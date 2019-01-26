@@ -1,0 +1,60 @@
+# CMI
+sourceId: 1
+cmiTitle: "Teachings of Christ Mind"
+
+# Setup
+title:        'title of source'
+tagline:      ''
+description:  ''
+url:          'https://xxx.christmind.info'
+baseurl:      ''
+keywords:     "Christ Mind, [additional keywords]"
+src-url:      'https://source.domain'
+port:         2222
+
+# About/contact
+author:
+  name:              Rick Mercer
+  url:               https://twitter.com/rmercer33
+  email:             rmercer33@gmail.com
+
+fb-appId:     448658485318107
+
+# Permalinks
+permalink: pretty
+permalink: /:title/
+
+# Set encoding to UTF-8
+encoding: utf-8
+
+# Build settings
+markdown: kramdown
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+
+# Collections for transcripts
+collections:
+  vol1:
+    output: true
+    title: Volume1 Title
+  vol2:
+    output: true
+    title: Volume2 Title
+
+defaults:
+  - scope:
+      path: ""
+      type: vol
+    values:
+      layout: transcript
+      book: "Volume Title"
+      image: "/public/img/src/vol-big.jpg"
+      image-width: 612
+      image-height: 792
+      bid: "vol"
+
+exclude: [
+  Gemfile, Gemfile.lock, package.json, package-lock.json, node_modules, webpack.config.js, src, project
+]
+
