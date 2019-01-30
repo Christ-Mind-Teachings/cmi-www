@@ -2,58 +2,40 @@
 # - used to comply with the DMCA Takedown Request from SCF over WOM content
 
 /library                  https://orig.christmind.info/library/
-/acim/intro/acim          https://orig.christmind.info/acim/intro/acim/
-/nwffacim/intro/nwffacim  https://orig.christmind.info/nwffacim/intro/nwffacim/
-/wom/intro/wom            https://orig.christmind.info/wom/intro/wom/
+
+#acim
+#/acim/intro/acim          https://orig.christmind.info/acim/intro/acim/
+/acim/*                   https://orig.christmind.info/acim/:splat
+/nwffacim/*               https://orig.christmind.info/nwffacim/:splat
+/wom/*                    https://orig.christmind.info/wom/:splat
+
+#acim books
+#/acim/intro/preface       https://orig.christmind.info/acim/intro/preface/
+#/acim/intro/text          https://orig.christmind.info/acim/intro/text/
+#/acim/intro/workbook      https://orig.christmind.info/acim/intro/workbook/
+#/acim/intro/manual        https://orig.christmind.info/acim/intro/manual/
+
+#acim text
+
+
+#nwffacim
+#/nwffacim/intro/nwffacim  https://orig.christmind.info/nwffacim/intro/nwffacim/
+
+#nwffacim books
+#/nwffacim/intro/yaa       https://orig.christmind.info/nwffacim/intro/yaa/
+#/nwffacim/intro/grad      https://orig.christmind.info/nwffacim/intro/grad/
+#/nwffacim/intro/acim      https://orig.christmind.info/nwffacim/intro/acim/
+
+#wom
+#/wom/intro/wom            https://orig.christmind.info/wom/intro/wom/
+
+#wom books
+#/wom/intro/tjl            https://orig.christmind.info/wom/intro/tjl/
+#/wom/intro/wos            https://orig.christmind.info/wom/intro/wos/
+#/wom/intro/woh            https://orig.christmind.info/wom/intro/woh/
+#/wom/intro/wot            https://orig.christmind.info/wom/intro/wot/
+#/wom/intro/wok            https://orig.christmind.info/wom/intro/wok/
+#/wom/intro/early          https://orig.christmind.info/wom/intro/early/
+#/wom/intro/questions      https://orig.christmind.info/wom/intro/questions/
 
 # Way of the Heart
-# /wom/woh/l01  /about/scf 307
-# /wom/woh/l02  /about/scf 307
-# /wom/woh/l03  /about/scf 307
-# /wom/woh/l04  /about/scf 307
-# /wom/woh/l05  /about/scf 307
-# /wom/woh/l06  /about/scf 307
-# /wom/woh/l07  /about/scf 307
-# /wom/woh/l08  /about/scf 307
-# /wom/woh/l09  /about/scf 307
-# /wom/woh/l10  /about/scf 307
-# /wom/woh/l11  /about/scf 307
-# /wom/woh/l12  /about/scf 307
-
-# Way of Transformation
-# /wom/wot/l01  /about/scf 307
-# /wom/wot/l02  /about/scf 307
-# /wom/wot/l03  /about/scf 307
-# /wom/wot/l04  /about/scf 307
-# /wom/wot/l05  /about/scf 307
-# /wom/wot/l06  /about/scf 307
-# /wom/wot/l07  /about/scf 307
-# /wom/wot/l08  /about/scf 307
-# /wom/wot/l09  /about/scf 307
-# /wom/wot/l10  /about/scf 307
-# /wom/wot/l11  /about/scf 307
-# /wom/wot/l12  /about/scf 307
-
-# Way of Knowning
-# /wom/wok/l01  /about/scf 307
-# /wom/wok/l02  /about/scf 307
-# /wom/wok/l03  /about/scf 307
-# /wom/wok/l04  /about/scf 307
-# /wom/wok/l05  /about/scf 307
-# /wom/wok/l06  /about/scf 307
-# /wom/wok/l07  /about/scf 307
-# /wom/wok/l08  /about/scf 307
-# /wom/wok/l09  /about/scf 307
-# /wom/wok/l10  /about/scf 307
-# /wom/wok/l11  /about/scf 307
-
-# Early Years
-# /wom/early/ble /about/scf 307
-# /wom/early/hoe /about/scf 307
-# /wom/early/com /about/scf 307
-# /wom/early/dth /about/scf 307
-# /wom/early/gar /about/scf 307
-# /wom/early/hoi /about/scf 307
-# /wom/early/c2s /about/scf 307
-# /wom/early/ign /about/scf 307
-
