@@ -1,0 +1,24 @@
+{
+  "bid": "acq",
+  "base": "/acq",
+  "title": "Get Acquainted",
+  "image": "/public/img/cmi/acq-toc.jpg",
+  "contents": [
+    {
+      "title": "Welcome",
+      "url": "/welcome/"
+    },
+    {
+      "title": "Quick Start",
+      "url": "/quick/"
+    },
+    {
+      "title": "Bookmarks",
+      "url": "/bookmark/"
+    },
+    {
+      "title": "Search",
+      "url": "/search/"
+    }
+  ]
+}

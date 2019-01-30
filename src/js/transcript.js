@@ -17,6 +17,25 @@ import fb from "./modules/_util/facebook";
 import share from "./modules/_share/share";
 import about from "./modules/_about/about";
 
+const ports = {
+  acim: 9912,
+  wom: 9910,
+  raj: 9913,
+  jsb: 9911,
+  www: 9999
+};
+
+function setLinks() {
+  if (location.hostname === "localhost") {
+    $("#www-christmind-info").removeAttr("href");
+
+    $("#acim-christmind-info").attr("href", `http://localhost:${ports.acim}/`);
+    $("#wom-christmind-info").attr("href", `http://localhost:${ports.wom}/`);
+    $("#raj-christmind-info").attr("href", `http://localhost:${ports.raj}/`);
+    $("#jsb-christmind-info").attr("href", `http://localhost:${ports.jsb}/`);
+  }
+}
+
 /*
  * For all transcript paragraphs -
  *   That are not footnotes and that don't have class .omit
@@ -102,6 +121,7 @@ function createParagraphNumberToggleListener() {
 $(document).ready(() => {
 
   initStickyMenu();
+  setLinks();
   labelParagraphs();
   createParagraphNumberToggleListener();
   auth.initialize();
@@ -128,6 +148,11 @@ $(document).ready(() => {
       //until the share window is closed
       let pid = share.initialize();
       bookmark.initialize(pid);
+
+      if ($(".disable-paragraph-marker").length > 0) {
+        console.log("disable paragraph markers");
+        $(".toggle-paragraph-markers").eq(0).trigger("click");
+      }
     })
     .catch((error) => {
       //report error to the user - somehow

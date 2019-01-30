@@ -1,16 +1,16 @@
 # CMI
-sourceId: 1
+sourceId: 99
 cmiTitle: "Teachings of Christ Mind"
 
 # Setup
-title:        'title of source'
+title:        'The Library'
 tagline:      ''
 description:  ''
-url:          'https://xxx.christmind.info'
+url:          'https://www.christmind.info'
 baseurl:      ''
-keywords:     "Christ Mind, [additional keywords]"
-src-url:      'https://source.domain'
-port:         2222
+keywords:     "Christ Mind, cmi, jesus, raj, acim"
+src-url:      ''
+port:         9999
 
 # About/contact
 author:
@@ -35,24 +35,21 @@ plugins:
 
 # Collections for transcripts
 collections:
-  vol1:
+  acq:
     output: true
-    title: Volume1 Title
-  vol2:
-    output: true
-    title: Volume2 Title
+    title: "Get Acquainted"
 
 defaults:
   - scope:
       path: ""
-      type: vol
+      type: acq
     values:
       layout: transcript
-      book: "Volume Title"
-      image: "/public/img/src/vol-big.jpg"
+      book: "Get Acquainted"
+      image: "/public/img/cmi/acq-big.jpg"
       image-width: 612
       image-height: 792
-      bid: "vol"
+      bid: "acq"
 
 exclude: [
   Gemfile, Gemfile.lock, package.json, package-lock.json, node_modules, webpack.config.js, src, project
