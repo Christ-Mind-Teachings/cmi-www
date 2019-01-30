@@ -2,40 +2,7 @@
 # - used to comply with the DMCA Takedown Request from SCF over WOM content
 
 /library                  https://orig.christmind.info/library/
-
-#acim
-#/acim/intro/acim          https://orig.christmind.info/acim/intro/acim/
 /acim/*                   https://orig.christmind.info/acim/:splat
 /nwffacim/*               https://orig.christmind.info/nwffacim/:splat
 /wom/*                    https://orig.christmind.info/wom/:splat
 
-#acim books
-#/acim/intro/preface       https://orig.christmind.info/acim/intro/preface/
-#/acim/intro/text          https://orig.christmind.info/acim/intro/text/
-#/acim/intro/workbook      https://orig.christmind.info/acim/intro/workbook/
-#/acim/intro/manual        https://orig.christmind.info/acim/intro/manual/
-
-#acim text
-
-
-#nwffacim
-#/nwffacim/intro/nwffacim  https://orig.christmind.info/nwffacim/intro/nwffacim/
-
-#nwffacim books
-#/nwffacim/intro/yaa       https://orig.christmind.info/nwffacim/intro/yaa/
-#/nwffacim/intro/grad      https://orig.christmind.info/nwffacim/intro/grad/
-#/nwffacim/intro/acim      https://orig.christmind.info/nwffacim/intro/acim/
-
-#wom
-#/wom/intro/wom            https://orig.christmind.info/wom/intro/wom/
-
-#wom books
-#/wom/intro/tjl            https://orig.christmind.info/wom/intro/tjl/
-#/wom/intro/wos            https://orig.christmind.info/wom/intro/wos/
-#/wom/intro/woh            https://orig.christmind.info/wom/intro/woh/
-#/wom/intro/wot            https://orig.christmind.info/wom/intro/wot/
-#/wom/intro/wok            https://orig.christmind.info/wom/intro/wok/
-#/wom/intro/early          https://orig.christmind.info/wom/intro/early/
-#/wom/intro/questions      https://orig.christmind.info/wom/intro/questions/
-
-# Way of the Heart

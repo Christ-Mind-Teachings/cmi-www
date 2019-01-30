@@ -39,6 +39,10 @@ function setLinks() {
     $("#raj-christmind-info").attr("href", `http://localhost:${ports.raj}/`);
     $("#jsb-christmind-info").attr("href", `http://localhost:${ports.jsb}/`);
   }
+  else if (location.pathname === "/") {
+    //remove the link that links to the current page
+    $("#www-christmind-info").removeAttr("href");
+  }
 }
 
 $(document).ready(() => {

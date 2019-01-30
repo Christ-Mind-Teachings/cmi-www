@@ -6,6 +6,32 @@ footer:
   display: true
 ---
 
+<h2 class="ui header">
+  Welcome! 
+</h2>
+<p>
+  We're making changes to the <em>Library of Christ Mind Teachings</em>. They're not
+  quite ready yet but we're moving around the furniture.
+</p>
+  
+<p>
+  You can access the original site by clicking the image below or scroll down
+  and take a peak at the changes. Things will change - a little.
+</p>
+
+<div class="ui centered card">
+  <a href="https://orig.christmind.info" class="small image">
+    <img src="/public/img/cmi/orig-big.jpg">
+  </a>
+  <div class="content">
+    <div class="header">Original Edition</div>
+    <div class="description">
+      Click here to display the original christmind.info website.
+    </div>
+  </div>
+</div>
+<hr/>
+
 <div id="page-contents" class="ui three cards">
   <div class="card">
     <a href="#" data-book="acq" class="toc-modal-open image">
