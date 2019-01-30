@@ -11,28 +11,27 @@ footer:
 </h2>
 <p>
   We're making changes to the <em>Library of Christ Mind Teachings</em>. They're not
-  quite ready yet but we're moving around the furniture.
+  quite ready yet but we're moving around the furniture!
 </p>
   
 <p>
-  You can access the original site by clicking the image below or scroll down
-  and take a peak at the changes. Things will change - a little.
+  You can access the original site by clicking the image on the left below or
+  poke around and take a peak at the changes. Things will change, a little but
+  most of the functionality is present. More help will be added.
 </p>
 
-<div class="ui centered card">
-  <a href="https://orig.christmind.info" class="small image">
-    <img src="/public/img/cmi/orig-big.jpg">
-  </a>
-  <div class="content">
-    <div class="header">Original Edition</div>
-    <div class="description">
-      Click here to display the original christmind.info website.
+<div id="page-contents" class="ui three cards">
+  <div class="card">
+    <a href="https://orig.christmind.info" class="small image">
+      <img src="/public/img/cmi/orig-big.jpg">
+    </a>
+    <div class="content">
+      <div class="header">CMI Original Edition</div>
+      <div class="description">
+        Click here to display the original christmind.info website.
+      </div>
     </div>
   </div>
-</div>
-<hr/>
-
-<div id="page-contents" class="ui three cards">
   <div class="card">
     <a href="#" data-book="acq" class="toc-modal-open image">
       <img src="/public/img/cmi/acq-big.jpg">
