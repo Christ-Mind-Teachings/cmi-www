@@ -51,6 +51,9 @@ defaults:
       image-height: 792
       bid: "acq"
 
+# force inclusion of
+include: [_redirects, LICENSE.txt]
+
 exclude: [
   Gemfile, Gemfile.lock, package.json, package-lock.json, node_modules, webpack.config.js, src, project
 ]

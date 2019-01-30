@@ -1,0 +1,60 @@
+# Netlify url rewrite file
+# - used to comply with the DMCA Takedown Request from SCF over WOM content
+
+/                         https://old.christmind.info/
+/library                  https://old.christmind.info/library/
+/acim/intro/acim          https://old.christmind.info/acim/intro/acim/
+/nwffacim/intro/nwffacim  https://old.christmind.info/nwffacim/intro/nwffacim/
+/wom/intro/wom            https://old.christmind.info/wom/intro/wom/
+
+# Way of the Heart
+# /wom/woh/l01  /about/scf 307
+# /wom/woh/l02  /about/scf 307
+# /wom/woh/l03  /about/scf 307
+# /wom/woh/l04  /about/scf 307
+# /wom/woh/l05  /about/scf 307
+# /wom/woh/l06  /about/scf 307
+# /wom/woh/l07  /about/scf 307
+# /wom/woh/l08  /about/scf 307
+# /wom/woh/l09  /about/scf 307
+# /wom/woh/l10  /about/scf 307
+# /wom/woh/l11  /about/scf 307
+# /wom/woh/l12  /about/scf 307
+
+# Way of Transformation
+# /wom/wot/l01  /about/scf 307
+# /wom/wot/l02  /about/scf 307
+# /wom/wot/l03  /about/scf 307
+# /wom/wot/l04  /about/scf 307
+# /wom/wot/l05  /about/scf 307
+# /wom/wot/l06  /about/scf 307
+# /wom/wot/l07  /about/scf 307
+# /wom/wot/l08  /about/scf 307
+# /wom/wot/l09  /about/scf 307
+# /wom/wot/l10  /about/scf 307
+# /wom/wot/l11  /about/scf 307
+# /wom/wot/l12  /about/scf 307
+
+# Way of Knowning
+# /wom/wok/l01  /about/scf 307
+# /wom/wok/l02  /about/scf 307
+# /wom/wok/l03  /about/scf 307
+# /wom/wok/l04  /about/scf 307
+# /wom/wok/l05  /about/scf 307
+# /wom/wok/l06  /about/scf 307
+# /wom/wok/l07  /about/scf 307
+# /wom/wok/l08  /about/scf 307
+# /wom/wok/l09  /about/scf 307
+# /wom/wok/l10  /about/scf 307
+# /wom/wok/l11  /about/scf 307
+
+# Early Years
+# /wom/early/ble /about/scf 307
+# /wom/early/hoe /about/scf 307
+# /wom/early/com /about/scf 307
+# /wom/early/dth /about/scf 307
+# /wom/early/gar /about/scf 307
+# /wom/early/hoi /about/scf 307
+# /wom/early/c2s /about/scf 307
+# /wom/early/ign /about/scf 307
+
