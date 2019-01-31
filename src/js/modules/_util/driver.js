@@ -4,7 +4,7 @@ const cmiPageTitle = {
   element: "#source-homepage",
   popover: {
     title: "Title",
-    description: "This is the homepage for the Sparkly Edition of <em>A Course In Miracles</em> in the Christ Mind Library.<br><br>Click on an image below to see the table of contents. A Course In Miracles include&hellip;",
+    description: "This is the homepage and card catalog for the Christ Mind Library. Begin exploration of the library here.",
     position: "bottom"
   }
 };
@@ -13,43 +13,61 @@ const cmiPageBanner = {
   element: "#masthead-title",
   popover: {
     title: "Navigation and Features",
-    description: "ACIM is part of the Library of Christ Mind Teachings. On every page you can click on this banner to navigate to the Library's main page and see all available teachings.",
+    description: "On every page you can click on this banner to navigate to the Library's main page and see all available teachings.",
     position: "bottom"
   }
 };
 
-const acimPreface = {
-  element: "[data-book='preface']",
+const originalEdition = {
+  element: "#original-edition",
   popover: {
-    title: "Preface",
-    description: "The Preface to the ACIM Sparkly Edition",
+    title: "Original Website",
+    description: "The original Christ Mind Teachings website.",
     position: "top"
   }
 };
 
-const acimText = {
-  element: "[data-book='text']",
+const getAcquainted = {
+  element: "[data-book='acq']",
   popover: {
-    title: "Text",
-    description: "The Text of ACIM containing thirty one chapters",
+    title: "Get Acquainted",
+    description: "Get help and learn about the library here.",
     position: "top"
   }
 };
 
-const acimWorkbook = {
-  element: "[data-book='workbook']",
+const acim = {
+  element: "#acim-christmind-info",
   popover: {
-    title: "Workbook for Students",
-    description: "The Workbook for Students containing one lesson for each day of the year.",
+    title: "A Course In Miracles",
+    description: "The Sparkly Edition of A Course In Miracles.",
     position: "top"
   }
 };
 
-const acimManual = {
-  element: "[data-book='manual']",
+const raj = {
+  element: "#raj-christmind-info",
   popover: {
-    title: "Manual for Teachers",
-    description: "Answers common questions and clarifies terms used in ACIM.",
+    title: "The Raj Material",
+    description: "The Raj Material from Paul Tuttle and the Northwest Foundation for ACIM.",
+    position: "top"
+  }
+};
+
+const wom = {
+  element: "#wom-christmind-info",
+  popover: {
+    title: "The Way of Mastery",
+    description: "The Way of Mastery from Jeshua and Jayem (Jon Marc Hammer)",
+    position: "top"
+  }
+};
+
+const jsb = {
+  element: "#jsb-christmind-info",
+  popover: {
+    title: "Joseph S. Benner",
+    description: "The Impersonal Life, published in 1914",
     position: "top"
   }
 };
@@ -112,7 +130,7 @@ const cmiTranscriptBanner = {
   element: "#masthead-title",
   popover: {
     title: "Library of Christ Mind Teachings",
-    description: "This page is part of the Teachings of Christ Mind Library. Click this link to navigate to the Library's Home page.",
+    description: "This banner identifies the page as being part of the Teachings of Christ Mind Library. Click this link to navigate to the Library's Home page.",
     position: "bottom"
   }
 };
@@ -120,8 +138,8 @@ const cmiTranscriptBanner = {
 const cmiTranscriptSourceTitle = {
   element: "#src-title",
   popover: {
-    title: "A Course In Miracles",
-    description: "This page is part of A Course In Miracles. Click this link to navigate to the ACIM Home page.",
+    title: "The Library",
+    description: "This identifies the source or section of the library the page is a part of. Click this link to navigate to the section Home page.",
     position: "bottom"
   }
 };
@@ -233,10 +251,12 @@ export function pageDriver() {
 
   driver.defineSteps([
     cmiPageTitle,
-    acimPreface,
-    acimText,
-    acimWorkbook,
-    acimManual
+    originalEdition,
+    getAcquainted,
+    acim,
+    raj,
+    wom,
+    jsb
   ]);
 
   driver.start();

@@ -27,8 +27,7 @@ const ports = {
 
 function setLinks() {
   if (location.hostname === "localhost") {
-    $("#www-christmind-info").removeAttr("href");
-
+    $("#www-christmind-info").attr("href", `http://localhost:${ports.www}/`);
     $("#acim-christmind-info").attr("href", `http://localhost:${ports.acim}/`);
     $("#wom-christmind-info").attr("href", `http://localhost:${ports.wom}/`);
     $("#raj-christmind-info").attr("href", `http://localhost:${ports.raj}/`);

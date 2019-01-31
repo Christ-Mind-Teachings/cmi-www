@@ -1,6 +1,7 @@
 ---
 layout: page
 masthead: home
+search: false
 title: "The Library"
 footer:
   display: true
@@ -22,7 +23,7 @@ footer:
 
 <div id="page-contents" class="ui three cards">
   <div class="card">
-    <a href="https://orig.christmind.info" class="small image">
+    <a id="original-edition" href="https://orig.christmind.info" class="small image" data-tooltip="Click to visit the original CMI website." data-position="bottom center">
       <img src="/public/img/cmi/orig-big.jpg">
     </a>
     <div class="content">
@@ -33,7 +34,7 @@ footer:
     </div>
   </div>
   <div class="card">
-    <a href="#" data-book="acq" class="toc-modal-open image">
+    <a href="#" data-book="acq" class="toc-modal-open image" data-tooltip="Click to view the Getting Acquainted table of contents." data-position="bottom center">
       <img src="/public/img/cmi/acq-big.jpg">
     </a>
     <div class="content">
@@ -44,7 +45,7 @@ footer:
     </div>
   </div>
   <div class="card">
-    <a id="acim-christmind-info" href="https://acim.christmind.info" class="image">
+    <a id="acim-christmind-info" href="https://acim.christmind.info" class="image" data-tooltip="Click to view the ACIM Sparkly Edition." data-position="bottom center">
       <img src="/public/img/cmi/acim-big.jpg">
     </a>
     <div class="content">
@@ -55,7 +56,7 @@ footer:
     </div>
   </div>
   <div class="card">
-    <a id="raj-christmind-info" href="https://raj.christmind.info" class="image">
+    <a id="raj-christmind-info" href="https://raj.christmind.info" class="image" data-tooltip="Click to view the Raj Material." data-position="bottom center">
       <img src="/public/img/cmi/raj-big.jpg">
     </a>
     <div class="content">
@@ -66,7 +67,7 @@ footer:
     </div>
   </div>
   <div class="card">
-    <a id="wom-christmind-info" href="https://wom.christmind.info" class="image">
+    <a id="wom-christmind-info" href="https://wom.christmind.info" class="image" data-tooltip="Click to view the Way of Mastery." data-position="bottom center">
       <img src="/public/img/cmi/wom-big.jpg">
     </a>
     <div class="content">
@@ -78,7 +79,7 @@ footer:
     </div>
   </div>
   <div class="card">
-    <a id="jsb-christmind-info" href="https://jsb.christmind.info" class="image">
+    <a id="jsb-christmind-info" href="https://jsb.christmind.info" class="image" data-tooltip="Click to view The Impersonal Life." data-position="bottom center">
       <img src="/public/img/cmi/jsb-big.jpg">
     </a>
     <div class="content">

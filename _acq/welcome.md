@@ -1,21 +1,42 @@
 ---
 title: Welcome
+search: false
 ---
 
-Welcome to the Library of Christ Mind Teachings.
-{: .disable-paragraph-marker}
+<h2 class="disable-paragraph-marker ui header">
+  Welcome to the Library of Christ Mind Teachings.
+</h2>
 
-The library is a collection of authoritative channeled insight and inspiration that offers a perspective on the individual and collective challenges of our lives and world that is not commonly taught. For many, this new perspective is immediately grasped as the only real solution to the problems of the world, from little anoyances to major conflict and from those of a personal nature to those that have a global effect.
+The library is a collection of authoritative channeled insight and inspiration that offers a perspective on the individual and collective challenges of our lives and world that is not commonly taught. For many, this new perspective is immediately grasped as the only real solution to the problems of the world, from little anoyances to major conflict and from those of a personal nature to those that have global effect.
 
-The volumes in the library all teach the same thing but each source presents its message in a different way and often using somewhat different language. The content is the same just the form differs. The variety if forms of teachings support a deeper understanding of the material.
+The books in the library express a similar message but each source presents it in a different way and often using somewhat different language. The content is the same, just the form differs. The variety of forms of teachings support a deeper understanding of the material.
 
-The library is orgainzed by teaching or *source* and each source contains one or more *books*. The [homepage](https://www.christmind.info) displays a cover that represents each source and a *Get Acquainted* guide. Click on a cover to display a table of contents for a book or to go to the homepage of a particular source.
+The library is orgainzed by teaching or *source* and each source contains one or more *books*. The Libraries [homepage](https://www.christmind.info) displays an image that represents each source and a *Get Acquainted* guide. 
 
-Below are contents of the library.
+Since this is a new version of the Library the original edition is still available and represented by the first image on the page. 
+
+Click on an image to display a table of contents for a book or to go to the homepage of a particular source.
+
+<h3 class="ui header">Listed here are contents of the library.</h3>
 
 <div class="ui items">
   <div class="item">
-    <a href="#" data-book="acq" class="toc-modal-open ui tiny image">
+    <a id="orig-christmind-info" href="https://orig.christmind.info" class="ui tiny image"
+      data-tooltip="Click to visit the original CMI website.">
+      <img src="/public/img/cmi/orig-toc.jpg">
+    </a>
+    <div class="content">
+      <a id="orig-christmind-info" class="header">Original Christ Mind Site</a>
+      <div class="description">
+        <p>
+          This is the original https://www.christmind.info site. It will be available here until
+          the new site is ready to go and documented. 
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="item">
+    <a href="#" data-book="acq" class="toc-modal-open ui tiny image" data-tooltip="Click to view the Getting Acquainted table of contents.">
       <img src="/public/img/cmi/acq-toc.jpg">
     </a>
     <div class="content">
@@ -28,7 +49,7 @@ Below are contents of the library.
     </div>
   </div>
   <div class="item">
-    <a id="acim-christmind-info" href="https://acim.christmind.info" class="ui tiny image">
+    <a id="acim-christmind-info" href="https://acim.christmind.info" class="ui tiny image" data-tooltip="Click to view the ACIM Sparkly Edition.">
       <img src="/public/img/cmi/acim-toc.jpg">
     </a>
     <div class="content">
@@ -37,11 +58,14 @@ Below are contents of the library.
         <p>
           The Sparkly Edition of <em>A Course In Miracles</em>. Clicking on the cover image will take you to the ACIM homepage in the library. You can learn more about ACIM there in the <em>Get Acquainted</em> guide.
         </p>
+        <p>
+          The Sparkly Edition is included in the Library because its the version Raj uses in his ACIM Study Group.
+        </p>
       </div>
     </div>
   </div>
   <div class="item">
-    <a id="raj-christmind-info" href="https://raj-christmind.info" class="ui tiny image">
+    <a id="raj-christmind-info" href="https://raj-christmind.info" class="ui tiny image" data-tooltip="Click to view the Raj Material.">
       <img id="raj-christmind-info" src="/public/img/cmi/raj-toc.jpg">
     </a>
     <div class="content">
@@ -50,7 +74,6 @@ Below are contents of the library.
         <p>
           Raj has been sharing wisdom and inspiration through Paul Tuttle since 1982. Paul has written two books on his experience with Raj, <em>You ARE the Answer</em> and <em>Graduation</em>, both of which are available in the library. Raj has also facilitated an enlightening ACIM Study Group since 2002.
         </p>
-
         <p>
           Click on the cover image to go to the Raj Material homepage.
         </p>
@@ -58,7 +81,7 @@ Below are contents of the library.
     </div>
   </div>
   <div class="item">
-    <a id="wom-christmind-info" href="https://wom-christmind-info" class="ui tiny image">
+    <a id="wom-christmind-info" href="https://wom-christmind-info" class="ui tiny image" data-tooltip="Click to view the Way of Mastery.">
       <img src="/public/img/cmi/wom-toc.jpg">
     </a>
     <div class="content">
@@ -75,7 +98,7 @@ Below are contents of the library.
     </div>
   </div>
   <div class="item">
-    <a id="jsb-christmind-info" href="https://jsb.christmind.info" class="ui tiny image">
+    <a id="jsb-christmind-info" href="https://jsb.christmind.info" class="ui tiny image" data-tooltip="Click to view The Impersonal Life.">
       <img src="/public/img/cmi/jsb-toc.jpg">
     </a>
     <div class="content">
@@ -83,6 +106,9 @@ Below are contents of the library.
       <div class="description">
         <p>
           <em>The Impersonal Life</em> was published in 1914 by Joepsh S. Benner. It is a teaching from a time much earlier than the other sources in the library and serves to illustrate the timeless nature of Christ Mind teachings.
+        </p>
+        <p markdown="1">
+          Audio is provided by Barry Peterson from the Youtube channel [Giving Voice to the Wisdom of the Ages](https://www.youtube.com/channel/UCOdt4ugDsU0R6Qis6lfW2Ew).
         </p>
         <p>
           Click on the cover image to go the Joesph S. Benner homepage.

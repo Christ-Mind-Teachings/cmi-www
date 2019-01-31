@@ -18,11 +18,13 @@
         </div>
       </div>
     </a>
+    {% unless page.search == false %}
     <a href="#" id="search-modal-open" class="item search-modal-open">
       <span data-position="bottom center" data-tooltip="Search {{site.title}}">
         <i class="search icon"></i>
       </span>
     </a>
+    {% endunless %}
     <a class="audio-player-toggle hide item" >
       <span data-position="bottom center" data-tooltip="Play Audio">
         <i class="volume up icon"></i></a>
@@ -58,8 +60,7 @@
     <a id="about-dropdown-menu" href="#" class="ui dropdown item">
       <i class="question icon"></i>
       <div id="help-menu" class="menu">
-        <div class="transcript-tour item">Learn About This Page</div>
-        <div class="about-src item">About This Teaching</div>
+        <div class="transcript-tour item">Tour the Page</div>
         <div class="read-documentation item">Read Documentation</div>
         <div class="view-documentation item">Watch Video Instruction</div>
       </div>
