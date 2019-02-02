@@ -72,7 +72,7 @@ Click on an image to display a table of contents for a book or to go to the home
       <a class="header">The Raj Material</a>
       <div class="description">
         <p>
-          Raj has been sharing wisdom and inspiration through Paul Tuttle since 1982. Paul has written two books on his experience with Raj, <em>You ARE the Answer</em> and <em>Graduation</em>, both of which are available in the library. Raj has also facilitated an enlightening ACIM Study Group since 2002.
+          Raj has been sharing wisdom and inspiration through Paul Tuttle since 1982. Paul has written two books on his experience with Raj, <em>You ARE the Answer</em> and <em>Graduation</em>, both of which are available here. Raj has also facilitated an enlightening ACIM Study Group since 2002; the text and audio for all sessions (over 400) is available.
         </p>
         <p>
           Click on the cover image to go to the Raj Material homepage.

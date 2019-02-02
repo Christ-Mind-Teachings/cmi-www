@@ -10,16 +10,14 @@ footer:
 <h2 class="ui header">
   Welcome! 
 </h2>
-<p>
-  We're making changes to the <em>Library of Christ Mind Teachings</em>. They're not
-  quite ready yet but we're moving around the furniture!
-</p>
-  
-<p>
-  You can access the original site by clicking the image on the left below or
-  poke around and take a peak at the changes. Things will change, a little but
-  most of the functionality is present. More help will be added.
-</p>
+
+The Library of Christ Mind Teachings is a fully searchable and integrated collection of modern spiritual texts. Where audio is available, it tracks paragraph by paragraph with the transcribed text. Search results are marked directly in the transcript and a "Search Navigator" provides navigation between results both within and between transcripts.
+
+The intent of the Library is to offer simple, readable, and uncluttered access to the material herein. The interface is terse by design so be sure to poke around and get familiar with the features available. Start by clicking the <i class="question icon"></i> option in the menu bar of each page. Video documentation is coming soon.
+
+Additional information and help is available in the *Get Acquainted* section and is accessed by clicking on the associated image.
+
+If you've used the library before you'll notice big changes. The old site is still available by clicking the Original Edition below.
 
 <div id="page-contents" class="ui three cards">
   <div class="card">
