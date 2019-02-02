@@ -9,7 +9,7 @@ description:  ''
 url:          'https://www.christmind.info'
 baseurl:      ''
 keywords:     "Christ Mind, cmi, jesus, raj, acim"
-src-url:      ''
+src-url:      'https://www.christmind.info'
 port:         9999
 
 # About/contact
