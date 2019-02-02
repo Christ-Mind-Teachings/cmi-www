@@ -2,7 +2,15 @@
 layout: page
 masthead: home
 search: false
-title: "The Library"
+title: "The CMI Library"
+fb:
+  desc: "Visit the Library of Christ Mind Teachings; an integrated, searchable and comprehensive collection of modern day spiritual teachings." 
+  image:
+    - "cmi/acim-big.jpg"
+    - "cmi/acq-big.jpg"
+    - "cmi/jsb-big.jpg"
+    - "cmi/raj-big.jpg"
+    - "cmi/wom-big.jpg"
 footer:
   display: true
 ---
