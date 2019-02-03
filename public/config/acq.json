@@ -9,16 +9,24 @@
       "url": "/welcome/"
     },
     {
+      "title": "Content Overview",
+      "url": "/overview/"
+    },
+    {
       "title": "Quick Start",
       "url": "/quick/"
     },
     {
-      "title": "Bookmarks",
+      "title": "Bookmarks and Annotation",
       "url": "/bookmark/"
     },
     {
-      "title": "Search",
+      "title": "CMI Search",
       "url": "/search/"
+    },
+    {
+      "title": "Integrated Audio",
+      "url": "/audio/"
     }
   ]
 }
