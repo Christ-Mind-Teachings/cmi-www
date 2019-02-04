@@ -18,7 +18,7 @@ Boxes headed by a <i class="volume up icon"></i> symbol indicate teachings with 
   ![Library Orgainization](/public/img/cmi/cmi-contents.jpg)
 </div>
 
-The number in parenthesis, for example (29), indicate the number of chapters or lessons or questions that teaching component contains.
+The number in parenthesis, for example (29), indicate the number of chapters or lessons or questions that that teaching component contains.
 
 The first box under each teaching is labeled *Get Acquainted* and contains one or more pages of pertainate information about the teaching. Please note help and information about the Library itself is found in the *Get Acquainted* box with the red border in the diagram. 
 

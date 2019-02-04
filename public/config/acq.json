@@ -27,6 +27,10 @@
     {
       "title": "Integrated Audio",
       "url": "/audio/"
+    },
+    {
+      "title": "User Accounts",
+      "url": "/accounts/"
     }
   ]
 }
