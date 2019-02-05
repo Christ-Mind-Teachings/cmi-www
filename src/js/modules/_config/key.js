@@ -36,7 +36,7 @@ const keyLength = 7;
 const books = ["acq" ];
 
 const bookIds = ["xxx", ...books];
-const acq = ["xxx", "welcome", "quick", "bookmark", "search"];
+const acq = ["xxx", "welcome", "overview", "quick", "bookmark", "search", "audio", "account"];
 
 const contents = {
   acq: acq

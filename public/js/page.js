@@ -1672,7 +1672,7 @@ const keyLength = 7;
 const books = ["acq"];
 
 const bookIds = ["xxx", ...books];
-const acq = ["xxx", "welcome", "quick", "bookmark", "search"];
+const acq = ["xxx", "welcome", "overview", "quick", "bookmark", "search", "audio", "account"];
 
 const contents = {
   acq: acq
@@ -34629,7 +34629,7 @@ function generateBookmarkList(books) {
         <li>Clicking on the paragraph number, eg: (p21)</li>
       </ul>
       <p>
-        See <a href="">the Bookmark documentation</a> for more information.
+        See <a href="https://www.christmind.info/acq/bookmark/">the Bookmark documentation</a> for more information.
       </p>
     `;
   }
