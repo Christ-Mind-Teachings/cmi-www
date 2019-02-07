@@ -56,6 +56,7 @@ Clicking the link on the search results listing will open the corresponding docu
 Here you see the search phrase highlighted in paragraph 82 and the *Search Navigator* that lets you move sequentially between matches both previous and next and within and between documents.
 
 ## Search Navigator
+{: #search-navigator}
 
 The search navigator makes it easy to jump between matches in the page and to those on other pages. The title section of the navigator gives the component and document title of the current page. The bottom half lists the search term and number of matches on the page. 
 

@@ -39,6 +39,10 @@ function generateHorizontalList(listArray) {
 function generateAnnotation(annotation, topics = []) {
   let match;
 
+  if (!annotation.topicList) {
+    annotation.topicList = [];
+  }
+
   //convert annotation topics list into string array
   let topicList = annotation.topicList.map((topic) => {
     if (typeof topic === "object") {
@@ -542,8 +546,8 @@ function initClickListeners() {
     pid = $(".selected-annotation-wrapper p").attr("id");
     aid = annotation.data("aid");
     text = annotation.text().replace(/\n/," ");
-    
-    let url = `https://acim.christmind.info${location.pathname}?as=${pid}:${aid}:${userInfo.userId}`;
+
+    let url = `https://www.christmind.info${location.pathname}?as=${pid}:${aid}:${userInfo.userId}`;
     let channel = $(this).hasClass("facebook")?"facebook":"email";
 
     // console.log("url: %s", url);
