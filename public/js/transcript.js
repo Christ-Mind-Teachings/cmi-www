@@ -47723,6 +47723,7 @@ function showAnnotation() {
 function createSubmitHandler($form) {
   let userInfo = Object(__WEBPACK_IMPORTED_MODULE_1__user_netlify__["b" /* getUserInfo */])();
 
+  //init form fields for signed in users
   if (userInfo) {
     $form.form("set values", {
       name: userInfo.name,
@@ -47730,6 +47731,7 @@ function createSubmitHandler($form) {
     });
   }
 
+  //submit handler
   $form.submit(function (e) {
     e.preventDefault();
     //console.log("submit pressed");
@@ -47738,6 +47740,7 @@ function createSubmitHandler($form) {
     let formData = $form.form("get values");
     let validationError = false;
 
+    //form validation
     if (formData.name.trim().length === 0) {
       __WEBPACK_IMPORTED_MODULE_0_toastr___default.a.warning("Please enter your name.");
       validationError = true;
@@ -47755,6 +47758,7 @@ function createSubmitHandler($form) {
       return false;
     }
 
+    //send to netlify
     $.post($form.attr("action"), $form.serialize()).done(function () {
       __WEBPACK_IMPORTED_MODULE_0_toastr___default.a.success("Thank you!");
     }).fail(function (e) {
@@ -47770,8 +47774,7 @@ function createSubmitHandler($form) {
 
     if ($form.length > 0) {
       createSubmitHandler($form);
-    } else {
-      console.log("Form %s not initialized.");
+      console.log("Form %s initialized.", formName);
     }
   }
 });

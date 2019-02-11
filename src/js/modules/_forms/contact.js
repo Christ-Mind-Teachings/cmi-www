@@ -8,6 +8,7 @@ import {getUserInfo} from "../_user/netlify";
 function createSubmitHandler($form) {
   let userInfo = getUserInfo();
 
+  //init form fields for signed in users
   if (userInfo) {
     $form.form("set values", {
       name: userInfo.name,
@@ -15,6 +16,7 @@ function createSubmitHandler($form) {
     });
   }
 
+  //submit handler
   $form.submit(function(e) {
     e.preventDefault();
     //console.log("submit pressed");
@@ -23,6 +25,7 @@ function createSubmitHandler($form) {
     let formData = $form.form("get values");
     let validationError = false;
 
+    //form validation
     if (formData.name.trim().length === 0) {
       notify.warning("Please enter your name.");
       validationError = true;
@@ -40,6 +43,7 @@ function createSubmitHandler($form) {
       return false;
     }
 
+    //send to netlify
     $.post($form.attr("action"), $form.serialize())
       .done(function() {
         notify.success("Thank you!");
@@ -57,9 +61,7 @@ export default {
 
     if ($form.length > 0) {
       createSubmitHandler($form);
-    }
-    else {
-      console.log("Form %s not initialized.");
+      console.log("Form %s initialized.", formName);
     }
   }
 };
