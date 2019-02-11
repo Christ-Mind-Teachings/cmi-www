@@ -19,7 +19,7 @@ Bookmarks are paragraph markers that may contain highlighted text, annotations, 
     <ul class="list">
       <li>Bookmarks created when you're signed in are accessible from all your devices</li>
       <li>and they can be shared to Facebook and via email.</li>
-      <li>See <a href="https://www.christmind.info/acq/account/">CMI User Accounts</a> for details.</li>
+      <li>See <a href="https://www.christmind.info/acq/accounts/">CMI User Accounts</a> for details.</li>
     </ul>
   </div>
 </div>

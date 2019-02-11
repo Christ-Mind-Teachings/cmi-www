@@ -36,7 +36,7 @@ const keyLength = 7;
 const books = ["acq" ];
 
 const bookIds = ["xxx", ...books];
-const acq = ["xxx", "welcome", "overview", "quick", "bookmark", "search", "audio", "account"];
+const acq = ["xxx", "welcome", "overview", "quick", "bookmark", "search", "audio", "accounts", "contact"];
 
 const contents = {
   acq: acq
@@ -231,6 +231,24 @@ function getNumberOfUnits(bid) {
   }
 }
 
+/*
+ * Convert page key to url
+ */
+function getUrl(key) {
+  let decodedKey = decodeKey(key);
+  let unit = "invalid";
+
+  if (decodedKey.error) {
+    return "/invalid/key/";
+  }
+
+  if (contents[decodedKey.bookId]) {
+    unit = contents[decodedKey.bookId][decodedKey.uid + 1];
+  }
+
+  return `/${decodedKey.bookId}/${unit}/`;
+}
+
 module.exports = {
   getNumberOfUnits: getNumberOfUnits,
   getBooks: getBooks,
@@ -240,5 +258,6 @@ module.exports = {
   getUnitId: getUnitId,
   genPageKey: genPageKey,
   genParagraphKey: genParagraphKey,
-  decodeKey: decodeKey
+  decodeKey: decodeKey,
+  getUrl: getUrl
 };

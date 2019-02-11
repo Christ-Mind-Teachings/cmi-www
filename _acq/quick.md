@@ -219,7 +219,7 @@ The menu offers access to the functions available on the page. The options avail
         </p>
 
         <p>
-        See the <a href="/acq/account/">Accounts</a> section of the <em>Get Acquainted</em> guide for more information.
+        See the <a href="/acq/accounts/">Accounts</a> section of the <em>Get Acquainted</em> guide for more information.
         </p>
       </div>
     </div>

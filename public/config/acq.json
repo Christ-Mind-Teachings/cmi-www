@@ -31,6 +31,10 @@
     {
       "title": "User Accounts",
       "url": "/accounts/"
+    },
+    {
+      "title": "Contact Me",
+      "url": "/contact/"
     }
   ]
 }

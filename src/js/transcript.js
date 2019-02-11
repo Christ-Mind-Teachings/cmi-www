@@ -16,6 +16,7 @@ import audio from "./modules/_audio/audio";
 import fb from "./modules/_util/facebook";
 import share from "./modules/_share/share";
 import about from "./modules/_about/about";
+import contact from "./modules/_forms/contact";
 
 const ports = {
   acim: 9912,
@@ -126,6 +127,7 @@ $(document).ready(() => {
   auth.initialize();
   fb.initialize();
   about.initialize();
+  contact.initialize("acq-contact-form");
 
   //load config file and do initializations that depend on a loaded config file
   loadConfig(getBookId())

@@ -1672,7 +1672,7 @@ const keyLength = 7;
 const books = ["acq"];
 
 const bookIds = ["xxx", ...books];
-const acq = ["xxx", "welcome", "overview", "quick", "bookmark", "search", "audio", "account"];
+const acq = ["xxx", "welcome", "overview", "quick", "bookmark", "search", "audio", "accounts", "contact"];
 
 const contents = {
   acq: acq
@@ -1863,6 +1863,24 @@ function getNumberOfUnits(bid) {
   }
 }
 
+/*
+ * Convert page key to url
+ */
+function getUrl(key) {
+  let decodedKey = decodeKey(key);
+  let unit = "invalid";
+
+  if (decodedKey.error) {
+    return "/invalid/key/";
+  }
+
+  if (contents[decodedKey.bookId]) {
+    unit = contents[decodedKey.bookId][decodedKey.uid + 1];
+  }
+
+  return `/${decodedKey.bookId}/${unit}/`;
+}
+
 module.exports = {
   getNumberOfUnits: getNumberOfUnits,
   getBooks: getBooks,
@@ -1872,7 +1890,8 @@ module.exports = {
   getUnitId: getUnitId,
   genPageKey: genPageKey,
   genParagraphKey: genParagraphKey,
-  decodeKey: decodeKey
+  decodeKey: decodeKey,
+  getUrl: getUrl
 };
 
 /***/ }),
@@ -5189,7 +5208,7 @@ const transcript = __webpack_require__(14);
 const AWS_BUCKET = "assets.christmind.info";
 
 //this is the id used on aws s3 to store audio files
-const SOURCE_ID = "nwffacim";
+const SOURCE_ID = "www";
 
 //mp3 and audio timing base directories
 const audioBase = `https://s3.amazonaws.com/${AWS_BUCKET}/${SOURCE_ID}/audio`;
@@ -34250,6 +34269,12 @@ function initClickListeners() {
       text = annotation.text().replace(/\n/, " ");
     }
 
+    let srcTitle = $("#src-title").text();
+    let bookTitle = $("#book-title").text();
+
+    //add document reference
+    text = `${text}\n~${srcTitle}: ${bookTitle}`;
+
     let url = `https://${location.hostname}${location.pathname}?as=${pid}:${aid}:${userInfo.userId}`;
     let channel = $(this).hasClass("facebook") ? "facebook" : "email";
 
@@ -37332,12 +37357,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__modules_util_facebook__ = __webpack_require__(433);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__modules_share_share__ = __webpack_require__(434);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__modules_about_about__ = __webpack_require__(396);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__modules_forms_contact__ = __webpack_require__(456);
 /* eslint no-console: off */
 
 /*
   semantic requires jquery which is loaded used
   webpack.ProvidePlugin
 */
+
 
 
 
@@ -37455,6 +37482,7 @@ $(document).ready(() => {
   __WEBPACK_IMPORTED_MODULE_5__modules_user_netlify__["a" /* default */].initialize();
   __WEBPACK_IMPORTED_MODULE_8__modules_util_facebook__["a" /* default */].initialize();
   __WEBPACK_IMPORTED_MODULE_10__modules_about_about__["a" /* default */].initialize();
+  __WEBPACK_IMPORTED_MODULE_11__modules_forms_contact__["a" /* default */].initialize("acq-contact-form");
 
   //load config file and do initializations that depend on a loaded config file
   Object(__WEBPACK_IMPORTED_MODULE_2__modules_config_config__["f" /* loadConfig */])(Object(__WEBPACK_IMPORTED_MODULE_6__modules_contents_toc__["b" /* getBookId */])()).then(result => {
@@ -47652,6 +47680,99 @@ function showAnnotation() {
 /* harmony default export */ __webpack_exports__["a"] = ({
   initialize: function () {
     return showAnnotation();
+  }
+});
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
+
+/***/ }),
+/* 435 */,
+/* 436 */,
+/* 437 */,
+/* 438 */,
+/* 439 */,
+/* 440 */,
+/* 441 */,
+/* 442 */,
+/* 443 */,
+/* 444 */,
+/* 445 */,
+/* 446 */,
+/* 447 */,
+/* 448 */,
+/* 449 */,
+/* 450 */,
+/* 451 */,
+/* 452 */,
+/* 453 */,
+/* 454 */,
+/* 455 */,
+/* 456 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_toastr__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_toastr___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_toastr__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__user_netlify__ = __webpack_require__(43);
+/*
+  Set up submit handler for contact forms
+*/
+
+
+
+
+function createSubmitHandler($form) {
+  let userInfo = Object(__WEBPACK_IMPORTED_MODULE_1__user_netlify__["b" /* getUserInfo */])();
+
+  if (userInfo) {
+    $form.form("set values", {
+      name: userInfo.name,
+      email: userInfo.email
+    });
+  }
+
+  $form.submit(function (e) {
+    e.preventDefault();
+    //console.log("submit pressed");
+
+    let $form = $(this);
+    let formData = $form.form("get values");
+    let validationError = false;
+
+    if (formData.name.trim().length === 0) {
+      __WEBPACK_IMPORTED_MODULE_0_toastr___default.a.warning("Please enter your name.");
+      validationError = true;
+    }
+    if (formData.email.trim().length === 0) {
+      __WEBPACK_IMPORTED_MODULE_0_toastr___default.a.warning("Please enter your email address.");
+      validationError = true;
+    }
+    if (formData.message.trim().length === 0) {
+      __WEBPACK_IMPORTED_MODULE_0_toastr___default.a.warning("Please enter a message.");
+      validationError = true;
+    }
+
+    if (validationError) {
+      return false;
+    }
+
+    $.post($form.attr("action"), $form.serialize()).done(function () {
+      __WEBPACK_IMPORTED_MODULE_0_toastr___default.a.success("Thank you!");
+    }).fail(function (e) {
+      __WEBPACK_IMPORTED_MODULE_0_toastr___default.a.error("Sorry, there was a failure to communicate!");
+    });
+  });
+}
+
+/* harmony default export */ __webpack_exports__["a"] = ({
+
+  initialize: function (formName) {
+    let $form = $(`form#${formName}`);
+
+    if ($form.length > 0) {
+      createSubmitHandler($form);
+    } else {
+      console.log("Form %s not initialized.");
+    }
   }
 });
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))

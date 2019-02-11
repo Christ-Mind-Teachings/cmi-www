@@ -1672,7 +1672,7 @@ const keyLength = 7;
 const books = ["acq"];
 
 const bookIds = ["xxx", ...books];
-const acq = ["xxx", "welcome", "overview", "quick", "bookmark", "search", "audio", "account"];
+const acq = ["xxx", "welcome", "overview", "quick", "bookmark", "search", "audio", "accounts", "contact"];
 
 const contents = {
   acq: acq
@@ -1863,6 +1863,24 @@ function getNumberOfUnits(bid) {
   }
 }
 
+/*
+ * Convert page key to url
+ */
+function getUrl(key) {
+  let decodedKey = decodeKey(key);
+  let unit = "invalid";
+
+  if (decodedKey.error) {
+    return "/invalid/key/";
+  }
+
+  if (contents[decodedKey.bookId]) {
+    unit = contents[decodedKey.bookId][decodedKey.uid + 1];
+  }
+
+  return `/${decodedKey.bookId}/${unit}/`;
+}
+
 module.exports = {
   getNumberOfUnits: getNumberOfUnits,
   getBooks: getBooks,
@@ -1872,7 +1890,8 @@ module.exports = {
   getUnitId: getUnitId,
   genPageKey: genPageKey,
   genParagraphKey: genParagraphKey,
-  decodeKey: decodeKey
+  decodeKey: decodeKey,
+  getUrl: getUrl
 };
 
 /***/ }),
@@ -5189,7 +5208,7 @@ const transcript = __webpack_require__(14);
 const AWS_BUCKET = "assets.christmind.info";
 
 //this is the id used on aws s3 to store audio files
-const SOURCE_ID = "nwffacim";
+const SOURCE_ID = "www";
 
 //mp3 and audio timing base directories
 const audioBase = `https://s3.amazonaws.com/${AWS_BUCKET}/${SOURCE_ID}/audio`;
@@ -34249,6 +34268,12 @@ function initClickListeners() {
       aid = annotation.data("aid");
       text = annotation.text().replace(/\n/, " ");
     }
+
+    let srcTitle = $("#src-title").text();
+    let bookTitle = $("#book-title").text();
+
+    //add document reference
+    text = `${text}\n~${srcTitle}: ${bookTitle}`;
 
     let url = `https://${location.hostname}${location.pathname}?as=${pid}:${aid}:${userInfo.userId}`;
     let channel = $(this).hasClass("facebook") ? "facebook" : "email";
