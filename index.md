@@ -19,11 +19,13 @@ footer:
   Welcome! 
 </h2>
 
-The Library of Christ Mind Teachings is a fully searchable and integrated collection of modern spiritual texts. Where audio is available, it tracks paragraph by paragraph with the transcribed text. Search results are marked directly in the transcript and a "Search Navigator" provides navigation between results both within and between transcripts.
+This library of Christ Mind teachings is offered to you from a deep appreciation and love of the content contained herein and for the love expressed and demonstrated in the words of each teaching. Within these words is found the motivation and power for real and lasting transformation of the human condition through love. Approached with honesty, curiosity, patience and a genuine desire for change the materials presented here will serve as a trusted guide and friend on the journey of awakening.
 
-The intent of the Library is to offer simple, readable, and uncluttered access to the material herein. The interface is terse by design so be sure to poke around and get familiar with the features available. Start by clicking the <i class="question icon"></i> option in the menu bar of each page. Video documentation is coming soon.
+One of the goals of this site is to bring all the bits and pieces of a teaching together in an easily discoverable and usable format. This is particularly true for <em>The Way of Mastery</em> and <em>The Raj Material</em> which, because of the volume of content, was difficult to compile into an approachable package.
 
-Additional information and help is available in the *Get Acquainted* section and is accessed by clicking on the associated image.
+Another goal is to integrate audio, where present, with the written word so you can read along as you listen and not loose your place. See the <em>Get Acquainted</em> guide for details of this and other features of the library.
+
+The intent of the library is to offer simple, readable, and uncluttered access to the material herein. The interface is terse by design so be sure to poke around and get familiar with the features available. Start by clicking the <i class="question icon"></i> option in the menu bar of each page. Video documentation is coming soon.
 
 If you've used the library before you'll notice big changes. The old site is still available by clicking the Original Edition below.
 
@@ -33,9 +35,8 @@ If you've used the library before you'll notice big changes. The old site is sti
       <img src="/public/img/cmi/orig-big.jpg">
     </a>
     <div class="content">
-      <div class="header">CMI Original Edition</div>
       <div class="description">
-        Click here to display the original christmind.info website.
+        This is the <em>Original Edition</em> of the Library still available during the transition to the new site.
       </div>
     </div>
   </div>
@@ -44,9 +45,8 @@ If you've used the library before you'll notice big changes. The old site is sti
       <img src="/public/img/cmi/acq-big.jpg">
     </a>
     <div class="content">
-      <div class="header">Get Acquainted</div>
       <div class="description">
-        About the Library of Christ Mind Teachings
+        Here you can find information and documentation about the features and functions of the Library.
       </div>
     </div>
   </div>
@@ -55,9 +55,8 @@ If you've used the library before you'll notice big changes. The old site is sti
       <img src="/public/img/cmi/acim-big.jpg">
     </a>
     <div class="content">
-      <div class="header">A Course In Miracles</div>
       <div class="description">
-        Sparkly Edition: Text, Workbook, Manual
+        Received by Helen Schucman through inner dictation from Jesus and first published in 1976 <em>The Course</em> contains a curriculum for spiritual transformation consisting of three sections entitled "Text", "Workbook for Students", and "Manual for Teachers".
       </div>
     </div>
   </div>
@@ -66,9 +65,8 @@ If you've used the library before you'll notice big changes. The old site is sti
       <img src="/public/img/cmi/raj-big.jpg">
     </a>
     <div class="content">
-      <div class="header">The Raj Material (NWFFACIM)</div>
       <div class="description">
-        You ARE the Answer, Graduation, ACIM Study Group
+        In 1982 during a period of personal difficulty Paul Tuttle began a life changing inner dialog with Raj. Since that time Paul has penned two books about his relationship with Raj, who later identified himself as "the author of the Course" and hosted Raj in facilitating an enlightening ACIM study group.
       </div>
     </div>
   </div>
@@ -77,10 +75,8 @@ If you've used the library before you'll notice big changes. The old site is sti
       <img src="/public/img/cmi/wom-big.jpg">
     </a>
     <div class="content">
-      <div class="header">The Way of Mastery</div>
       <div class="description">
-        The Jeshua Letters, Way of the Servant, Way of the Heart, Way of
-        Transformation, Way of Knowing, The Early Years
+        In 1987 Jon Marc Hammer (Jayem) was reunited with Jeshua while meditating in his living room. This began a relationship that resulted in a pathway of awakening called <em>The Way of Mastery</em> and many other inspired messages.
       </div>
     </div>
   </div>
@@ -89,9 +85,8 @@ If you've used the library before you'll notice big changes. The old site is sti
       <img src="/public/img/cmi/jsb-big.jpg">
     </a>
     <div class="content">
-      <div class="header">The Impersonal Life</div>
       <div class="description">
-        by Joseph S. Benner, 1914
+        In 1914, Joseph S. Benner published <em>The Impersonal Life</em> under the pseudonym <em>Anonymous</em> and believed it words were recorded directly from God.
       </div>
     </div>
   </div>

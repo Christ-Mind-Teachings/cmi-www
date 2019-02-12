@@ -1,12 +1,12 @@
 ---
 title: "Contact Me"
 search: false
+fb:
+  desc: "Learn about the motivation for the Library and contact the author."
+  image: "cmi/rick-profile.jpg"
 ---
 
-## Keep In Touch
-{: .disable-paragraph-marker}
-
-<div class="ui segment">
+<div class="ui basic segment">
   <img class="ui small left floated image" src="/public/img/cmi/rick-profile.jpg">
   <p>
   Welcome to the Library of Christ Mind Teachings. My name is Rick Mercer.
@@ -26,5 +26,7 @@ search: false
 </div>
 <hr/>
 
+## Get In Touch
+{: .disable-paragraph-marker}
 
 {% include form/contact.html name="acq-contact-form" %}

@@ -11,7 +11,7 @@ The library is a collection of authoritative channeled insight and inspiration t
 
 The books in the library express a similar message but each source presents it in a different way and often using somewhat different language. The content is the same, just the form differs. The variety of forms of teachings support a deeper understanding of the material.
 
-The library is orgainzed by teaching or *source* and each source contains one or more *books*. The Libraries [homepage](https://www.christmind.info) displays an image that represents each source and a *Get Acquainted* guide. 
+The library is orgainzed by teaching or *source* and each source contains one or more *books*. The [home page](https://www.christmind.info) displays an image that represents each source and a *Get Acquainted* guide. 
 
 Since this is a new version of the Library the original edition is still available and represented by the first image on the page. 
 
