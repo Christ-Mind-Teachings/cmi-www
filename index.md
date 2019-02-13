@@ -15,9 +15,8 @@ footer:
   display: true
 ---
 
-<h2 class="ui header">
-  Welcome! 
-</h2>
+## Welcome to The Library of Christ Mind Teachings! 
+{: .ui.header}
 
 This library of Christ Mind teachings is offered to you from a deep appreciation and love of the content contained herein and for the love expressed and demonstrated in the words of each teaching. Within these words is found the motivation and power for real and lasting transformation of the human condition through love. Approached with honesty, curiosity, patience and a genuine desire for change the materials presented here will serve as a trusted guide and friend on the journey of awakening.
 

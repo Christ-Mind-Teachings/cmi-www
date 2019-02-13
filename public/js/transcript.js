@@ -75,11 +75,11 @@
 	__webpack_require__(29),
 	__webpack_require__(3),
 	__webpack_require__(171),
-	__webpack_require__(40),
+	__webpack_require__(41),
 	__webpack_require__(103),
 	__webpack_require__(104),
 	__webpack_require__(58),
-	__webpack_require__(39),
+	__webpack_require__(40),
 	__webpack_require__(105),
 	__webpack_require__(57),
 	__webpack_require__(106),
@@ -488,7 +488,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
 	__webpack_require__(185),
 	__webpack_require__(23),
 	__webpack_require__(189),
-	__webpack_require__(41),
+	__webpack_require__(42),
 	__webpack_require__(191),
 	__webpack_require__(194),
 	__webpack_require__(28),
@@ -2046,7 +2046,7 @@ module.exports = engine.createStore(storages, plugins)
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-	__webpack_require__(39),
+	__webpack_require__(40),
 	__webpack_require__(105)
 ], __WEBPACK_AMD_DEFINE_RESULT__ = (function( class2type, toString ) {
 
@@ -2075,7 +2075,7 @@ return toType;
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
 	__webpack_require__(0),
 	__webpack_require__(2),
-	__webpack_require__(40),
+	__webpack_require__(41),
 	__webpack_require__(65)
 ], __WEBPACK_AMD_DEFINE_RESULT__ = (function( jQuery, isFunction, slice ) {
 
@@ -2682,7 +2682,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
 	__webpack_require__(64),
 	__webpack_require__(2),
 	__webpack_require__(11),
-	__webpack_require__(40),
+	__webpack_require__(41),
 	__webpack_require__(9),
 	__webpack_require__(17),
 
@@ -5531,7 +5531,7 @@ module.exports = baseUnary;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_store___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_store__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_toastr__ = __webpack_require__(10);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_toastr___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_toastr__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__user_netlify__ = __webpack_require__(43);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__user_netlify__ = __webpack_require__(37);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__selection__ = __webpack_require__(99);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_lodash_isEqual__ = __webpack_require__(305);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_lodash_isEqual___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_lodash_isEqual__);
@@ -6144,6 +6144,168 @@ function deleteLocalAnnotation(pid, aid) {
 
 /***/ }),
 /* 37 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function($) {/* harmony export (immutable) */ __webpack_exports__["b"] = getUserInfo;
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_netlify_identity_widget__ = __webpack_require__(240);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_netlify_identity_widget___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_netlify_identity_widget__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_md5__ = __webpack_require__(241);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_md5___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_md5__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__util_url__ = __webpack_require__(43);
+/*eslint no-console: "off" */
+
+
+
+
+
+let userInfo;
+
+let testUsers = {
+  "rick": {
+    email: "rmercer33@gmail.com",
+    userId: __WEBPACK_IMPORTED_MODULE_1_md5___default()("rmercer33@gmail.com"),
+    name: "Rick Mercer",
+    roles: ["timer", "editor"]
+  },
+  "julie": {
+    email: "julief8@me.com",
+    userId: __WEBPACK_IMPORTED_MODULE_1_md5___default()("julief8@me.com"),
+    name: "Julie Franklin",
+    roles: ["timer", "editor"]
+  },
+  "yodi": {
+    email: "yodi@yodith.com",
+    userId: __WEBPACK_IMPORTED_MODULE_1_md5___default()("yodi@yodith.com"),
+    name: "Yodi Debebe",
+    roles: ["timer"]
+  },
+  "hettie": {
+    email: "hcmercer@gmail.com",
+    userId: __WEBPACK_IMPORTED_MODULE_1_md5___default()("hcmercer@gmail.com"),
+    name: "Hettie Mercer",
+    roles: []
+  }
+};
+
+function devUserInfo() {
+  let user = Object(__WEBPACK_IMPORTED_MODULE_2__util_url__["a" /* getUser */])();
+
+  if (user && testUsers[user]) {
+    return testUsers[user];
+  } else {
+    //use rick
+    return testUsers["rick"];
+  }
+
+  return null;
+}
+
+function prodUserInfo() {
+  if (userInfo) {
+    return {
+      email: userInfo.email,
+      userId: __WEBPACK_IMPORTED_MODULE_1_md5___default()(userInfo.email),
+      name: userInfo.user_metadata.full_name,
+      roles: userInfo.app_metadata.roles,
+      avatar_url: userInfo.user_metadata.avatar_url
+    };
+  }
+
+  return null;
+}
+
+function getUserInfo(name) {
+  if (location.hostname !== "localhost") {
+    return prodUserInfo();
+  } else {
+    return devUserInfo(name);
+  }
+}
+
+/*
+  Modify menubar icons "bookmark" and "sign in" to 
+  indicate user is signed in
+*/
+function setAsSignedIn() {
+  let userInfo = getUserInfo();
+
+  //change sign-in icon to sign-out and change color from red to green
+  $(".login-menu-option > span").html("<i class='green sign out icon'></i>").attr("data-tooltip", `Sign Out: ${userInfo.name}`);
+
+  //change bookmark menu icon to green from red
+  $(".main.menu a > span > i.bookmark.icon").addClass("green").removeClass("red");
+
+  //add color to menu background to further indicate signed in status
+  $(".main.menu .ui.text.container").addClass("signed-in");
+}
+
+/*
+  Modify menubar icons "bookmark" and "sign in" to 
+  indicate user is signed in
+*/
+function setAsSignedOut() {
+  //change sign-in icon to sign-out and change color from red to green
+  $(".login-menu-option > span").html("<i class='red sign in icon'></i>").attr("data-tooltip", "Sign In");
+
+  //change bookmark menu icon to green from red
+  $(".main.menu a > span > i.bookmark.icon").addClass("red").removeClass("green");
+
+  //removed signed-in class
+  $(".main.menu .ui.text.container").removeClass("signed-in");
+}
+
+/* harmony default export */ __webpack_exports__["a"] = ({
+
+  initialize: function () {
+    //console.log("Init user authentication");
+
+    /*
+     * if user already logged in, change icon to log out
+     */
+    __WEBPACK_IMPORTED_MODULE_0_netlify_identity_widget___default.a.on("init", user => {
+      //console.log("user.on('init')");
+      userInfo = user;
+      if (userInfo) {
+        setAsSignedIn();
+      }
+    });
+
+    __WEBPACK_IMPORTED_MODULE_0_netlify_identity_widget___default.a.on("login", login => {
+      //console.log("user.on('login')");
+      userInfo = login;
+      setAsSignedIn();
+    });
+
+    __WEBPACK_IMPORTED_MODULE_0_netlify_identity_widget___default.a.on("logout", () => {
+      //console.log("user.logout()");
+      setAsSignedOut();
+      userInfo = null;
+      location.href = "/";
+    });
+
+    __WEBPACK_IMPORTED_MODULE_0_netlify_identity_widget___default.a.on("error", err => console.error("user.on('error'): ", err));
+
+    $(".login-menu-option").on("click", e => {
+      e.preventDefault();
+
+      if (userInfo) {
+        __WEBPACK_IMPORTED_MODULE_0_netlify_identity_widget___default.a.logout();
+      } else {
+        __WEBPACK_IMPORTED_MODULE_0_netlify_identity_widget___default.a.open();
+      }
+    });
+
+    //init authentication
+    __WEBPACK_IMPORTED_MODULE_0_netlify_identity_widget___default.a.init({
+      //container: "#netlify-modal"
+    });
+  }
+});
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
+
+/***/ }),
+/* 38 */
 /***/ (function(module, exports) {
 
 /**
@@ -6170,7 +6332,7 @@ module.exports = arrayMap;
 
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var arrayLikeKeys = __webpack_require__(153),
@@ -6213,7 +6375,7 @@ module.exports = keys;
 
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_RESULT__ = (function() {
@@ -6226,7 +6388,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_RESULT__ = (function() 
 
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
@@ -6240,7 +6402,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
 
 
 /***/ }),
-/* 41 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
@@ -6733,7 +6895,7 @@ return jQuery;
 
 
 /***/ }),
-/* 42 */
+/* 43 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -6834,168 +6996,6 @@ function getUser() {
 
   return null;
 }
-
-/***/ }),
-/* 43 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function($) {/* harmony export (immutable) */ __webpack_exports__["b"] = getUserInfo;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_netlify_identity_widget__ = __webpack_require__(240);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_netlify_identity_widget___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_netlify_identity_widget__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_md5__ = __webpack_require__(241);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_md5___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_md5__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__util_url__ = __webpack_require__(42);
-/*eslint no-console: "off" */
-
-
-
-
-
-let userInfo;
-
-let testUsers = {
-  "rick": {
-    email: "rmercer33@gmail.com",
-    userId: __WEBPACK_IMPORTED_MODULE_1_md5___default()("rmercer33@gmail.com"),
-    name: "Rick Mercer",
-    roles: ["timer", "editor"]
-  },
-  "julie": {
-    email: "julief8@me.com",
-    userId: __WEBPACK_IMPORTED_MODULE_1_md5___default()("julief8@me.com"),
-    name: "Julie Franklin",
-    roles: ["timer", "editor"]
-  },
-  "yodi": {
-    email: "yodi@yodith.com",
-    userId: __WEBPACK_IMPORTED_MODULE_1_md5___default()("yodi@yodith.com"),
-    name: "Yodi Debebe",
-    roles: ["timer"]
-  },
-  "hettie": {
-    email: "hcmercer@gmail.com",
-    userId: __WEBPACK_IMPORTED_MODULE_1_md5___default()("hcmercer@gmail.com"),
-    name: "Hettie Mercer",
-    roles: []
-  }
-};
-
-function devUserInfo() {
-  let user = Object(__WEBPACK_IMPORTED_MODULE_2__util_url__["a" /* getUser */])();
-
-  if (user && testUsers[user]) {
-    return testUsers[user];
-  } else {
-    //use rick
-    return testUsers["rick"];
-  }
-
-  return null;
-}
-
-function prodUserInfo() {
-  if (userInfo) {
-    return {
-      email: userInfo.email,
-      userId: __WEBPACK_IMPORTED_MODULE_1_md5___default()(userInfo.email),
-      name: userInfo.user_metadata.full_name,
-      roles: userInfo.app_metadata.roles,
-      avatar_url: userInfo.user_metadata.avatar_url
-    };
-  }
-
-  return null;
-}
-
-function getUserInfo(name) {
-  if (location.hostname !== "localhost") {
-    return prodUserInfo();
-  } else {
-    return devUserInfo(name);
-  }
-}
-
-/*
-  Modify menubar icons "bookmark" and "sign in" to 
-  indicate user is signed in
-*/
-function setAsSignedIn() {
-  let userInfo = getUserInfo();
-
-  //change sign-in icon to sign-out and change color from red to green
-  $(".login-menu-option > span").html("<i class='green sign out icon'></i>").attr("data-tooltip", `Sign Out: ${userInfo.name}`);
-
-  //change bookmark menu icon to green from red
-  $(".main.menu a > span > i.bookmark.icon").addClass("green").removeClass("red");
-
-  //add color to menu background to further indicate signed in status
-  $(".main.menu .ui.text.container").addClass("signed-in");
-}
-
-/*
-  Modify menubar icons "bookmark" and "sign in" to 
-  indicate user is signed in
-*/
-function setAsSignedOut() {
-  //change sign-in icon to sign-out and change color from red to green
-  $(".login-menu-option > span").html("<i class='red sign in icon'></i>").attr("data-tooltip", "Sign In");
-
-  //change bookmark menu icon to green from red
-  $(".main.menu a > span > i.bookmark.icon").addClass("red").removeClass("green");
-
-  //removed signed-in class
-  $(".main.menu .ui.text.container").removeClass("signed-in");
-}
-
-/* harmony default export */ __webpack_exports__["a"] = ({
-
-  initialize: function () {
-    //console.log("Init user authentication");
-
-    /*
-     * if user already logged in, change icon to log out
-     */
-    __WEBPACK_IMPORTED_MODULE_0_netlify_identity_widget___default.a.on("init", user => {
-      //console.log("user.on('init')");
-      userInfo = user;
-      if (userInfo) {
-        setAsSignedIn();
-      }
-    });
-
-    __WEBPACK_IMPORTED_MODULE_0_netlify_identity_widget___default.a.on("login", login => {
-      //console.log("user.on('login')");
-      userInfo = login;
-      setAsSignedIn();
-    });
-
-    __WEBPACK_IMPORTED_MODULE_0_netlify_identity_widget___default.a.on("logout", () => {
-      //console.log("user.logout()");
-      setAsSignedOut();
-      userInfo = null;
-      location.href = "/";
-    });
-
-    __WEBPACK_IMPORTED_MODULE_0_netlify_identity_widget___default.a.on("error", err => console.error("user.on('error'): ", err));
-
-    $(".login-menu-option").on("click", e => {
-      e.preventDefault();
-
-      if (userInfo) {
-        __WEBPACK_IMPORTED_MODULE_0_netlify_identity_widget___default.a.logout();
-      } else {
-        __WEBPACK_IMPORTED_MODULE_0_netlify_identity_widget___default.a.open();
-      }
-    });
-
-    //init authentication
-    __WEBPACK_IMPORTED_MODULE_0_netlify_identity_widget___default.a.init({
-      //container: "#netlify-modal"
-    });
-  }
-});
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 
 /***/ }),
 /* 44 */
@@ -7431,7 +7431,7 @@ module.exports = g;
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-	__webpack_require__(39)
+	__webpack_require__(40)
 ], __WEBPACK_AMD_DEFINE_RESULT__ = (function( class2type ) {
 	"use strict";
 
@@ -8074,7 +8074,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
 	__webpack_require__(67),
 	__webpack_require__(21),
 	__webpack_require__(22),
-	__webpack_require__(41),
+	__webpack_require__(42),
 	__webpack_require__(28),
 	__webpack_require__(184)
 ], __WEBPACK_AMD_DEFINE_RESULT__ = (function( jQuery, camelCase, document, isFunction, rcssNum, rnothtmlwhite, cssExpand,
@@ -10686,7 +10686,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-	__webpack_require__(39)
+	__webpack_require__(40)
 ], __WEBPACK_AMD_DEFINE_RESULT__ = (function( class2type ) {
 	"use strict";
 
@@ -12279,7 +12279,7 @@ module.exports = Cancel;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_lodash_cloneDeep___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_lodash_cloneDeep__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_lodash_startCase__ = __webpack_require__(366);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_lodash_startCase___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_lodash_startCase__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__util_url__ = __webpack_require__(42);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__util_url__ = __webpack_require__(43);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__navigator__ = __webpack_require__(383);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__list__ = __webpack_require__(387);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__topics__ = __webpack_require__(147);
@@ -12812,7 +12812,7 @@ module.exports = toFinite;
 var SetCache = __webpack_require__(46),
     arrayIncludes = __webpack_require__(80),
     arrayIncludesWith = __webpack_require__(81),
-    arrayMap = __webpack_require__(37),
+    arrayMap = __webpack_require__(38),
     baseUnary = __webpack_require__(35),
     cacheHas = __webpack_require__(51);
 
@@ -13275,7 +13275,7 @@ module.exports = Uint8Array;
 
 var baseGetAllKeys = __webpack_require__(151),
     getSymbols = __webpack_require__(91),
-    keys = __webpack_require__(38);
+    keys = __webpack_require__(39);
 
 /**
  * Creates an array of own enumerable property names and symbols of `object`.
@@ -17569,7 +17569,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
 	__webpack_require__(0),
 	__webpack_require__(2),
 	__webpack_require__(6),
-	__webpack_require__(41), // clone
+	__webpack_require__(42), // clone
 	__webpack_require__(22) // parent, contents
 ], __WEBPACK_AMD_DEFINE_RESULT__ = (function( jQuery, isFunction ) {
 
@@ -18050,7 +18050,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
 	__webpack_require__(200),
 	__webpack_require__(24),
 	__webpack_require__(22),
-	__webpack_require__(41),
+	__webpack_require__(42),
 	__webpack_require__(4)
 ], __WEBPACK_AMD_DEFINE_RESULT__ = (function( jQuery, stripAndCollapse, isFunction ) {
 
@@ -18588,7 +18588,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
 	__webpack_require__(20),
 	__webpack_require__(2),
 	__webpack_require__(30),
-	__webpack_require__(40),
+	__webpack_require__(41),
 
 	__webpack_require__(207)
 ], __WEBPACK_AMD_DEFINE_RESULT__ = (function( jQuery, nodeName, camelCase, toType, isFunction, isWindow, slice ) {
@@ -31712,7 +31712,7 @@ module.exports = baseIsMatch;
 /***/ (function(module, exports, __webpack_require__) {
 
 var isStrictComparable = __webpack_require__(158),
-    keys = __webpack_require__(38);
+    keys = __webpack_require__(39);
 
 /**
  * Gets the property names, values, and compare flags of `object`.
@@ -31964,7 +31964,7 @@ module.exports = memoize;
 /***/ (function(module, exports, __webpack_require__) {
 
 var Symbol = __webpack_require__(26),
-    arrayMap = __webpack_require__(37),
+    arrayMap = __webpack_require__(38),
     isArray = __webpack_require__(8),
     isSymbol = __webpack_require__(45);
 
@@ -32210,7 +32210,7 @@ var Stack = __webpack_require__(89),
     isMap = __webpack_require__(360),
     isObject = __webpack_require__(12),
     isSet = __webpack_require__(362),
-    keys = __webpack_require__(38);
+    keys = __webpack_require__(39);
 
 /** Used to compose bitmasks for cloning. */
 var CLONE_DEEP_FLAG = 1,
@@ -32396,7 +32396,7 @@ module.exports = arrayEach;
 /***/ (function(module, exports, __webpack_require__) {
 
 var copyObject = __webpack_require__(55),
-    keys = __webpack_require__(38);
+    keys = __webpack_require__(39);
 
 /**
  * The base implementation of `_.assign` without support for multiple sources
@@ -33722,7 +33722,7 @@ module.exports = unicodeToArray;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_store___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_store__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_scroll_into_view__ = __webpack_require__(27);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_scroll_into_view___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_scroll_into_view__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__user_netlify__ = __webpack_require__(43);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__user_netlify__ = __webpack_require__(37);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_toastr__ = __webpack_require__(10);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_toastr___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_toastr__);
 
@@ -34342,7 +34342,7 @@ function initNavigator(actualPid) {
 /* 384 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var arrayMap = __webpack_require__(37),
+var arrayMap = __webpack_require__(38),
     baseIntersection = __webpack_require__(385),
     baseRest = __webpack_require__(85),
     castArrayLikeObject = __webpack_require__(386);
@@ -34381,7 +34381,7 @@ module.exports = intersection;
 var SetCache = __webpack_require__(46),
     arrayIncludes = __webpack_require__(80),
     arrayIncludesWith = __webpack_require__(81),
-    arrayMap = __webpack_require__(37),
+    arrayMap = __webpack_require__(38),
     baseUnary = __webpack_require__(35),
     cacheHas = __webpack_require__(51);
 
@@ -35162,7 +35162,7 @@ module.exports = noop;
 /* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios__ = __webpack_require__(72);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_axios__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__show__ = __webpack_require__(393);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__util_url__ = __webpack_require__(42);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__util_url__ = __webpack_require__(43);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__navigator__ = __webpack_require__(394);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_toastr__ = __webpack_require__(10);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_toastr___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_toastr__);
@@ -36018,6 +36018,7 @@ function getBookId() {
 
 
 function createClickHandlers() {
+  //help menu
   $("#help-menu").on("click", "div.item", function (e) {
     e.preventDefault();
 
@@ -36048,6 +36049,15 @@ function createClickHandlers() {
       console.log("video documentation not ready yet");
       //location.href = "";
     }
+  });
+
+  //quick links
+  $("#quick-links").on("click", "div.item", function (e) {
+    e.preventDefault();
+
+    let href = $(this).attr("data-href");
+    //console.log("quick links href: %s", href);
+    location.href = href;
   });
 }
 
@@ -36830,7 +36840,7 @@ module.exports = findLastIndex;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_toastr___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_toastr__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_store__ = __webpack_require__(19);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_store___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_store__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__user_netlify__ = __webpack_require__(43);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__user_netlify__ = __webpack_require__(37);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_scroll_into_view__ = __webpack_require__(27);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_scroll_into_view___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_scroll_into_view__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__focus__ = __webpack_require__(399);
@@ -37347,17 +37357,17 @@ module.exports = __webpack_require__(403);
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__vendor_semantic_semantic_min_js__ = __webpack_require__(210);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__vendor_semantic_semantic_min_js___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__vendor_semantic_semantic_min_js__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__modules_util_url__ = __webpack_require__(42);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__modules_util_url__ = __webpack_require__(43);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__modules_config_config__ = __webpack_require__(32);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__modules_bookmark_bookmark__ = __webpack_require__(136);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__modules_search_search__ = __webpack_require__(392);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__modules_user_netlify__ = __webpack_require__(43);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__modules_user_netlify__ = __webpack_require__(37);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__modules_contents_toc__ = __webpack_require__(395);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__modules_audio_audio__ = __webpack_require__(404);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__modules_util_facebook__ = __webpack_require__(433);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__modules_share_share__ = __webpack_require__(434);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__modules_about_about__ = __webpack_require__(396);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__modules_forms_contact__ = __webpack_require__(456);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__modules_forms_contact__ = __webpack_require__(435);
 /* eslint no-console: off */
 
 /*
@@ -37450,12 +37460,7 @@ function initStickyMenu() {
   });
 
   // show dropdown on hover
-  // $(".main.menu  .ui.dropdown").dropdown({
-  $("#bookmark-dropdown-menu").dropdown({
-    on: "hover"
-  });
-
-  $("#about-dropdown-menu").dropdown({
+  $(".main.menu  .ui.dropdown").dropdown({
     on: "hover"
   });
 }
@@ -37615,7 +37620,7 @@ function createAudioPlayerToggleListener() {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_16_toastr__ = __webpack_require__(10);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_16_toastr___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_16_toastr__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_17__focus__ = __webpack_require__(399);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_18__user_netlify__ = __webpack_require__(43);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_18__user_netlify__ = __webpack_require__(37);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_19__config_config__ = __webpack_require__(32);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_20__capture__ = __webpack_require__(401);
 
@@ -47217,7 +47222,7 @@ var require;var require;
 /* 425 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var arrayMap = __webpack_require__(37),
+var arrayMap = __webpack_require__(38),
     baseIteratee = __webpack_require__(157),
     baseMap = __webpack_require__(426),
     isArray = __webpack_require__(8);
@@ -47325,7 +47330,7 @@ module.exports = baseEach;
 /***/ (function(module, exports, __webpack_require__) {
 
 var baseFor = __webpack_require__(429),
-    keys = __webpack_require__(38);
+    keys = __webpack_require__(39);
 
 /**
  * The base implementation of `_.forOwn` without support for iteratee shorthands.
@@ -47521,7 +47526,7 @@ class CaptureData {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__util_url__ = __webpack_require__(42);
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__util_url__ = __webpack_require__(43);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__bookmark_bmnet__ = __webpack_require__(36);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__bookmark_selection__ = __webpack_require__(99);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_lodash_range__ = __webpack_require__(100);
@@ -47685,34 +47690,13 @@ function showAnnotation() {
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 
 /***/ }),
-/* 435 */,
-/* 436 */,
-/* 437 */,
-/* 438 */,
-/* 439 */,
-/* 440 */,
-/* 441 */,
-/* 442 */,
-/* 443 */,
-/* 444 */,
-/* 445 */,
-/* 446 */,
-/* 447 */,
-/* 448 */,
-/* 449 */,
-/* 450 */,
-/* 451 */,
-/* 452 */,
-/* 453 */,
-/* 454 */,
-/* 455 */,
-/* 456 */
+/* 435 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_toastr__ = __webpack_require__(10);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_toastr___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_toastr__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__user_netlify__ = __webpack_require__(43);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__user_netlify__ = __webpack_require__(37);
 /*
   Set up submit handler for contact forms
 */
