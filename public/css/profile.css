@@ -1,0 +1,20 @@
+.addto-maillist-dialog-wrapper {
+  position: fixed;
+  bottom: 55px;
+  left: 50%;
+  width: 60%;
+}
+
+.addto-maillist-dialog {
+  position: relative;
+  left: -50%;
+}
+
+.hide.addto-maillist-dialog-wrapper {
+  display: none;
+}
+
+td.delete-maillist-item,
+td.edit-maillist-item {
+  cursor: pointer;
+}

@@ -1,22 +1,10 @@
 <!-- _includes/common/transcript-menu.html -->
 <div class="ui borderless main menu">
   <div id="transcript-menu" class="ui text container">
-    <a id="bookmark-dropdown-menu" href="#" class="ui dropdown item">
-      <span data-xposition="left center" data-xtooltip="Show/Set Bookmarks">
+    <a href="#" class="bookmark-modal-open ui dropdown item">
+      <span data-position="bottom center" data-tooltip="Show Bookmarks">
         <i class="red bookmark icon"></i>
       </span>
-      <div class="menu">
-        <div id="bookmark-modal-open" class="bookmark-modal-open item">Show Bookmarks</div>
-        <div id="bookmark-toggle-highlight" class="toggle-bookmark-highlight item">Hide Highlighted Text</div>
-        <div class="divider"></div>
-        <div data-filter="none" class="header">Topic Filter: None</div>
-        <div id="topic-menu-item" class="item">
-          <i class="dropdown icon"></i>
-          Page Topic List
-          <div id="topic-menu-select" class="menu transition hidden">
-          </div>
-        </div>
-      </div>
     </a>
     {% unless page.search == false %}
     <a href="#" id="search-modal-open" class="item search-modal-open">
@@ -25,16 +13,6 @@
       </span>
     </a>
     {% endunless %}
-    <a class="audio-player-toggle hide item" >
-      <span data-position="bottom center" data-tooltip="Play Audio">
-        <i class="volume up icon"></i></a>
-      </span>
-    </a>
-    <a href="#" class="toggle-paragraph-markers item">
-      <span data-position="bottom center" data-tooltip="Toggle Display of Paragraph Numbers">
-        <i class="paragraph icon"></i>
-      </span>
-    </a>
     <a href="#masthead-title" class="top-of-page item">
       <span data-position="bottom center" data-tooltip="Top of Page">
         <i class="level up icon"></i>

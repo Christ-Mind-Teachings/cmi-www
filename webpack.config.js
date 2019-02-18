@@ -17,6 +17,7 @@ module.exports = {
 
   entry: {
     transcript: ["./src/js/transcript.js"],
+    profile: ["./src/js/profile.js"],
     page: ["./src/js/page.js"]
   },
   output: {

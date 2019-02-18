@@ -1,0 +1,12 @@
+{
+  "bid": "profile",
+  "base": "/profile",
+  "title": "User Profile",
+  "image": "/public/img/cmi/profile-toc.jpg",
+  "contents": [
+    {
+      "title": "Manage Your Email List",
+      "url": "/email/"
+    }
+  ]
+}

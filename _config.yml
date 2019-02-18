@@ -38,6 +38,9 @@ collections:
   acq:
     output: true
     title: "Get Acquainted"
+  profile:
+    output: true
+    title: "User Profile"
 
 defaults:
   - scope:
@@ -50,6 +53,16 @@ defaults:
       image-width: 612
       image-height: 792
       bid: "acq"
+  - scope:
+      path: ""
+      type: profile
+    values:
+      layout: profile
+      book: "User Profile"
+      image: "/public/img/cmi/profile-big.jpg"
+      image-width: 612
+      image-height: 792
+      bid: "profile"
 
 # force inclusion of
 include: [_redirects, LICENSE.txt]
