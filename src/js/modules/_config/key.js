@@ -32,14 +32,16 @@ const sourceId = 99;
 //length of pageKey excluding decimal portion
 const keyLength = 7;
 
-//Raj material books (bid)
-const books = ["acq" ];
+// books (bid)
+const books = ["acq", "profile" ];
 
 const bookIds = ["xxx", ...books];
+const profile = ["xxx", "email"];
 const acq = ["xxx", "welcome", "overview", "quick", "bookmark", "search", "audio", "accounts", "contact"];
 
 const contents = {
-  acq: acq
+  acq: acq,
+  profile: profile
 };
 
 

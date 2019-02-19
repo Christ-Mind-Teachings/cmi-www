@@ -18,3 +18,8 @@ td.delete-maillist-item,
 td.edit-maillist-item {
   cursor: pointer;
 }
+
+#maillist-table {
+  margin-bottom: 300px;;
+}
+

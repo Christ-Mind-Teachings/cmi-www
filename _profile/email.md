@@ -17,7 +17,7 @@ Add, modify, or delete email addresses here. This list is available when sharing
   Save Changes
 </button>
 
-<table class="ui selectable celled table">
+<table id="maillist-table" class="ui selectable celled table">
   <thead>
     <tr>
       <th><i class="sync icon"></i></th>
