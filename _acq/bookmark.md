@@ -19,7 +19,7 @@ Bookmarks are paragraph markers that may contain highlighted text, annotations, 
     <ul class="list">
       <li>Bookmarks created when you're signed in are accessible from all your devices</li>
       <li>and they can be shared to Facebook and via email.</li>
-      <li>See <a href="https://www.christmind.info/acq/accounts/">CMI User Accounts</a> for details.</li>
+      <li>See <a href="/acq/accounts/">CMI User Accounts</a> for details.</li>
     </ul>
   </div>
 </div>
@@ -60,7 +60,7 @@ The first method is by selecting text within a paragraph. This maybe a sentance 
 
 Note that selecting text is limited to one paragraph and making a selection that includes text from multiple paragraphs is not supported. 
 
-See the <a href="#selection-details">Text Selection</a> section below for details on selecting text for bookmarks.
+See the [Text Selection](#selection-details) section below for details on selecting text for bookmarks.
 
 ### Click Paragraph Number
 
@@ -183,7 +183,7 @@ You can take a quick peek at the bookmark by hovering the mouse over highlighted
 
 In this example, you can see the bookmark ranges from p6/p9, that the topics "Practice" and "Honesty" are associated with it and the comment: "A daily awakening practice."
 
-You can modify a bookmark by clicking on the highligt or the paragraph id when not highlight is associated.
+You can modify a bookmark by clicking on the highlight or the paragraph id when no highlight is associated.
 
 <div class="ui container" markdown="1">
   ![Bookmark Edit](/public/img/cmi/bookmark-edit.jpg)
@@ -194,25 +194,37 @@ You change the range, topics, comment and even add new topics. Press "Submit" to
 ## Sharing Bookmarks
 {: #sharing-bookmarks}
 
-When shared a link, containing the bookmark text, is sent to the recipient(s). They can click the link to see the bookmark directly in the source from which it came. In this way the content is not taken out of context and be easily discovered.
+When shared, a link containing the bookmark text, is sent to the recipient(s). They can click the link to see the bookmark directly in the source from which it came. In this way the content is not taken out of context and can be easily discovered.
 
 Bookmarks can be shared to Facebook and by email. When you find something in a teaching you find inspirational and want to share it, create a bookmark and follow these steps.
 
-First, navigate to the bookmark by opening the Bookmark List Dialog as disucssed earlier. The page will load and the bookmark navigator will be active.
+First, navigate to the bookmark. There are two ways to do this; using the Bookmark List Dialog or when editing a bookmark.
+
+### Share starting from the Bookmark List Dialog
+
+Open the Bookmark List Dialog as disucssed earlier. The page will load and the bookmark navigator will be active.
 
 <div class="ui container" markdown="1">
   ![Bookmark Sharing](/public/img/cmi/bookmark-navigator2.jpg)
 </div>
 
-Click the comment to share the bookmark. The display will change to show you how it will look when a recepient follows the link that was shared.
+Click the comment to share the bookmark. The display will change to show you how it will look when a recipient follows the link that was shared.
 
 <div class="ui container" markdown="1">
   ![Bookmark Sharing](/public/img/cmi/bookmark-share.jpg)
 </div>
 
+### Share by Editing
+
+Click the highlighted text of a bookmark on a document page or, if the bookmark has no highlight click the paragraph identifier. This displayes the bookmark exit dialog. Next to the Submit and Cancel buttons is the Share button. This is disabled when the bookmark is first being defined and has not yet been saved.
+
+Clicking "Share" will close the edit form and change the display to look similar to the way it will look when a recipient follows the link that is shared.
+
 Remember you can edit the bookmark comment before you share it if necessary.
 
-If it looks good, press the <i class="facebook icon"></i> icon to share to Facebook or <i class="envelope outline icon"></i> icon to share by email. Note: sharing by email is not ready yet.
+If it looks good, press the <i class="facebook icon"></i> icon to share to Facebook or <i class="envelope outline icon"></i> icon to share by email.
+
+### Sharing to Facebook
 
 Here's what it looks like when you share to Facebook.
 
@@ -224,6 +236,34 @@ On Facebook, when the link shared in your post is clicked, the page will be open
 
 <div class="ui container" markdown="1">
   ![Bookmark FB Post](/public/img/cmi/bookmark-follow-shared-link.jpg)
+</div>
+
+### Sharing via Email
+
+When you share by email you are prompted to enter the email addresses of those you want to share with. You can select names from a predefined maillist and enter one or more addresses separated by a comma. An email will be sent to each address.
+
+Learn about creating a maillist in the [User Profile](/acq/profile/) section.
+
+<div class="ui container" markdown="1">
+  ![Share Bookmark by Email](/public/img/cmi/sharebyemail.jpg)
+</div>
+
+When you press "Submit" it will take a few moments to receive confirmation that the messages were successfully sent.
+
+The recipient will receive a message with the subject: *Your Name shared a quote from the Library of Christ Mind Teachings*.
+
+Here's what the email looks like.
+
+<div class="ui container" markdown="1">
+  ![Shared Email](/public/img/cmi/shared-email.jpg)
+</div>
+
+When sharing bookmarks via email check with the recipient to see if they received the email. It is possible that it gets delivered to the junk folder; we don't want that, it's not junk!
+
+When the "To The Source" button is clicked in the email the browser is opened, page with the bookmark is loaded and the bookmark is displayed. This is how the page will be presented.
+
+<div class="ui container" markdown="1">
+  ![Target of Email](/public/img/cmi/share-target.jpg)
 </div>
 
 ## Controlling Bookmark Display

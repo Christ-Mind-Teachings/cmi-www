@@ -1673,7 +1673,7 @@ const books = ["acq", "profile"];
 
 const bookIds = ["xxx", ...books];
 const profile = ["xxx", "email"];
-const acq = ["xxx", "welcome", "overview", "quick", "bookmark", "search", "audio", "accounts", "contact"];
+const acq = ["xxx", "welcome", "overview", "quick", "bookmark", "search", "audio", "accounts", "profile", "contact"];
 
 const contents = {
   acq: acq,
@@ -5467,6 +5467,8 @@ module.exports = isArrayLike;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_store___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_store__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_axios__ = __webpack_require__(33);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_axios__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__status__ = __webpack_require__(462);
+
 
 
 
@@ -5489,16 +5491,37 @@ const configUrl = "/public/config";
 //the current configuration, initially null, assigned by getConfig()
 let config;
 
-/* 
-  check if config has changed since we last stored it
+/*
+  The status constains the save date for each config file. We compare that to the saveDate
+  in the locally stored config file. If it's different or doesn't exist we need to get
+  a new version.
+
+  return: true - get a new version
+          false - use the one we've got
 */
-function refreshNeeded(bid) {
-  if (location.hostname === "localhost") {
-    console.log("reloading config for %s", bid);
-    return true;
+function refreshNeeded(cfg) {
+  let saveDate = __WEBPACK_IMPORTED_MODULE_2__status__["a" /* status */][cfg.bid];
+
+  if (!cfg.saveDate) {
+    cfg.saveDate = saveDate;
+
+    //we don't use this anymore
+    if (cfg.lastFetchDate) {
+      delete cfg.lastFetchDate;
+    }
+    console.log("%s needs to be refreshed", cfg.bid);
+    return true; //refresh needed
   }
 
-  return false;
+  if (cfg.saveDate === saveDate) {
+    //no refresh needed
+    return false;
+  } else {
+    //config file has changed, refresh needed
+    cfg.saveDate = saveDate;
+    console.log("%s needs to be refreshed", cfg.bid);
+    return true;
+  }
 }
 
 function requestConfiguration(url) {
@@ -5535,7 +5558,7 @@ function getConfig(book, assign = true) {
     let url;
 
     //if config in local storage check if we need to get a freash copy
-    if (cfg && !refreshNeeded(cfg.bid, cfg.lastFetchDate)) {
+    if (cfg && !refreshNeeded(cfg)) {
       if (assign) {
         config = cfg;
       }
@@ -5546,8 +5569,8 @@ function getConfig(book, assign = true) {
     //get config from server
     url = `${configUrl}/${book}.json`;
     requestConfiguration(url).then(response => {
-      //add fetch date before storing
-      response.data.lastFetchDate = Date.now();
+      //add save date before storing
+      response.data.saveDate = __WEBPACK_IMPORTED_MODULE_2__status__["a" /* status */][response.data.bid];
       __WEBPACK_IMPORTED_MODULE_0_store___default.a.set(`config-${book}`, response.data);
       if (assign) {
         config = response.data;
@@ -5582,7 +5605,7 @@ function loadConfig(book) {
     let url;
 
     //if config in local storage check if we need to get a freash copy
-    if (cfg && !refreshNeeded(cfg.bid, cfg.lastFetchDate)) {
+    if (cfg && !refreshNeeded(cfg)) {
       config = cfg;
       resolve("config read from cache");
       return;
@@ -5591,12 +5614,12 @@ function loadConfig(book) {
     //get config from server
     url = `${configUrl}/${book}.json`;
     requestConfiguration(url).then(response => {
-      //add fetch date before storing
-      response.data.lastFetchDate = Date.now();
+      //add save date before storing
+      response.data.saveDate = __WEBPACK_IMPORTED_MODULE_2__status__["a" /* status */][response.data.bid];
       __WEBPACK_IMPORTED_MODULE_0_store___default.a.set(`config-${book}`, response.data);
       config = response.data;
       resolve("config fetched from server");
-    }).catch(error => {
+    }).catch(() => {
       config = null;
       reject(`Config file: ${url} is not valid JSON`);
     });
@@ -10184,6 +10207,27 @@ process.umask = function() { return 0; };
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* WEBPACK VAR INJECTION */(function($) {
+/*
+  Modify navigation links to localhost when running in development
+*/
+function setLinks() {
+  if (location.hostname === "localhost") {
+    //for masthead and cmi-www:index.md
+    $(".href.www-christmind-info").attr("href", `http://localhost:${local_ports.www}/`);
+    $(".href.acim-christmind-info").attr("href", `http://localhost:${local_ports.acim}/`);
+    $(".href.wom-christmind-info").attr("href", `http://localhost:${local_ports.wom}/`);
+    $(".href.raj-christmind-info").attr("href", `http://localhost:${local_ports.raj}/`);
+    $(".href.jsb-christmind-info").attr("href", `http://localhost:${local_ports.jsb}/`);
+
+    //for quick link menu
+    $(".dhref.www-christmind-info").attr("data-href", `http://localhost:${local_ports.www}/`);
+    $(".dhref.acim-christmind-info").attr("data-href", `http://localhost:${local_ports.acim}/`);
+    $(".dhref.wom-christmind-info").attr("data-href", `http://localhost:${local_ports.wom}/`);
+    $(".dhref.raj-christmind-info").attr("data-href", `http://localhost:${local_ports.raj}/`);
+    $(".dhref.jsb-christmind-info").attr("data-href", `http://localhost:${local_ports.jsb}/`);
+  }
+}
 
 const local_ports = {
   acim: 9912,
@@ -10200,8 +10244,10 @@ const userEndpoint = "https://93e93isn03.execute-api.us-east-1.amazonaws.com/lat
   sid: "WWW",
   ports: local_ports,
   share: shareEndpoint,
-  user: userEndpoint
+  user: userEndpoint,
+  setLinks: setLinks
 });
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 
 /***/ }),
 /* 100 */
@@ -36424,7 +36470,7 @@ function highlightCurrentTranscript(bid) {
 
 //called for transcript pages
 function loadTOC() {
-  console.log("transcript page: loading toc");
+  //console.log("transcript page: loading toc");
   let book = $("#contents-modal-open").attr("data-book").toLowerCase();
 
   Object(__WEBPACK_IMPORTED_MODULE_1__config_config__["c" /* getConfig */])(book).then(contents => {
@@ -36543,7 +36589,11 @@ function createClickHandlers() {
     }
 
     if ($(this).hasClass("profile-management")) {
-      location.href = "https://www.christmind.info/profile/email/";
+      if (location.hostname === "localhost") {
+        location.href = "http://localhost:9999/profile/email/";
+      } else {
+        location.href = "https://www.christmind.info/profile/email/";
+      }
     }
   });
 
@@ -36801,6 +36851,15 @@ const transcriptMenuNextPageItem = {
   }
 };
 
+const transcriptMenuQuickLink = {
+  element: "#quick-links-dropdown-menu",
+  popover: {
+    title: "Quick Links",
+    description: "Quickly navigate to other teachings in the Library.",
+    position: "bottom"
+  }
+};
+
 const transcriptMenuHelpItem = {
   element: "#about-dropdown-menu",
   popover: {
@@ -36868,6 +36927,7 @@ function transcriptDriver() {
     transcriptDriverSteps.push(transcriptMenuNextPageItem);
   }
 
+  transcriptDriverSteps.push(transcriptMenuQuickLink);
   transcriptDriverSteps.push(transcriptMenuHelpItem);
   transcriptDriverSteps.push(transcriptMenuLoginItem);
 
@@ -37865,6 +37925,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__modules_share_share__ = __webpack_require__(437);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__modules_about_about__ = __webpack_require__(399);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__modules_forms_contact__ = __webpack_require__(438);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__constants__ = __webpack_require__(99);
 /* eslint no-console: off */
 
 /*
@@ -37886,23 +37947,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 
-const ports = {
-  acim: 9912,
-  wom: 9910,
-  raj: 9913,
-  jsb: 9911,
-  www: 9999
-};
-
-function setLinks() {
-  if (location.hostname === "localhost") {
-    $("#www-christmind-info").attr("href", `http://localhost:${ports.www}/`);
-    $("#acim-christmind-info").attr("href", `http://localhost:${ports.acim}/`);
-    $("#wom-christmind-info").attr("href", `http://localhost:${ports.wom}/`);
-    $("#raj-christmind-info").attr("href", `http://localhost:${ports.raj}/`);
-    $("#jsb-christmind-info").attr("href", `http://localhost:${ports.jsb}/`);
-  }
-}
 
 /*
  * For all transcript paragraphs -
@@ -37980,7 +38024,7 @@ $(document).ready(() => {
 
   initStickyMenu();
   Object(__WEBPACK_IMPORTED_MODULE_1__modules_util_url__["c" /* loadStart */])();
-  setLinks();
+  __WEBPACK_IMPORTED_MODULE_13__constants__["a" /* default */].setLinks();
   labelParagraphs();
   createParagraphNumberToggleListener();
   __WEBPACK_IMPORTED_MODULE_6__modules_user_netlify__["a" /* default */].initialize();
@@ -38010,7 +38054,6 @@ $(document).ready(() => {
     Object(__WEBPACK_IMPORTED_MODULE_3__modules_bookmark_shareByEmail__["a" /* initShareByEmail */])();
 
     if ($(".disable-paragraph-marker").length > 0) {
-      console.log("disable paragraph markers");
       $(".toggle-paragraph-markers").eq(0).trigger("click");
     }
   }).catch(error => {
@@ -48269,6 +48312,41 @@ function createSubmitHandler($form) {
   }
 });
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
+
+/***/ }),
+/* 439 */,
+/* 440 */,
+/* 441 */,
+/* 442 */,
+/* 443 */,
+/* 444 */,
+/* 445 */,
+/* 446 */,
+/* 447 */,
+/* 448 */,
+/* 449 */,
+/* 450 */,
+/* 451 */,
+/* 452 */,
+/* 453 */,
+/* 454 */,
+/* 455 */,
+/* 456 */,
+/* 457 */,
+/* 458 */,
+/* 459 */,
+/* 460 */,
+/* 461 */,
+/* 462 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+const status = {
+  acq: "Wed Feb 20 14:36:53 WITA 2019",
+  profile: "Mon Feb 18 13:42:38 WITA 2019"
+};
+/* harmony export (immutable) */ __webpack_exports__["a"] = status;
+
 
 /***/ })
 /******/ ]);

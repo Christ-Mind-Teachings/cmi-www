@@ -225,6 +225,15 @@ const transcriptMenuNextPageItem = {
   }
 };
 
+const transcriptMenuQuickLink = {
+  element: "#quick-links-dropdown-menu",
+  popover: {
+    title: "Quick Links",
+    description: "Quickly navigate to other teachings in the Library.",
+    position: "bottom"
+  }
+};
+
 const transcriptMenuHelpItem = {
   element: "#about-dropdown-menu",
   popover: {
@@ -308,6 +317,7 @@ export function transcriptDriver() {
     transcriptDriverSteps.push(transcriptMenuNextPageItem);
   }
 
+  transcriptDriverSteps.push(transcriptMenuQuickLink);
   transcriptDriverSteps.push(transcriptMenuHelpItem);
   transcriptDriverSteps.push(transcriptMenuLoginItem);
 

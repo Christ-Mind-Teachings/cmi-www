@@ -1,7 +1,7 @@
 {
-  "name": "cmi-start",
+  "name": "cmi-www",
   "version": "0.1.0",
-  "description": "Start project for adding a source to the Library of Christ Mind Teachings",
+  "description": "Landing page, card catalog, and documentation for the Library of Christ Mind Teachings",
   "main": "index.js",
   "scripts": {
     "test": "jest",

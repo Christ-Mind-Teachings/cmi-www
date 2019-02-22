@@ -197,6 +197,15 @@ The menu offers access to the functions available on the page. The options avail
     </div>
   </div>
   <div class="item">
+    <i class="book icon"></i>
+    <div class="content">
+      <div class="header">Quick Link</div>
+      <div class="description">
+        This option offers links for quickly navigating to other teachings in the library.
+      </div>
+    </div>
+  </div>
+  <div class="item">
     <i class="question icon"></i>
     <div class="content">
       <div class="header">Help</div>

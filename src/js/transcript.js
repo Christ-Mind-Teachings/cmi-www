@@ -18,24 +18,7 @@ import fb from "./modules/_util/facebook";
 import share from "./modules/_share/share";
 import about from "./modules/_about/about";
 import contact from "./modules/_forms/contact";
-
-const ports = {
-  acim: 9912,
-  wom: 9910,
-  raj: 9913,
-  jsb: 9911,
-  www: 9999
-};
-
-function setLinks() {
-  if (location.hostname === "localhost") {
-    $("#www-christmind-info").attr("href", `http://localhost:${ports.www}/`);
-    $("#acim-christmind-info").attr("href", `http://localhost:${ports.acim}/`);
-    $("#wom-christmind-info").attr("href", `http://localhost:${ports.wom}/`);
-    $("#raj-christmind-info").attr("href", `http://localhost:${ports.raj}/`);
-    $("#jsb-christmind-info").attr("href", `http://localhost:${ports.jsb}/`);
-  }
-}
+import constants from "./constants";
 
 /*
  * For all transcript paragraphs -
@@ -118,7 +101,7 @@ $(document).ready(() => {
 
   initStickyMenu();
   loadStart();
-  setLinks();
+  constants.setLinks();
   labelParagraphs();
   createParagraphNumberToggleListener();
   auth.initialize();
@@ -149,7 +132,6 @@ $(document).ready(() => {
       initShareByEmail();
 
       if ($(".disable-paragraph-marker").length > 0) {
-        console.log("disable paragraph markers");
         $(".toggle-paragraph-markers").eq(0).trigger("click");
       }
     })

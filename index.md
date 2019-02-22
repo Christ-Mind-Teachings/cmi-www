@@ -50,7 +50,7 @@ If you've used the library before you'll notice big changes. The old site is sti
     </div>
   </div>
   <div class="card">
-    <a id="acim-christmind-info" href="https://acim.christmind.info" class="image" data-tooltip="Click to view the ACIM Sparkly Edition." data-position="bottom center">
+    <a href="https://acim.christmind.info" class="href acim-christmind-info image" data-tooltip="Click to view the ACIM Sparkly Edition." data-position="bottom center">
       <img src="/public/img/cmi/acim-big.jpg">
     </a>
     <div class="content">
@@ -60,7 +60,7 @@ If you've used the library before you'll notice big changes. The old site is sti
     </div>
   </div>
   <div class="card">
-    <a id="raj-christmind-info" href="https://raj.christmind.info" class="image" data-tooltip="Click to view the Raj Material." data-position="bottom center">
+    <a href="https://raj.christmind.info" class="href raj-christmind-info image" data-tooltip="Click to view the Raj Material." data-position="bottom center">
       <img src="/public/img/cmi/raj-big.jpg">
     </a>
     <div class="content">
@@ -70,7 +70,7 @@ If you've used the library before you'll notice big changes. The old site is sti
     </div>
   </div>
   <div class="card">
-    <a id="wom-christmind-info" href="https://wom.christmind.info" class="image" data-tooltip="Click to view the Way of Mastery." data-position="bottom center">
+    <a href="https://wom.christmind.info" class="href wom-christmind-info image" data-tooltip="Click to view the Way of Mastery." data-position="bottom center">
       <img src="/public/img/cmi/wom-big.jpg">
     </a>
     <div class="content">
@@ -80,7 +80,7 @@ If you've used the library before you'll notice big changes. The old site is sti
     </div>
   </div>
   <div class="card">
-    <a id="jsb-christmind-info" href="https://jsb.christmind.info" class="image" data-tooltip="Click to view The Impersonal Life." data-position="bottom center">
+    <a href="https://jsb.christmind.info" class="href jsb-christmind-info image" data-tooltip="Click to view The Impersonal Life." data-position="bottom center">
       <img src="/public/img/cmi/jsb-big.jpg">
     </a>
     <div class="content">
