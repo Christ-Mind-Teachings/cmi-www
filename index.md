@@ -40,7 +40,7 @@ If you've used the library before you'll notice big changes. The old site is sti
     </div>
   </div>
   <div class="card">
-    <a href="#" data-book="acq" class="toc-modal-open image" data-tooltip="Click to view the Getting Acquainted table of contents." data-position="bottom center">
+    <a id="get-acquainted" href="#" data-book="acq" class="toc-modal-open image" data-tooltip="Click to view the Getting Acquainted table of contents." data-position="bottom center">
       <img src="/public/img/cmi/acq-big.jpg">
     </a>
     <div class="content">

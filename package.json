@@ -2,18 +2,22 @@
   "name": "cmi-www",
   "version": "0.1.0",
   "description": "Landing page, card catalog, and documentation for the Library of Christ Mind Teachings",
+  "license": "MIT",
+  "author": "Rick Mercer",
+  "homepage": "https://www.christmind.info/",
+  "repository": "github:rmercer33/cmi-www",
   "main": "index.js",
   "scripts": {
     "test": "jest",
+    "setConfigDate": "./deploy",
     "watch": "webpack --watch",
     "jekyll": "bundle exec jekyll s",
     "start": "npm run jekyll & npm run watch"
   },
   "keywords": [
-    "cmi"
+    "cmi",
+    "jekyll"
   ],
-  "author": "Rick Mercer",
-  "license": "MIT",
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
@@ -23,6 +27,7 @@
     "eslint": "^5.12.0",
     "extract-text-webpack-plugin": "^3.0.2",
     "file-loader": "^1.1.11",
+    "selenium-webdriver": "^4.0.0-alpha.1",
     "style-loader": "^0.20.3",
     "webpack": "^3.11.0"
   },
