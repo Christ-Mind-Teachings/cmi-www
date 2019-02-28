@@ -132,6 +132,7 @@ export default {
    */
   initialize: function(env) {
     //dialog settings
+    console.log("init toc modal");
     $(uiTocModal).modal({
       dimmerSettings: {opacity: uiModalOpacity},
       observeChanges: true

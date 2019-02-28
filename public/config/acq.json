@@ -37,6 +37,10 @@
       "url": "/profile/"
     },
     {
+      "title": "Technical Info",
+      "url": "/tech/"
+    },
+    {
       "title": "Contact Me",
       "url": "/contact/"
     }

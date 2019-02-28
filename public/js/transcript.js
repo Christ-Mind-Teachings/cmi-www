@@ -1673,7 +1673,7 @@ const books = ["acq", "profile"];
 
 const bookIds = ["xxx", ...books];
 const profile = ["xxx", "email"];
-const acq = ["xxx", "welcome", "overview", "quick", "bookmark", "search", "audio", "accounts", "profile", "contact"];
+const acq = ["xxx", "welcome", "overview", "quick", "bookmark", "search", "audio", "accounts", "profile", "tech", "contact"];
 
 const contents = {
   acq: acq,
@@ -26562,7 +26562,7 @@ module.exports = function spread(callback) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-const status = { acq: "Wed Feb 20 14:36:53 WITA 2019", profile: "Mon Feb 18 13:42:38 WITA 2019" };
+const status = { acq: "Thu Feb 28 12:12:58 WITA 2019", profile: "Mon Feb 18 13:42:38 WITA 2019" };
 /* harmony export (immutable) */ __webpack_exports__["a"] = status;
 
 
@@ -36512,6 +36512,7 @@ function getBookId() {
    */
   initialize: function (env) {
     //dialog settings
+    console.log("init toc modal");
     $(uiTocModal).modal({
       dimmerSettings: { opacity: uiModalOpacity },
       observeChanges: true
