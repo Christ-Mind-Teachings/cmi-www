@@ -1,12 +1,17 @@
 ---
 title: "Contact Me"
-search: false
 fb:
   desc: "Learn about the motivation for the Library and contact the author."
   image: "cmi/rick-profile.jpg"
+footer:
+  display: true
+  donate: true
+  id: "CMI-WWW"
+  source: "WWW"
+  repohref: "https://github.com/rmercer33/cmi-www"
 ---
 
-<div class="ui basic segment">
+<!-- <div class="ui basic segment"> -->
   <img class="ui small left floated image" src="/public/img/cmi/rick-profile.jpg">
   <p>
   Welcome to the Library of Christ Mind Teachings. My name is Rick Mercer.
@@ -23,7 +28,7 @@ fb:
   <p>
   I would love to hear from you about any subject. You can especially support this project by reporting any errors you find and by suggesting new features and the addition of other teachings. Thank you!
   </p>
-</div>
+<!-- </div> -->
 <hr/>
 
 ## Get In Touch

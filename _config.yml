@@ -53,6 +53,8 @@ defaults:
       image-width: 612
       image-height: 792
       bid: "acq"
+      search: false
+      audio: false
   - scope:
       path: ""
       type: profile

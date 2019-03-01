@@ -1,6 +1,5 @@
 ---
 title: Welcome
-search: false
 ---
 
 <h2 class="disable-paragraph-marker ui header">

@@ -3,7 +3,6 @@ title: Technical Information
 fb:
   desc: "Lean the technical details of the Library of Christ Mind
   Teachings."
-search: false
 ---
 
 # Technical Information

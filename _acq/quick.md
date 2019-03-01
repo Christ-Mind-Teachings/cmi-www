@@ -2,7 +2,6 @@
 title: Quick Start
 fb:
   desc: "An overview of the basic features of the CMI Library. Start here when learning how to use CMI."
-search: false
 ---
 
 This page offers a quick introduction to the features found in the Library. Take a moment to get acquainted and you'll find there's more here than meets the eye.
