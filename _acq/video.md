@@ -11,6 +11,6 @@ search: false
 ### Introduction to the Library
 {: #acq-video .ui.header}
 
-<div class="ui embed" data-source="youtube" data-id="-qaKmJPKRvs" data-placeholder="/public/img/cmi/youtube-cmi-intro.jpg">
+<div class="ui embed" data-source="youtube" data-id="PwuDMXOLp74" data-placeholder="/public/img/cmi/cmi-intro.png">
 </div>
 
