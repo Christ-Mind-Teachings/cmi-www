@@ -1673,7 +1673,7 @@ const books = ["acq", "profile"];
 
 const bookIds = ["xxx", ...books];
 const profile = ["xxx", "email"];
-const acq = ["xxx", "welcome", "overview", "quick", "bookmark", "search", "audio", "accounts", "profile", "tech", "contact"];
+const acq = ["xxx", "welcome", "overview", "quick", "bookmark", "search", "audio", "accounts", "video", "profile", "tech", "contact"];
 
 const contents = {
   acq: acq,
@@ -1843,7 +1843,7 @@ function decodeKey(key) {
   let bid = parseInt(pageKeyString.substr(2, 2), 10);
   decodedKey.bookId = bookIds[bid];
 
-  //substract 1 from key value to get index
+  //subtract 1 from key value to get index
   decodedKey.uid = parseInt(pageKeyString.substr(4, 3), 10) - 1;
 
   return decodedKey;
@@ -26562,7 +26562,7 @@ module.exports = function spread(callback) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-const status = { acq: "Thu Feb 28 12:12:58 WITA 2019", profile: "Mon Feb 18 13:42:38 WITA 2019" };
+const status = { acq: "Sat Mar 2 12:38:15 WITA 2019", profile: "Mon Feb 18 13:42:38 WITA 2019" };
 /* harmony export (immutable) */ __webpack_exports__["a"] = status;
 
 
@@ -36576,12 +36576,12 @@ function createClickHandlers() {
     }
 
     if ($(this).hasClass("page-navtour")) {
-      console.log("page Nav Driver");
+      //console.log("page Nav Driver");
       Object(__WEBPACK_IMPORTED_MODULE_0__util_driver__["b" /* pageNavigationDriver */])();
     }
 
     if ($(this).hasClass("transcript-tour")) {
-      console.log("transcriptDriver");
+      //console.log("transcriptDriver");
       Object(__WEBPACK_IMPORTED_MODULE_0__util_driver__["c" /* transcriptDriver */])();
     }
 
@@ -36590,19 +36590,34 @@ function createClickHandlers() {
     }
 
     if ($(this).hasClass("read-documentation")) {
-      location.href = "https://www.christmind.info/acq/quick/";
+      if (location.hostname === "localhost") {
+        location.href = "http://localhost:9999/acq/quick/";
+      } else {
+        location.href = "/acq/quick/";
+      }
     }
 
     if ($(this).hasClass("view-documentation")) {
-      console.log("video documentation not ready yet");
-      //location.href = "";
+      if (location.hostname === "localhost") {
+        location.href = "http://localhost:9999/acq/video/";
+      } else {
+        location.href = "/acq/video/";
+      }
+    }
+
+    if ($(this).hasClass("contact-me")) {
+      if (location.hostname === "localhost") {
+        location.href = "http://localhost:9999/acq/contact/";
+      } else {
+        location.href = "/acq/contact/";
+      }
     }
 
     if ($(this).hasClass("profile-management")) {
       if (location.hostname === "localhost") {
         location.href = "http://localhost:9999/profile/email/";
       } else {
-        location.href = "https://www.christmind.info/profile/email/";
+        location.href = "/profile/email/";
       }
     }
   });
@@ -37936,12 +37951,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__modules_about_about__ = __webpack_require__(400);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__modules_forms_contact__ = __webpack_require__(439);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__constants__ = __webpack_require__(74);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__modules_video_acq__ = __webpack_require__(463);
 /* eslint no-console: off */
 
 /*
   semantic requires jquery which is loaded used
   webpack.ProvidePlugin
 */
+
 
 
 
@@ -38041,6 +38058,7 @@ $(document).ready(() => {
   __WEBPACK_IMPORTED_MODULE_9__modules_util_facebook__["a" /* default */].initialize();
   __WEBPACK_IMPORTED_MODULE_11__modules_about_about__["a" /* default */].initialize();
   __WEBPACK_IMPORTED_MODULE_12__modules_forms_contact__["a" /* default */].initialize("acq-contact-form");
+  Object(__WEBPACK_IMPORTED_MODULE_14__modules_video_acq__["a" /* initialize */])();
 
   //load config file and do initializations that depend on a loaded config file
   Object(__WEBPACK_IMPORTED_MODULE_2__modules_config_config__["f" /* loadConfig */])(Object(__WEBPACK_IMPORTED_MODULE_7__modules_contents_toc__["b" /* getBookId */])()).then(result => {
@@ -48321,6 +48339,49 @@ function createSubmitHandler($form) {
     }
   }
 });
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
+
+/***/ }),
+/* 440 */,
+/* 441 */,
+/* 442 */,
+/* 443 */,
+/* 444 */,
+/* 445 */,
+/* 446 */,
+/* 447 */,
+/* 448 */,
+/* 449 */,
+/* 450 */,
+/* 451 */,
+/* 452 */,
+/* 453 */,
+/* 454 */,
+/* 455 */,
+/* 456 */,
+/* 457 */,
+/* 458 */,
+/* 459 */,
+/* 460 */,
+/* 461 */,
+/* 462 */,
+/* 463 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function($) {/* harmony export (immutable) */ __webpack_exports__["a"] = initialize;
+//initialize video in Get Acquainted Guide
+
+function initialize() {
+
+  //check if we're on acq.video page
+  if ($("#acq-video").length === 0) {
+    return;
+  }
+
+  //embed all videos on page
+  $(".ui.embed").embed();
+}
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 
 /***/ })

@@ -37,7 +37,8 @@ const books = ["acq", "profile" ];
 
 const bookIds = ["xxx", ...books];
 const profile = ["xxx", "email"];
-const acq = ["xxx", "welcome", "overview", "quick", "bookmark", "search", "audio", "accounts", "profile", "tech", "contact"];
+const acq = ["xxx", "welcome", "overview", "quick", "bookmark", "search", "audio",
+  "accounts", "video", "profile", "tech", "contact"];
 
 const contents = {
   acq: acq,
@@ -209,7 +210,7 @@ function decodeKey(key) {
   let bid = parseInt(pageKeyString.substr(2,2), 10);
   decodedKey.bookId = bookIds[bid];
 
-  //substract 1 from key value to get index
+  //subtract 1 from key value to get index
   decodedKey.uid = parseInt(pageKeyString.substr(4,3), 10) - 1;
 
   return decodedKey;

@@ -1673,7 +1673,7 @@ const books = ["acq", "profile"];
 
 const bookIds = ["xxx", ...books];
 const profile = ["xxx", "email"];
-const acq = ["xxx", "welcome", "overview", "quick", "bookmark", "search", "audio", "accounts", "profile", "tech", "contact"];
+const acq = ["xxx", "welcome", "overview", "quick", "bookmark", "search", "audio", "accounts", "video", "profile", "tech", "contact"];
 
 const contents = {
   acq: acq,
@@ -1843,7 +1843,7 @@ function decodeKey(key) {
   let bid = parseInt(pageKeyString.substr(2, 2), 10);
   decodedKey.bookId = bookIds[bid];
 
-  //substract 1 from key value to get index
+  //subtract 1 from key value to get index
   decodedKey.uid = parseInt(pageKeyString.substr(4, 3), 10) - 1;
 
   return decodedKey;
@@ -26562,7 +26562,7 @@ module.exports = function spread(callback) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-const status = { acq: "Thu Feb 28 12:12:58 WITA 2019", profile: "Mon Feb 18 13:42:38 WITA 2019" };
+const status = { acq: "Sat Mar 2 12:38:15 WITA 2019", profile: "Mon Feb 18 13:42:38 WITA 2019" };
 /* harmony export (immutable) */ __webpack_exports__["a"] = status;
 
 
@@ -36576,12 +36576,12 @@ function createClickHandlers() {
     }
 
     if ($(this).hasClass("page-navtour")) {
-      console.log("page Nav Driver");
+      //console.log("page Nav Driver");
       Object(__WEBPACK_IMPORTED_MODULE_0__util_driver__["b" /* pageNavigationDriver */])();
     }
 
     if ($(this).hasClass("transcript-tour")) {
-      console.log("transcriptDriver");
+      //console.log("transcriptDriver");
       Object(__WEBPACK_IMPORTED_MODULE_0__util_driver__["c" /* transcriptDriver */])();
     }
 
@@ -36590,19 +36590,34 @@ function createClickHandlers() {
     }
 
     if ($(this).hasClass("read-documentation")) {
-      location.href = "https://www.christmind.info/acq/quick/";
+      if (location.hostname === "localhost") {
+        location.href = "http://localhost:9999/acq/quick/";
+      } else {
+        location.href = "/acq/quick/";
+      }
     }
 
     if ($(this).hasClass("view-documentation")) {
-      console.log("video documentation not ready yet");
-      //location.href = "";
+      if (location.hostname === "localhost") {
+        location.href = "http://localhost:9999/acq/video/";
+      } else {
+        location.href = "/acq/video/";
+      }
+    }
+
+    if ($(this).hasClass("contact-me")) {
+      if (location.hostname === "localhost") {
+        location.href = "http://localhost:9999/acq/contact/";
+      } else {
+        location.href = "/acq/contact/";
+      }
     }
 
     if ($(this).hasClass("profile-management")) {
       if (location.hostname === "localhost") {
         location.href = "http://localhost:9999/profile/email/";
       } else {
-        location.href = "https://www.christmind.info/profile/email/";
+        location.href = "/profile/email/";
       }
     }
   });

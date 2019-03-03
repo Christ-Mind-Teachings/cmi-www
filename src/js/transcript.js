@@ -19,6 +19,7 @@ import share from "./modules/_share/share";
 import about from "./modules/_about/about";
 import contact from "./modules/_forms/contact";
 import constants from "./constants";
+import {initialize as acqVideoInit} from "./modules/_video/acq";
 
 /*
  * For all transcript paragraphs -
@@ -108,6 +109,7 @@ $(document).ready(() => {
   fb.initialize();
   about.initialize();
   contact.initialize("acq-contact-form");
+  acqVideoInit();
 
   //load config file and do initializations that depend on a loaded config file
   loadConfig(getBookId())
