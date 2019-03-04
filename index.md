@@ -13,6 +13,7 @@ fb:
     - "cmi/wom-toc.jpg"
 footer:
   display: true
+  subscribe: true
 ---
 
 ## Welcome to The Library of Christ Mind Teachings! 

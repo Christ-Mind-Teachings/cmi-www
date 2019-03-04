@@ -37028,7 +37028,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__modules_user_netlify__ = __webpack_require__(26);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__modules_about_about__ = __webpack_require__(400);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__constants__ = __webpack_require__(74);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__modules_forms_subscribe__ = __webpack_require__(464);
 /* eslint no-console: off */
+
 
 
 
@@ -37062,6 +37064,89 @@ $(document).ready(() => {
   __WEBPACK_IMPORTED_MODULE_4__modules_user_netlify__["a" /* default */].initialize();
   __WEBPACK_IMPORTED_MODULE_3__modules_contents_toc__["a" /* default */].initialize("page");
   __WEBPACK_IMPORTED_MODULE_5__modules_about_about__["a" /* default */].initialize();
+
+  //init subscribe form in footer
+  __WEBPACK_IMPORTED_MODULE_7__modules_forms_subscribe__["a" /* default */].initialize();
+});
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
+
+/***/ }),
+/* 444 */,
+/* 445 */,
+/* 446 */,
+/* 447 */,
+/* 448 */,
+/* 449 */,
+/* 450 */,
+/* 451 */,
+/* 452 */,
+/* 453 */,
+/* 454 */,
+/* 455 */,
+/* 456 */,
+/* 457 */,
+/* 458 */,
+/* 459 */,
+/* 460 */,
+/* 461 */,
+/* 462 */,
+/* 463 */,
+/* 464 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_toastr__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_toastr___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_toastr__);
+/*
+  Set up submit handler for contact forms
+*/
+
+
+
+function createSubmitHandler($form) {
+  //submit handler
+  $form.submit(function (e) {
+    e.preventDefault();
+    //console.log("submit pressed");
+
+    let $form = $(this);
+    let formData = $form.form("get values");
+    let validationError = false;
+
+    //form validation
+    if (formData.name.trim().length === 0) {
+      __WEBPACK_IMPORTED_MODULE_0_toastr___default.a.warning("Please enter your name.");
+      validationError = true;
+    }
+
+    if (formData.email.trim().length === 0) {
+      __WEBPACK_IMPORTED_MODULE_0_toastr___default.a.warning("Please enter your email address.");
+      validationError = true;
+    }
+
+    if (validationError) {
+      return false;
+    }
+
+    //send to netlify
+    $.post($form.attr("action"), $form.serialize()).done(function () {
+      __WEBPACK_IMPORTED_MODULE_0_toastr___default.a.success("Success!");
+    }).fail(function () {
+      __WEBPACK_IMPORTED_MODULE_0_toastr___default.a.error("Sorry, there was a failure to communicate!");
+    });
+  });
+}
+
+/* harmony default export */ __webpack_exports__["a"] = ({
+
+  initialize: function () {
+    let $form = $(".subscribe.form");
+
+    if ($form.length > 0) {
+      createSubmitHandler($form);
+      console.log("Subscribe form initialized.");
+    }
+  }
 });
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 

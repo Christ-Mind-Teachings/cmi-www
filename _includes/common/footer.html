@@ -51,6 +51,8 @@ footer:
             <img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" />
           </form>
         </div>
+      {% elsif page.footer.subscribe == true %}
+        {% include form/subscribe1.html %}
       {% endif %}
     </div>
   </div>

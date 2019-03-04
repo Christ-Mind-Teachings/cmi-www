@@ -7,6 +7,7 @@ import toc from "./modules/_contents/toc";
 import auth from "./modules/_user/netlify";
 import about from "./modules/_about/about";
 import constants from "./constants";
+import subscribe from "./modules/_forms/subscribe";
 
 /*
   Fix main menu to top of page when scrolled
@@ -33,5 +34,7 @@ $(document).ready(() => {
   toc.initialize("page");
   about.initialize();
 
+  //init subscribe form in footer
+  subscribe.initialize();
 });
 
