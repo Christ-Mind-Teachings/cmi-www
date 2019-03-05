@@ -41,6 +41,9 @@ collections:
   profile:
     output: true
     title: "User Profile"
+  email:
+    output: true
+    title: "Email Communications"
 
 defaults:
   - scope:
@@ -65,6 +68,16 @@ defaults:
       image-width: 612
       image-height: 792
       bid: "profile"
+  - scope:
+      path: ""
+      type: email
+    values:
+      layout: email
+      book: "Announcements"
+      image: "/public/img/cmi/email-big.jpg"
+      image-width: 612
+      image-height: 792
+      bid: "email"
 
 # force inclusion of
 include: [_redirects, LICENSE.txt]

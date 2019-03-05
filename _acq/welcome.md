@@ -64,7 +64,7 @@ Click on an image to display a table of contents for a book or to go to the home
     </div>
   </div>
   <div class="item">
-    <a id="raj-christmind-info" href="https://raj-christmind.info" class="ui tiny image" data-tooltip="Click to view the Raj Material.">
+    <a id="raj-christmind-info" href="https://raj.christmind.info" class="ui tiny image" data-tooltip="Click to view the Raj Material.">
       <img id="raj-christmind-info" src="/public/img/cmi/raj-toc.jpg">
     </a>
     <div class="content">
@@ -80,7 +80,7 @@ Click on an image to display a table of contents for a book or to go to the home
     </div>
   </div>
   <div class="item">
-    <a id="wom-christmind-info" href="https://wom-christmind-info" class="ui tiny image" data-tooltip="Click to view the Way of Mastery.">
+    <a id="wom-christmind-info" href="https://wom.christmind.info" class="ui tiny image" data-tooltip="Click to view the Way of Mastery.">
       <img src="/public/img/cmi/wom-toc.jpg">
     </a>
     <div class="content">
