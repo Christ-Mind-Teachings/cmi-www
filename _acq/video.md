@@ -8,6 +8,12 @@ search: false
 ## Video Instruction
 {: .ui.header.disable-paragraph-marker}
 
+### Using the Search Feature
+{: #acq-video .ui.header}
+
+<div class="ui embed" data-source="youtube" data-id="s3zON1d3o-o" data-placeholder="/public/img/cmi/cmi-search.png">
+</div>
+
 ### Introduction to the Library
 {: #acq-video .ui.header}
 
