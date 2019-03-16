@@ -97,11 +97,11 @@ Click on an image to display a table of contents for a book or to go to the home
     </div>
   </div>
   <div class="item">
-    <a id="jsb-christmind-info" href="https://jsb.christmind.info" class="ui tiny image" data-tooltip="Click to view The Impersonal Life.">
+    <a href="/jsb/" class="ui tiny image" data-tooltip="Click to view The Impersonal Life.">
       <img src="/public/img/cmi/jsb-toc.jpg">
     </a>
     <div class="content">
-      <a class="header">The Impersonal Life</a>
+      <a href="/jsb/" class="header">The Impersonal Life</a>
       <div class="description">
         <p>
           <em>The Impersonal Life</em> was published in 1914 by Joepsh S. Benner. It is a teaching from a time much earlier than the other sources in the library and serves to illustrate the timeless nature of Christ Mind teachings.

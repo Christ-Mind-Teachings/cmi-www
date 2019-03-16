@@ -30,7 +30,6 @@ encoding: utf-8
 # Build settings
 markdown: kramdown
 plugins:
-  - jekyll-feed
   - jekyll-sitemap
 
 # Collections for transcripts
@@ -80,11 +79,11 @@ defaults:
       bid: "email"
 
 # force inclusion of
-include: [_redirects, LICENSE.txt]
+include: [_redirects]
 
 exclude: [
   deploy, LICENSE, README.md, Gemfile, Gemfile.lock, package.json, package-lock.json, node_modules, webpack.config.js, src, project
 ]
 
-keep_files: [acim]
+keep_files: [acim, jsb]
 

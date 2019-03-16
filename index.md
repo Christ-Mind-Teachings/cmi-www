@@ -81,7 +81,7 @@ If you've used the library before you'll notice big changes. The old site is sti
     </div>
   </div>
   <div class="card">
-    <a href="https://jsb.christmind.info" class="href jsb-christmind-info image" data-tooltip="Click to view The Impersonal Life." data-position="bottom center">
+    <a href="/jsb/" class="image" data-tooltip="Click to view The Impersonal Life." data-position="bottom center">
       <img src="/public/img/cmi/jsb-big.jpg">
     </a>
     <div class="content">

@@ -37678,12 +37678,10 @@ function createClickHandlers() {
     }
 
     if ($(this).hasClass("page-navtour")) {
-      //console.log("page Nav Driver");
       Object(__WEBPACK_IMPORTED_MODULE_0__util_driver__["b" /* pageNavigationDriver */])();
     }
 
     if ($(this).hasClass("transcript-tour")) {
-      //console.log("transcriptDriver");
       Object(__WEBPACK_IMPORTED_MODULE_0__util_driver__["c" /* transcriptDriver */])();
     }
 
@@ -37692,35 +37690,19 @@ function createClickHandlers() {
     }
 
     if ($(this).hasClass("read-documentation")) {
-      if (location.hostname === "localhost") {
-        location.href = "http://localhost:9999/acq/quick/";
-      } else {
-        location.href = "/acq/quick/";
-      }
+      location.href = "/acq/quick/";
     }
 
     if ($(this).hasClass("view-documentation")) {
-      if (location.hostname === "localhost") {
-        location.href = "http://localhost:9999/acq/video/";
-      } else {
-        location.href = "/acq/video/";
-      }
+      location.href = "/acq/video/";
     }
 
     if ($(this).hasClass("contact-me")) {
-      if (location.hostname === "localhost") {
-        location.href = "http://localhost:9999/acq/contact/";
-      } else {
-        location.href = "/acq/contact/";
-      }
+      location.href = "/acq/contact/";
     }
 
     if ($(this).hasClass("profile-management")) {
-      if (location.hostname === "localhost") {
-        location.href = "http://localhost:9999/profile/email/";
-      } else {
-        location.href = "/profile/email/";
-      }
+      location.href = "/profile/email/";
     }
   });
 
