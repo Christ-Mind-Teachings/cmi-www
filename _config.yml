@@ -83,6 +83,8 @@ defaults:
 include: [_redirects, LICENSE.txt]
 
 exclude: [
-  Gemfile, Gemfile.lock, package.json, package-lock.json, node_modules, webpack.config.js, src, project
+  deploy, LICENSE, README.md, Gemfile, Gemfile.lock, package.json, package-lock.json, node_modules, webpack.config.js, src, project
 ]
+
+keep_files: [acim]
 

@@ -51,7 +51,7 @@ If you've used the library before you'll notice big changes. The old site is sti
     </div>
   </div>
   <div class="card">
-    <a href="https://acim.christmind.info" class="href acim-christmind-info image" data-tooltip="Click to view the ACIM Sparkly Edition." data-position="bottom center">
+    <a href="/acim/" class="image" data-tooltip="Click to view the ACIM Sparkly Edition." data-position="bottom center">
       <img src="/public/img/cmi/acim-big.jpg">
     </a>
     <div class="content">
