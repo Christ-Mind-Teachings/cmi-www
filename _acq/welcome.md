@@ -64,11 +64,11 @@ Click on an image to display a table of contents for a book or to go to the home
     </div>
   </div>
   <div class="item">
-    <a href="https://raj.christmind.info" class="ui tiny image" data-tooltip="Click to view the Raj Material.">
+    <a href="/raj/" class="ui tiny image" data-tooltip="Click to view the Raj Material.">
       <img src="/public/img/cmi/raj-toc.jpg">
     </a>
     <div class="content">
-      <a href="https://raj.christmind.info" class="header">The Raj Material</a>
+      <a href="/raj/" class="header">The Raj Material</a>
       <div class="description">
         <p>
           Raj has been sharing wisdom and inspiration through Paul Tuttle since 1982. Paul has written two books on his experience with Raj, <em>You ARE the Answer</em> and <em>Graduation</em>, both of which are available here. Raj has also facilitated an enlightening ACIM Study Group since 2002; the text and audio for all sessions (over 400) is available.

@@ -39034,15 +39034,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__modules_share_share__ = __webpack_require__(440);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__modules_about_about__ = __webpack_require__(402);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__modules_forms_contact__ = __webpack_require__(441);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__constants__ = __webpack_require__(74);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__modules_video_acq__ = __webpack_require__(442);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__modules_video_acq__ = __webpack_require__(442);
 /* eslint no-console: off */
 
 /*
   semantic requires jquery which is loaded used
   webpack.ProvidePlugin
 */
-
 
 
 
@@ -39135,14 +39133,13 @@ $(document).ready(() => {
 
   initStickyMenu();
   Object(__WEBPACK_IMPORTED_MODULE_1__modules_util_url__["c" /* loadStart */])();
-  __WEBPACK_IMPORTED_MODULE_13__constants__["a" /* default */].setLinks();
   labelParagraphs();
   createParagraphNumberToggleListener();
   __WEBPACK_IMPORTED_MODULE_6__modules_user_netlify__["a" /* default */].initialize();
   __WEBPACK_IMPORTED_MODULE_9__modules_util_facebook__["a" /* default */].initialize();
   __WEBPACK_IMPORTED_MODULE_11__modules_about_about__["a" /* default */].initialize();
   __WEBPACK_IMPORTED_MODULE_12__modules_forms_contact__["a" /* default */].initialize("acq-contact-form");
-  Object(__WEBPACK_IMPORTED_MODULE_14__modules_video_acq__["a" /* initialize */])();
+  Object(__WEBPACK_IMPORTED_MODULE_13__modules_video_acq__["a" /* initialize */])();
 
   //load config file and do initializations that depend on a loaded config file
   Object(__WEBPACK_IMPORTED_MODULE_2__modules_config_config__["f" /* loadConfig */])(Object(__WEBPACK_IMPORTED_MODULE_7__modules_contents_toc__["b" /* getBookId */])()).then(result => {

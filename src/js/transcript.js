@@ -18,7 +18,6 @@ import fb from "./modules/_util/facebook";
 import share from "./modules/_share/share";
 import about from "./modules/_about/about";
 import contact from "./modules/_forms/contact";
-import constants from "./constants";
 import {initialize as acqVideoInit} from "./modules/_video/acq";
 
 /*
@@ -102,7 +101,6 @@ $(document).ready(() => {
 
   initStickyMenu();
   loadStart();
-  constants.setLinks();
   labelParagraphs();
   createParagraphNumberToggleListener();
   auth.initialize();

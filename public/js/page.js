@@ -38112,10 +38112,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__modules_contents_toc__ = __webpack_require__(401);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__modules_user_netlify__ = __webpack_require__(18);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__modules_about_about__ = __webpack_require__(402);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__constants__ = __webpack_require__(74);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__modules_forms_subscribe__ = __webpack_require__(447);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__modules_forms_subscribe__ = __webpack_require__(447);
 /* eslint no-console: off */
-
 
 
 
@@ -38142,7 +38140,6 @@ function initStickyMenu() {
 
 $(document).ready(() => {
   initStickyMenu();
-  __WEBPACK_IMPORTED_MODULE_6__constants__["a" /* default */].setLinks();
 
   __WEBPACK_IMPORTED_MODULE_1__modules_bookmark_bookmark__["b" /* default */].initialize();
   __WEBPACK_IMPORTED_MODULE_2__modules_search_search__["a" /* default */].initialize();
@@ -38151,7 +38148,7 @@ $(document).ready(() => {
   __WEBPACK_IMPORTED_MODULE_5__modules_about_about__["a" /* default */].initialize();
 
   //init subscribe form in footer
-  __WEBPACK_IMPORTED_MODULE_7__modules_forms_subscribe__["a" /* default */].initialize();
+  __WEBPACK_IMPORTED_MODULE_6__modules_forms_subscribe__["a" /* default */].initialize();
 });
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 

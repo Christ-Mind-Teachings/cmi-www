@@ -61,7 +61,7 @@ If you've used the library before you'll notice big changes. The old site is sti
     </div>
   </div>
   <div class="card">
-    <a href="https://raj.christmind.info" class="href raj-christmind-info image" data-tooltip="Click to view the Raj Material." data-position="bottom center">
+    <a href="/raj/" class="image" data-tooltip="Click to view the Raj Material." data-position="bottom center">
       <img src="/public/img/cmi/raj-big.jpg">
     </a>
     <div class="content">
