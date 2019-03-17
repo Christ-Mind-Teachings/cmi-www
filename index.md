@@ -71,7 +71,7 @@ If you've used the library before you'll notice big changes. The old site is sti
     </div>
   </div>
   <div class="card">
-    <a href="https://wom.christmind.info" class="href wom-christmind-info image" data-tooltip="Click to view the Way of Mastery." data-position="bottom center">
+    <a href="/wom/" class="image" data-tooltip="Click to view the Way of Mastery." data-position="bottom center">
       <img src="/public/img/cmi/wom-big.jpg">
     </a>
     <div class="content">
