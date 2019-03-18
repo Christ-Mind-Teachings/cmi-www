@@ -96,6 +96,7 @@ Click on an image to display a table of contents for a book or to go to the home
       </div>
     </div>
   </div>
+  {% if jekyll_environmet == "development" %}
   <div class="item">
     <a href="/t/acol/" class="ui tiny image" data-tooltip="Click to view A Course Of Love">
       <img src="/public/img/cmi/acol-toc.jpg">
@@ -109,6 +110,7 @@ Click on an image to display a table of contents for a book or to go to the home
         </p>
       </div>
     </div>
+  {% endif %}
   <div class="item">
     <a href="/t/jsb/" class="ui tiny image" data-tooltip="Click to view The Impersonal Life.">
       <img src="/public/img/cmi/jsb-toc.jpg">

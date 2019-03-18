@@ -81,10 +81,12 @@ defaults:
 # force inclusion of
 include: [_redirects]
 
+# "t" the production output of other teachings
 exclude: [
-  deploy, LICENSE, README.md, Gemfile, Gemfile.lock, package.json, package-lock.json, node_modules, webpack.config.js, src, project
+  t, deploy, LICENSE, README.md, Gemfile, Gemfile.lock, package.json, package-lock.json, node_modules, webpack.config.js, src, project
 ]
 
-# this contains content from library teachings
+# this contains content from library teachings that are populated
+# by in development mode
 keep_files: [t]
 

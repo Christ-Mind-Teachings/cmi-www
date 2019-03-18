@@ -1,0 +1,87 @@
+# CMI
+sourceId: 99
+cmiTitle: "Teachings of Christ Mind"
+
+# Setup
+title:        'The Library'
+tagline:      ''
+description:  ''
+url:          'https://www.christmind.info'
+baseurl:      ''
+keywords:     "Christ Mind, cmi, jesus, raj, acim"
+src-url:      'https://www.christmind.info'
+port:         9999
+
+# About/contact
+author:
+  name:              Rick Mercer
+  url:               https://twitter.com/rmercer33
+  email:             rmercer33@gmail.com
+
+fb-appId:     448658485318107
+
+# Permalinks
+permalink: pretty
+permalink: /:title/
+
+# Set encoding to UTF-8
+encoding: utf-8
+
+# Build settings
+markdown: kramdown
+plugins:
+  - jekyll-sitemap
+
+# Collections for transcripts
+collections:
+  acq:
+    output: true
+    title: "Get Acquainted"
+  profile:
+    output: true
+    title: "User Profile"
+  email:
+    output: true
+    title: "Email Communications"
+
+defaults:
+  - scope:
+      path: ""
+      type: acq
+    values:
+      layout: transcript
+      book: "Get Acquainted"
+      image: "/public/img/cmi/acq-big.jpg"
+      image-width: 612
+      image-height: 792
+      bid: "acq"
+      search: false
+      audio: false
+  - scope:
+      path: ""
+      type: profile
+    values:
+      layout: profile
+      book: "User Profile"
+      image: "/public/img/cmi/profile-big.jpg"
+      image-width: 612
+      image-height: 792
+      bid: "profile"
+  - scope:
+      path: ""
+      type: email
+    values:
+      layout: email
+      book: "Announcements"
+      image: "/public/img/cmi/email-big.jpg"
+      image-width: 612
+      image-height: 792
+      bid: "email"
+
+# force inclusion of
+include: [_redirects]
+
+exclude: [
+  deploy, LICENSE, README.md, Gemfile, Gemfile.lock, package.json, package-lock.json, node_modules, webpack.config.js, src, project
+]
+
