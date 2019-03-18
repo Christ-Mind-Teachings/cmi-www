@@ -5487,6 +5487,7 @@ const timingBase = "/public/timing";
 
 //location of configuration files
 const configUrl = "/public/config";
+const configStore = "config.www.";
 
 //the current configuration, initially null, assigned by getConfig()
 let config;
@@ -5554,7 +5555,7 @@ function fetchTimingData(url) {
 */
 function getConfig(book, assign = true) {
   return new Promise((resolve, reject) => {
-    let cfg = __WEBPACK_IMPORTED_MODULE_0_store___default.a.get(`config-${book}`);
+    let cfg = __WEBPACK_IMPORTED_MODULE_0_store___default.a.get(`${configStore}${book}`);
     let url;
 
     //if config in local storage check if we need to get a freash copy
@@ -5571,7 +5572,7 @@ function getConfig(book, assign = true) {
     requestConfiguration(url).then(response => {
       //add save date before storing
       response.data.saveDate = __WEBPACK_IMPORTED_MODULE_2__status__["a" /* status */][response.data.bid];
-      __WEBPACK_IMPORTED_MODULE_0_store___default.a.set(`config-${book}`, response.data);
+      __WEBPACK_IMPORTED_MODULE_0_store___default.a.set(`${configStore}${book}`, response.data);
       if (assign) {
         config = response.data;
       }
@@ -5601,10 +5602,10 @@ function loadConfig(book) {
       resolve(0);
       return;
     }
-    let cfg = __WEBPACK_IMPORTED_MODULE_0_store___default.a.get(`config-${book}`);
+    let cfg = __WEBPACK_IMPORTED_MODULE_0_store___default.a.get(`${configStore}${book}`);
     let url;
 
-    //if config in local storage check if we need to get a freash copy
+    //if config in local storage check if we need to get a fresh copy
     if (cfg && !refreshNeeded(cfg)) {
       config = cfg;
       resolve("config read from cache");
@@ -5616,7 +5617,7 @@ function loadConfig(book) {
     requestConfiguration(url).then(response => {
       //add save date before storing
       response.data.saveDate = __WEBPACK_IMPORTED_MODULE_2__status__["a" /* status */][response.data.bid];
-      __WEBPACK_IMPORTED_MODULE_0_store___default.a.set(`config-${book}`, response.data);
+      __WEBPACK_IMPORTED_MODULE_0_store___default.a.set(`${configStore}${book}`, response.data);
       config = response.data;
       resolve("config fetched from server");
     }).catch(() => {
@@ -5763,6 +5764,8 @@ function getPageInfo(pageKey, data = false) {
 
 //import {parseKey, getKeyInfo, genPageKey, genParagraphKey } from "../_config/key";
 const transcript = __webpack_require__(14);
+const bm_list_store = "bm.www.list";
+const bm_topic_list = "bm.www.topics";
 
 //Index topics
 const topicsEndPoint = "https://93e93isn03.execute-api.us-east-1.amazonaws.com/latest";
@@ -5916,11 +5919,11 @@ function queryBookmarks(key) {
 }
 
 function storeBookmarkList(bookmarks, keyInfo) {
-  __WEBPACK_IMPORTED_MODULE_1_store___default.a.set(`bmList_${keyInfo.sourceId}`, bookmarks);
+  __WEBPACK_IMPORTED_MODULE_1_store___default.a.set(bm_list_store, bookmarks);
 }
 
 function getBookmarkList(keyInfo) {
-  return __WEBPACK_IMPORTED_MODULE_1_store___default.a.get(`bmList_${keyInfo.sourceId}`);
+  return __WEBPACK_IMPORTED_MODULE_1_store___default.a.get(bm_list_store);
 }
 
 /*
@@ -6118,7 +6121,7 @@ function getAnnotation(pid, aid) {
 */
 function fetchTopics() {
   const userInfo = Object(__WEBPACK_IMPORTED_MODULE_3__user_netlify__["b" /* getUserInfo */])();
-  let topics = __WEBPACK_IMPORTED_MODULE_1_store___default.a.get("topic-list");
+  let topics = __WEBPACK_IMPORTED_MODULE_1_store___default.a.get(bm_topic_list);
 
   //keep topics in cache for 2 hours
   const retentionTime = 60 * 1000 * 60 * 2;
@@ -6132,7 +6135,7 @@ function fetchTopics() {
           lastFetchDate: 0,
           topics: []
         };
-        __WEBPACK_IMPORTED_MODULE_1_store___default.a.set("topic-list", topics);
+        __WEBPACK_IMPORTED_MODULE_1_store___default.a.set(bm_topic_list, topics);
       }
       resolve(topics);
       return;
@@ -6150,7 +6153,7 @@ function fetchTopics() {
     __WEBPACK_IMPORTED_MODULE_0_axios___default.a.get(`${topicsEndPoint}/user/${userInfo.userId}/topics/${sourceId}`).then(topicInfo => {
       console.log("topicInfo.data: ", topicInfo.data);
       topicInfo.data.lastFetchDate = Date.now();
-      __WEBPACK_IMPORTED_MODULE_1_store___default.a.set("topic-list", topicInfo.data);
+      __WEBPACK_IMPORTED_MODULE_1_store___default.a.set(bm_topic_list, topicInfo.data);
       resolve(topicInfo.data);
     }).catch(error => {
       console.error("Error fetching topicList: ", error);
@@ -6163,7 +6166,7 @@ function fetchTopics() {
   add new topics to topic-list in application store
 */
 function addToTopicList(newTopics) {
-  let topics = __WEBPACK_IMPORTED_MODULE_1_store___default.a.get("topic-list");
+  let topics = __WEBPACK_IMPORTED_MODULE_1_store___default.a.get(bm_topic_list);
   let concatTopics = topics.topics.concat(newTopics);
 
   //improve sort
@@ -6195,7 +6198,7 @@ function addToTopicList(newTopics) {
   });
 
   topics.topics = concatTopics;
-  __WEBPACK_IMPORTED_MODULE_1_store___default.a.set("topic-list", topics);
+  __WEBPACK_IMPORTED_MODULE_1_store___default.a.set(bm_topic_list, topics);
 
   //add topics to server if user signed in
   let userInfo = Object(__WEBPACK_IMPORTED_MODULE_3__user_netlify__["b" /* getUserInfo */])();
@@ -12932,6 +12935,8 @@ module.exports = toFinite;
 
 //import {getSourceId, genPageKey} from "../_config/key";
 const transcript = __webpack_require__(14);
+const bm_modal_store = "bm.www.modal";
+const bm_list_store = "bm.www.list";
 
 let shareEventListenerCreated = false;
 let gPageKey;
@@ -13319,8 +13324,8 @@ function getCurrentBookmark(pageKey, actualPid, allBookmarks, bmModal, whoCalled
 function bookmarkManager(actualPid) {
   let sourceId = transcript.getSourceId();
   let pageKey = transcript.genPageKey().toString(10);
-  let bmList = __WEBPACK_IMPORTED_MODULE_2_store___default.a.get(`bmList_${sourceId}`);
-  let bmModal = __WEBPACK_IMPORTED_MODULE_2_store___default.a.get(`bmModal_${sourceId}`);
+  let bmList = __WEBPACK_IMPORTED_MODULE_2_store___default.a.get(bm_list_store);
+  let bmModal = __WEBPACK_IMPORTED_MODULE_2_store___default.a.get(bm_modal_store);
 
   if (bmList) {
     //store globally
@@ -13366,7 +13371,7 @@ function bookmarkManager(actualPid) {
       }
     });
   } else {
-    console.log(`bmList_${sourceId}`);
+    console.log(bm_list_store);
   }
 }
 
@@ -13379,8 +13384,8 @@ function bookmarkManager(actualPid) {
 */
 function updateNavigator(pid, update) {
   //console.log("updateNavigator, pid: %s, update: %s", pid, update);
-  let bmList = __WEBPACK_IMPORTED_MODULE_2_store___default.a.get(`bmList_${transcript.getSourceId()}`);
-  let bmModal = __WEBPACK_IMPORTED_MODULE_2_store___default.a.get(`bmModal_${transcript.getSourceId()}`);
+  let bmList = __WEBPACK_IMPORTED_MODULE_2_store___default.a.get(bm_list_store);
+  let bmModal = __WEBPACK_IMPORTED_MODULE_2_store___default.a.get(bm_modal_store);
   getCurrentBookmark(gPageKey, pid, bmList, bmModal, update);
 }
 
@@ -36152,8 +36157,7 @@ const uiOpenBookmarkModal = ".bookmark-modal-open";
 const uiModalOpacity = 0.5;
 
 function bookmarkModalState(option, modalInfo) {
-  let sid = transcript.getSourceId();
-  let name = `bmModal_${sid}`;
+  const name = "bm.www.modal";
   let info;
 
   switch (option) {
@@ -36313,7 +36317,7 @@ function generateBookmarkList(books) {
         <li>Clicking on the paragraph number, eg: (p21)</li>
       </ul>
       <p>
-        See <a href="https://www.christmind.info/acq/bookmark/">the Bookmark documentation</a> for more information.
+        See <a href="/acq/bookmark/">the Bookmark documentation</a> for more information.
       </p>
     `;
   }
