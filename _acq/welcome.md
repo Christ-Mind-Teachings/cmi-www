@@ -80,7 +80,7 @@ Click on an image to display a table of contents for a book or to go to the home
     </div>
   </div>
   <div class="item">
-    <a id="wom-christmind-info" href="https://wom.christmind.info" class="ui tiny image" data-tooltip="Click to view the Way of Mastery.">
+    <a href="/wom/" class="ui tiny image" data-tooltip="Click to view the Way of Mastery.">
       <img src="/public/img/cmi/wom-toc.jpg">
     </a>
     <div class="content">
@@ -96,6 +96,19 @@ Click on an image to display a table of contents for a book or to go to the home
       </div>
     </div>
   </div>
+  <div class="item">
+    <a href="/acol/" class="ui tiny image" data-tooltip="Click to view A Course Of Love">
+      <img src="/public/img/cmi/acol-toc.jpg">
+    </a>
+    <div class="content">
+      <a href="/acol/" class="header">A Course Of Love</a>
+      <div class="description">
+        Forty years ago Jesus dictated ACIM to the scribe Helen Schucman. More recently, over three years, he similarly dictated A Course of Love to Mari Perron. Students of ACIM will recognize the Voice. Jesus describes ACOL as a "continuation" of A Course in Miracles. Students of truth, whatever their background, will find that ACOL resonates with the heart.
+        <p>
+          Click on the cover image to go the ACOL homepage.
+        </p>
+      </div>
+    </div>
   <div class="item">
     <a href="/jsb/" class="ui tiny image" data-tooltip="Click to view The Impersonal Life.">
       <img src="/public/img/cmi/jsb-toc.jpg">

@@ -4,14 +4,19 @@
     {% unless include.name == "acim" %}
     <div class="item" data-href="/acim/">ACIM Sparkly Edition</div>
     {% endunless %}
+    {% unless include.name == "acol" %}
+    {% if jekyll.environment == "development" %}
+    <div class="item" data-href="/acol/">A Course Of Love</div>
+    {% endif %}
+    {% endunless %}
     {% unless include.name == "raj" %}
-    <div class="dhref raj-christmind-info item" data-href="https://raj.christmind.info">The Raj Material</div>
+    <div class="item" data-href="/raj/">The Raj Material</div>
     {% endunless %}
     {% unless include.name == "wom" %}
-    <div class="dhref wom-christmind-info item" data-href="https://wom.christmind.info">The Way of Mastery</div>
+    <div class="item" data-href="/wom/">The Way of Mastery</div>
     {% endunless %}
     {% unless include.name == "jsb" %}
-    <div class="data-href jsb-christmind-info item" data-href="https://jsb.christmind.info">The Impersonal Life</div>
+    <div class="item" data-href="/jsb/">The Impersonal Life</div>
     {% endunless %}
   </div>
 </a>

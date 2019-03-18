@@ -80,6 +80,18 @@ If you've used the library before you'll notice big changes. The old site is sti
       </div>
     </div>
   </div>
+  {% if jekyll.environment == "development" %}
+  <div class="card">
+    <a href="/acol/" class="image" data-tooltip="Click to view A Course Of Love" data-position="bottom center">
+      <img src="/public/img/cmi/acol-big.jpg">
+    </a>
+    <div class="content">
+      <div class="description">
+        Forty years ago Jesus dictated ACIM to the scribe Helen Schucman. More recently, over three years, he similarly dictated A Course of Love to Mari Perron. Students of ACIM will recognize the Voice. Jesus describes ACOL as a "continuation" of A Course in Miracles. Students of truth, whatever their background, will find that ACOL resonates with the heart.
+      </div>
+    </div>
+  </div>
+  {% endif %}
   <div class="card">
     <a href="/jsb/" class="image" data-tooltip="Click to view The Impersonal Life." data-position="bottom center">
       <img src="/public/img/cmi/jsb-big.jpg">
