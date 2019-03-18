@@ -1,0 +1,12 @@
+[Settings]
+  command = "jekyll build --config _config.prod.yml"
+
+[context.production]
+  environment = { JEKYLL_ENVIRONMENT = "production" }
+
+[context.branch-deploy]
+  command = "jekyll build"
+
+[context.branch-deploy.environment]
+  JEKYLL_ENVIRONMENT = "development"
+
