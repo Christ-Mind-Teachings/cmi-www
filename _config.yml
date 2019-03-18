@@ -85,5 +85,6 @@ exclude: [
   deploy, LICENSE, README.md, Gemfile, Gemfile.lock, package.json, package-lock.json, node_modules, webpack.config.js, src, project
 ]
 
-keep_files: [acim, jsb, raj, wom, acol]
+# this contains content from library teachings
+keep_files: [t]
 
