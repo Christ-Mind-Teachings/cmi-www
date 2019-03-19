@@ -49,7 +49,7 @@ defaults:
       path: ""
       type: acq
     values:
-      layout: transcript
+      layout: "transcript"
       book: "Get Acquainted"
       image: "/public/img/cmi/acq-big.jpg"
       image-width: 612
@@ -61,7 +61,7 @@ defaults:
       path: ""
       type: profile
     values:
-      layout: profile
+      layout: "profile"
       book: "User Profile"
       image: "/public/img/cmi/profile-big.jpg"
       image-width: 612
@@ -71,7 +71,7 @@ defaults:
       path: ""
       type: email
     values:
-      layout: email
+      layout: "email"
       book: "Announcements"
       image: "/public/img/cmi/email-big.jpg"
       image-width: 612
@@ -83,10 +83,10 @@ include: [_redirects]
 
 # "t" the production output of other teachings
 exclude: [
-  t, deploy, LICENSE, README.md, Gemfile, Gemfile.lock, package.json, package-lock.json, node_modules, webpack.config.js, src, project
+  "t/", "deploy", "LICENSE", "README.md", "Gemfile", "Gemfile.lock", "package.json", "package-lock.json", "node_modules/", "webpack.config.js", "src/", "project/"
 ]
 
 # this contains content from library teachings that are populated
 # by in development mode
-keep_files: [t]
+keep_files: ["t/"]
 
