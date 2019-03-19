@@ -88,5 +88,5 @@ exclude: [
 
 # this contains content from library teachings that are populated
 # by in development mode
-keep_files: ["t/"]
+keep_files: ["t"]
 
