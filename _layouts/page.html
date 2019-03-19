@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-  {% include common/analytics.html %}
+  {% if jekyll.environment == "production" %}
+    {% include common/analytics.html %}
+  {% endif %}
 
   <!-- Standard Meta -->
   <meta charset="utf-8" />

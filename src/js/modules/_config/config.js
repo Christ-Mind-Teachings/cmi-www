@@ -17,6 +17,7 @@ const timingBase = "/public/timing";
 
 //location of configuration files
 const configUrl = "/public/config";
+const configStore = "config.www.";
 
 //the current configuration, initially null, assigned by getConfig()
 let config;
@@ -87,7 +88,7 @@ export function fetchTimingData(url) {
 */
 export function getConfig(book, assign = true) {
   return new Promise((resolve, reject) => {
-    let cfg = store.get(`config-${book}`);
+    let cfg = store.get(`${configStore}${book}`);
     let url;
 
     //if config in local storage check if we need to get a freash copy
@@ -105,7 +106,7 @@ export function getConfig(book, assign = true) {
       .then((response) => {
         //add save date before storing
         response.data.saveDate = status[response.data.bid];
-        store.set(`config-${book}`, response.data);
+        store.set(`${configStore}${book}`, response.data);
         if (assign) {
           config = response.data;
         }
@@ -136,10 +137,10 @@ export function loadConfig(book) {
       resolve(0);
       return;
     }
-    let cfg = store.get(`config-${book}`);
+    let cfg = store.get(`${configStore}${book}`);
     let url;
 
-    //if config in local storage check if we need to get a freash copy
+    //if config in local storage check if we need to get a fresh copy
     if (cfg && !refreshNeeded(cfg)) {
       config = cfg;
       resolve("config read from cache");
@@ -152,7 +153,7 @@ export function loadConfig(book) {
       .then((response) => {
         //add save date before storing
         response.data.saveDate = status[response.data.bid];
-        store.set(`config-${book}`, response.data);
+        store.set(`${configStore}${book}`, response.data);
         config = response.data;
         resolve("config fetched from server");
       })

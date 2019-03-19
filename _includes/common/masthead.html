@@ -1,10 +1,16 @@
 <!-- _include/common/masthead.html -->
 <div class="cmi-header ui main text container">
-  <a title="To Library Card Catalog" class="href www-christmind-info" href="https://www.christmind.info/">
+  {% if page.masthead == "home" %}
+  <h1 id="masthead-title" class="ui centered header">
+    {{site.cmiTitle}}<br/>
+  </h1>
+  {% else %}
+  <a title="To Library Card Catalog" href="/">
     <h1 id="masthead-title" class="ui centered header">
       {{site.cmiTitle}}<br/>
     </h1>
   </a>
+  {% endif %}
 
   {% if page.masthead == "home" %}
   <h2 id="source-homepage" class="ui centered header">{{site.title}}</h2>

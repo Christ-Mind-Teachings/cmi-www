@@ -1,0 +1,25 @@
+{
+    "base": "/wom/questions/bleq3/",
+    "time": [{
+        "id": "p0",
+        "time": 0
+    }, {
+        "id": "p1",
+        "seconds": 10.661129
+    }, {
+        "id": "p2",
+        "seconds": 20.421765
+    }, {
+        "id": "p3",
+        "seconds": 24.666731
+    }, {
+        "id": "p4",
+        "seconds": 27.167021
+    }, {
+        "id": "p5",
+        "seconds": 84.172753
+    }, {
+        "id": "p6",
+        "seconds": 87.412151
+    }]
+}

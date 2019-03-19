@@ -6,11 +6,11 @@ title: Welcome
   Welcome to the Library of Christ Mind Teachings.
 </h2>
 
-The library is a collection of authoritative channeled insight and inspiration that offers a perspective on the individual and collective challenges of our lives and world that is not commonly taught. For many, this new perspective is immediately grasped as the only real solution to the problems of the world, from little anoyances to major conflict and from those of a personal nature to those that have global effect.
+The library is a collection of authoritative channeled insight and inspiration that offers a perspective on the individual and collective challenges of our lives and world that is not commonly taught. For many, this new perspective is immediately grasped as the only real solution to the problems of the world, from little annoyances to major conflict and from those of a personal nature to those that have global effect.
 
 The books in the library express a similar message but each source presents it in a different way and often using somewhat different language. The content is the same, just the form differs. The variety of forms of teachings support a deeper understanding of the material.
 
-The library is orgainzed by teaching or *source* and each source contains one or more *books*. The [home page](https://www.christmind.info) displays an image that represents each source and a *Get Acquainted* guide. 
+The library is organized by teaching or *source* and each source contains one or more *books*. The [home page](/) displays an image that represents each source and a *Get Acquainted* guide. 
 
 Since this is a new version of the Library the original edition is still available and represented by the first image on the page. 
 
@@ -48,11 +48,11 @@ Click on an image to display a table of contents for a book or to go to the home
     </div>
   </div>
   <div class="item">
-    <a id="acim-christmind-info" href="https://acim.christmind.info" class="ui tiny image" data-tooltip="Click to view the ACIM Sparkly Edition.">
+    <a href="/t/acim/" class="ui tiny image" data-tooltip="Click to view the ACIM Sparkly Edition.">
       <img src="/public/img/cmi/acim-toc.jpg">
     </a>
     <div class="content">
-      <a id="acim-christmind-info" class="header">A Course In Miracles</a>
+      <a href="/t/acim/" class="header">A Course In Miracles</a>
       <div class="description">
         <p>
           The Sparkly Edition of <em>A Course In Miracles</em>. Clicking on the cover image will take you to the ACIM homepage in the library. You can learn more about ACIM there in the <em>Get Acquainted</em> guide.
@@ -64,11 +64,11 @@ Click on an image to display a table of contents for a book or to go to the home
     </div>
   </div>
   <div class="item">
-    <a id="raj-christmind-info" href="https://raj.christmind.info" class="ui tiny image" data-tooltip="Click to view the Raj Material.">
-      <img id="raj-christmind-info" src="/public/img/cmi/raj-toc.jpg">
+    <a href="/t/raj/" class="ui tiny image" data-tooltip="Click to view the Raj Material.">
+      <img src="/public/img/cmi/raj-toc.jpg">
     </a>
     <div class="content">
-      <a class="header">The Raj Material</a>
+      <a href="/t/raj/" class="header">The Raj Material</a>
       <div class="description">
         <p>
           Raj has been sharing wisdom and inspiration through Paul Tuttle since 1982. Paul has written two books on his experience with Raj, <em>You ARE the Answer</em> and <em>Graduation</em>, both of which are available here. Raj has also facilitated an enlightening ACIM Study Group since 2002; the text and audio for all sessions (over 400) is available.
@@ -80,7 +80,7 @@ Click on an image to display a table of contents for a book or to go to the home
     </div>
   </div>
   <div class="item">
-    <a id="wom-christmind-info" href="https://wom.christmind.info" class="ui tiny image" data-tooltip="Click to view the Way of Mastery.">
+    <a href="/t/wom/" class="ui tiny image" data-tooltip="Click to view the Way of Mastery.">
       <img src="/public/img/cmi/wom-toc.jpg">
     </a>
     <div class="content">
@@ -96,12 +96,27 @@ Click on an image to display a table of contents for a book or to go to the home
       </div>
     </div>
   </div>
+  {% if jekyll_environmet == "development" %}
   <div class="item">
-    <a id="jsb-christmind-info" href="https://jsb.christmind.info" class="ui tiny image" data-tooltip="Click to view The Impersonal Life.">
+    <a href="/t/acol/" class="ui tiny image" data-tooltip="Click to view A Course Of Love">
+      <img src="/public/img/cmi/acol-toc.jpg">
+    </a>
+    <div class="content">
+      <a href="/t/acol/" class="header">A Course Of Love</a>
+      <div class="description">
+        Forty years ago Jesus dictated ACIM to the scribe Helen Schucman. More recently, over three years, he similarly dictated A Course of Love to Mari Perron. Students of ACIM will recognize the Voice. Jesus describes ACOL as a "continuation" of A Course in Miracles. Students of truth, whatever their background, will find that ACOL resonates with the heart.
+        <p>
+          Click on the cover image to go the ACOL homepage.
+        </p>
+      </div>
+    </div>
+  {% endif %}
+  <div class="item">
+    <a href="/t/jsb/" class="ui tiny image" data-tooltip="Click to view The Impersonal Life.">
       <img src="/public/img/cmi/jsb-toc.jpg">
     </a>
     <div class="content">
-      <a class="header">The Impersonal Life</a>
+      <a href="/t/jsb/" class="header">The Impersonal Life</a>
       <div class="description">
         <p>
           <em>The Impersonal Life</em> was published in 1914 by Joepsh S. Benner. It is a teaching from a time much earlier than the other sources in the library and serves to illustrate the timeless nature of Christ Mind teachings.
