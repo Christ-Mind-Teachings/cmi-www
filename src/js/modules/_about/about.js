@@ -6,8 +6,9 @@ function createClickHandlers() {
     e.preventDefault();
 
     if ($(this).hasClass("page-tour")) {
-      console.log("pageDriver");
-      pageDriver();
+      let prod = !$(this).hasClass("development");
+      console.log(`pageDriver(${prod})`);
+      pageDriver(prod);
     }
 
     if ($(this).hasClass("page-navtour")) {

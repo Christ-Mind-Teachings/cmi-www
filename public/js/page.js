@@ -37697,8 +37697,9 @@ function createClickHandlers() {
     e.preventDefault();
 
     if ($(this).hasClass("page-tour")) {
-      console.log("pageDriver");
-      Object(__WEBPACK_IMPORTED_MODULE_0__util_driver__["a" /* pageDriver */])();
+      let prod = !$(this).hasClass("development");
+      console.log(`pageDriver(${prod})`);
+      Object(__WEBPACK_IMPORTED_MODULE_0__util_driver__["a" /* pageDriver */])(prod);
     }
 
     if ($(this).hasClass("page-navtour")) {
@@ -37831,6 +37832,15 @@ const jsb = {
   }
 };
 
+const acol = {
+  element: "#acol-christmind-info",
+  popover: {
+    title: "A Course Of Love",
+    description: "A very personal expression of living as Christ from Jesus to you.",
+    position: "top"
+  }
+};
+
 const pageMenu = {
   element: "#page-menu",
   popover: {
@@ -37876,11 +37886,11 @@ const pageMenuLoginItem = {
   }
 };
 
-const pageMenuTextContents = {
-  element: "[data-book='text']",
+const pageMenuContents = {
+  element: "[data-book='acq']",
   popover: {
     title: "Display Table of Contents",
-    description: "Click on any image to display and navigate to the volume contents.<br/><br/>Note: The Preface does not have a table of contents.",
+    description: "Click on any image to display the table of contents or navigate directly to the teaching.",
     position: "left"
   }
 };
@@ -38011,13 +38021,23 @@ const transcriptMenuLoginItem = {
   }
 };
 
-function pageDriver() {
+/*
+ * Arg: prod boolean
+ *
+ * true = we're running production
+ * false = we're running development
+ */
+function pageDriver(prod) {
   const driver = new __WEBPACK_IMPORTED_MODULE_0_driver_js___default.a({
     allowClose: false,
     opacity: 0.5
   });
 
-  driver.defineSteps([cmiPageTitle, originalEdition, getAcquainted, acim, raj, wom, jsb]);
+  let production = [cmiPageTitle, originalEdition, getAcquainted, acim, raj, wom, jsb];
+
+  let development = [cmiPageTitle, originalEdition, getAcquainted, acim, raj, wom, acol, jsb];
+
+  driver.defineSteps(prod ? production : development);
 
   driver.start();
 }
@@ -38028,8 +38048,16 @@ function pageNavigationDriver() {
     opacity: 0.5
   });
 
-  driver.defineSteps([cmiPageBanner, pageMenu, pageMenuBookmarkItem, pageMenuSearchItem, pageMenuHelpItem, pageMenuLoginItem, pageMenuTextContents]);
+  let steps = [cmiPageBanner, pageMenu, pageMenuBookmarkItem, pageMenuHelpItem];
 
+  if ($(".search-modal-open").length > 0) {
+    steps.push(pageMenuSearchItem);
+  }
+
+  steps.push(pageMenuLoginItem);
+  steps.push(pageMenuContents);
+
+  driver.defineSteps(steps);
   driver.start();
 }
 

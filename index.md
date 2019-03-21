@@ -51,7 +51,7 @@ If you've used the library before you'll notice big changes. The old site is sti
     </div>
   </div>
   <div class="card">
-    <a href="/t/acim/" class="image" data-tooltip="Click to view the ACIM Sparkly Edition." data-position="bottom center">
+    <a id="acim-christmind-info" href="/t/acim/" class="image" data-tooltip="Click to view the ACIM Sparkly Edition." data-position="bottom center">
       <img src="/public/img/cmi/acim-big.jpg">
     </a>
     <div class="content">
@@ -61,7 +61,7 @@ If you've used the library before you'll notice big changes. The old site is sti
     </div>
   </div>
   <div class="card">
-    <a href="/t/raj/" class="image" data-tooltip="Click to view the Raj Material." data-position="bottom center">
+    <a id="raj-christmind-info" href="/t/raj/" class="image" data-tooltip="Click to view the Raj Material." data-position="bottom center">
       <img src="/public/img/cmi/raj-big.jpg">
     </a>
     <div class="content">
@@ -71,7 +71,7 @@ If you've used the library before you'll notice big changes. The old site is sti
     </div>
   </div>
   <div class="card">
-    <a href="/t/wom/" class="image" data-tooltip="Click to view the Way of Mastery." data-position="bottom center">
+    <a id="wom-christmind-info" href="/t/wom/" class="image" data-tooltip="Click to view the Way of Mastery." data-position="bottom center">
       <img src="/public/img/cmi/wom-big.jpg">
     </a>
     <div class="content">
@@ -82,7 +82,7 @@ If you've used the library before you'll notice big changes. The old site is sti
   </div>
   {% if jekyll.environment == "development" %}
   <div class="card">
-    <a href="/t/acol/" class="image" data-tooltip="Click to view A Course Of Love" data-position="bottom center">
+    <a id="acol-christmind-info" href="/t/acol/" class="image" data-tooltip="Click to view A Course Of Love" data-position="bottom center">
       <img src="/public/img/cmi/acol-big.jpg">
     </a>
     <div class="content">
@@ -93,7 +93,7 @@ If you've used the library before you'll notice big changes. The old site is sti
   </div>
   {% endif %}
   <div class="card">
-    <a href="/t/jsb/" class="image" data-tooltip="Click to view The Impersonal Life." data-position="bottom center">
+    <a id="jsb-christmind-info" href="/t/jsb/" class="image" data-tooltip="Click to view The Impersonal Life." data-position="bottom center">
       <img src="/public/img/cmi/jsb-big.jpg">
     </a>
     <div class="content">

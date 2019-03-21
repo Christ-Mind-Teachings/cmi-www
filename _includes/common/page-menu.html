@@ -1,3 +1,5 @@
+---
+---
 <div class="ui borderless main menu">
   <div id="page-menu" class="ui text container">
     <a href="#" class="bookmark-modal-open ui dropdown item">
@@ -15,7 +17,11 @@
     <a id="help-menu" href="#" class="ui dropdown item">
       <i class="question icon"></i>
       <div class="menu">
-        <div class="page-tour item">Tour This Page</div>
+        {% if jekyll.environment == "production" %}
+        <div class="production page-tour item">Tour This Page</div>
+        {% else %}
+        <div class="development page-tour item">Tour This Page</div>
+        {% endif %}
         <div class="page-navtour item">Getting Around</div>
         <div class="read-documentation item">Read Documentation</div>
         <div class="view-documentation item">Watch Video Instruction</div>

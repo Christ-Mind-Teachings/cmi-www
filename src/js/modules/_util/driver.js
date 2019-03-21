@@ -72,6 +72,15 @@ const jsb = {
   }
 };
 
+const acol = {
+  element: "#acol-christmind-info",
+  popover: {
+    title: "A Course Of Love",
+    description: "A very personal expression of living as Christ from Jesus to you.",
+    position: "top"
+  }
+};
+
 const pageMenu = {
   element: "#page-menu",
   popover: {
@@ -117,11 +126,11 @@ const pageMenuLoginItem = {
   }
 };
 
-const pageMenuTextContents = {
-  element: "[data-book='text']",
+const pageMenuContents = {
+  element: "[data-book='acq']",
   popover: {
     title: "Display Table of Contents",
-    description: "Click on any image to display and navigate to the volume contents.<br/><br/>Note: The Preface does not have a table of contents.",
+    description: "Click on any image to display the table of contents or navigate directly to the teaching.",
     position: "left"
   }
 };
@@ -252,13 +261,19 @@ const transcriptMenuLoginItem = {
   }
 };
 
-export function pageDriver() {
+/*
+ * Arg: prod boolean
+ *
+ * true = we're running production
+ * false = we're running development
+ */
+export function pageDriver(prod) {
   const driver = new Driver({
     allowClose: false,
     opacity: 0.5
   });
 
-  driver.defineSteps([
+  let production = [
     cmiPageTitle,
     originalEdition,
     getAcquainted,
@@ -266,7 +281,20 @@ export function pageDriver() {
     raj,
     wom,
     jsb
-  ]);
+  ];
+
+  let development = [
+    cmiPageTitle,
+    originalEdition,
+    getAcquainted,
+    acim,
+    raj,
+    wom,
+    acol,
+    jsb
+  ];
+
+  driver.defineSteps(prod ? production: development);
 
   driver.start();
 }
@@ -277,16 +305,21 @@ export function pageNavigationDriver() {
     opacity: 0.5
   });
 
-  driver.defineSteps([
+  let steps = [
     cmiPageBanner,
     pageMenu,
     pageMenuBookmarkItem,
-    pageMenuSearchItem,
-    pageMenuHelpItem,
-    pageMenuLoginItem,
-    pageMenuTextContents
-  ]);
+    pageMenuHelpItem
+  ];
 
+  if ($(".search-modal-open").length > 0) {
+    steps.push(pageMenuSearchItem);
+  }
+
+  steps.push(pageMenuLoginItem);
+  steps.push(pageMenuContents);
+
+  driver.defineSteps(steps);
   driver.start();
 }
 

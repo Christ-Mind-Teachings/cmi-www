@@ -38428,6 +38428,15 @@ const pageMenuSearchItem = {
   }
 };
 
+const pageMenuQuickLinkItem = {
+  element: "#quick-links-dropdown-menu",
+  popover: {
+    title: "Navigate to Another Teaching",
+    description: "Quickly jump to one of the other teachings in the Library.",
+    position: "bottom"
+  }
+};
+
 const pageMenuHelpItem = {
   element: "#help-menu",
   popover: {
@@ -38589,7 +38598,7 @@ function pageNavigationDriver() {
     opacity: 0.5
   });
 
-  driver.defineSteps([cmiPageBanner, pageMenu, pageMenuBookmarkItem, pageMenuSearchItem, pageMenuHelpItem, pageMenuLoginItem, pageMenuTextContents]);
+  driver.defineSteps([cmiPageBanner, pageMenu, pageMenuBookmarkItem, pageMenuSearchItem, pageMenuQuickLinkItem, pageMenuHelpItem, pageMenuLoginItem, pageMenuTextContents]);
 
   driver.start();
 }
@@ -38621,6 +38630,7 @@ function transcriptDriver() {
     transcriptDriverSteps.push(transcriptMenuNextPageItem);
   }
 
+  transcriptDriverSteps.push(pageMenuQuickLinkItem);
   transcriptDriverSteps.push(transcriptMenuHelpItem);
   transcriptDriverSteps.push(transcriptMenuLoginItem);
 

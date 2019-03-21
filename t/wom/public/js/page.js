@@ -37938,6 +37938,13 @@ function pageNavigationDriver() {
       position: "bottom"
     }
   }, {
+    element: "#quick-links-dropdown-menu",
+    popover: {
+      title: "Navigate to Another Teaching",
+      description: "Quickly jump to one of the other teachings in the Library.",
+      position: "bottom"
+    }
+  }, {
     element: "#help-menu",
     popover: {
       title: "Get Help and Learn About",
@@ -38075,6 +38082,15 @@ function transcriptDriver() {
     popover: {
       title: "Next Page",
       description: "Go to the next page. This will be disabled when the last page is displayed.",
+      position: "bottom"
+    }
+  });
+
+  steps.push({
+    element: "#quick-links-dropdown-menu",
+    popover: {
+      title: "Navigate to Another Teaching",
+      description: "Quickly jump to one of the other teachings in the Library.",
       position: "bottom"
     }
   });
