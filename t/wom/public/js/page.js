@@ -5485,7 +5485,7 @@ function getConfig(book, assign = true) {
     let cfg = __WEBPACK_IMPORTED_MODULE_0_store___default.a.get(`${configStore}${book}`);
     let url;
 
-    //if config in local storage check if we need to get a freash copy
+    //if config in local storage check if we need to get a fresh copy
     if (cfg && !refreshNeeded(cfg)) {
       if (assign) {
         config = cfg;
@@ -5616,7 +5616,7 @@ function getReservation(url) {
   returns: book title, page title, url and optionally subtitle.
 
   args:
-    pageKey: a key uniuely identifying a transcript page
+    pageKey: a key uniquely identifying a transcript page
     data: optional, data that will be added to the result, used for convenience
 */
 function getPageInfo(pageKey, data = false) {
@@ -5631,18 +5631,43 @@ function getPageInfo(pageKey, data = false) {
 
     //get configuration data specific to the bookId
     getConfig(decodedKey.bookId, false).then(data => {
-      info.bookTitle = data.title;
-
-      if (decodedKey.hasQuestions) {
-        info.title = data.contents[decodedKey.uid].title;
-        info.subTitle = data.contents[decodedKey.uid].questions[decodedKey.qid].title;
-        info.url = data.contents[decodedKey.uid].questions[decodedKey.qid].url;
+      if (!data) {
+        info.bookTitle = "Book Title Unknown";
+        info.title = "Title Unknown";
+        info.url = "";
       } else {
-        info.title = data.contents[decodedKey.uid].title;
-        info.url = data.contents[decodedKey.uid].url;
-      }
+        info.bookTitle = data.title;
 
-      resolve(info);
+        let unit = data.contents[decodedKey.uid];
+        if (!unit) {
+          info.title = `Title not found, pageKey: ${pageKey}, decodedKey: ${decodedKey}`;
+          info.title = "";
+        } else {
+
+          if (decodedKey.hasQuestions) {
+            let question;
+
+            //this shouldn't happen but did once due to test data that got indexed and later
+            //deleted but the index remained and caused the code to fail. Took me a long time to 
+            //find the problem.
+            if (decodedKey.qid >= unit.questions.length) {
+              console.log("invalid pageKey: %s, specifies out of range qid", pageKey);
+              console.log("decodedKey: %o", decodedKey);
+              question = unit.questions[unit.questions.length - 1];
+            } else {
+              question = unit.questions[decodedKey.qid];
+            }
+            info.title = unit.title;
+            info.subTitle = question.title;
+            info.url = question.url;
+          } else {
+            info.title = unit.title;
+            info.url = unit.url;
+          }
+        }
+
+        resolve(info);
+      }
     }).catch(error => {
       reject(error);
     });
