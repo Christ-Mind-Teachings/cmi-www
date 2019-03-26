@@ -8,6 +8,19 @@ search: false
 ## Video Instruction
 {: .ui.header.disable-paragraph-marker}
 
+### About Bookmarks
+{: #acq-video .ui.header}
+
+<div class="ui embed" data-source="youtube" data-id="1gIXyRXnAvc" data-placeholder="/public/img/cmi/bookmark-video.png">
+</div>
+
+### Sharing Bookmarks to FB and by Email
+{: #acq-video .ui.header}
+
+<div class="ui embed" data-source="youtube" data-id="M08SunH16h8" data-placeholder="/public/img/cmi/sharing-video.png">
+</div>
+
+
 ### Using the Search Feature
 {: #acq-video .ui.header}
 

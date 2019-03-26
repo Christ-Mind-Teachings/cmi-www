@@ -99,8 +99,8 @@ The Library includes the following components.
           <div class="item">
             <i class="linkify icon"></i>
             <div class="content">
-              <a href="https://acim.christmind.info">
-                Website: https://acim.christmind.info
+              <a href="https://www.christmind.info/t/acim">
+                Website: https://www.christmind.info/t/acim
               </a>
             </div>
           </div>
@@ -137,8 +137,8 @@ The Library includes the following components.
           <div class="item">
             <i class="linkify icon"></i>
             <div class="content">
-              <a href="https://raj.christmind.info">
-                Website: https://raj.christmind.info
+              <a href="https://www.christmind.info/t/raj">
+                Website: https://www.christmind.info/t/raj
               </a>
             </div>
           </div>
@@ -178,8 +178,8 @@ The Library includes the following components.
           <div class="item">
             <i class="linkify icon"></i>
             <div class="content">
-              <a href="https://wom.christmind.info">
-                Website: https://wom.christmind.info
+              <a href="https://www.christmind.info/t/wom">
+                Website: https://www.christmind.info/t/wom
               </a>
             </div>
           </div>
@@ -224,8 +224,8 @@ The Library includes the following components.
           <div class="item">
             <i class="linkify icon"></i>
             <div class="content">
-              <a href="https://jsb.christmind.info">
-                Website: https://jsb.christmind.info
+              <a href="https://www.christmind.info/t/jsb">
+                Website: https://www.christmind.info/t/jsb
               </a>
             </div>
           </div>

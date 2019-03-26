@@ -1673,7 +1673,7 @@ const books = ["acq", "profile"];
 
 const bookIds = ["xxx", ...books];
 const profile = ["xxx", "email"];
-const acq = ["xxx", "welcome", "overview", "quick", "bookmark", "search", "audio", "accounts", "video", "profile", "tech", "contact"];
+const acq = ["xxx", "welcome", "overview", "quick", "bookmark", "search", "audio", "accounts", "profile", "video", "email", "tech", "contact"];
 
 const contents = {
   acq: acq,
@@ -26669,7 +26669,7 @@ module.exports = function spread(callback) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-const status = { acq: "Sat Mar 2 12:38:15 WITA 2019", profile: "Mon Feb 18 13:42:38 WITA 2019" };
+const status = { acq: "Tue Mar 26 18:01:19 WITA 2019", profile: "Mon Feb 18 13:42:38 WITA 2019" };
 /* harmony export (immutable) */ __webpack_exports__["a"] = status;
 
 
