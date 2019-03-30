@@ -29,13 +29,19 @@ function createSubmitHandler($form) {
       return false;
     }
 
+    //disable submit button
+    $("[name='cmi-subscribe'] > button").addClass("disabled");
+
     //send to netlify
     $.post($form.attr("action"), $form.serialize())
       .done(function() {
         notify.success("Success!");
+        $form.form("clear");
+        $("[name='cmi-subscribe'] > button").removeClass("disabled");
       })
       .fail(function() {
         notify.error("Sorry, there was a failure to communicate!");
+        $("[name='cmi-subscribe'] > button").removeClass("disabled");
       });
   });
 }

@@ -38258,11 +38258,17 @@ function createSubmitHandler($form) {
       return false;
     }
 
+    //disable submit button
+    $("[name='cmi-subscribe'] > button").addClass("disabled");
+
     //send to netlify
     $.post($form.attr("action"), $form.serialize()).done(function () {
       __WEBPACK_IMPORTED_MODULE_0_toastr___default.a.success("Success!");
+      $form.form("clear");
+      $("[name='cmi-subscribe'] > button").removeClass("disabled");
     }).fail(function () {
       __WEBPACK_IMPORTED_MODULE_0_toastr___default.a.error("Sorry, there was a failure to communicate!");
+      $("[name='cmi-subscribe'] > button").removeClass("disabled");
     });
   });
 }
