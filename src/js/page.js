@@ -7,6 +7,23 @@ import toc from "./modules/_contents/toc";
 import auth from "./modules/_user/netlify";
 import about from "./modules/_about/about";
 import subscribe from "./modules/_forms/subscribe";
+import {TweenMax} from "gsap";
+
+function initAnimation() {
+  let delay = 0.2;
+  //$("#page-contents").on("mouseover", "[data-book]", function(e) {
+  $("#page-contents").on("mouseover", ".card > a", function(e) {
+    console.log("mouse over");
+    TweenMax.to($(this), delay, {className: "+=gsap-hover"});
+    TweenMax.to($(this), delay, {scale: "1.1"});
+  });
+  //$("#page-contents").on("mouseout", "[data-book]", function(e) {
+  $("#page-contents").on("mouseout", ".card > a", function(e) {
+    console.log("mouse over");
+    TweenMax.to($(this), delay, {className: "-=gsap-hover"});
+    TweenMax.to($(this), delay, {scale: "1.0"});
+  });
+}
 
 /*
   Fix main menu to top of page when scrolled
@@ -34,5 +51,7 @@ $(document).ready(() => {
 
   //init subscribe form in footer
   subscribe.initialize();
+
+  initAnimation();
 });
 

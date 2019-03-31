@@ -1,0 +1,14 @@
+/* add your source css here */
+
+.transcript blockquote {
+  font-style: italic;
+}
+
+a[data-restricted="1"] {
+  color: black !important;
+  cursor: default !important;
+}
+
+.prose {
+  font-style: italic;
+}
