@@ -88,6 +88,12 @@ body {
   border-radius: 5px;
 }
 
+/*
+.toc.ui.modal {
+  overflow: hidden;
+}
+*/
+
 /* add margin so the navigator does not hide a bookmark or search result */
 .transcript.ui.text.container.bookmark-navigator-active,
 .transcript.ui.text.container.search-navigator-active {

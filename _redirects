@@ -1,8 +1,8 @@
 # Netlify url rewrite file
 # - used to comply with the DMCA Takedown Request from SCF over WOM content
 
-/library                  https://orig.christmind.info/library/
-/acim/*                   https://orig.christmind.info/acim/:splat
-/nwffacim/*               https://orig.christmind.info/nwffacim/:splat
-/wom/*                    https://orig.christmind.info/wom/:splat
+/library                  /
+/acim/*                   /t/acim/
+/nwffacim/*               /t/raj/
+/wom/*                    /t/wom/
 
