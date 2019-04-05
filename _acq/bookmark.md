@@ -36,11 +36,15 @@ On landing pages just click the bookmark icon to display the bookmark dialog.
 
 ### Document Pages
 
-On documentpages, the bookmark icon shows a dropdown menu, choose "Show Bookmarks" to display the bookmark dialog.
+On document pages, the bookmark icon shows a dropdown menu, choose "Show Bookmarks" to display the bookmark dialog.
 
 <div class="ui container" markdown="1">
   ![Landing Page Bookmarks](/public/img/cmi/bookmark-document-menu.jpg)
 </div>
+
+As described below, one way to create bookmarks is by selecting text. One of the side effects of this is that you are unable to select text to paste in another document because each time you select text the bookmark creation dialog is displayed effectively preventing you from copying the text.
+
+You can disable bookmark creation so that copy/paste functions normally. Once disabled, the bookmark feature will remain unavailable until you enable it. 
 
 ## No Bookmarks
 

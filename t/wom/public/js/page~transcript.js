@@ -235,7 +235,12 @@ function initializeForm(pid, aid, annotation) {
       aid: aid
     });
   } else {
-    let topicSelect = annotation.topicList.map(t => t.value);
+    let topicSelect = [];
+
+    if (annotation.topicList) {
+      topicSelect = annotation.topicList.map(t => t.value);
+    }
+
     form.form("set values", {
       rangeStart: annotation.rangeStart,
       rangeEnd: annotation.rangeEnd,
@@ -294,7 +299,9 @@ function editAnnotation(pid, aid, annotation) {
   } //console.log("editAnnotation");
 
 
-  warnNotSignedIn();
+  warnNotSignedIn(); //.disable-selection will prevent text selection during annotation creation/edit
+
+  addSelectionGuard();
   $(".annotation-edit").wrapAll(wrapper);
   $(".annotate-wrapper").prepend(form);
   $(".annotation-delete.disabled").removeClass("disabled");
@@ -324,8 +331,10 @@ function noteHandler() {
         editAnnotation(pid, undefined, annotation);
         return;
       }
-    } //new note for paragraph
+    } //disable text selection while annotation form is open
 
+
+    addSelectionGuard(); //new note for paragraph
 
     $(`#${pid}`).addClass("annotation-edit annotation-note");
     $(".annotation-edit").wrapAll(wrapper);
@@ -435,10 +444,40 @@ function editHandler() {
     editAnnotation(pid, aid, annotation);
   });
 }
+/*
+ * Enable text selection by removing .disable-selection unless
+ * .user is present. This means user has explicitly disabled
+ * text selection.
+ */
+
+
+function removeSelectionGuard() {
+  let guard = $("div.transcript.ui.disable-selection:not(.user)");
+
+  if (guard.length > 0) {
+    console.log("removing selection guard");
+    guard.removeClass("disable-selection");
+  }
+}
+/*
+ * Disable text selection when annotation form is open
+ */
+
+
+function addSelectionGuard() {
+  let guard = $("div.transcript.ui");
+
+  if (!guard.hasClass("disable-selection")) {
+    console.log("adding selection guard");
+    guard.addClass("disable-selection");
+  }
+}
 
 function submitHandler() {
   $(".transcript").on("submit", "#annotation-form", function (e) {
-    e.preventDefault(); //1. Create new topic begins here
+    e.preventDefault(); //enable text selection, disabled when annotation form open
+
+    removeSelectionGuard(); //1. Create new topic begins here
 
     let formData = getFormData(); //topicList contains topic strings but we want the topic object
     //get it from the select option tag
@@ -473,7 +512,9 @@ function submitHandler() {
 
 function cancelHandler() {
   $(".transcript").on("click", "#annotation-form .annotation-cancel", function (e) {
-    e.preventDefault();
+    e.preventDefault(); //enable text selection, disabled when annotation form open
+
+    removeSelectionGuard();
     let formData = getFormData();
     unwrap(); //remove class "show" added when form was displayed
 
@@ -495,9 +536,7 @@ function shareHandler() {
 
     $(`[data-annotation-id="${formData.aid}"]`).removeClass("show");
     _bookmark__WEBPACK_IMPORTED_MODULE_2__["annotation"].cancel(formData);
-    $(".transcript .annotation-edit").removeClass("annotation-edit"); //now, wrap annotation for display
-    //console.log("share formData: %o", formData);
-
+    $(".transcript .annotation-edit").removeClass("annotation-edit");
     let userInfo = Object(_user_netlify__WEBPACK_IMPORTED_MODULE_5__["getUserInfo"])();
 
     if (!userInfo) {
@@ -573,7 +612,9 @@ function shareHandler() {
 
 function deleteHandler() {
   $(".transcript").on("click", "#annotation-form .annotation-delete", function (e) {
-    e.preventDefault();
+    e.preventDefault(); //enable text selection, disabled when annotation form open
+
+    removeSelectionGuard();
     let formData = getFormData();
     unwrap();
     _bookmark__WEBPACK_IMPORTED_MODULE_2__["annotation"].delete(formData);
@@ -608,8 +649,10 @@ function getUserInput(highlight) {
       aid: highlight.id
     });
     return;
-  }
+  } //.disable-selection will prevent text selection during annotation creation/edit
 
+
+  addSelectionGuard();
   warnNotSignedIn();
   $(`#${highlight.pid}`).addClass("annotation-edit");
   $(".annotation-edit").wrapAll(wrapper);
@@ -1281,18 +1324,21 @@ __webpack_require__.r(__webpack_exports__);
 /* WEBPACK VAR INJECTION */(function($) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "annotation", function() { return annotation; });
 /* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! toastr */ "./node_modules/toastr/toastr.js");
 /* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(toastr__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _bmnet__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./bmnet */ "./src/js/modules/_bookmark/bmnet.js");
-/* harmony import */ var lodash_differenceWith__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lodash/differenceWith */ "./node_modules/lodash/differenceWith.js");
-/* harmony import */ var lodash_differenceWith__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(lodash_differenceWith__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lodash/cloneDeep */ "./node_modules/lodash/cloneDeep.js");
-/* harmony import */ var lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var lodash_startCase__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! lodash/startCase */ "./node_modules/lodash/startCase.js");
-/* harmony import */ var lodash_startCase__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(lodash_startCase__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _util_url__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../_util/url */ "./src/js/modules/_util/url.js");
-/* harmony import */ var _navigator__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./navigator */ "./src/js/modules/_bookmark/navigator.js");
-/* harmony import */ var _list__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./list */ "./src/js/modules/_bookmark/list.js");
-/* harmony import */ var _topics__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./topics */ "./src/js/modules/_bookmark/topics.js");
-/* harmony import */ var _selection__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./selection */ "./src/js/modules/_bookmark/selection.js");
+/* harmony import */ var store__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! store */ "./node_modules/store/dist/store.legacy.js");
+/* harmony import */ var store__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(store__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _bmnet__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./bmnet */ "./src/js/modules/_bookmark/bmnet.js");
+/* harmony import */ var lodash_differenceWith__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lodash/differenceWith */ "./node_modules/lodash/differenceWith.js");
+/* harmony import */ var lodash_differenceWith__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(lodash_differenceWith__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! lodash/cloneDeep */ "./node_modules/lodash/cloneDeep.js");
+/* harmony import */ var lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var lodash_startCase__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! lodash/startCase */ "./node_modules/lodash/startCase.js");
+/* harmony import */ var lodash_startCase__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(lodash_startCase__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _util_url__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../_util/url */ "./src/js/modules/_util/url.js");
+/* harmony import */ var _navigator__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./navigator */ "./src/js/modules/_bookmark/navigator.js");
+/* harmony import */ var _list__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./list */ "./src/js/modules/_bookmark/list.js");
+/* harmony import */ var _topics__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./topics */ "./src/js/modules/_bookmark/topics.js");
+/* harmony import */ var _selection__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./selection */ "./src/js/modules/_bookmark/selection.js");
+
 
 
 
@@ -1303,7 +1349,8 @@ __webpack_require__.r(__webpack_exports__);
  //const topicsEndPoint = "https://s3.amazonaws.com/assets.christmind.info/wom/topics.json";
 
 
- //add bookmark topics to bookmark selected text to support 
+
+const bm_creation_state = "bm.wom.creation"; //add bookmark topics to bookmark selected text to support 
 //selective display of hightlight based on topic
 
 function addTopicsAsClasses(bookmark) {
@@ -1326,7 +1373,7 @@ function addTopicsAsClasses(bookmark) {
 
 function getPageBookmarks(sharePid) {
   //identify paragraphs with bookmarks
-  _bmnet__WEBPACK_IMPORTED_MODULE_1__["default"].getBookmarks().then(response => {
+  _bmnet__WEBPACK_IMPORTED_MODULE_2__["default"].getBookmarks().then(response => {
     if (response) {
       //mark each paragraph containing bookmarks
       for (let id in response) {
@@ -1337,9 +1384,9 @@ function getPageBookmarks(sharePid) {
 
         for (const bm of response[id]) {
           if (bm.selectedText) {
-            Object(_selection__WEBPACK_IMPORTED_MODULE_9__["markSelection"])(bm.selectedText, count, sharePid);
+            Object(_selection__WEBPACK_IMPORTED_MODULE_10__["markSelection"])(bm.selectedText, count, sharePid);
             addTopicsAsClasses(bm);
-            _topics__WEBPACK_IMPORTED_MODULE_8__["default"].add(bm);
+            _topics__WEBPACK_IMPORTED_MODULE_9__["default"].add(bm);
             count++;
             hasBookmark = true;
           } else {
@@ -1357,7 +1404,7 @@ function getPageBookmarks(sharePid) {
         }
       }
 
-      _topics__WEBPACK_IMPORTED_MODULE_8__["default"].bookmarksLoaded();
+      _topics__WEBPACK_IMPORTED_MODULE_9__["default"].bookmarksLoaded();
     }
   }).catch(error => {
     console.error(error);
@@ -1371,7 +1418,7 @@ function getPageBookmarks(sharePid) {
 
 function createAnnotation(formValues) {
   console.log("createAnnotation");
-  let annotation = lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_3___default()(formValues);
+  let annotation = lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_4___default()(formValues);
   annotation.rangeStart = annotation.rangeStart.trim();
   annotation.rangeEnd = annotation.rangeEnd.trim();
 
@@ -1391,7 +1438,7 @@ function createAnnotation(formValues) {
   if (annotation.aid === "") {
     delete annotation.aid;
   } else {
-    annotation.selectedText = Object(_selection__WEBPACK_IMPORTED_MODULE_9__["getSelection"])(annotation.aid);
+    annotation.selectedText = Object(_selection__WEBPACK_IMPORTED_MODULE_10__["getSelection"])(annotation.aid);
 
     if (annotation.creationDate) {
       annotation.selectedText.aid = annotation.creationDate.toString(10);
@@ -1405,11 +1452,11 @@ function createAnnotation(formValues) {
   } //keep track of topics added or deleted
 
 
-  Object(_selection__WEBPACK_IMPORTED_MODULE_9__["updateSelectionTopicList"])(annotation);
+  Object(_selection__WEBPACK_IMPORTED_MODULE_10__["updateSelectionTopicList"])(annotation);
   delete annotation.newTopics;
   delete annotation.hasAnnotation; //persist the bookmark
 
-  _bmnet__WEBPACK_IMPORTED_MODULE_1__["default"].postAnnotation(annotation);
+  _bmnet__WEBPACK_IMPORTED_MODULE_2__["default"].postAnnotation(annotation);
 }
 /*
   new topics entered on the annotation form are formatted
@@ -1441,7 +1488,7 @@ function formatNewTopics({
   topics = topics.replace(/,*$/, "");
   let newTopicArray = topics.split(",");
   newTopicArray = newTopicArray.map(t => t.trim());
-  newTopicArray = newTopicArray.map(t => lodash_startCase__WEBPACK_IMPORTED_MODULE_4___default()(t));
+  newTopicArray = newTopicArray.map(t => lodash_startCase__WEBPACK_IMPORTED_MODULE_5___default()(t));
   newTopicArray = newTopicArray.map(t => {
     if (/ /.test(t)) {
       return {
@@ -1466,15 +1513,15 @@ function formatNewTopics({
 
 function addToTopicList(newTopics, formValues) {
   //Check for new topics already in topic list
-  _bmnet__WEBPACK_IMPORTED_MODULE_1__["default"].fetchTopics().then(response => {
+  _bmnet__WEBPACK_IMPORTED_MODULE_2__["default"].fetchTopics().then(response => {
     //remove duplicate topics from and return the rest in difference[]
-    let newUniqueTopics = lodash_differenceWith__WEBPACK_IMPORTED_MODULE_2___default()(newTopics, response.topics, (n, t) => {
+    let newUniqueTopics = lodash_differenceWith__WEBPACK_IMPORTED_MODULE_3___default()(newTopics, response.topics, (n, t) => {
       return t.value === n.value;
     }); //these are the new topics
 
     if (newUniqueTopics.length > 0) {
       //add new topics to topic list
-      _bmnet__WEBPACK_IMPORTED_MODULE_1__["default"].addToTopicList(newUniqueTopics); //add new topics to this annotations topicList
+      _bmnet__WEBPACK_IMPORTED_MODULE_2__["default"].addToTopicList(newUniqueTopics); //add new topics to this annotations topicList
 
       formValues.topicList = formValues.topicList.concat(newUniqueTopics); //add newTopics to formValues for posting to server
 
@@ -1503,6 +1550,44 @@ function highlightHandler() {
   });
 }
 /*
+ * Turn off/on bookmark creation feature. When feature is enabled users cannot select
+ * and copy text from transcript
+ */
+
+
+function bookmarkFeatureHandler() {
+  $("#bookmark-toggle-disable-selection").on("click", function (e) {
+    e.preventDefault();
+    let el = $(".transcript");
+
+    if (el.hasClass("disable-selection") && el.hasClass("user")) {
+      console.log("removing selection guard - user initiated");
+      el.removeClass("disable-selection user");
+      $(".toggle-bookmark-selection").text("Disable Bookmark Creation");
+      store__WEBPACK_IMPORTED_MODULE_1___default.a.set(bm_creation_state, "enabled");
+    } else {
+      console.log("adding selection guard - user initiated");
+      el.addClass("disable-selection user");
+      $(".toggle-bookmark-selection").text("Enable Bookmark Creation");
+      store__WEBPACK_IMPORTED_MODULE_1___default.a.set(bm_creation_state, "disabled");
+    }
+  });
+}
+/*
+ * The bookmark feature is initially enabled. Check local storage to see if
+ * it has been disabled by the user. If so, disable it on page load.
+ */
+
+
+function initializeBookmarkFeatureState() {
+  let state = store__WEBPACK_IMPORTED_MODULE_1___default.a.get(bm_creation_state);
+
+  if (state && state === "disabled") {
+    console.log("triggering selection guard disable");
+    $("#bookmark-toggle-disable-selection").trigger("click"); //$(".toggle-bookmark-selection").trigger("click");
+  }
+}
+/*
   initialize transcript page
 */
 
@@ -1511,14 +1596,17 @@ function initTranscriptPage(sharePid) {
   //get existing bookmarks for page
   getPageBookmarks(sharePid); //add support for text selection
 
-  Object(_selection__WEBPACK_IMPORTED_MODULE_9__["initialize"])(); //show/hide bookmark highlights
+  Object(_selection__WEBPACK_IMPORTED_MODULE_10__["initialize"])(); //show/hide bookmark highlights
 
-  highlightHandler(); //setup bookmark navigator if requested
+  highlightHandler(); //disable/enable bookmark creation feature
 
-  let pid = Object(_util_url__WEBPACK_IMPORTED_MODULE_5__["showBookmark"])();
+  bookmarkFeatureHandler();
+  initializeBookmarkFeatureState(); //setup bookmark navigator if requested
+
+  let pid = Object(_util_url__WEBPACK_IMPORTED_MODULE_6__["showBookmark"])();
 
   if (pid) {
-    Object(_navigator__WEBPACK_IMPORTED_MODULE_6__["initNavigator"])(pid);
+    Object(_navigator__WEBPACK_IMPORTED_MODULE_7__["initNavigator"])(pid);
   }
 }
 
@@ -1546,7 +1634,7 @@ const annotation = {
       $(`#${formData.rangeStart} > span.pnum`).addClass("has-bookmark"); //this is a new annotation
 
       if (formData.creationDate === "") {
-        let bookmarks = Object(_bmnet__WEBPACK_IMPORTED_MODULE_1__["getBookmark"])(formData.rangeStart);
+        let bookmarks = Object(_bmnet__WEBPACK_IMPORTED_MODULE_2__["getBookmark"])(formData.rangeStart);
         let annotationCount = 0;
 
         if (bookmarks.bookmark && bookmarks.bookmark.length > 0) {
@@ -1559,7 +1647,7 @@ const annotation = {
           }, 0);
         }
 
-        Object(_selection__WEBPACK_IMPORTED_MODULE_9__["updateHighlightColor"])(formData.aid, annotationCount);
+        Object(_selection__WEBPACK_IMPORTED_MODULE_10__["updateHighlightColor"])(formData.aid, annotationCount);
       }
     }
   },
@@ -1568,7 +1656,7 @@ const annotation = {
   cancel(formData) {
     //no creationDate means a new annotation that hasn't been stored
     if (!formData.creationDate && formData.aid) {
-      Object(_selection__WEBPACK_IMPORTED_MODULE_9__["deleteNewSelection"])(formData.aid);
+      Object(_selection__WEBPACK_IMPORTED_MODULE_10__["deleteNewSelection"])(formData.aid);
     }
   },
 
@@ -1576,21 +1664,21 @@ const annotation = {
   delete(formData) {
     //if annotation has selected text unwrap and delete it
     if (formData.aid) {
-      Object(_selection__WEBPACK_IMPORTED_MODULE_9__["deleteSelection"])(formData.aid);
+      Object(_selection__WEBPACK_IMPORTED_MODULE_10__["deleteSelection"])(formData.aid);
     } else {
       //remove mark from paragraph
       $(`#${formData.rangeStart} > span.pnum`).removeClass("has-annotation");
     } //mark as having no annotations if all have been deleted
 
 
-    let remainingAnnotations = _bmnet__WEBPACK_IMPORTED_MODULE_1__["default"].deleteAnnotation(formData.rangeStart, formData.creationDate);
+    let remainingAnnotations = _bmnet__WEBPACK_IMPORTED_MODULE_2__["default"].deleteAnnotation(formData.rangeStart, formData.creationDate);
 
     if (remainingAnnotations === 0) {
       $(`#${formData.rangeStart} > span.pnum`).removeClass("has-bookmark");
     } //delete topics from the page topic list
 
 
-    _topics__WEBPACK_IMPORTED_MODULE_8__["default"].delete(formData);
+    _topics__WEBPACK_IMPORTED_MODULE_9__["default"].delete(formData);
   }
 
 };
@@ -1608,7 +1696,7 @@ const annotation = {
     } //initialize bookmark list modal - available on all pages
 
 
-    _list__WEBPACK_IMPORTED_MODULE_7__["default"].initialize();
+    _list__WEBPACK_IMPORTED_MODULE_8__["default"].initialize();
   }
 });
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/src/jquery.js")))
@@ -2696,12 +2784,30 @@ function updateNavigator(pid, update) {
   let bmModal = store__WEBPACK_IMPORTED_MODULE_2___default.a.get(bm_modal_store);
   getCurrentBookmark(gPageKey, pid, bmList, bmModal, update);
 }
+/*
+  An annotation is selected and the user can choose from sharing options. This dialog
+  is set up by adding the .selected-annotation class.
+
+  It is cleared here thus removing the share dialog
+*/
+
 
 function clearSelectedAnnotation() {
-  $(".selected-annotation-wrapper > .header").remove();
-  $(".selected-annotation").unwrap();
-  $(".selected-annotation").removeClass("selected-annotation");
-  $(".bookmark-selected-text.show").removeClass("show");
+  let selected = $(".selected-annotation"); //remove dialog
+
+  if (selected.length > 0) {
+    $(".selected-annotation-wrapper > .header").remove();
+    selected.unwrap().removeClass("selected-annotation");
+    $(".bookmark-selected-text.show").removeClass("show"); //clear text selection guard applied whey bookmark is edited
+    // if .user exists then guard is user initiated and we don't clear it
+
+    let guard = $("div.transcript.ui.disable-selection:not(.user)");
+
+    if (guard.length > 0) {
+      console.log("removing selection guard");
+      guard.removeClass("disable-selection");
+    }
+  }
 }
 
 function scrollComplete(message, type) {
@@ -3206,6 +3312,7 @@ function getSelectedText(range, fromNode = document.body) {
   });
   var selectedText = {
     type: "Annotation",
+    title: $("#book-title").text(),
     url: location.pathname,
     pid: range.startContainer.parentNode.id,
     id: uuid(),
@@ -3224,23 +3331,29 @@ function getSelectedText(range, fromNode = document.body) {
 
 function initialize() {
   $("div.transcript.ui").on("mouseup", function (e) {
-    e.preventDefault();
+    e.preventDefault(); //ignore text selection when disabled by user or when annotation is 
+    //being created
+
+    if ($(this).hasClass("disable-selection")) {
+      console.log("selection prevented by selection guard");
+      return;
+    }
 
     if (document.getSelection().isCollapsed) {
       return;
     }
 
-    let selObj = document.getSelection();
-    console.log("selection: %o", selObj); //Safari calls this function twice for each selection, the second time
+    let selObj = document.getSelection(); //console.log("selection: %o", selObj);
+    //Safari calls this function twice for each selection, the second time
     //rangeCount === 0 and type == "None"
 
     if (selObj.rangeCount === 0) {
-      console.log("selObj.rangeCount === 0)");
+      //console.log("selObj.rangeCount === 0)");
       return;
     }
 
     if (selObj.getRangeAt(0).collapsed) {
-      console.log("range collapsed");
+      //console.log("range collapsed");
       return;
     }
 
@@ -3255,8 +3368,8 @@ function initialize() {
 */
 
 function processSelection(range) {
-  console.log("range: %o", range); //check for overlap with other highlighted text
-
+  //console.log("range: %o", range);
+  //check for overlap with other highlighted text
   let startParent = range.startContainer.parentElement.localName;
   let endParent = range.endContainer.parentElement.localName;
 
