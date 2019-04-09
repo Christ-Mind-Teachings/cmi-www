@@ -171,8 +171,11 @@ const form = `
       <div id="available-topics" class="twelve wide field"></div>
       </div>
     </div>
-    <div class="inline field">
+    <div class="field">
+      <!--
       <textarea name="Comment" placeholder="Comment" rows="1"></textarea>
+      -->
+      <input type="text" name="Comment" placeholder="Comment">
     </div>
     <div class="field">
       <input type="text" name="newTopics" placeholder="New topics? Comma delimited list">
@@ -181,12 +184,33 @@ const form = `
       <button class="annotation-submit ui green button" type="submit">Submit</button>
       <button class="annotation-cancel ui red basic button">Cancel</button>
       <button class="annotation-share ui green disabled basic button">Share</button>
+      <button class="annotation-note ui blue basic button">Note</button>
       <div class="twelve wide field">
         <button class="annotation-delete ui red disabled right floated button">Delete</button>
       </div>
     </div>
+    <div class="note-and-links hide">
+      <div class="field">
+        <textarea name="Note" placeholder="Additional Notes" rows="3"></textarea>
+      </div>
+    </div>
   </form>
   `;
+
+function noteToggle() {
+  $(".transcript").on("click", "#annotation-form .annotation-note", function (e) {
+    e.preventDefault();
+    console.log("note button clicked");
+    let nal = $(".note-and-links");
+
+    if (nal.hasClass("hide")) {
+      nal.removeClass("hide");
+    } else {
+      nal.addClass("hide");
+    }
+  });
+}
+
 const wrapper = `
   <div class="annotate-wrapper ui raised segment"></div>`;
 
@@ -246,6 +270,7 @@ function initializeForm(pid, aid, annotation) {
       aid: annotation.aid,
       creationDate: annotation.creationDate,
       Comment: annotation.Comment,
+      Note: annotation.Note,
       topicList: topicSelect
     });
   }
@@ -633,6 +658,7 @@ function initialize() {
   editHandler();
   noteHandler();
   hoverHandler();
+  noteToggle();
 }
 /*
   Display annotation form
@@ -1429,6 +1455,10 @@ function createAnnotation(formValues) {
     delete annotation.Comment;
   }
 
+  if (annotation.Note === "") {
+    delete annotation.Note;
+  }
+
   if (annotation.creationDate === "") {
     delete annotation.creationDate;
   }
@@ -1766,8 +1796,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(toastr__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var lodash_flatten__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lodash/flatten */ "./node_modules/lodash/flatten.js");
 /* harmony import */ var lodash_flatten__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(lodash_flatten__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var lodash_uniq__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! lodash/uniq */ "./node_modules/lodash/uniq.js");
-/* harmony import */ var lodash_uniq__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(lodash_uniq__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var lodash_uniqWith__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! lodash/uniqWith */ "./node_modules/lodash/uniqWith.js");
+/* harmony import */ var lodash_uniqWith__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(lodash_uniqWith__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var store__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! store */ "./node_modules/store/dist/store.legacy.js");
 /* harmony import */ var store__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(store__WEBPACK_IMPORTED_MODULE_5__);
 /*
@@ -2032,17 +2062,42 @@ function combinePages(pages) {
           let tpl = page.bookmarks[pid].map(annotation => {
             if (annotation.topicList) {
               return annotation.topicList;
+            } else {
+              //bookmark has no topics
+              return [];
             }
           }); //collect all topics used for modal dropdown select control
 
-          let uniqueArray = lodash_uniq__WEBPACK_IMPORTED_MODULE_4___default()(lodash_flatten__WEBPACK_IMPORTED_MODULE_3___default()(tpl));
+          let uniqueArray = lodash_uniqWith__WEBPACK_IMPORTED_MODULE_4___default()(lodash_flatten__WEBPACK_IMPORTED_MODULE_3___default()(tpl), (a, b) => {
+            if (a.value === b.value) {
+              return true;
+            }
+
+            return false;
+          });
           page.bookmarks[`tpList${pid}`] = uniqueArray;
           allTopics.push(uniqueArray);
         }
       }
     });
   });
-  let allUniqueTopics = lodash_uniq__WEBPACK_IMPORTED_MODULE_4___default()(lodash_flatten__WEBPACK_IMPORTED_MODULE_3___default()(allTopics)).sort();
+  let flatTopics = lodash_flatten__WEBPACK_IMPORTED_MODULE_3___default()(allTopics);
+  let sortedFlatTopics = flatTopics.sort((a, b) => {
+    if (a.value < b.value) {
+      return -1;
+    } else if (a.value > b.value) {
+      return 1;
+    }
+
+    return 0;
+  });
+  let allUniqueTopics = lodash_uniqWith__WEBPACK_IMPORTED_MODULE_4___default()(sortedFlatTopics, (a, b) => {
+    if (a.value === b.value) {
+      return true;
+    }
+
+    return false;
+  });
   return {
     bookArray,
     topics: allUniqueTopics
@@ -3582,8 +3637,28 @@ __webpack_require__.r(__webpack_exports__);
   contains.
 */
 let topics = new Map();
-let listRefreshNeeded;
+let listRefreshNeeded = true;
 let deletedKeys = [];
+const uiPageTopicsModal = "#page-topics-modal";
+const uiOpenPageTopicsModal = "#page-topics-modal-open";
+const uiModalOpacity = 0.5; //generate the option element of a select statement
+
+function generateOption(topic) {
+  if (typeof topic === "object") {
+    return `<option value="${topic.value}">${topic.topic}</option>`;
+  }
+
+  return `<option value="${topic}">${topic}</option>`;
+} //generate select html for Topics
+
+
+function makeTopicSelect(topics) {
+  return `
+    <select name="pageTopicList" id="page-topics-topic-list" class="search ui dropdown">
+      ${topics.map(topic => `${generateOption(topic)}`).join("")}
+    </select>
+  `;
+}
 
 function formatTopic(topic) {
   if (topic === "__reset__") {
@@ -3591,6 +3666,30 @@ function formatTopic(topic) {
   }
 
   return `<div class="item">${topic}</div>`;
+}
+
+function makeTopicSelectElement() {
+  let topicMap = getTopics();
+  let topicKeys = Array.from(topicMap.keys());
+  let topics = topicKeys.map(key => {
+    return topicMap.get(key);
+  });
+  topics.sort((a, b) => {
+    if (a.value < b.value) {
+      return -1;
+    }
+
+    if (a.value > b.value) {
+      return 1;
+    }
+
+    return 0;
+  });
+  return makeTopicSelect(topics);
+}
+
+function getTopics() {
+  return topics;
 }
 /*
   Generate html for page topic list and reset listRefreshNeeded indicator
@@ -3820,10 +3919,13 @@ function decrement(trackedTopic) {
 
   //generate topic select list and setup listeners
   bookmarksLoaded() {
+    initPageTopicsModal();
+    /*
     let html = makeTopicList(topics);
-    $("#topic-menu-select").html(html); //init click handler
-
+    $("#topic-menu-select").html(html);
+     //init click handler
     topicSelectHandler();
+    */
   },
 
   report() {
@@ -3833,6 +3935,148 @@ function decrement(trackedTopic) {
   }
 
 });
+/*
+  Get topic select element for page-topic-modal
+*/
+
+function getTopicList() {
+  if (!listRefreshNeeded) return;
+  let selectHtml = makeTopicSelectElement();
+  $("#page-topics-modal-topic-select").html(selectHtml);
+  $("#page-topics-topic-list").dropdown();
+  $("#page-topics-modal-loading").removeClass("active").addClass("disabled");
+  listRefreshNeeded = false;
+}
+
+function initPageTopicsModal() {
+  $(uiPageTopicsModal).modal({
+    dimmerSettings: {
+      opacity: uiModalOpacity
+    },
+    autofocus: false,
+    centered: true,
+    duration: 400,
+    inverted: true,
+    observeChanges: true,
+    transition: "horizontal flip",
+    onShow: function () {
+      getTopicList();
+    },
+    onVisible: function () {},
+    onHidden: function () {}
+  });
+  $(uiOpenPageTopicsModal).on("click", e => {
+    e.preventDefault(); //populateBookmarkModal(uiBookmarkModalDiv);
+
+    $(uiPageTopicsModal).modal("show");
+  });
+  filterSubmitHandler();
+  filterResetHandler();
+}
+/*
+  Apply topic filter to bookmarks on page
+*/
+
+
+function filterSubmitHandler() {
+  //apply topic filter
+  $("#page-topics-filter-submit").on("click", function (e) {
+    e.preventDefault();
+    let form = $("#page-topics-filter-form");
+    let filterTopic = form.form("get value", "pageTopicList");
+    let topicTopic = $(`#page-topics-topic-list > [value='${filterTopic}']`).text();
+    setTopicFilter({
+      value: filterTopic,
+      topic: topicTopic
+    });
+    /*
+    let bookmarkItems = $(".cmi-bookmark-list .bookmark-item");
+    bookmarkItems.each(function() {
+      let classList = $(this).attr("class");
+      if (classList.match(topicRegExp)) {
+        //the bookmark could be hidden from a previous filter, so just remove the class
+        //in case it's there
+        $(this).removeClass("hide-bookmark-item");
+      }
+      else {
+        $(this).addClass("hide-bookmark-item");
+      }
+    });
+     //keep track of the state of the bookmark Modal
+    let bookmarkModalInfo = bookmarkModalState("get");
+     //if we have data we're initializing and so we don't need to save state
+    if (!data) {
+      bookmarkModalInfo["modal"].filter = true;
+      bookmarkModalInfo["modal"].topics = topics;
+      bookmarkModalState("set", bookmarkModalInfo);
+    }
+     $("[data-bid]").each(function() {
+      let bid = $(this).data("bid");
+      let filtered = $(`[data-bid="${bid}"] .bookmark-item.hide-bookmark-item`).length;
+      let remaining = bookmarkModalInfo[bid].count - filtered;
+       //update title to reflect number of bookmarks shown after filter applied
+      $(`.${bid}-header`).html(`${bookmarkModalInfo[bid].header} (<span class="bookmark-filter-color">${remaining}</span>/${bookmarkModalInfo[bid].count})`);
+    });
+    */
+  });
+}
+/*
+  Clear bookmark filter
+*/
+
+
+function filterResetHandler() {
+  //clear filter
+  $(".page-topics-filter-reset").on("click", function (e) {
+    e.preventDefault(); //mark transcript as having an active filter
+
+    if ($(".transcript").hasClass("topic-filter-active")) {
+      //clear active filter
+      let currentFilter = $("#current-topic-filter").attr("data-filter");
+      $(`mark.bookmark-selected-text.${currentFilter}`).removeClass("show");
+    }
+
+    $(".transcript").removeClass("topic-filter-active"); //clear active filter from menu
+
+    $("#current-topic-filter").html("Topic Filter: None");
+    $("#current-topic-filter").attr("data-filter", ""); //mark bookmark icon green - no filter applied
+
+    $("#bookmark-dropdown-menu > span > i").eq(0).removeClass("yellow").addClass("green"); //close the modal
+    //$(uiPageTopicsModal).modal("hide");
+  });
+}
+/*
+  Show selected text from bookmarks that contain topic. If there is an active filter
+  already clear it first.
+
+  Args: topic; show only bookmarks with this topic
+*/
+
+
+function setTopicFilter(topic) {
+  //mark transcript as having an active filter
+  if ($(".transcript").hasClass("topic-filter-active")) {
+    //clear active filter
+    let currentFilter = $("#current-topic-filter").attr("data-filter"); //new filter is the same as the current, no need to do anything
+
+    if (currentFilter === topic.value) {
+      return;
+    }
+
+    $(`mark.bookmark-selected-text.${currentFilter}`).removeClass("show");
+  } else {
+    $(".transcript").addClass("topic-filter-active");
+  }
+
+  $(`mark.bookmark-selected-text.${topic.value}`).addClass("show"); //mark menu option as having an active filter
+
+  $("#current-topic-filter").html(`Topic Filter: <span class="red">${topic.topic}</span>`);
+  $("#current-topic-filter").attr("data-filter", topic.value); //mark bookmark icon as yellow - filter is applied
+
+  $("#bookmark-dropdown-menu > span > i").eq(0).removeClass("green").addClass("yellow"); //close the modal
+
+  $(uiPageTopicsModal).modal("hide");
+}
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/src/jquery.js")))
 
 /***/ }),
