@@ -2173,11 +2173,18 @@ function filterSubmitHandler() {
       }
     }); //keep track of the state of the bookmark Modal
 
-    let bookmarkModalInfo = bookmarkModalState("get"); //if we have data we're initializing and so we don't need to save state
+    let bookmarkModalInfo = bookmarkModalState("get");
+    let fullTopic = topics.map(t => {
+      return {
+        value: t,
+        topic: $(`#bookmark-topic-list > [value='${t}']`).text()
+      };
+    }); //if we have data we're initializing and so we don't need to save state
 
     if (!data) {
       bookmarkModalInfo["modal"].filter = true;
       bookmarkModalInfo["modal"].topics = topics;
+      bookmarkModalInfo["modal"].fullTopic = fullTopic;
       bookmarkModalState("set", bookmarkModalInfo);
     }
 
@@ -2351,18 +2358,21 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "initNavigator", function() { return initNavigator; });
 /* harmony import */ var lodash_intersection__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lodash/intersection */ "./node_modules/lodash/intersection.js");
 /* harmony import */ var lodash_intersection__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(lodash_intersection__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var lodash_range__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! lodash/range */ "./node_modules/lodash/range.js");
-/* harmony import */ var lodash_range__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(lodash_range__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var store__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! store */ "./node_modules/store/dist/store.legacy.js");
-/* harmony import */ var store__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(store__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var scroll_into_view__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! scroll-into-view */ "./node_modules/scroll-into-view/scrollIntoView.js");
-/* harmony import */ var scroll_into_view__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(scroll_into_view__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _user_netlify__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../_user/netlify */ "./src/js/modules/_user/netlify.js");
-/* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! toastr */ "./node_modules/toastr/toastr.js");
-/* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(toastr__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _shareByEmail__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./shareByEmail */ "./src/js/modules/_bookmark/shareByEmail.js");
-/* harmony import */ var _clipboard__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./clipboard */ "./src/js/modules/_bookmark/clipboard.js");
+/* harmony import */ var lodash_intersectionWith__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! lodash/intersectionWith */ "./node_modules/lodash/intersectionWith.js");
+/* harmony import */ var lodash_intersectionWith__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(lodash_intersectionWith__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var lodash_range__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lodash/range */ "./node_modules/lodash/range.js");
+/* harmony import */ var lodash_range__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(lodash_range__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var store__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! store */ "./node_modules/store/dist/store.legacy.js");
+/* harmony import */ var store__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(store__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var scroll_into_view__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! scroll-into-view */ "./node_modules/scroll-into-view/scrollIntoView.js");
+/* harmony import */ var scroll_into_view__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(scroll_into_view__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _user_netlify__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../_user/netlify */ "./src/js/modules/_user/netlify.js");
+/* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! toastr */ "./node_modules/toastr/toastr.js");
+/* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(toastr__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var _shareByEmail__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./shareByEmail */ "./src/js/modules/_bookmark/shareByEmail.js");
+/* harmony import */ var _clipboard__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./clipboard */ "./src/js/modules/_bookmark/clipboard.js");
 //import {getPageInfo} from "../_config/config";
+
 
 
 
@@ -2470,26 +2480,35 @@ function generateBookmark(actualPid, bkmk, topics) {
 */
 
 
-function getBookmarkUrl(bookmarks, pageKey) {
+function getBookmarkUrl(bookmarks, pageKey, pid) {
   let url;
-  let bookmark = bookmarks[pageKey];
+  let bookmark = bookmarks[pageKey][pid];
+  let selectedText = bookmark[0].selectedText;
 
+  if (selectedText) {
+    url = `${bookmark[0].selectedText.url}?bkmk=${bookmark[0].rangeStart}`;
+  } else {
+    //we have a bookmark with no selected text, have to get the url in another way
+    url = `${url_prefix}${transcript.getUrl(pageKey)}?bkmk=${bookmark[0].rangeStart}`;
+  }
+  /*
   for (let prop in bookmark) {
     if (bookmark.hasOwnProperty(prop)) {
       if (bookmark[prop][0]) {
         let selectedText = bookmark[prop][0].selectedText;
-
         if (selectedText) {
           url = `${bookmark[prop][0].selectedText.url}?bkmk=${bookmark[prop][0].rangeStart}`;
-        } else {
+        }
+        else {
           //we have a bookmark with no selected text, have to get the url in another way
           url = `${transcript.getUrl(pageKey)}?bkmk=${bookmark[prop][0].rangeStart}`;
         }
-
         break;
       }
     }
-  } //console.log("url: %s", url);
+  }
+  */
+  //console.log("url: %s", url);
 
 
   return url;
@@ -2514,7 +2533,14 @@ function getNextPageUrl(pos, pageList, filterList, bookmarks) {
           found = true;
           break outer;
         } else {
-          let match = lodash_intersection__WEBPACK_IMPORTED_MODULE_0___default()(filterList, pageMarks[pid][a].topicList || []);
+          //compare the filter topic (a) with bookmark topics ({value, topic})
+          let match = lodash_intersectionWith__WEBPACK_IMPORTED_MODULE_1___default()(filterList, pageMarks[pid][a].topicList || [], (a, b) => {
+            if (a === b.value) {
+              return true;
+            }
+
+            return false;
+          });
 
           if (match.length > 0) {
             found = true;
@@ -2528,7 +2554,7 @@ function getNextPageUrl(pos, pageList, filterList, bookmarks) {
   return new Promise(resolve => {
     if (found) {
       let pageKey = pageList[pagePos];
-      let url = getBookmarkUrl(bookmarks, pageKey); //it's possible the url was not found so check for that
+      let url = getBookmarkUrl(bookmarks, pageKey, pid); //it's possible the url was not found so check for that
 
       if (url) {
         resolve(url);
@@ -2561,7 +2587,13 @@ function getPrevPageUrl(pos, pageList, filterList, bookmarks) {
           found = true;
           break outer;
         } else {
-          let match = lodash_intersection__WEBPACK_IMPORTED_MODULE_0___default()(filterList, pageMarks[pid][a].topicList || []);
+          let match = lodash_intersectionWith__WEBPACK_IMPORTED_MODULE_1___default()(filterList, pageMarks[pid][a].topicList || [], (a, b) => {
+            if (a === b.value) {
+              return true;
+            }
+
+            return false;
+          });
 
           if (match.length > 0) {
             found = true;
@@ -2575,7 +2607,7 @@ function getPrevPageUrl(pos, pageList, filterList, bookmarks) {
   return new Promise(resolve => {
     if (found) {
       let pageKey = pageList[pagePos];
-      let url = getBookmarkUrl(bookmarks, pageKey); //console.log("prev url is %s", url);
+      let url = getBookmarkUrl(bookmarks, pageKey, pid); //console.log("prev url is %s", url);
 
       resolve(url);
     } else {
@@ -2640,7 +2672,15 @@ function getPreviousPid(currentPos, pageMarks, pageBookmarks, topics) {
 
       for (let i = 0; i < bookmark.length; i++) {
         if (bookmark[i].topicList && bookmark[i].topicList.length > 0) {
-          if (lodash_intersection__WEBPACK_IMPORTED_MODULE_0___default()(bookmark[i].topicList, topics).length > 0) {
+          let inter = lodash_intersectionWith__WEBPACK_IMPORTED_MODULE_1___default()(bookmark[i].topicList, topics, (a, b) => {
+            if (a.value === b) {
+              return true;
+            }
+
+            return false;
+          });
+
+          if (inter.length > 0) {
             //we found a bookmark containing a topic in the topicList
             return `p${(parseInt(pageMarks[newPos], 10) - 1).toString(10)}`;
           }
@@ -2679,12 +2719,20 @@ function getNextPid(currentPos, pageMarks, pageBookmarks, topics) {
   } else {
     //topic filtering - look through all previous paragraphs for the first one
     //containing an annotation found in topics[]
-    for (let newPos = currentPos + 1; newPos <= pageBookmarks.length; newPos++) {
+    for (let newPos = currentPos + 1; newPos < pageMarks.length; newPos++) {
       let bookmark = pageBookmarks[pageMarks[newPos]];
 
       for (let i = 0; i < bookmark.length; i++) {
         if (bookmark[i].topicList && bookmark[i].topicList.length > 0) {
-          if (lodash_intersection__WEBPACK_IMPORTED_MODULE_0___default()(bookmark[i].topicList, topics).length > 0) {
+          let inter = lodash_intersectionWith__WEBPACK_IMPORTED_MODULE_1___default()(bookmark[i].topicList, topics, (a, b) => {
+            if (a.value === b) {
+              return true;
+            }
+
+            return false;
+          });
+
+          if (inter.length > 0) {
             //we found a bookmark containing a topic in the topicList
             return `p${(parseInt(pageMarks[newPos], 10) - 1).toString(10)}`;
           }
@@ -2713,9 +2761,11 @@ function getNextPid(currentPos, pageMarks, pageBookmarks, topics) {
 function getCurrentBookmark(pageKey, actualPid, allBookmarks, bmModal, whoCalled) {
   let pidKey;
   let topics = [];
+  let filterTopics;
 
   if (bmModal["modal"].filter) {
     topics = bmModal["modal"].topics;
+    filterTopics = generateHorizontalList(bmModal["modal"].fullTopic);
   } //convert pid to key in bookmark array
 
 
@@ -2728,6 +2778,15 @@ function getCurrentBookmark(pageKey, actualPid, allBookmarks, bmModal, whoCalled
   }
 
   let html = generateBookmark(actualPid, paragraphBookmarks, topics);
+
+  if (filterTopics) {
+    $("#filter-topics-section").removeClass("hide");
+    $(".bookmark-navigator-filter").html(filterTopics);
+  } else {
+    $("#filter-topics-section").addClass("hide");
+  }
+
+  $(".bookmark-navigator-header-book").text($("#book-title").text());
   $("#bookmark-content").html(html); //get links to next and previous bookmarks on the page
 
   let pageMarks = Object.keys(allBookmarks[pageKey]);
@@ -2771,8 +2830,8 @@ function getCurrentBookmark(pageKey, actualPid, allBookmarks, bmModal, whoCalled
 function bookmarkManager(actualPid) {
   let sourceId = transcript.getSourceId();
   let pageKey = transcript.genPageKey().toString(10);
-  let bmList = store__WEBPACK_IMPORTED_MODULE_2___default.a.get(bm_list_store);
-  let bmModal = store__WEBPACK_IMPORTED_MODULE_2___default.a.get(bm_modal_store);
+  let bmList = store__WEBPACK_IMPORTED_MODULE_3___default.a.get(bm_list_store);
+  let bmModal = store__WEBPACK_IMPORTED_MODULE_3___default.a.get(bm_modal_store);
 
   if (bmList) {
     //store globally
@@ -2800,7 +2859,7 @@ function bookmarkManager(actualPid) {
 
 
       if (!getCurrentBookmark(pageKey, actualPid, bmList, bmModal, "both")) {
-        toastr__WEBPACK_IMPORTED_MODULE_5___default.a.info(`A bookmark at ${actualPid} was not found.`);
+        toastr__WEBPACK_IMPORTED_MODULE_6___default.a.info(`A bookmark at ${actualPid} was not found.`);
         return;
       } //init navigator controls
 
@@ -2815,7 +2874,7 @@ function bookmarkManager(actualPid) {
       console.error(err);
 
       if (err === "bookmark not found") {
-        toastr__WEBPACK_IMPORTED_MODULE_5___default.a.info(`A bookmark at ${actualPid} was not found.`);
+        toastr__WEBPACK_IMPORTED_MODULE_6___default.a.info(`A bookmark at ${actualPid} was not found.`);
       }
     });
   } else {
@@ -2833,8 +2892,8 @@ function bookmarkManager(actualPid) {
 
 function updateNavigator(pid, update) {
   //console.log("updateNavigator, pid: %s, update: %s", pid, update);
-  let bmList = store__WEBPACK_IMPORTED_MODULE_2___default.a.get(bm_list_store);
-  let bmModal = store__WEBPACK_IMPORTED_MODULE_2___default.a.get(bm_modal_store);
+  let bmList = store__WEBPACK_IMPORTED_MODULE_3___default.a.get(bm_list_store);
+  let bmModal = store__WEBPACK_IMPORTED_MODULE_3___default.a.get(bm_modal_store);
   getCurrentBookmark(gPageKey, pid, bmList, bmModal, update);
 }
 /*
@@ -2868,7 +2927,7 @@ function scrollComplete(message, type) {
 }
 
 function scrollIntoView(id, caller) {
-  scroll_into_view__WEBPACK_IMPORTED_MODULE_3___default()(document.getElementById(id), {
+  scroll_into_view__WEBPACK_IMPORTED_MODULE_4___default()(document.getElementById(id), {
     align: {
       top: 0.2
     }
@@ -2901,10 +2960,10 @@ function initShareDialog(source) {
       return;
     }
 
-    userInfo = Object(_user_netlify__WEBPACK_IMPORTED_MODULE_4__["getUserInfo"])();
+    userInfo = Object(_user_netlify__WEBPACK_IMPORTED_MODULE_5__["getUserInfo"])();
 
     if (!userInfo) {
-      toastr__WEBPACK_IMPORTED_MODULE_5___default.a.info("You must be signed in to share selected text");
+      toastr__WEBPACK_IMPORTED_MODULE_6___default.a.info("You must be signed in to share selected text");
       return;
     }
 
@@ -2920,7 +2979,7 @@ function initShareDialog(source) {
     } else if ($(this).hasClass("linkify")) {
       if (pos > -1) {
         //Houston, we've got a problem
-        toastr__WEBPACK_IMPORTED_MODULE_5___default.a.error("Sorry, there was a problem, an invalid link was copied to the clipboard, refresh the page and try again.");
+        toastr__WEBPACK_IMPORTED_MODULE_6___default.a.error("Sorry, there was a problem, an invalid link was copied to the clipboard, refresh the page and try again.");
         return;
       } //work is already done
 
@@ -2944,7 +3003,7 @@ function initShareDialog(source) {
     if (channel === "facebook") {
       if (pos > -1) {
         //Houston, we've got a problem
-        toastr__WEBPACK_IMPORTED_MODULE_5___default.a.error("Sorry, there was a problem, refresh the page and try again.");
+        toastr__WEBPACK_IMPORTED_MODULE_6___default.a.error("Sorry, there was a problem, refresh the page and try again.");
         return;
       }
 
@@ -2958,11 +3017,11 @@ function initShareDialog(source) {
     } else if (channel === "email") {
       if (pos > -1) {
         //Houston, we've got a problem
-        toastr__WEBPACK_IMPORTED_MODULE_5___default.a.error("Sorry, there was a problem, refresh the page and try again.");
+        toastr__WEBPACK_IMPORTED_MODULE_6___default.a.error("Sorry, there was a problem, refresh the page and try again.");
         return;
       }
 
-      Object(_shareByEmail__WEBPACK_IMPORTED_MODULE_6__["shareByEmail"])(text, citation, url);
+      Object(_shareByEmail__WEBPACK_IMPORTED_MODULE_7__["shareByEmail"])(text, citation, url);
     }
   });
   shareEventListenerCreated = true;
@@ -2974,7 +3033,7 @@ function initClickListeners() {
     e.preventDefault();
     clearSelectedAnnotation();
     let actualPid = $(this).attr("data-pid");
-    scroll_into_view__WEBPACK_IMPORTED_MODULE_3___default()(document.getElementById(actualPid), {
+    scroll_into_view__WEBPACK_IMPORTED_MODULE_4___default()(document.getElementById(actualPid), {
       align: {
         top: 0.2
       }
@@ -2987,7 +3046,7 @@ function initClickListeners() {
     e.preventDefault();
     clearSelectedAnnotation();
     let actualPid = $(this).attr("data-pid");
-    scroll_into_view__WEBPACK_IMPORTED_MODULE_3___default()(document.getElementById(actualPid), {
+    scroll_into_view__WEBPACK_IMPORTED_MODULE_4___default()(document.getElementById(actualPid), {
       align: {
         top: 0.2
       }
@@ -2999,7 +3058,7 @@ function initClickListeners() {
   $(".bookmark-navigator .current-bookmark").on("click", function (e) {
     e.preventDefault();
     let actualPid = $(this).attr("data-pid");
-    scroll_into_view__WEBPACK_IMPORTED_MODULE_3___default()(document.getElementById(actualPid), {
+    scroll_into_view__WEBPACK_IMPORTED_MODULE_4___default()(document.getElementById(actualPid), {
       align: {
         top: 0.2
       }
@@ -3017,7 +3076,7 @@ function initClickListeners() {
   $(".bookmark-navigator").on("click", ".annotation-item", function (e) {
     e.preventDefault();
     clearSelectedAnnotation();
-    let userInfo = Object(_user_netlify__WEBPACK_IMPORTED_MODULE_4__["getUserInfo"])();
+    let userInfo = Object(_user_netlify__WEBPACK_IMPORTED_MODULE_5__["getUserInfo"])();
 
     if (!userInfo) {
       userInfo = {
@@ -3042,7 +3101,7 @@ function initClickListeners() {
 
     let url = `https://${location.hostname}${location.pathname}?as=${pid}:${aid}:${userInfo.userId}`;
     let numericRange = rangeArray.map(r => parseInt(r.substr(1), 10));
-    let annotationRange = lodash_range__WEBPACK_IMPORTED_MODULE_1___default()(numericRange[0], numericRange[1] + 1);
+    let annotationRange = lodash_range__WEBPACK_IMPORTED_MODULE_2___default()(numericRange[0], numericRange[1] + 1);
     let header;
 
     if (userInfo.userId === "xxx") {
@@ -3075,7 +3134,7 @@ function initClickListeners() {
     $(".selected-annotation-wrapper").prepend(header);
 
     if (userInfo.userId !== "xxx") {
-      _clipboard__WEBPACK_IMPORTED_MODULE_7__["default"].register(".share-annotation.linkify");
+      _clipboard__WEBPACK_IMPORTED_MODULE_8__["default"].register(".share-annotation.linkify");
     }
   }); //init click events for FB and email sharing
 
@@ -3935,6 +3994,17 @@ function decrement(trackedTopic) {
      //init click handler
     topicSelectHandler();
     */
+  },
+
+  //given a topic value return the topic.topic
+  getTopic(value) {
+    let t = topics.get(value);
+
+    if (t) {
+      return t.topic;
+    }
+
+    return null;
   },
 
   report() {
