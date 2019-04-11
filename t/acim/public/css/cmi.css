@@ -97,7 +97,7 @@ body {
 /* add margin so the navigator does not hide a bookmark or search result */
 .transcript.ui.text.container.bookmark-navigator-active,
 .transcript.ui.text.container.search-navigator-active {
-  margin-bottom: 250px;
+  margin-bottom: 300px;
 }
 
 /* footer */
@@ -130,5 +130,9 @@ body {
 
 .note-and-links {
   margin-bottom: 20px;
+}
+
+#filter-topics-section.hide {
+  display: none;
 }
 
