@@ -18,6 +18,8 @@ import {
   updateHighlightColor,
   updateSelectionTopicList
 } from "./selection";
+import {getLink} from "../_bookmark/annotate";
+import { createLinkListener } from "../_link/setup";
 
 const bm_creation_state = "bm.www.creation";
 
@@ -286,6 +288,9 @@ function initTranscriptPage(sharePid) {
   //disable/enable bookmark creation feature
   bookmarkFeatureHandler();
   initializeBookmarkFeatureState();
+
+  //setup bookmark link listener
+  createLinkListener(getLink);
 
   //setup bookmark navigator if requested
   let pid = showBookmark();

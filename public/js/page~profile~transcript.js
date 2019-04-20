@@ -1,5 +1,1252 @@
 (window["webpackJsonp"] = window["webpackJsonp"] || []).push([["page~profile~transcript"],{
 
+/***/ "../cmi-acim/src/js/modules/_config/key.js":
+/*!*************************************************!*\
+  !*** ../cmi-acim/src/js/modules/_config/key.js ***!
+  \*************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*
+  ACIM: Transcript keys
+  - first item starts with 1, not 0
+  - a numeric value that represents a specific transcript and represents
+    a specific logical ordering.
+
+  - The integer part of the key represent a transcript and the decimal part
+    a paragraph within the transcript.
+  - The paragraphId is increased by 1 and divided by 1000
+
+  key format: ssbuuuu.ppp
+  where: ss: source Id
+          b: book Id
+       uuuu: unit Id
+        ppp: paragraph number - not positional
+
+  NOTE: This module is used by code running in the browser and Node so the
+        common.js module system is used
+*/
+//import indexOf from "lodash/indexOf";
+const sprintf = __webpack_require__(/*! sprintf-js */ "../cmi-acim/node_modules/sprintf-js/src/sprintf.js").sprintf; //length of pageKey excluding decimal portion
+
+
+const keyLength = 7; //Source Id, this must be a unique two digit number
+
+const sourceId = 12; //list the books, these correspond to collection names defined in _config.yml
+// * order according to how search results and bookmarks should appear
+
+const books = ["preface", "text", "workbook", "manual", "acq"];
+const bookIds = ["xxx", ...books]; //list the chapters or parts that make up each book, set the first item to 'xxx'
+
+const acq = ["xxx", "welcome", "acim", "web", "raj"];
+const preface = ["xxx", "preface"];
+const text = ["xxx", "chap0100", "chap0101", "chap0102", "chap0200", "chap0201", "chap0202", "chap0203", "chap0204", "chap0205", "chap0300", "chap0301", "chap0302", "chap0303", "chap0304", "chap0305", "chap0306", "chap0307", "chap0308", "chap0400", "chap0401", "chap0402", "chap0403", "chap0404", "chap0405", "chap0406", "chap0407", "chap0408", "chap0500", "chap0501", "chap0502", "chap0503", "chap0504", "chap0505", "chap0506", "chap0507", "chap0508", "chap0600", "chap0601", "chap0602", "chap0603", "chap0604", "chap0700", "chap0701", "chap0702", "chap0703", "chap0704", "chap0705", "chap0706", "chap0707", "chap0708", "chap0709", "chap0710", "chap0711", "chap0800", "chap0801", "chap0802", "chap0803", "chap0804", "chap0805", "chap0806", "chap0807", "chap0808", "chap0809", "chap0810", "chap0900", "chap0901", "chap0902", "chap0903", "chap0904", "chap0905", "chap0906", "chap0907", "chap0908", "chap0909", "chap0910", "chap1000", "chap1001", "chap1002", "chap1003", "chap1004", "chap1005", "chap1006", "chap1007", "chap1100", "chap1101", "chap1102", "chap1103", "chap1104", "chap1105", "chap1106", "chap1107", "chap1108", "chap1109", "chap1200", "chap1201", "chap1202", "chap1203", "chap1204", "chap1205", "chap1206", "chap1300", "chap1301", "chap1302", "chap1303", "chap1304", "chap1305", "chap1306", "chap1307", "chap1308", "chap1400", "chap1401", "chap1402", "chap1403", "chap1404", "chap1405", "chap1406", "chap1500", "chap1501", "chap1502", "chap1503", "chap1504", "chap1505", "chap1506", "chap1507", "chap1508", "chap1509", "chap1510", "chap1600", "chap1601", "chap1602", "chap1603", "chap1604", "chap1605", "chap1606", "chap1607", "chap1700", "chap1701", "chap1702", "chap1703", "chap1704", "chap1705", "chap1706", "chap1707", "chap1708", "chap1800", "chap1801", "chap1802", "chap1803", "chap1804", "chap1805", "chap1806", "chap1807", "chap1808", "chap1809", "chap1810", "chap1900", "chap1901", "chap1902", "chap1903", "chap1904", "chap1905", "chap1906", "chap1907", "chap1908", "chap1909", "chap1910", "chap1911", "chap2000", "chap2001", "chap2002", "chap2003", "chap2004", "chap2005", "chap2006", "chap2007", "chap2008", "chap2100", "chap2101", "chap2102", "chap2103", "chap2104", "chap2105", "chap2106", "chap2107", "chap2108", "chap2200", "chap2201", "chap2202", "chap2203", "chap2204", "chap2205", "chap2206", "chap2300", "chap2301", "chap2302", "chap2303", "chap2304", "chap2400", "chap2401", "chap2402", "chap2403", "chap2404", "chap2405", "chap2406", "chap2407", "chap2500", "chap2501", "chap2502", "chap2503", "chap2504", "chap2505", "chap2506", "chap2507", "chap2508", "chap2509", "chap2600", "chap2601", "chap2602", "chap2603", "chap2604", "chap2605", "chap2606", "chap2607", "chap2608", "chap2609", "chap2610", "chap2700", "chap2701", "chap2702", "chap2703", "chap2704", "chap2705", "chap2706", "chap2707", "chap2708", "chap2800", "chap2801", "chap2802", "chap2803", "chap2804", "chap2805", "chap2806", "chap2807", "chap2900", "chap2901", "chap2902", "chap2903", "chap2904", "chap2905", "chap2906", "chap2907", "chap2908", "chap2909", "chap3000", "chap3001", "chap3002", "chap3003", "chap3004", "chap3005", "chap3006", "chap3007", "chap3008", "chap3100", "chap3101", "chap3102", "chap3103", "chap3104", "chap3105", "chap3106", "chap3107"];
+const workbook = ["xxx", "introp1", "l001", "l002", "l003", "l004", "l005", "l006", "l007", "l008", "l009", "l010", "l011", "l012", "l013", "l014", "l015", "l016", "l017", "l018", "l019", "l020", "l021", "l022", "l023", "l024", "l025", "l026", "l027", "l028", "l029", "l030", "l031", "l032", "l033", "l034", "l035", "l036", "l037", "l038", "l039", "l040", "l041", "l042", "l043", "l044", "l045", "l046", "l047", "l048", "l049", "l050", "review1", "l051", "l052", "l053", "l054", "l055", "l056", "l057", "l058", "l059", "l060", "l061", "l062", "l063", "l064", "l065", "l066", "l067", "l068", "l069", "l070", "l071", "l072", "l073", "l074", "l075", "l076", "l077", "l078", "l079", "l080", "review2", "l081", "l082", "l083", "l084", "l085", "l086", "l087", "l088", "l089", "l090", "l091", "l092", "l093", "l094", "l095", "l096", "l097", "l098", "l099", "l100", "l101", "l102", "l103", "l104", "l105", "l106", "l107", "l108", "l109", "l110", "review3", "l111", "l112", "l113", "l114", "l115", "l116", "l117", "l118", "l119", "l120", "l121", "l122", "l123", "l124", "l125", "l126", "l127", "l128", "l129", "l130", "l131", "l132", "l133", "l134", "l135", "l136", "l137", "l138", "l139", "l140", "review4", "l141", "l142", "l143", "l144", "l145", "l146", "l147", "l148", "l149", "l150", "l151", "l152", "l153", "l154", "l155", "l156", "l157", "l158", "l159", "l160", "l161", "l162", "l163", "l164", "l165", "l166", "l167", "l168", "l169", "l170", "review5", "l171", "l172", "l173", "l174", "l175", "l176", "l177", "l178", "l179", "l180", "intro181", "l181", "l182", "l183", "l184", "l185", "l186", "l187", "l188", "l189", "l190", "l191", "l192", "l193", "l194", "l195", "l196", "l197", "l198", "l199", "l200", "review6", "l201", "l202", "l203", "l204", "l205", "l206", "l207", "l208", "l209", "l210", "l211", "l212", "l213", "l214", "l215", "l216", "l217", "l218", "l219", "l220", "introp2", "forgiveness", "l221", "l222", "l223", "l224", "l225", "l226", "l227", "l228", "l229", "l230", "salvation", "l231", "l232", "l233", "l234", "l235", "l236", "l237", "l238", "l239", "l240", "world", "l241", "l242", "l243", "l244", "l245", "l246", "l247", "l248", "l249", "l250", "sin", "l251", "l252", "l253", "l254", "l255", "l256", "l257", "l258", "l259", "l260", "body", "l261", "l262", "l263", "l264", "l265", "l266", "l267", "l268", "l269", "l270", "christ", "l271", "l272", "l273", "l274", "l275", "l276", "l277", "l278", "l279", "l280", "holyspirit", "l281", "l282", "l283", "l284", "l285", "l286", "l287", "l288", "l289", "l290", "realworld", "l291", "l292", "l293", "l294", "l295", "l296", "l297", "l298", "l299", "l300", "secondcoming", "l301", "l302", "l303", "l304", "l305", "l306", "l307", "l308", "l309", "l310", "lastjudgement", "l311", "l312", "l313", "l314", "l315", "l316", "l317", "l318", "l319", "l320", "creation", "l321", "l322", "l323", "l324", "l325", "l326", "l327", "l328", "l329", "l330", "ego", "l331", "l332", "l333", "l334", "l335", "l336", "l337", "l338", "l339", "l340", "miracle", "l341", "l342", "l343", "l344", "l345", "l346", "l347", "l348", "l349", "l350", "whatami", "l351", "l352", "l353", "l354", "l355", "l356", "l357", "l358", "l359", "l360", "final", "l361", "epilog"];
+const manual = ["xxx", "chap01", "chap02", "chap03", "chap04", "chap05", "chap06", "chap07", "chap08", "chap09", "chap10", "chap11", "chap12", "chap13", "chap14", "chap15", "chap16", "chap17", "chap18", "chap19", "chap20", "chap21", "chap22", "chap23", "chap24", "chap25", "chap26", "chap27", "chap28", "chap29", "chap30", "chap31"];
+const contents = {
+  acq: acq,
+  preface: preface,
+  text: text,
+  workbook: workbook,
+  manual: manual
+};
+/*
+  return the position of unit in the bid array
+    arg: section is passed when bid = text
+*/
+
+function getUnitId(t, source, bid, unit, section) {
+  if (section) {
+    unit = section;
+  }
+
+  if (contents[bid]) {
+    return contents[bid].indexOf(unit);
+  } else {
+    throw new Error(`unexpected bookId: ${bid}`);
+  }
+}
+/*
+  Return the number of chapters in the book (bid). 
+  Subtract one from length because of 'xxx' (fake chapter)
+*/
+
+
+function getNumberOfUnits(bid) {
+  if (contents[bid]) {
+    return contents[bid].length - 1;
+  } else {
+    throw new Error(`getNumberOfUnits() unexpected bookId: ${bid}`);
+  }
+}
+
+function splitUrl(url) {
+  let u = url; //remove leading and trailing "/"
+
+  u = url.substr(1);
+  u = u.substr(0, u.length - 1);
+  return u.split("/");
+}
+
+function getSourceId() {
+  return sourceId;
+}
+
+function getKeyInfo() {
+  return {
+    sourceId: sourceId,
+    keyLength: keyLength
+  };
+}
+/*
+  parse bookmarkId into pageKey and paragraphId
+  - pid=0 indicates no paragraph id
+*/
+
+
+function parseKey(key) {
+  const keyInfo = getKeyInfo();
+  let keyString = key;
+  let pid = 0;
+
+  if (typeof keyString === "number") {
+    keyString = key.toString(10);
+  }
+
+  let decimalPos = keyString.indexOf("."); //if no decimal key doesn't include paragraph id
+
+  if (decimalPos > -1) {
+    let decimalPart = keyString.substr(decimalPos + 1); //append 0's if decimal part < 3
+
+    switch (decimalPart.length) {
+      case 1:
+        decimalPart = `${decimalPart}00`;
+        break;
+
+      case 2:
+        decimalPart = `${decimalPart}0`;
+        break;
+    }
+
+    pid = parseInt(decimalPart, 10);
+  }
+
+  let pageKey = parseInt(keyString.substr(0, keyInfo.keyLength), 10);
+  return {
+    pid,
+    pageKey
+  };
+}
+/*
+  Convert url into key
+  returns -1 for non-transcript url
+
+  key format: ssbuuIqq.ppp
+  where: ss: source Id
+          b: book Id
+       uuuu: unit Id
+        ppp: paragraph number - not positional
+*/
+
+
+function genPageKey(url = location.pathname) {
+  let key = {
+    sid: sourceId,
+    bid: 0,
+    uid: 0
+  };
+  let parts = splitUrl(url); //make sure we have a valid book
+
+  key.bid = bookIds.indexOf(parts[2]);
+
+  if (key.bid === -1) {
+    return -1;
+  } //get the unitId of the page, return if invalid
+
+
+  key.uid = getUnitId(...parts);
+
+  if (key.uid === -1) {
+    return -1;
+  }
+
+  let compositeKey = sprintf("%02s%01s%04s", key.sid, key.bid, key.uid);
+  let numericKey = parseInt(compositeKey, 10);
+  return numericKey;
+}
+/* 
+  genParagraphKey(paragraphId, key: url || pageKey) 
+
+  args:
+    pid: a string representing a transcript paragraph, starts as "p0"..."pnnn"
+         - it's converted to number and incremented by 1 then divided by 1000
+        pid can also be a number so then we just increment it and divide by 1000
+
+    key: either a url or pageKey returned from genPageKey(), if key
+   is a string it is assumed to be a url
+*/
+
+
+function genParagraphKey(pid, key = location.pathname) {
+  let numericKey = key;
+  let pKey;
+
+  if (typeof pid === "string") {
+    pKey = (parseInt(pid.substr(1), 10) + 1) / 1000;
+  } else {
+    pKey = (pid + 1) / 1000;
+  } //if key is a string it represents a url
+
+
+  if (typeof key === "string") {
+    numericKey = genPageKey(key);
+  }
+
+  let paragraphKey = numericKey + pKey;
+  return paragraphKey;
+}
+/*
+  key format: ssbuuuu.ppp
+  where: ss: source Id
+          b: book Id
+       uuuu: unit Id
+        ppp: paragraph number - not positional
+*/
+
+
+function decodeKey(key) {
+  let {
+    pid,
+    pageKey
+  } = parseKey(key);
+  let pageKeyString = pageKey.toString(10);
+  let decodedKey = {
+    error: false,
+    message: "ok",
+    sid: 0,
+    bookId: "",
+    uid: 0,
+    pid: pid - 1
+  }; //error, invalid key length
+
+  if (pageKeyString.length !== keyLength) {
+    decodedKey.error = true;
+    decodedKey.message = `Integer portion of key should have a length of ${keyLength}, key is: ${pageKeyString}`;
+    return decodedKey;
+  } //check for valid sourceId
+
+
+  decodedKey.sid = parseInt(pageKeyString.substr(0, 2), 10);
+
+  if (decodedKey.sid !== sourceId) {
+    decodedKey.error = true;
+    decodedKey.message = `Invalid sourceId: ${decodedKey.sid}, expecting: ${sourceId}`;
+    return decodedKey;
+  }
+
+  let bid = parseInt(pageKeyString.substr(2, 1), 10);
+  decodedKey.bookId = bookIds[bid]; //subtract 1 from key value to get index
+
+  decodedKey.uid = parseInt(pageKeyString.substr(3, 4), 10);
+  return decodedKey;
+}
+/*
+ * Convert page key to url
+ */
+
+
+function getUrl(key) {
+  let decodedKey = decodeKey(key);
+  let unit = "invalid";
+
+  if (decodedKey.error) {
+    return "/invalid/key/";
+  }
+
+  if (contents[decodedKey.bookId]) {
+    unit = contents[decodedKey.bookId][decodedKey.uid];
+
+    if (decodedKey.bookId === "text") {
+      let chapter = unit.substr(4, 2);
+      unit = `${chapter}/${unit}`;
+    }
+  }
+
+  return `/${decodedKey.bookId}/${unit}/`;
+}
+/*
+function getUrl(key) {
+  let decodedKey = decodeKey(key);
+  let unit = "invalid";
+  let chapter;
+
+  if (decodedKey.error) {
+    return "";
+  }
+
+  switch(decodedKey.bookId) {
+    case "text":
+      unit = text[decodedKey.uid];
+      chapter = unit.substr(4,2);
+      unit = `${chapter}/${unit}`;
+      break;
+    case "workbook":
+      unit = workbook[decodedKey.uid];
+      break;
+    case "manual":
+      unit = manual[decodedKey.uid];
+      break;
+    case "preface":
+      unit = preface[decodedKey.uid];
+      break;
+    case "acq":
+      unit = acq[decodedKey.uid];
+      break;
+  }
+
+  return `/${decodedKey.bookId}/${unit}/`;
+}
+*/
+
+
+function getBooks() {
+  return books;
+}
+
+module.exports = {
+  getNumberOfUnits: getNumberOfUnits,
+  getBooks: getBooks,
+  getSourceId: getSourceId,
+  getKeyInfo: getKeyInfo,
+  parseKey: parseKey,
+  genPageKey: genPageKey,
+  genParagraphKey: genParagraphKey,
+  decodeKey: decodeKey,
+  getUrl: getUrl
+};
+
+/***/ }),
+
+/***/ "../cmi-acol/src/js/modules/_config/key.js":
+/*!*************************************************!*\
+  !*** ../cmi-acol/src/js/modules/_config/key.js ***!
+  \*************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*
+  ACOL: Transcript keys
+  - first item starts with 1, not 0
+  - a numeric value that represents a specific transcript and represents
+    a specific logical ordering.
+
+  - The integer part of the key represent a transcript and the decimal part
+    a paragraph within the transcript.
+  - The paragraphId is increased by 1 and divided by 1000
+
+  key format: ssbbuuu.ppp
+  where: ss: source Id
+         bb: book Id
+        uuu: unit Id
+        ppp: paragraph number - not positional
+
+  Using this key structure; these are maximums
+    books: 99
+    units: 999        //units are chapters that make up a book
+    paragraphs: 999   //max number of paragraphs in a unit
+
+  NOTE: This module is used by code running in the browser and Node so the 
+        common.js module system is used
+*/
+//import indexOf from "lodash/indexOf";
+const sprintf = __webpack_require__(/*! sprintf-js */ "../cmi-acol/node_modules/sprintf-js/src/sprintf.js").sprintf; //source id: each source has a unique id
+//WOM = 10
+//JSB = 11
+//ACIM = 12
+//RAJ = 13
+
+
+const sourceId = 14;
+const sid = "acol";
+const prefix = "/t/acol"; //length of pageKey excluding decimal portion
+
+const keyLength = 7; //Raj material books (bid)
+
+const books = ["course", "treatise", "dialog", "acq"];
+const bookIds = ["xxx", ...books];
+const acq = ["xxx", "welcome", "book"];
+const course = ["xxx", "introduction", "prelude", "chap01", "chap02", "chap03", "chap04", "chap05", "chap06", "chap07", "chap08", "chap09", "chap10", "chap11", "chap12", "chap13", "chap14", "chap15", "chap16", "chap17", "chap18", "chap19", "chap20", "chap21", "chap22", "chap23", "chap24", "chap25", "chap26", "chap27", "chap28", "chap29", "chap30", "chap31", "chap32"];
+const treatise = ["xxx", "t1chap01", "t1chap02", "t1chap03", "t1chap04", "t1chap05", "t1chap06", "t1chap07", "t1chap08", "t1chap09", "t1chap10", "t2chap01", "t2chap02", "t2chap03", "t2chap04", "t2chap05", "t2chap06", "t2chap07", "t2chap08", "t2chap09", "t2chap10", "t2chap11", "t2chap12", "t2chap13", "t3chap01", "t3chap02", "t3chap03", "t3chap04", "t3chap05", "t3chap06", "t3chap07", "t3chap08", "t3chap09", "t3chap10", "t3chap11", "t3chap12", "t3chap13", "t3chap14", "t3chap15", "t3chap16", "t3chap17", "t3chap18", "t3chap19", "t3chap20", "t3chap21", "t3chap22", "t4chap01", "t4chap02", "t4chap03", "t4chap04", "t4chap05", "t4chap06", "t4chap07", "t4chap08", "t4chap09", "t4chap10", "t4chap11", "t4chap12"];
+const dialog = ["xxx", "chap01", "chap02", "chap03", "chap04", "chap05", "chap06", "chap07", "chap08", "chap09", "chap10", "chap11", "chap12", "chap13", "chap14", "chap15", "chap16", "chap17", "day01", "day02", "day03", "day04", "day05", "day06", "day07", "day08", "day09", "day10", "day11", "day12", "day13", "day14", "day15", "day16", "day17", "day18", "day19", "day20", "day21", "day22", "day23", "day24", "day25", "day26", "day27", "day28", "day29", "day30", "day31", "day32", "day33", "day34", "day35", "day36", "day37", "day38", "day39", "day40", "epilogue"];
+const contents = {
+  course: course,
+  treatise: treatise,
+  dialog: dialog,
+  acq: acq
+};
+
+function splitUrl(url) {
+  let u = url; //remove leading and trailing "/"
+
+  u = url.substr(1);
+  u = u.substr(0, u.length - 1);
+  return u.split("/");
+}
+/*
+  return the position of unit in the bid array
+*/
+
+
+function getUnitId(bid, unit) {
+  if (contents[bid]) {
+    return contents[bid].indexOf(unit);
+  } else {
+    throw new Error(`unexpected bookId: ${bid}`);
+  }
+}
+
+function getSourceId() {
+  return sourceId;
+}
+
+function getKeyInfo() {
+  return {
+    sourceId: sourceId,
+    keyLength: keyLength
+  };
+}
+/*
+  parse bookmarkId into pageKey and paragraphId
+  - pid=0 indicates no paragraph id
+*/
+
+
+function parseKey(key) {
+  const keyInfo = getKeyInfo();
+  let keyString = key;
+  let pid = 0;
+
+  if (typeof keyString === "number") {
+    keyString = key.toString(10);
+  }
+
+  let decimalPos = keyString.indexOf("."); //if no decimal key doesn't include paragraph id
+
+  if (decimalPos > -1) {
+    let decimalPart = keyString.substr(decimalPos + 1); //append 0's if decimal part < 3
+
+    switch (decimalPart.length) {
+      case 1:
+        decimalPart = `${decimalPart}00`;
+        break;
+
+      case 2:
+        decimalPart = `${decimalPart}0`;
+        break;
+    }
+
+    pid = parseInt(decimalPart, 10);
+  }
+
+  let pageKey = parseInt(keyString.substr(0, keyInfo.keyLength), 10);
+  return {
+    pid,
+    pageKey
+  };
+}
+/*
+  Convert url into key
+  returns -1 for non-transcript url
+
+  key format: ssbbuuu.ppp
+  where: ss: source Id
+         bb: book Id
+        uuu: unit Id
+        ppp: paragraph number - not positional
+*/
+
+
+function genPageKey(url = location.pathname) {
+  let key = {
+    sid: sourceId,
+    bid: 0,
+    uid: 0,
+    qid: 0
+  };
+  let parts = splitUrl(url); //key.bid = indexOf(bookIds, parts[0]);
+
+  key.bid = bookIds.indexOf(parts[2]);
+
+  if (key.bid === -1) {
+    return -1;
+  }
+
+  key.uid = getUnitId(parts[2], parts[3]);
+
+  if (key.bid === -1) {
+    return -1;
+  }
+
+  let compositeKey = sprintf("%02s%02s%03s", key.sid, key.bid, key.uid);
+  let numericKey = parseInt(compositeKey, 10);
+  return numericKey;
+}
+/* 
+  genParagraphKey(paragraphId, key: url || pageKey) 
+
+  args:
+    pid: a string representing a transcript paragraph, starts as "p0"..."pnnn"
+         - it's converted to number and incremented by 1 then divided by 1000
+        pid can also be a number so then we just increment it and divide by 1000
+
+    key: either a url or pageKey returned from genPageKey(), if key
+   is a string it is assumed to be a url
+*/
+
+
+function genParagraphKey(pid, key = location.pathname) {
+  let numericKey = key;
+  let pKey;
+
+  if (typeof pid === "string") {
+    pKey = (parseInt(pid.substr(1), 10) + 1) / 1000;
+  } else {
+    pKey = (pid + 1) / 1000;
+  } //if key is a string it represents a url
+
+
+  if (typeof key === "string") {
+    numericKey = genPageKey(key);
+  }
+
+  let paragraphKey = numericKey + pKey;
+  return paragraphKey;
+}
+/*
+  key format: ssbbuuu.ppp
+  where: ss: source Id
+         bb: book Id
+        uuu: unit Id
+        ppp: paragraph number - not positional
+
+  Substracting one from the unit does not work for getUrl, don't know
+  why we do that. Added a second arg to keep old behavior but when false
+  we don't do the subtraction.
+*/
+
+
+function decodeKey(key, subtract = true) {
+  let {
+    pid,
+    pageKey
+  } = parseKey(key);
+  let pageKeyString = pageKey.toString(10);
+  let decodedKey = {
+    error: 0,
+    message: "ok",
+    sid: sourceId,
+    bookId: "",
+    uid: 0,
+    pid: pid - 1
+  }; //error, invalid key length
+
+  if (pageKeyString.length !== keyLength) {
+    decodedKey.error = true;
+    decodedKey.message = `Integer portion of key should have a length of ${keyLength}, key is: ${pageKeyString}`;
+    return decodedKey;
+  }
+
+  let bid = parseInt(pageKeyString.substr(2, 2), 10);
+  decodedKey.bookId = bookIds[bid];
+
+  if (subtract) {
+    //substract 1 from key value to get index
+    decodedKey.uid = parseInt(pageKeyString.substr(4, 3), 10) - 1;
+  } else {
+    decodedKey.uid = parseInt(pageKeyString.substr(4, 3), 10);
+  }
+
+  return decodedKey;
+}
+
+function getBooks() {
+  return books;
+}
+/*
+  Return the number of chapters in the book (bid). 
+  Subtract one from length because of 'xxx' (fake chapter)
+*/
+
+
+function getNumberOfUnits(bid) {
+  if (contents[bid]) {
+    return contents[bid].length - 1;
+  } else {
+    throw new Error(`getNumberOfUnits() unexpected bookId: ${bid}`);
+  }
+}
+/*
+ * Convert page key to url
+ */
+
+
+function getUrl(key, withPrefix = false) {
+  let decodedKey = decodeKey(key, false);
+  let unit = "invalid";
+
+  if (decodedKey.error) {
+    return "/invalid/key/";
+  }
+
+  if (contents[decodedKey.bookId]) {
+    unit = contents[decodedKey.bookId][decodedKey.uid];
+  }
+
+  if (withPrefix) {
+    return `${prefix}/${decodedKey.bookId}/${unit}/`;
+  } else {
+    return `/${decodedKey.bookId}/${unit}/`;
+  }
+}
+/*
+  Describe key in terms of source:book:unit:p
+*/
+
+
+function describeKey(key) {
+  let decodedKey = decodeKey(key, false);
+
+  if (decodedKey.error) {
+    return {
+      key: key,
+      error: true,
+      source: sid
+    };
+  }
+
+  let info = {
+    key: key,
+    source: sid,
+    book: decodedKey.bookId,
+    unit: contents[decodedKey.bookId][decodedKey.uid]
+  };
+
+  if (decodedKey.pid > -1) {
+    info.pid = `p${decodedKey.pid}`;
+  }
+
+  return info;
+}
+
+module.exports = {
+  getNumberOfUnits: getNumberOfUnits,
+  getBooks: getBooks,
+  getSourceId: getSourceId,
+  getKeyInfo: getKeyInfo,
+  parseKey: parseKey,
+  getUnitId: getUnitId,
+  getUrl: getUrl,
+  genPageKey: genPageKey,
+  genParagraphKey: genParagraphKey,
+  decodeKey: decodeKey,
+  describeKey: describeKey
+};
+
+/***/ }),
+
+/***/ "../cmi-jsb/src/js/modules/_config/key.js":
+/*!************************************************!*\
+  !*** ../cmi-jsb/src/js/modules/_config/key.js ***!
+  \************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*
+  JSB: Transcript keys
+  - first item starts with 1, not 0
+  - a numeric value that represents a specific transcript and represents
+    a specific logical ordering.
+
+  - The integer part of the key represent a transcript and the decimal part
+    a paragraph within the transcript.
+  - The paragraphId is increased by 1 and divided by 1000
+
+  key format: ssbuuIqq.ppp
+  where: ss: source Id
+          b: book Id
+         uu: unit Id
+          I: quesiton indicator, 0:no questions 1:questions
+         qq: question Id
+        ppp: paragraph number - not positional
+
+  NOTE: This module is used by code running in the browser and Node so the
+        common.js module system is used
+*/
+//import indexOf from "lodash/indexOf";
+const sprintf = __webpack_require__(/*! sprintf-js */ "../cmi-jsb/node_modules/sprintf-js/src/sprintf.js").sprintf; //source id: each source has a unique id
+//WOM = 10
+//jsb = 11
+
+
+const sourceId = 11; //length of pageKey excluding decimal portion
+
+const keyLength = 8;
+const books = ["til", "acq"];
+const bookIds = ["xxx", ...books];
+const acq = ["xxx", "welcome"];
+const til = ["xxx", "chap01", "chap02", "chap03", "chap04", "chap05", "chap06", "chap07", "chap08", "chap09", "chap10", "chap11", "chap12", "chap13", "chap14", "chap15", "chap16", "chap17", "chap18", "chap18"];
+const contents = {
+  acq: acq,
+  til: til
+};
+
+function splitUrl(url) {
+  let u = url; //remove leading and trailing "/"
+
+  u = url.substr(1);
+  u = u.substr(0, u.length - 1);
+  return u.split("/");
+}
+/*
+  return the position of unit in the bid array
+*/
+
+
+function getUnitId(bid, unit) {
+  if (contents[bid]) {
+    return contents[bid].indexOf(unit);
+  } else {
+    throw new Error(`unexpected bookId: ${bid}`);
+  }
+}
+
+function getSourceId() {
+  return sourceId;
+}
+
+function getKeyInfo() {
+  return {
+    sourceId: sourceId,
+    keyLength: keyLength
+  };
+}
+/*
+  parse bookmarkId into pageKey and paragraphId
+  - pid=0 indicates no paragraph id
+*/
+
+
+function parseKey(key) {
+  const keyInfo = getKeyInfo();
+  let keyString = key;
+  let pid = 0;
+
+  if (typeof keyString === "number") {
+    keyString = key.toString(10);
+  }
+
+  let decimalPos = keyString.indexOf("."); //if no decimal key doesn't include paragraph id
+
+  if (decimalPos > -1) {
+    let decimalPart = keyString.substr(decimalPos + 1); //append 0's if decimal part < 3
+
+    switch (decimalPart.length) {
+      case 1:
+        decimalPart = `${decimalPart}00`;
+        break;
+
+      case 2:
+        decimalPart = `${decimalPart}0`;
+        break;
+    }
+
+    pid = parseInt(decimalPart, 10);
+  }
+
+  let pageKey = parseInt(keyString.substr(0, keyInfo.keyLength), 10);
+  return {
+    pid,
+    pageKey
+  };
+}
+/*
+  Convert url into key
+  returns -1 for non-transcript url
+
+  key format: ssbuuIqq.ppp
+  where: ss: source Id
+          b: book Id
+         uu: unit Id
+          I: question indicator, 0:no questions 1:questions
+         qq: question Id
+        ppp: paragraph number - not positional
+*/
+
+
+function genPageKey(url = location.pathname) {
+  let key = {
+    sid: sourceId,
+    bid: 0,
+    uid: 0,
+    hasQuestions: 0,
+    qid: 0
+  };
+  let parts = splitUrl(url); //key.bid = indexOf(bookIds, parts[0]);
+
+  key.bid = bookIds.indexOf(parts[2]);
+
+  if (key.bid === -1) {
+    return -1;
+  }
+
+  key.uid = getUnitId(parts[2], parts[3]);
+
+  if (key.bid === -1) {
+    return -1;
+  }
+
+  if (parts.length === 5) {
+    key.hasQuestions = 1;
+    key.qid = parseInt(parts[4].substr(1), 10);
+  }
+
+  let compositeKey = sprintf("%02s%01s%02s%1s%02s", key.sid, key.bid, key.uid, key.hasQuestions, key.qid);
+  let numericKey = parseInt(compositeKey, 10);
+  return numericKey;
+}
+/* 
+  genParagraphKey(paragraphId, key: url || pageKey) 
+
+  args:
+    pid: a string representing a transcript paragraph, starts as "p0"..."pnnn"
+         - it's converted to number and incremented by 1 then divided by 1000
+        pid can also be a number so then we just increment it and divide by 1000
+
+    key: either a url or pageKey returned from genPageKey(), if key
+   is a string it is assumed to be a url
+*/
+
+
+function genParagraphKey(pid, key = location.pathname) {
+  let numericKey = key;
+  let pKey;
+
+  if (typeof pid === "string") {
+    pKey = (parseInt(pid.substr(1), 10) + 1) / 1000;
+  } else {
+    pKey = (pid + 1) / 1000;
+  } //if key is a string it represents a url
+
+
+  if (typeof key === "string") {
+    numericKey = genPageKey(key);
+  }
+
+  let paragraphKey = numericKey + pKey;
+  return paragraphKey;
+}
+/*
+  key format: ssbuuIqq.ppp
+  where: ss: source Id
+          b: book Id
+         uu: unit Id
+          I: question indicator, 0:no questions 1:questions
+         qq: question Id
+        ppp: paragraph number - not positional
+*/
+
+
+function decodeKey(key) {
+  let {
+    pid,
+    pageKey
+  } = parseKey(key);
+  let pageKeyString = pageKey.toString(10);
+  let decodedKey = {
+    error: 0,
+    message: "ok",
+    sid: sourceId,
+    bookId: "",
+    uid: 0,
+    hasQuestions: false,
+    qid: 0,
+    pid: pid - 1
+  }; //error, invalid key length
+
+  if (pageKeyString.length !== keyLength) {
+    decodedKey.error = true;
+    decodedKey.message = `Integer portion of key should have a length of ${keyLength}, key is: ${pageKeyString}`;
+    return decodedKey;
+  }
+
+  let bid = parseInt(pageKeyString.substr(2, 1), 10);
+  decodedKey.bookId = bookIds[bid]; //substract 1 from key value to get index
+
+  decodedKey.uid = parseInt(pageKeyString.substr(3, 2), 10) - 1;
+  decodedKey.hasQuestions = pageKeyString.substr(5, 1) === "1"; //subtract 1 from key value to get index
+
+  decodedKey.qid = parseInt(pageKeyString.substr(6, 2), 10) - 1;
+  return decodedKey;
+}
+
+function getBooks() {
+  return books;
+}
+/*
+  Return the number of chapters in the book (bid). 
+  Subtract one from length because of 'xxx' (fake chapter)
+*/
+
+
+function getNumberOfUnits(bid) {
+  if (contents[bid]) {
+    return contents[bid].length - 1;
+  } else {
+    throw new Error(`getNumberOfUnits() unexpected bookId: ${bid}`);
+  }
+}
+/*
+ * Convert page key to url
+ */
+
+
+function getUrl(key) {
+  let decodedKey = decodeKey(key);
+  let unit = "invalid";
+
+  if (decodedKey.error) {
+    return "/invalid/key/";
+  }
+
+  if (contents[decodedKey.bookId]) {
+    unit = contents[decodedKey.bookId][decodedKey.uid + 1];
+  }
+
+  return `/${decodedKey.bookId}/${unit}/`;
+}
+
+module.exports = {
+  getNumberOfUnits: getNumberOfUnits,
+  getUrl: getUrl,
+  getBooks: getBooks,
+  getSourceId: getSourceId,
+  getKeyInfo: getKeyInfo,
+  parseKey: parseKey,
+  genPageKey: genPageKey,
+  genParagraphKey: genParagraphKey,
+  decodeKey: decodeKey
+};
+
+/***/ }),
+
+/***/ "../cmi-raj/src/js/modules/_config/key.js":
+/*!************************************************!*\
+  !*** ../cmi-raj/src/js/modules/_config/key.js ***!
+  \************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*
+  RAJ: Transcript keys
+  - first item starts with 1, not 0
+  - a numeric value that represents a specific transcript and represents
+    a specific logical ordering.
+
+  - The integer part of the key represent a transcript and the decimal part
+    a paragraph within the transcript.
+  - The paragraphId is increased by 1 and divided by 1000
+
+  key format: ssbbuuu.ppp
+  where: ss: source Id
+         bb: book Id
+        uuu: unit Id
+        ppp: paragraph number - not positional
+
+  NOTE: This module is used by code running in the browser and Node so the 
+        common.js module system is used
+*/
+//import indexOf from "lodash/indexOf";
+const sprintf = __webpack_require__(/*! sprintf-js */ "../cmi-raj/node_modules/sprintf-js/src/sprintf.js").sprintf; //source id: each source has a unique id
+//WOM = 10
+//JSB = 11
+//ACIM = 12
+//RAJ = 13
+
+
+const sourceId = 13; //length of pageKey excluding decimal portion
+
+const keyLength = 7; //Raj material books (bid)
+
+const books = ["yaa", "grad", "sg2002", "sg2003", "sg2004", "sg2005", "sg2006", "sg2007", "sg2008", "sg2009", "sg2010", "sg2011", "sg2012", "sg2013", "sg2014", "sg2015", "sg2016", "sg2017", "sg2018", "acq"];
+const bookIds = ["xxx", ...books];
+const acq = ["xxx", "welcome", "raj", "download", "acim", "web"];
+const grad = ["xxx", "g000002", "g000003", "g010491", "g010591", "g011491", "g011591", "g011691", "g011891", "g012091", "g012591", "g012791", "g020291", "g020591", "g020691", "g021291", "g021391", "g021491", "g022091", "g022591", "g030291", "g030891", "g031491", "g031991", "g032091", "g032191", "g032291", "g032591", "g032991"];
+const sg2002 = ["xxx", "061202", "073102", "080702", "081402", "082802", "090402", "091102", "091802", "092502", "100202", "101002", "101702", "102402", "103102", "110702", "112102", "120502", "121202", "121902"];
+const sg2003 = ["xxx", "010203", "010903", "011603", "012303", "020603", "021303", "022003", "022703", "030603", "031303", "032003", "032703", "040303", "041003", "042403", "050103", "051103", "051803", "052503", "060103", "060803", "061503", "062203", "062903", "070603", "071303", "072003", "072703", "080303", "081003", "081703", "082403", "083103", "090703", "091403", "092103", "092803", "101203", "101903", "102603", "110203", "110903", "111603", "112303", "120703", "121403", "122103"];
+const sg2004 = ["xxx", "011104", "011804", "012504", "020104", "020804", "021504", "022204", "030704", "031404", "032804", "040404", "041104", "041804", "042504", "050204", "050904", "051604", "052304", "053004", "061304", "062004", "062704", "071104", "071804", "072504", "080104", "080804", "081504", "082204", "090504", "091204", "091904", "092604", "100304", "101004", "101704", "102404", "110704", "112104", "112804", "120504", "121204", "121904"];
+const sg2005 = ["xxx", "010205", "011605", "012305", "013005", "021305", "022005", "030605", "031305", "032705", "040305", "041005", "041705", "042405", "050105", "050805", "052205", "060505", "061205", "061905", "070305", "071005", "071705", "072405", "080705", "081405", "082105", "082805", "090405", "091105", "091805", "100205", "100905", "101605", "102305", "110605", "111305", "112005", "120405", "121105", "121805"];
+const sg2006 = ["xxx", "010806", "011506", "012206", "012906", "021206", "022606", "030406", "031106", "031906", "040106", "041506", "042906", "050606", "052006", "052706", "060306", "061006", "061806", "062406", "070106", "071506", "073006", "080506", "081206", "082006", "090206", "090906", "092306", "100706", "101406", "102106", "102806", "111106", "111806", "120206"];
+const sg2007 = ["xxx", "081807", "082507", "090907", "091607", "092207", "100607", "101407", "102707", "110307", "111007", "111807", "120807", "121607"];
+const sg2008 = ["xxx", "012008", "012708", "021008", "021708", "022408", "030208", "030908", "032508", "033008", "040608", "041308", "042008", "050408", "051808", "052508", "060108", "060808", "061508", "062208", "070608", "071308", "072708", "081708", "083108", "090708", "091408", "092108", "100508", "101908", "102608", "110208", "110908", "112308"];
+const sg2009 = ["xxx", "010309", "011009", "011709", "012409", "020709", "022809", "031409", "032809", "040409", "041209", "042509", "050909", "052409", "053109", "060709", "061309", "062009", "071109", "071809", "072509", "080109", "080809", "082909", "090509", "091209", "091909", "092709", "101009", "102409", "103109", "111409", "112209", "112809", "120509", "121909"];
+const sg2010 = ["xxx", "010210", "011610", "013010", "020610", "021310", "030610", "032010", "032710", "040310", "041010", "050110", "051510", "052910", "060510", "061210", "061910", "070310", "071010", "071710", "072410", "080710", "082810", "090410", "091110", "092510", "100210", "100910", "101610", "102310", "110610", "111310", "112010", "112710", "120410", "121810"];
+const sg2011 = ["xxx", "010111", "010811", "011511", "012211", "020511", "021611", "021911", "031211", "032011", "032611", "040311", "040911", "041611", "042311", "043011", "050711", "051411", "052211", "060411", "061211", "061811", "062611", "070911", "071611", "073011", "080611", "082011", "082711", "090311", "091711", "092411", "100111", "101511", "102311", "110511", "111311", "112611", "120411", "121111", "122011"];
+const sg2012 = ["xxx", "010712", "012212", "020512", "021212", "021812", "032412", "033112", "040812", "041512", "042212", "042912", "051212", "052012", "060312", "061712", "072212", "072912", "080412", "081112", "081812", "082712", "090812", "091612", "092312", "093012", "100812", "101412", "102112", "110512", "111212"];
+const sg2013 = ["xxx", "042713", "050413", "051113", "052013", "052813", "060213", "060913", "062513", "063013", "070713", "071413", "072113", "080413", "081113", "082513", "090113", "090813", "091513", "092313", "100613", "101513", "102013", "102713", "110313", "112413", "122213", "123013"];
+const sg2014 = ["xxx", "010614", "011414", "012814", "020914", "022414", "030914", "041314", "061614", "062914", "091514"];
+const sg2015 = ["xxx", "041815", "042515", "050315", "050915", "051715", "060715", "061415", "062115", "062815", "070515", "071315", "072115", "080115", "082315", "091315", "100215", "102115", "110115"];
+const sg2016 = ["xxx", "070316", "071616", "080216"];
+const sg2017 = ["xxx", "040817", "041617", "042317", "043017", "051217", "060917", "071117", "072317", "092317", "100117", "101717", "120417"];
+const sg2018 = ["xxx", "013118", "031118", "081918", "082918"];
+const yaa = ["xxx", "acknowledgments", "foreword", "020782", "020882", "020982", "021082", "021182a", "021182b", "021282", "021382", "021482", "021682", "021782", "021882a", "021882b", "021882c", "021982", "022082", "022182a", "022182b", "022382a", "022382b", "022382c", "022482", "022582", "022682a", "022682b", "022682c", "022782", "022882", "030182a", "030182b", "030282", "030382", "030482a", "030482b", "030582a", "030582b", "030682a", "030682b", "030682c", "030682d", "030682e", "030882", "030982", "031082a", "031082b", "031082c", "031182", "031382", "031582", "031982", "032982", "033082", "042782", "042882", "042982", "043082", "050182", "050282", "050382", "050782", "050982", "051082a", "051082b", "051082c", "051182", "051582", "051782", "052882", "053082", "060382", "061082", "061282", "061482", "061982", "062182", "afterword"];
+const contents = {
+  acq: acq,
+  yaa: yaa,
+  grad: grad,
+  sg2002: sg2002,
+  sg2003: sg2003,
+  sg2004: sg2004,
+  sg2005: sg2005,
+  sg2006: sg2006,
+  sg2007: sg2007,
+  sg2008: sg2008,
+  sg2009: sg2009,
+  sg2010: sg2010,
+  sg2011: sg2011,
+  sg2012: sg2012,
+  sg2013: sg2013,
+  sg2014: sg2014,
+  sg2015: sg2015,
+  sg2016: sg2016,
+  sg2017: sg2017,
+  sg2018: sg2018
+};
+
+function splitUrl(url) {
+  let u = url; //remove leading and trailing "/"
+
+  u = url.substr(1);
+  u = u.substr(0, u.length - 1);
+  return u.split("/");
+}
+/*
+  return the position of unit in the bid array
+*/
+
+
+function getUnitId(bid, unit) {
+  if (contents[bid]) {
+    return contents[bid].indexOf(unit);
+  } else {
+    throw new Error(`unexpected bookId: ${bid}`);
+  }
+}
+
+function getSourceId() {
+  return sourceId;
+}
+
+function getKeyInfo() {
+  return {
+    sourceId: sourceId,
+    keyLength: keyLength
+  };
+}
+/*
+  parse bookmarkId into pageKey and paragraphId
+  - pid=0 indicates no paragraph id
+*/
+
+
+function parseKey(key) {
+  const keyInfo = getKeyInfo();
+  let keyString = key;
+  let pid = 0;
+
+  if (typeof keyString === "number") {
+    keyString = key.toString(10);
+  }
+
+  let decimalPos = keyString.indexOf("."); //if no decimal key doesn't include paragraph id
+
+  if (decimalPos > -1) {
+    let decimalPart = keyString.substr(decimalPos + 1); //append 0's if decimal part < 3
+
+    switch (decimalPart.length) {
+      case 1:
+        decimalPart = `${decimalPart}00`;
+        break;
+
+      case 2:
+        decimalPart = `${decimalPart}0`;
+        break;
+    }
+
+    pid = parseInt(decimalPart, 10);
+  }
+
+  let pageKey = parseInt(keyString.substr(0, keyInfo.keyLength), 10);
+  return {
+    pid,
+    pageKey
+  };
+}
+/*
+  Convert url into key
+  returns -1 for non-transcript url
+
+  key format: ssbuuIqq.ppp
+  where: ss: source Id
+         bb: book Id
+        uuu: unit Id
+        ppp: paragraph number - not positional
+*/
+
+
+function genPageKey(url = location.pathname) {
+  let key = {
+    sid: sourceId,
+    bid: 0,
+    uid: 0,
+    qid: 0
+  };
+  let parts = splitUrl(url); //key.bid = indexOf(bookIds, parts[0]);
+
+  key.bid = bookIds.indexOf(parts[2]);
+
+  if (key.bid === -1) {
+    return -1;
+  }
+
+  key.uid = getUnitId(parts[2], parts[3]);
+
+  if (key.bid === -1) {
+    return -1;
+  }
+
+  let compositeKey = sprintf("%02s%02s%03s", key.sid, key.bid, key.uid);
+  let numericKey = parseInt(compositeKey, 10);
+  return numericKey;
+}
+/* 
+  genParagraphKey(paragraphId, key: url || pageKey) 
+
+  args:
+    pid: a string representing a transcript paragraph, starts as "p0"..."pnnn"
+         - it's converted to number and incremented by 1 then divided by 1000
+        pid can also be a number so then we just increment it and divide by 1000
+
+    key: either a url or pageKey returned from genPageKey(), if key
+   is a string it is assumed to be a url
+*/
+
+
+function genParagraphKey(pid, key = location.pathname) {
+  let numericKey = key;
+  let pKey;
+
+  if (typeof pid === "string") {
+    pKey = (parseInt(pid.substr(1), 10) + 1) / 1000;
+  } else {
+    pKey = (pid + 1) / 1000;
+  } //if key is a string it represents a url
+
+
+  if (typeof key === "string") {
+    numericKey = genPageKey(key);
+  }
+
+  let paragraphKey = numericKey + pKey;
+  return paragraphKey;
+}
+/*
+  key format: ssbuuIqq.ppp
+  where: ss: source Id
+         bb: book Id
+        uuu: unit Id
+        ppp: paragraph number - not positional
+*/
+
+
+function decodeKey(key) {
+  let {
+    pid,
+    pageKey
+  } = parseKey(key);
+  let pageKeyString = pageKey.toString(10);
+  let decodedKey = {
+    error: 0,
+    message: "ok",
+    sid: sourceId,
+    bookId: "",
+    uid: 0,
+    pid: pid - 1
+  }; //error, invalid key length
+
+  if (pageKeyString.length !== keyLength) {
+    decodedKey.error = true;
+    decodedKey.message = `Integer portion of key should have a length of ${keyLength}, key is: ${pageKeyString}`;
+    return decodedKey;
+  }
+
+  let bid = parseInt(pageKeyString.substr(2, 2), 10);
+  decodedKey.bookId = bookIds[bid]; //subtract 1 from key value to get index
+
+  decodedKey.uid = parseInt(pageKeyString.substr(4, 3), 10) - 1;
+  return decodedKey;
+}
+
+function getBooks() {
+  return books;
+}
+/*
+  Return the number of chapters in the book (bid). 
+  Subtract one from length because of 'xxx' (fake chapter)
+*/
+
+
+function getNumberOfUnits(bid) {
+  if (contents[bid]) {
+    return contents[bid].length - 1;
+  } else {
+    throw new Error(`getNumberOfUnits() unexpected bookId: ${bid}`);
+  }
+}
+/*
+ * Convert page key to url
+ */
+
+
+function getUrl(key) {
+  let decodedKey = decodeKey(key);
+  let unit = "invalid";
+
+  if (decodedKey.error) {
+    return "/invalid/key/";
+  }
+
+  if (contents[decodedKey.bookId]) {
+    unit = contents[decodedKey.bookId][decodedKey.uid + 1];
+  }
+
+  return `/${decodedKey.bookId}/${unit}/`;
+}
+
+module.exports = {
+  getNumberOfUnits: getNumberOfUnits,
+  getBooks: getBooks,
+  getUrl: getUrl,
+  getSourceId: getSourceId,
+  getKeyInfo: getKeyInfo,
+  parseKey: parseKey,
+  getUnitId: getUnitId,
+  genPageKey: genPageKey,
+  genParagraphKey: genParagraphKey,
+  decodeKey: decodeKey
+};
+
+/***/ }),
+
 /***/ "./src/js/constants.js":
 /*!*****************************!*\
   !*** ./src/js/constants.js ***!
@@ -123,22 +1370,26 @@ function createClickHandlers() {
 /*!**********************************************!*\
   !*** ./src/js/modules/_bookmark/annotate.js ***!
   \**********************************************/
-/*! exports provided: initialize, getUserInput */
+/*! exports provided: getLink, initialize, getUserInput */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* WEBPACK VAR INJECTION */(function($) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "initialize", function() { return initialize; });
+/* WEBPACK VAR INJECTION */(function($) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getLink", function() { return getLink; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "initialize", function() { return initialize; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getUserInput", function() { return getUserInput; });
 /* harmony import */ var _bmnet__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./bmnet */ "./src/js/modules/_bookmark/bmnet.js");
-/* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! toastr */ "./node_modules/toastr/toastr.js");
-/* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(toastr__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _bookmark__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./bookmark */ "./src/js/modules/_bookmark/bookmark.js");
-/* harmony import */ var lodash_range__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lodash/range */ "./node_modules/lodash/range.js");
-/* harmony import */ var lodash_range__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(lodash_range__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _navigator__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./navigator */ "./src/js/modules/_bookmark/navigator.js");
-/* harmony import */ var _user_netlify__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../_user/netlify */ "./src/js/modules/_user/netlify.js");
-/* harmony import */ var _clipboard__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./clipboard */ "./src/js/modules/_bookmark/clipboard.js");
+/* harmony import */ var _config_key__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../_config/key */ "./src/js/modules/_config/key.js");
+/* harmony import */ var _config_key__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_config_key__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! toastr */ "./node_modules/toastr/toastr.js");
+/* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(toastr__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _bookmark__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./bookmark */ "./src/js/modules/_bookmark/bookmark.js");
+/* harmony import */ var lodash_range__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! lodash/range */ "./node_modules/lodash/range.js");
+/* harmony import */ var lodash_range__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(lodash_range__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _navigator__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./navigator */ "./src/js/modules/_bookmark/navigator.js");
+/* harmony import */ var _user_netlify__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../_user/netlify */ "./src/js/modules/_user/netlify.js");
+/* harmony import */ var _clipboard__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./clipboard */ "./src/js/modules/_bookmark/clipboard.js");
+
 
 
 
@@ -150,12 +1401,12 @@ __webpack_require__.r(__webpack_exports__);
 var warningIssued = false;
 
 function warnNotSignedIn() {
-  let userInfo = Object(_user_netlify__WEBPACK_IMPORTED_MODULE_5__["getUserInfo"])();
+  let userInfo = Object(_user_netlify__WEBPACK_IMPORTED_MODULE_6__["getUserInfo"])();
 
   if (!userInfo && !warningIssued) {
-    toastr__WEBPACK_IMPORTED_MODULE_1___default.a.options.timeOut = "10000";
-    toastr__WEBPACK_IMPORTED_MODULE_1___default.a.success("Cancel, Sign In, and create a new bookmark.");
-    toastr__WEBPACK_IMPORTED_MODULE_1___default.a.warning("You are not signed in. Bookmarks created when you are not signed in cannot be shared.");
+    toastr__WEBPACK_IMPORTED_MODULE_2___default.a.options.timeOut = "10000";
+    toastr__WEBPACK_IMPORTED_MODULE_2___default.a.success("Cancel, Sign In, and create a new bookmark.");
+    toastr__WEBPACK_IMPORTED_MODULE_2___default.a.warning("You are not signed in. Bookmarks created when you are not signed in cannot be shared.");
     warningIssued = true;
   }
 }
@@ -181,22 +1432,190 @@ const form = `
     <div class="field">
       <input type="text" name="newTopics" placeholder="New topics? Comma delimited list">
     </div>
+    <div class="field">
+      <textarea name="Note" placeholder="Additional Notes" rows="3"></textarea>
+    </div>
     <div class="fields">
       <button class="annotation-submit ui green button" type="submit">Submit</button>
       <button class="annotation-cancel ui red basic button">Cancel</button>
       <button class="annotation-share ui green disabled basic button">Share</button>
-      <button class="annotation-note ui blue basic button">Note</button>
+      <button class="annotation-note ui blue basic button">Links</button>
       <div class="twelve wide field">
         <button class="annotation-delete ui red disabled right floated button">Delete</button>
       </div>
     </div>
-    <div class="note-and-links hide">
-      <div class="field">
-        <textarea name="Note" placeholder="Additional Notes" rows="3"></textarea>
-      </div>
-    </div>
   </form>
+  <div class="note-and-links hide">
+    <table id="bookmark-link-table" class="ui selectable celled table">
+      <thead>
+        <tr>
+          <th></th>
+          <th></th>
+          <th>Reference</th>
+          <th>Link</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="bookmark-link-list">
+      </tbody>
+    </table>
+    <form name="linkForm" id="link-form" class="ui form">
+      <div class="fields">
+        <div class="ten wide field">
+          <input required type="text" placeholder="Link note" name="reference">
+        </div>
+        <div class="five wide field">
+          <input required type="text" placeholder="Link" name="link">
+        </div>
+        <button title="add or update" data-index="-1" type="submit" class="green ui icon button">
+          <i class="plus circle icon"></i>
+        </button>
+        <button title="clear fields" type="reset" class="yellow ui icon button">
+          <i class="minus circle icon"></i>
+        </button>
+      </div>
+    </form>
+  </div>
+`;
+let linkArray = [];
+function getLink(index) {
+  return linkArray[index];
+}
+
+function populateTable(links) {
+  return `
+    ${links.map((item, index) => `
+      <tr data-index="${index}">
+        <td title="Delete" class="delete-link-item"><i class="red trash alternate icon"></i></td>
+        <td title="Edit" class="edit-link-item"><i class="yellow pencil alternate icon"></i></td>
+        <td data-name="reference">${item.reference}</td>
+        <td data-name="link">${formatLink(item.link)}</td>
+        <td title="Follow" class="follow-link-item"><i class="green share icon"></i></td>
+      </tr>
+    `).join("")}
   `;
+}
+
+function getIndex() {
+  let value = $("#link-form [type='submit']").data("index");
+  return parseInt(value, 10);
+}
+
+function setIndex(index) {
+  $("#link-form [type='submit']").data("index", index);
+}
+
+function makeTableRow(item, index) {
+  return `
+    <tr data-index="${index}">
+      <td title="Delete" class="delete-link-item"><i class="red trash alternate icon"></i></td>
+      <td title="Edit" class="edit-link-item"><i class="yellow pencil alternate icon"></i></td>
+      <td data-name="reference">${item.reference}</td>
+      <td data-name="link">${item.link}</td>
+      <td title="Follow" class="follow-link-item"><i class="green share icon"></i></td>
+    </tr>
+  `;
+}
+
+function validateLink(pid, link) {
+  let rawLink;
+  let pKey = _config_key__WEBPACK_IMPORTED_MODULE_1___default.a.genParagraphKey(pid);
+
+  try {
+    rawLink = JSON.parse(link);
+  } catch (error) {
+    toastr__WEBPACK_IMPORTED_MODULE_2___default.a.error("Invalid link; invalid format, get link from bookmark popup.");
+    return false;
+  }
+
+  if (!rawLink.aid || !rawLink.desc || !rawLink.key || !rawLink.userId) {
+    toastr__WEBPACK_IMPORTED_MODULE_2___default.a.error("Invalid link; invalid format, get link from bookmark popup.");
+    return false;
+  }
+
+  if (rawLink.key === pKey) {
+    toastr__WEBPACK_IMPORTED_MODULE_2___default.a.error("Invalid link; it references itself.");
+    return false;
+  }
+
+  return true;
+}
+/*
+ * format link for display in annotation form
+ */
+
+
+function formatLink(link) {
+  let raw = JSON.parse(link);
+  let display = `${raw.desc.source}:${raw.desc.book}:${raw.desc.unit}:${raw.desc.pid}`;
+  return display;
+}
+
+function createLinkHandlers() {
+  //add
+  $(".transcript").on("submit", "#link-form", function (e) {
+    e.preventDefault(); //get state; new or edit
+
+    let index = getIndex();
+    let state = index === -1 ? "new" : "edit"; //get link values from form
+
+    let form = $("#link-form").form("get values"); //validate link
+
+    let pid = $(".annotate-wrapper p.cmiTranPara").attr("id");
+
+    if (!validateLink(pid, form.link)) {
+      return;
+    }
+
+    let linkDisplay = formatLink(form.link);
+
+    if (state === "new") {
+      linkArray.push({
+        reference: form.reference,
+        link: form.link,
+        deleted: false
+      });
+      let row = makeTableRow({
+        reference: form.reference,
+        link: linkDisplay
+      }, linkArray.length - 1);
+      $("#bookmark-link-list").append(row);
+    } else {
+      //update array
+      linkArray[index] = {
+        reference: form.reference,
+        link: form.link,
+        deleted: false
+      }; //update table
+
+      $(`tr[data-index="${index}"] > td[data-name="reference"]`).text(linkArray[index].reference);
+      $(`tr[data-index="${index}"] > td[data-name="link"]`).text(linkDisplay);
+      setIndex(-1);
+    }
+
+    $("#link-form").form("clear");
+  }); //delete
+
+  $(".transcript").on("click", "#bookmark-link-list td.delete-link-item", function (e) {
+    e.stopPropagation();
+    e.preventDefault();
+    let parent = $(this).parent();
+    let index = parseInt(parent.attr("data-index"), 10); //mark deleted item from linkArray
+
+    linkArray[index].deleted = true; //remove item from table
+
+    parent.remove();
+    console.log("after delete: link %o", linkArray);
+  }); //edit
+
+  $(".transcript").on("click", "#bookmark-link-list td.edit-link-item", function (e) {
+    e.stopPropagation();
+    e.preventDefault();
+    let index = parseInt($(this).parent().attr("data-index"), 10);
+    $("#link-form").form("set values", linkArray[index]);
+    setIndex(index);
+  });
+}
 
 function noteToggle() {
   $(".transcript").on("click", "#annotation-form .annotation-note", function (e) {
@@ -233,6 +1652,47 @@ function generateHorizontalList(listArray) {
   `;
 }
 
+function generateExtraList(annotation) {
+  let extras = [];
+
+  if (annotation.Note) {
+    extras.push("N");
+  }
+
+  if (annotation.links) {
+    extras.push(`L${annotation.links.length}`);
+  }
+
+  if (extras.length === 0) {
+    return `
+      <div class="item">
+        <i class="bookmark outline icon"></i>
+      </div>
+    `;
+  }
+
+  return `
+    ${extras.map(item => `
+      <div class="item">
+        ${genExtrasItem(item)}
+      </div>
+    `).join("")}
+  `;
+}
+
+function genExtrasItem(item) {
+  let icon;
+
+  if (item === "N") {
+    icon = "<i class='align justify icon'></i>";
+  } else if (item.startsWith("L")) {
+    let length = item.substr(1);
+    icon = `<i class="linkify icon"></i>[${length}]`;
+  }
+
+  return `${icon}`;
+}
+
 function generateComment(comment) {
   if (!comment) {
     return "No comment";
@@ -250,7 +1710,17 @@ function generateComment(comment) {
 
 
 function initializeForm(pid, aid, annotation) {
-  let form = $("#annotation-form"); //a new annotation
+  let form = $("#annotation-form");
+  let linkform = $("#link-form");
+  /*
+  linkform.form("set values", {
+    linkNote: "Hi Rick",
+    link: "a:b:c"
+  });
+  */
+  //set link array to empty
+
+  linkArray = []; //a new annotation
 
   if (!annotation) {
     form.form("set values", {
@@ -263,6 +1733,12 @@ function initializeForm(pid, aid, annotation) {
 
     if (annotation.topicList) {
       topicSelect = annotation.topicList.map(t => t.value);
+    }
+
+    if (annotation.links) {
+      linkArray = annotation.links;
+      let html = populateTable(linkArray);
+      $("#bookmark-link-list").html(html);
     }
 
     form.form("set values", {
@@ -291,7 +1767,7 @@ function annotationFormOpen(currentPid) {
     let pid = selector.first(1).attr("id"); //if currentPid === pid user clicked hidden link in editor, we just exit w/o notice
 
     if (currentPid !== pid) {
-      toastr__WEBPACK_IMPORTED_MODULE_1___default.a.info(`A bookmark is already being added at paragraph ${pid}. Please complete that first.`);
+      toastr__WEBPACK_IMPORTED_MODULE_2___default.a.info(`A bookmark is already being added at paragraph ${pid}. Please complete that first.`);
     }
 
     return true;
@@ -302,7 +1778,7 @@ function annotationFormOpen(currentPid) {
 
 function bookmarkNavigatorActive() {
   if ($(".transcript").hasClass("bookmark-navigator-active")) {
-    toastr__WEBPACK_IMPORTED_MODULE_1___default.a.info("Annotation is disabled when the bookmark navigator is active.");
+    toastr__WEBPACK_IMPORTED_MODULE_2___default.a.info("Annotation is disabled when the bookmark navigator is active.");
     return true;
   }
 
@@ -314,7 +1790,7 @@ function editAnnotation(pid, aid, annotation) {
   let rangeEnd = parseInt(annotation.rangeEnd.substr(1), 10); //add class 'annotation-edit' to paragraphs so they can be wrapped
 
   if (rangeStart !== rangeEnd) {
-    let annotationRange = lodash_range__WEBPACK_IMPORTED_MODULE_3___default()(rangeStart, rangeEnd + 1);
+    let annotationRange = lodash_range__WEBPACK_IMPORTED_MODULE_4___default()(rangeStart, rangeEnd + 1);
 
     for (let i = 0; i < annotationRange.length; i++) {
       $(`#p${annotationRange[i]}`).addClass("annotation-edit");
@@ -368,11 +1844,54 @@ function noteHandler() {
   });
 }
 
+function hoverNoteHandler() {
+  $(".transcript").on("mouseenter", ".has-annotation", function (e) {
+    e.preventDefault();
+    let aid = $(this).data("aid");
+    let pid = $(this).parent("p").attr("id"); //bookmark wont be found if it is still being created
+
+    let bookmarkData = Object(_bmnet__WEBPACK_IMPORTED_MODULE_0__["getBookmark"])(pid);
+
+    if (!bookmarkData.bookmark) {
+      return;
+    }
+
+    let annotation = bookmarkData.bookmark.find(value => value.creationDate === aid); //sometimes the annotation won't be found because it is being created, so just return
+
+    if (!annotation) {
+      return;
+    }
+
+    let topicList = generateHorizontalList(annotation.topicList);
+    let comment = generateComment(annotation.Comment);
+    let extraHtml = generateExtraList(annotation);
+    $(".annotation-information .topic-list").html(topicList);
+    $(".annotation-information .range").html(`Range: ${annotation.rangeStart}/${annotation.rangeEnd}`);
+    $(".annotation-information .description").html(`${comment}`);
+    $(".annotation-information .extra").html(extraHtml);
+    $(this).popup({
+      popup: ".annotation-information.popup",
+      hoverable: true
+    }).popup("show"); //create link
+
+    let link = createBookmarkLink(pid, aid);
+    $("#popup-button").attr("data-clipboard-text", link);
+    _clipboard__WEBPACK_IMPORTED_MODULE_7__["default"].register("#popup-button"); //set focus on button so pressing Enter will click the button
+
+    $("#popup-button").focus();
+  });
+}
+/*
+ * Highlighted text hover; show popup
+ */
+
+
 function hoverHandler() {
   $(".transcript").on("mouseenter", "[data-annotation-id]", function (e) {
     e.preventDefault();
     let aid = $(this).attr("data-annotation-id");
-    let pid = $(this).parent("p").attr("id"); //disable hover if highlights are hidden
+    let pid = $(this).parent("p").attr("id");
+    let realAid = $(this).data("aid"); //disable hover if highlights are hidden
 
     if ($(".transcript").hasClass("hide-bookmark-highlights")) {
       $(this).popup("hide").popup("destroy");
@@ -424,12 +1943,53 @@ function hoverHandler() {
 
     let topicList = generateHorizontalList(annotation.topicList);
     let comment = generateComment(annotation.Comment);
-    $(".annotation-information > .topic-list").html(topicList);
-    $(".annotation-information > .range").html(`Range: ${annotation.rangeStart}/${annotation.rangeEnd}`);
-    $(".annotation-information > .description").html(`${comment}`);
+    let extraHtml = generateExtraList(annotation);
+    $(".annotation-information .topic-list").html(topicList);
+    $(".annotation-information .range").html(`Range: ${annotation.rangeStart}/${annotation.rangeEnd}`);
+    $(".annotation-information .description").html(`${comment}`);
+    $(".annotation-information .extra").html(extraHtml);
     $(this).popup({
-      popup: ".annotation-information.popup"
-    }).popup("show");
+      popup: ".annotation-information.popup",
+      hoverable: true
+    }).popup("show"); //create link
+
+    let link = createBookmarkLink(pid, realAid);
+    $("#popup-button").attr("data-clipboard-text", link);
+    _clipboard__WEBPACK_IMPORTED_MODULE_7__["default"].register("#popup-button"); //set focus on button so pressing Enter will click the button
+
+    $("#popup-button").focus();
+  });
+}
+/*
+ * Create a link reference to a CMI bookmark
+ *
+ * Format: pageKey.000:aid:uid
+ */
+
+
+function createBookmarkLink(pid, aid) {
+  let pKey = _config_key__WEBPACK_IMPORTED_MODULE_1___default.a.genParagraphKey(pid);
+  let keyInfo = _config_key__WEBPACK_IMPORTED_MODULE_1___default.a.describeKey(pKey);
+  let userInfo = Object(_user_netlify__WEBPACK_IMPORTED_MODULE_6__["getUserInfo"])();
+  let link = {
+    userId: userInfo.userId,
+    key: pKey,
+    aid: aid,
+    desc: keyInfo
+  };
+  return JSON.stringify(link);
+}
+/*
+ * Click handler for the button press on annotation popups.
+ */
+
+
+function getReferenceHandler() {
+  $("body").on("click", "#popup-button", function (e) {
+    //for selected text bookmarks
+    $("mark.visible").popup("hide"); //for note style bookmarks
+
+    $(".pnum.has-annotation.visible").popup("hide");
   });
 }
 
@@ -524,9 +2084,16 @@ function submitHandler() {
 
     if ($(".transcript .annotation-edit").hasClass("annotation-note")) {
       formData.bookTitle = $("#book-title").text();
+    } //get links from annotation
+
+
+    let links = linkArray.filter(l => l.deleted === false);
+
+    if (links.length > 0) {
+      formData.links = links;
     }
 
-    _bookmark__WEBPACK_IMPORTED_MODULE_2__["annotation"].submit(formData);
+    _bookmark__WEBPACK_IMPORTED_MODULE_3__["annotation"].submit(formData);
     $(".transcript .annotation-edit").removeClass("annotation-edit annotation-note");
   });
 }
@@ -544,7 +2111,7 @@ function cancelHandler() {
     unwrap(); //remove class "show" added when form was displayed
 
     $(`[data-annotation-id="${formData.aid}"]`).removeClass("show");
-    _bookmark__WEBPACK_IMPORTED_MODULE_2__["annotation"].cancel(formData);
+    _bookmark__WEBPACK_IMPORTED_MODULE_3__["annotation"].cancel(formData);
     $(".transcript .annotation-edit").removeClass("annotation-edit");
   });
 }
@@ -560,9 +2127,9 @@ function shareHandler() {
     unwrap(); //remove class "show" added when form was displayed
 
     $(`[data-annotation-id="${formData.aid}"]`).removeClass("show");
-    _bookmark__WEBPACK_IMPORTED_MODULE_2__["annotation"].cancel(formData);
+    _bookmark__WEBPACK_IMPORTED_MODULE_3__["annotation"].cancel(formData);
     $(".transcript .annotation-edit").removeClass("annotation-edit");
-    let userInfo = Object(_user_netlify__WEBPACK_IMPORTED_MODULE_5__["getUserInfo"])();
+    let userInfo = Object(_user_netlify__WEBPACK_IMPORTED_MODULE_6__["getUserInfo"])();
 
     if (!userInfo) {
       userInfo = {
@@ -585,7 +2152,7 @@ function shareHandler() {
     }
 
     let url = `https://${location.hostname}${location.pathname}?as=${pid}:${aid}:${userInfo.userId}`;
-    let annotationRange = lodash_range__WEBPACK_IMPORTED_MODULE_3___default()(numericRange[0], numericRange[1] + 1);
+    let annotationRange = lodash_range__WEBPACK_IMPORTED_MODULE_4___default()(numericRange[0], numericRange[1] + 1);
     let header2;
 
     if (userInfo.userId === "xxx") {
@@ -628,11 +2195,11 @@ function shareHandler() {
     $(".selected-annotation-wrapper").prepend(header2);
 
     if (userInfo.userId !== "xxx") {
-      _clipboard__WEBPACK_IMPORTED_MODULE_6__["default"].register(".share-annotation.linkify");
+      _clipboard__WEBPACK_IMPORTED_MODULE_7__["default"].register(".share-annotation.linkify");
     }
   }); //init click handler for FB and email share dialog
 
-  Object(_navigator__WEBPACK_IMPORTED_MODULE_4__["initShareDialog"])("annotate.js");
+  Object(_navigator__WEBPACK_IMPORTED_MODULE_5__["initShareDialog"])("annotate.js");
 }
 
 function deleteHandler() {
@@ -642,7 +2209,7 @@ function deleteHandler() {
     removeSelectionGuard();
     let formData = getFormData();
     unwrap();
-    _bookmark__WEBPACK_IMPORTED_MODULE_2__["annotation"].delete(formData);
+    _bookmark__WEBPACK_IMPORTED_MODULE_3__["annotation"].delete(formData);
     $(".transcript .annotation-edit").removeClass("annotation-edit");
   });
 }
@@ -660,6 +2227,9 @@ function initialize() {
   noteHandler();
   hoverHandler();
   noteToggle();
+  createLinkHandlers();
+  getReferenceHandler();
+  hoverNoteHandler();
 }
 /*
   Display annotation form
@@ -671,7 +2241,7 @@ function getUserInput(highlight) {
   //don't allow multiple annotation forms to be open at the same time
   // - if open cancel the highlight
   if (annotationFormOpen(highlight.pid) || bookmarkNavigatorActive()) {
-    _bookmark__WEBPACK_IMPORTED_MODULE_2__["annotation"].cancel({
+    _bookmark__WEBPACK_IMPORTED_MODULE_3__["annotation"].cancel({
       aid: highlight.id
     });
     return;
@@ -693,6 +2263,7 @@ function getUserInput(highlight) {
 
 function unwrap() {
   $(".annotate-wrapper > form").remove();
+  $(".annotate-wrapper > .note-and-links").remove();
   $(".annotation-edit").unwrap();
 } //generate the option element of a select statement
 
@@ -725,7 +2296,7 @@ function getTopicList(pid, aid, data) {
     initializeForm(pid, aid, data);
   }).catch(error => {
     console.error("topic fetch error: ", error);
-    toastr__WEBPACK_IMPORTED_MODULE_1___default.a.error("Unable to fetch bookmark topic list: ", error);
+    toastr__WEBPACK_IMPORTED_MODULE_2___default.a.error("Unable to fetch bookmark topic list: ", error);
   });
 }
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/src/jquery.js")))
@@ -1364,6 +2935,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _list__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./list */ "./src/js/modules/_bookmark/list.js");
 /* harmony import */ var _topics__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./topics */ "./src/js/modules/_bookmark/topics.js");
 /* harmony import */ var _selection__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./selection */ "./src/js/modules/_bookmark/selection.js");
+/* harmony import */ var _bookmark_annotate__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../_bookmark/annotate */ "./src/js/modules/_bookmark/annotate.js");
+/* harmony import */ var _link_setup__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../_link/setup */ "./src/js/modules/_link/setup.js");
 
 
 
@@ -1373,6 +2946,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
  //const topicsEndPoint = "https://s3.amazonaws.com/assets.christmind.info/wom/topics.json";
+
+
 
 
 
@@ -1631,7 +3206,9 @@ function initTranscriptPage(sharePid) {
   highlightHandler(); //disable/enable bookmark creation feature
 
   bookmarkFeatureHandler();
-  initializeBookmarkFeatureState(); //setup bookmark navigator if requested
+  initializeBookmarkFeatureState(); //setup bookmark link listener
+
+  Object(_link_setup__WEBPACK_IMPORTED_MODULE_12__["createLinkListener"])(_bookmark_annotate__WEBPACK_IMPORTED_MODULE_11__["getLink"]); //setup bookmark navigator if requested
 
   let pid = Object(_util_url__WEBPACK_IMPORTED_MODULE_6__["showBookmark"])();
 
@@ -1747,8 +3324,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! toastr */ "./node_modules/toastr/toastr.js");
 /* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(toastr__WEBPACK_IMPORTED_MODULE_1__);
 
+ //var clipboard;
 
-var clipboard;
+var clipboard = new Map();
 
 function setEvents(clip) {
   clip.on("success", e => {
@@ -1768,15 +3346,21 @@ function createInstance(selector) {
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   register: function (selector) {
-    if (!clipboard) {
-      clipboard = createInstance(selector);
+    let clip = clipboard.get(selector);
+
+    if (!clip) {
+      clip = createInstance(selector);
+      clipboard.set(selector, clip);
     }
 
-    return clipboard;
+    return clip;
   },
-  destroy: function () {
-    if (clipboard) {
-      clipboard.destroy();
+  destroy: function (selector) {
+    let clip = clipboard.get(selector);
+
+    if (clip) {
+      clip.destroy();
+      clipboard.delete(selector);
     }
   }
 });
@@ -4464,7 +6048,9 @@ const sprintf = __webpack_require__(/*! sprintf-js */ "./node_modules/sprintf-js
 //WWW = 99 This is the Library 
 
 
-const sourceId = 99; //length of pageKey excluding decimal portion
+const sourceId = 99;
+const sid = "www";
+const prefix = ""; //length of pageKey excluding decimal portion
 
 const keyLength = 7; // books (bid)
 
@@ -4686,6 +6272,35 @@ function getUrl(key) {
 
   return `/${decodedKey.bookId}/${unit}/`;
 }
+/*
+  Describe key in terms of source:book:unit:p
+*/
+
+
+function describeKey(key) {
+  let decodedKey = decodeKey(key, false);
+
+  if (decodedKey.error) {
+    return {
+      key: key,
+      error: true,
+      source: sid
+    };
+  }
+
+  let info = {
+    key: key,
+    source: sid,
+    book: decodedKey.bookId,
+    unit: contents[decodedKey.bookId][decodedKey.uid]
+  };
+
+  if (decodedKey.pid > -1) {
+    info.pid = `p${decodedKey.pid}`;
+  }
+
+  return info;
+}
 
 module.exports = {
   getNumberOfUnits: getNumberOfUnits,
@@ -4697,7 +6312,8 @@ module.exports = {
   genPageKey: genPageKey,
   genParagraphKey: genParagraphKey,
   decodeKey: decodeKey,
-  getUrl: getUrl
+  getUrl: getUrl,
+  describeKey: describeKey
 };
 
 /***/ }),
@@ -4905,6 +6521,88 @@ function getBookId() {
     });
   }
 });
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/src/jquery.js")))
+
+/***/ }),
+
+/***/ "./src/js/modules/_link/setup.js":
+/*!***************************************!*\
+  !*** ./src/js/modules/_link/setup.js ***!
+  \***************************************/
+/*! exports provided: createLinkListener */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* WEBPACK VAR INJECTION */(function($) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createLinkListener", function() { return createLinkListener; });
+const {
+  getUrl: www_getUrl
+} = __webpack_require__(/*! ../_config/key */ "./src/js/modules/_config/key.js");
+
+const {
+  getUrl: acim_getUrl
+} = __webpack_require__(/*! acim/modules/_config/key */ "../cmi-acim/src/js/modules/_config/key.js");
+
+const {
+  getUrl: acol_getUrl
+} = __webpack_require__(/*! acol/modules/_config/key */ "../cmi-acol/src/js/modules/_config/key.js");
+
+const {
+  getUrl: jsb_getUrl
+} = __webpack_require__(/*! jsb/modules/_config/key */ "../cmi-jsb/src/js/modules/_config/key.js");
+
+const {
+  getUrl: raj_getUrl
+} = __webpack_require__(/*! raj/modules/_config/key */ "../cmi-raj/src/js/modules/_config/key.js");
+
+const {
+  getUrl: wom_getUrl
+} = __webpack_require__(/*! wom/modules/_config/key */ "../cmi-acim/src/js/modules/_config/key.js");
+
+function getUrl(source, key) {
+  let url;
+
+  switch (source) {
+    case "acol":
+      url = acol_getUrl(key, true);
+      break;
+
+    case "acim":
+      url = acim_getUrl(key, true);
+      break;
+
+    case "jsb":
+      url = jsb_getUrl(key, true);
+      break;
+
+    case "raj":
+      url = raj_getUrl(key, true);
+      break;
+
+    case "wom":
+      url = wom_getUrl(key, true);
+      break;
+
+    case "www":
+      url = www_getUrl(key, true);
+      break;
+
+    default:
+      url = "/invalid/source";
+  }
+
+  return url;
+}
+
+function createLinkListener(getLink) {
+  $(".transcript").on("click", "td.follow-link-item", function (e) {
+    e.preventDefault();
+    let index = $(this).parent("tr").attr("data-index");
+    let linkInfo = getLink(index);
+    let link = JSON.parse(linkInfo.link);
+    console.log("url: %s", getUrl(link.desc.source, link.key));
+  });
+}
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/src/jquery.js")))
 
 /***/ }),

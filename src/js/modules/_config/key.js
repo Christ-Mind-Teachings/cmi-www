@@ -28,6 +28,8 @@ const sprintf = require("sprintf-js").sprintf;
 //RAJ = 13
 //WWW = 99 This is the Library 
 const sourceId = 99;
+const sid = "www";
+const prefix = "";
 
 //length of pageKey excluding decimal portion
 const keyLength = 7;
@@ -251,6 +253,30 @@ function getUrl(key) {
   return `/${decodedKey.bookId}/${unit}/`;
 }
 
+/*
+  Describe key in terms of source:book:unit:p
+*/
+function describeKey(key) {
+  let decodedKey = decodeKey(key, false);
+
+  if (decodedKey.error) {
+    return {key: key, error: true, source: sid};
+  }
+
+  let info = {
+    key: key,
+    source: sid,
+    book: decodedKey.bookId,
+    unit: contents[decodedKey.bookId][decodedKey.uid]
+  };
+
+  if (decodedKey.pid > -1) {
+    info.pid = `p${decodedKey.pid}`;
+  }
+
+  return info;
+}
+
 module.exports = {
   getNumberOfUnits: getNumberOfUnits,
   getBooks: getBooks,
@@ -261,5 +287,7 @@ module.exports = {
   genPageKey: genPageKey,
   genParagraphKey: genParagraphKey,
   decodeKey: decodeKey,
-  getUrl: getUrl
+  getUrl: getUrl,
+  describeKey: describeKey
 };
+
