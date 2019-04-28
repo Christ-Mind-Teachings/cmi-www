@@ -28,9 +28,9 @@ export function highlightSkippedAnnotations() {
 
   for (let a of skippedAnnotations) {
     let annotation = pageAnnotations[a];
-    console.log("annotation: %o", annotation);
+    //console.log("annotation: %o", annotation);
 
-    //all skiped annotations are on the same pid, so get id just once
+    //all skipped annotations are on the same pid, so get id just once
     if (!node) {
       node = document.getElementById(annotation.pid);
     }
@@ -278,6 +278,7 @@ function getSelectedText(range, fromNode = document.body) {
   Capture user text selection
 */
 export function initialize() {
+
   $("div.transcript.ui").on("mouseup", function(e) {
     e.preventDefault();
 

@@ -2,7 +2,6 @@
   Display list of bookmarks for user/source and allow for filtering by topic
 */
 
-import {getPageInfo} from "../_config/config";
 import net from "./bmnet";
 import notify from "toastr";
 import flatten from "lodash/flatten";
@@ -10,14 +9,18 @@ import uniqWith from "lodash/uniqWith";
 import store from "store";
 
 //import {getSourceId, getKeyInfo} from "../_config/key";
-const transcript = require("../_config/key");
+//const transcript = require("../_config/key");
+//import {getPageInfo} from "../_config/config";
 
 const uiBookmarkModal = ".bookmark.ui.modal";
 const uiOpenBookmarkModal = ".bookmark-modal-open";
 const uiModalOpacity = 0.5;
 
+//teaching specific constants
+let teaching = {}; 
+
 function bookmarkModalState(option, modalInfo) {
-  const name = "bm.www.modal";
+  const name = teaching.bm_modal_key;
   let info;
 
   switch(option) {
@@ -445,7 +448,7 @@ function populateModal(bookmarks) {
   //get page info for each page with bookmarks
   for (let pageKey in bookmarks) {
     if (pageKey !== "lastFetchDate" && pageKey !== "lastBuildDate") {
-      info.push(getPageInfo(pageKey, bookmarks[pageKey]));
+      info.push(teaching.getPageInfo(pageKey, bookmarks[pageKey]));
     }
   }
 
@@ -503,7 +506,7 @@ function populateModal(bookmarks) {
   We query bookmarks just once per day and whenever bookmarks have changed
 */
 function initList() {
-  const {sourceId} = transcript.getKeyInfo();
+  const {sourceId} = teaching.keyInfo.getKeyInfo();
 
   net.queryBookmarks(sourceId)
     .then((response) => {
@@ -527,7 +530,7 @@ function initBookmarkModal() {
       observeChanges: true,
       transition: "horizontal flip",
       onShow: function() {
-        console.log("calling initList()");
+        //console.log("calling initList()");
         initList();
       },
       onVisible: function() {
@@ -545,7 +548,8 @@ function initBookmarkModal() {
 }
 
 export default {
-  initialize: function() {
+  initialize: function(constants) {
+    teaching = constants;
     initBookmarkModal();
   }
 };

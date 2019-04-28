@@ -5,7 +5,7 @@
   cmi-api/bookmark repository for API.
 
   For signed in users, when a transcript page is loaded bookmarks are queried from the server
-  and stored locally. Bookmarks for users not signed in are stored only to lcoal storage.
+  and stored locally. Bookmarks for users not signed in are stored only to local storage.
 
   Operations for create, modify, and delete are performed locally and sent to the server
   for signed in users.
@@ -14,23 +14,23 @@
 import axios from "axios";
 import store from "store";
 import notify from "toastr";
-import {getUserInfo} from "../_user/netlify";
-import {updateSelectedText} from "./selection";
-
 import isEqual from "lodash/isEqual";
 import findIndex from "lodash/findIndex";
 import cloneDeep from "lodash/cloneDeep";
 
-//import {parseKey, getKeyInfo, genPageKey, genParagraphKey } from "../_config/key";
-const transcript = require("../_config/key");
-const bm_list_store = "bm.www.list";
-const bm_topic_list = "bm.www.topics";
+import {getUserInfo} from "../_user/netlify";
+import {updateSelectedText} from "./selection";
+import globals from "../../globals";
 
-//Index topics
-const topicsEndPoint = "https://93e93isn03.execute-api.us-east-1.amazonaws.com/latest";
+//const transcript = require("../_config/key");
+//const bm_list_store = "bm.www.list";
+//const bm_topic_list = "bm.www.topics";
 
-//Bookmark API
-const bookmarkApi = "https://rcd7l4adth.execute-api.us-east-1.amazonaws.com/latest";
+var teaching = {};
+
+export function netInit(constants) {
+  teaching = constants;
+}
 
 /*
   Get bookmark for paragraph pid from local storage. All bookmarks for the page
@@ -43,7 +43,7 @@ const bookmarkApi = "https://rcd7l4adth.execute-api.us-east-1.amazonaws.com/late
   but are incremented by one to form the key.
 */
 export function getBookmark(pid) {
-  const pageKey = transcript.genPageKey();
+  const pageKey = teaching.keyInfo.genPageKey();
   const bookmarks = store.get(pageKey);
 
   if (bookmarks && pid) {
@@ -63,21 +63,21 @@ export function getBookmark(pid) {
   otherwise get them from the server and store them locally
 */
 function getBookmarks() {
-  let pageKey = transcript.genPageKey();
+  let pageKey = teaching.keyInfo.genPageKey();
   const userInfo = getUserInfo();
 
   return new Promise((resolve, reject) => {
 
     //get bookmarks from server
     if (userInfo) {
-      axios.get(`${bookmarkApi}/bookmark/query/${userInfo.userId}/${pageKey}`)
+      axios.get(`${globals.bookmarkApi}/bookmark/query/${userInfo.userId}/${pageKey}`)
         .then((response) => {
 
           //convert to local data structure and store locally 
           if (response.data.response) {
             let bookmarks = {};
             response.data.response.forEach((b) => {
-              let key = transcript.parseKey(b.id);
+              let key = teaching.keyInfo.parseKey(b.id);
 
               //parson JSON to object
               for (let a of b.bookmark) {
@@ -115,7 +115,7 @@ function getBookmarks() {
 function queryBookmarks(key) {
   const retentionTime = 1000 * 60 * 60 * 8; //eight hours of milliseconds
   const userInfo = getUserInfo();
-  const keyInfo = transcript.getKeyInfo();
+  const keyInfo = teaching.keyInfo.getKeyInfo();
 
   return new Promise((resolve, reject) => {
     //get bookmarks from server
@@ -138,7 +138,7 @@ function queryBookmarks(key) {
       }
 
       //get from the server
-      axios.get(`${bookmarkApi}/bookmark/query/${userInfo.userId}/${key}`)
+      axios.get(`${globals.bookmarkApi}/bookmark/query/${userInfo.userId}/${key}`)
         .then((response) => {
           //convert to local data structure and store locally 
           if (response.data.response) {
@@ -185,11 +185,11 @@ function queryBookmarks(key) {
 }
 
 function storeBookmarkList(bookmarks, keyInfo) {
-  store.set(bm_list_store, bookmarks);
+  store.set(teaching.bm_list_store, bookmarks);
 }
 
 function getBookmarkList(keyInfo) {
-  return store.get(bm_list_store);
+  return store.get(teaching.bm_list_store);
 }
 
 /*
@@ -233,7 +233,7 @@ function buildBookmarkListFromLocalStore(keyInfo) {
 function buildBookmarkListFromServer(response, keyInfo) {
   let bookmarks = {};
   response.data.response.forEach((b) => {
-    let keyParts = transcript.parseKey(b.id);
+    let keyParts = teaching.keyInfo.parseKey(b.id);
     if (!bookmarks[keyParts.pageKey]) {
       bookmarks[keyParts.pageKey] = {};
     }
@@ -254,7 +254,7 @@ function buildBookmarkListFromServer(response, keyInfo) {
 */
 function postAnnotation(annotation) {
   //console.log("annotation: ", annotation);
-  const pageKey = transcript.genPageKey();
+  const pageKey = teaching.keyInfo.genPageKey();
   const userInfo = getUserInfo();
 
   //the annotation creation data; aka annotationId, aid
@@ -278,13 +278,13 @@ function postAnnotation(annotation) {
 
     let postBody = {
       userId: userInfo.userId,
-      bookmarkId: transcript.genParagraphKey(serverAnnotation.rangeStart, pageKey),
+      bookmarkId: teaching.keyInfo.genParagraphKey(serverAnnotation.rangeStart, pageKey),
       annotationId: serverAnnotation.creationDate ? serverAnnotation.creationDate : now,
       annotation: serverAnnotation
     };
 
     //console.log("posting: %o", serverAnnotation);
-    axios.post(`${bookmarkApi}/bookmark/annotation`, postBody)
+    axios.post(`${globals.bookmarkApi}/bookmark/annotation`, postBody)
       .then((data) => {
         if (data.data.message !== "OK") {
           console.error("not OK message: %s", data.data.message);
@@ -313,14 +313,14 @@ function postAnnotation(annotation) {
   Delete the annotation 'creationDate' for bookmark 'pid'
 */
 function deleteAnnotation(pid, creationDate) {
-  const pageKey = transcript.genPageKey();
+  const pageKey = teaching.keyInfo.genPageKey();
   const userInfo = getUserInfo();
 
   //delete annotation from server
   if (userInfo) {
-    let bookmarkId = transcript.genParagraphKey(pid, pageKey);
+    let bookmarkId = teaching.keyInfo.genParagraphKey(pid, pageKey);
 
-    axios.delete(`${bookmarkApi}/bookmark/annotation/${userInfo.userId}/${bookmarkId}/${creationDate}`)
+    axios.delete(`${globals.bookmarkApi}/bookmark/annotation/${userInfo.userId}/${bookmarkId}/${creationDate}`)
       .then(() => {
         console.log("deleted annotation: %s/%s/%s", userInfo.userId, bookmarkId, creationDate);
       })
@@ -337,7 +337,7 @@ function deleteAnnotation(pid, creationDate) {
 */
 export function fetchBookmark(bookmarkId, userId) {
   return new Promise((resolve, reject) => {
-    axios.get(`${bookmarkApi}/bookmark/${userId}/${bookmarkId}`)
+    axios.get(`${globals.bookmarkApi}/bookmark/${userId}/${bookmarkId}`)
       .then((response) => {
         if (response.data.response.Item) {
           for (let a of response.data.response.Item.bookmark) {
@@ -362,7 +362,7 @@ export function fetchBookmark(bookmarkId, userId) {
   We get the bookmark from local storage when the user is not signed in also.
 */
 function getAnnotation(pid, aid) {
-  const pageKey = transcript.genPageKey();
+  const pageKey = teaching.keyInfo.genPageKey();
 
   let data;
   let annotation;
@@ -395,7 +395,7 @@ function getAnnotation(pid, aid) {
 */
 function fetchTopics() {
   const userInfo = getUserInfo();
-  let topics = store.get(bm_topic_list);
+  let topics = store.get(teaching.bm_topic_list);
 
   //keep topics in cache for 2 hours
   const retentionTime = 60 * 1000 * 60 * 2;
@@ -409,7 +409,7 @@ function fetchTopics() {
           lastFetchDate: 0,
           topics: []
         };
-        store.set(bm_topic_list, topics);
+        store.set(teaching.bm_topic_list, topics);
       }
       resolve(topics);
       return;
@@ -421,14 +421,14 @@ function fetchTopics() {
       return;
     }
 
-    let sourceId = transcript.getKeyInfo().sourceId.toString(10);
+    let sourceId = teaching.keyInfo.getKeyInfo().sourceId.toString(10);
 
     //user signed in, we need to get topics from server
-    axios.get(`${topicsEndPoint}/user/${userInfo.userId}/topics/${sourceId}`)
+    axios.get(`${globals.topicsEndPoint}/user/${userInfo.userId}/topics/${sourceId}`)
       .then((topicInfo) => {
         //console.log("topicInfo.data: ", topicInfo.data);
         topicInfo.data.lastFetchDate = Date.now();
-        store.set(bm_topic_list, topicInfo.data);
+        store.set(teaching.bm_topic_list, topicInfo.data);
         resolve(topicInfo.data);
       })
       .catch((error) => {
@@ -443,7 +443,7 @@ function fetchTopics() {
   write topics to database if user signed in
 */
 function addToTopicList(newTopics) {
-  let topics = store.get(bm_topic_list);
+  let topics = store.get(teaching.bm_topic_list);
   let concatTopics = topics.topics.concat(newTopics);
 
   //improve sort
@@ -467,18 +467,18 @@ function addToTopicList(newTopics) {
   });
 
   topics.topics = concatTopics;
-  store.set(bm_topic_list, topics);
+  store.set(teaching.bm_topic_list, topics);
 
   //add topics to server if user signed in
   let userInfo = getUserInfo();
   if (userInfo) {
     let postBody = {
       userId: userInfo.userId,
-      sourceId: transcript.getKeyInfo().sourceId,
+      sourceId: teaching.keyInfo.getKeyInfo().sourceId,
       topicList: newTopics
     };
-    console.log("newTopics: %o", newTopics);
-    axios.post(`${topicsEndPoint}/user/topics`, postBody)
+    //console.log("newTopics: %o", newTopics);
+    axios.post(`${globals.topicsEndPoint}/user/topics`, postBody)
       .then((response) => {
         //console.log("addToTopicList: %o", response.data);
       })
@@ -496,7 +496,7 @@ function addToTopicList(newTopics) {
   to be rebuilt.
 */
 function inValidateBookmarkList() {
-  const keyInfo = transcript.getKeyInfo();
+  const keyInfo = teaching.keyInfo.getKeyInfo();
 
   let bmList = getBookmarkList(keyInfo);
 
@@ -513,7 +513,7 @@ function inValidateBookmarkList() {
     it needs to be recreated.
 */
 function storeAnnotation(annotation, creationDate) {
-  const pageKey = transcript.genPageKey();
+  const pageKey = teaching.keyInfo.genPageKey();
 
   //make annotation key
   let pid = parseInt(annotation.rangeStart.substr(1), 10) + 1;
@@ -581,7 +581,7 @@ function storeAnnotation(annotation, creationDate) {
     aid: annotation id
 */
 function deleteLocalAnnotation(pid, aid) {
-  const pageKey = transcript.genPageKey();
+  const pageKey = teaching.keyInfo.genPageKey();
 
   //make annotation id
   pid = parseInt(pid.substr(1), 10) + 1;

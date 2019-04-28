@@ -2,7 +2,7 @@
   Email list management - for sharing bookmarks via email
 */
 import axios from "axios";
-import constants from "../../constants";
+import globals from "../../globals";
 import notify from "toastr";
 import {getUserInfo} from "../_user/netlify";
 
@@ -55,7 +55,7 @@ function createEventHandlers() {
     parent.remove();
     enableSave();
 
-    console.log("after delete: maillist %o", maillist);
+    //console.log("after delete: maillist %o", maillist);
   });
 
   //edit
@@ -118,7 +118,7 @@ function createEventHandlers() {
       //close form
       $(".addto-maillist-dialog-wrapper").addClass("hide");
       enableSave();
-      console.log("after Update: maillist: %o", maillist);
+      //console.log("after Update: maillist: %o", maillist);
     }
 
     $("#addto-maillist-form").form("clear");
@@ -145,7 +145,7 @@ export function loadEmailListTable() {
   let api = `${userInfo.userId}/maillist`;
 
   $(".sync.icon").addClass("loading");
-  axios(`${constants.user}/${api}`)
+  axios(`${globals.user}/${api}`)
     .then(response => {
       $(".sync.icon.loading").removeClass("loading");
       maillist = response.data.maillist;
@@ -177,7 +177,7 @@ function saveChanges() {
   };
 
   $(".sync.icon").addClass("loading");
-  axios.post(`${constants.user}/${api}`, body)
+  axios.post(`${globals.user}/${api}`, body)
     .then(response => {
       $(".sync.icon.loading").removeClass("loading");
       if (response.data.message === "OK") {

@@ -1,13 +1,15 @@
-import constants from "../../constants";
-import {getUserInfo} from "../_user/netlify";
 import axios from "axios";
 import notify from "toastr";
-import { loadEmailListTable } from "../_user/email";
+import globals from "../../globals";
+import {getUserInfo} from "../_user/netlify";
 
+//teaching specific constants
+let teaching = {};
 let shareInfo = {};
 
 //load email list and setup submit and cancel listeners
-export function initShareByEmail() {
+export function initShareByEmail(constants) {
+  teaching = constants;
   loadEmailList();
 
   //submit
@@ -44,13 +46,13 @@ export function initShareByEmail() {
 
     shareInfo.senderName = userInfo.name;
     shareInfo.senderEmail = userInfo.email;
-    shareInfo.sid = constants.sid;
+    shareInfo.sid = teaching.sid;
     //console.log("shareInfo: %o", shareInfo);
 
     //hide form not sure if this will work
     $(".email-share-dialog-wrapper").addClass("hide");
 
-    axios.post(constants.share, shareInfo)
+    axios.post(globals.share, shareInfo)
       .then((response) => {
         if (response.status === 200) {
           notify.info("Email Sent!");
@@ -102,7 +104,7 @@ function loadEmailList() {
   let maillist = [];
   let api = `${userInfo.userId}/maillist`;
 
-  axios(`${constants.user}/${api}`)
+  axios(`${globals.user}/${api}`)
     .then(response => {
       maillist = response.data.maillist;
       let selectHtml = makeMaillistSelect(maillist);

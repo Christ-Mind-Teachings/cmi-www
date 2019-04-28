@@ -17,7 +17,10 @@ import {highlightSkippedAnnotations, highlight} from "../_bookmark/selection";
 import range from "lodash/range";
 import scroll from "scroll-into-view";
 
-const key = require("../_config/key");
+//const key = require("../_config/key");
+
+//teaching specific constants
+let teaching = {};
 
 //persist shared annotation so it can be unwraped when closed
 let sharedAnnotation;
@@ -99,7 +102,7 @@ function showAnnotation() {
     return false;
   }
 
-  let bookmarkId = key.genParagraphKey(pid);
+  let bookmarkId = teaching.keyInfo.genParagraphKey(pid);
 
   /*
     fetch shared bookmark and wrap it in a raised segment
@@ -156,7 +159,8 @@ function showAnnotation() {
 }
 
 export default {
-  initialize: function() {
+  initialize: function(constants) {
+    teaching = constants;
     return showAnnotation();
   }
 };

@@ -2466,182 +2466,6 @@ function createSubmitHandler($form) {
 
 /***/ }),
 
-/***/ "./src/js/modules/_share/share.js":
-/*!****************************************!*\
-  !*** ./src/js/modules/_share/share.js ***!
-  \****************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var _util_url__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../_util/url */ "./src/js/modules/_util/url.js");
-/* harmony import */ var _bookmark_bmnet__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../_bookmark/bmnet */ "./src/js/modules/_bookmark/bmnet.js");
-/* harmony import */ var _bookmark_selection__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../_bookmark/selection */ "./src/js/modules/_bookmark/selection.js");
-/* harmony import */ var lodash_range__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lodash/range */ "./node_modules/lodash/range.js");
-/* harmony import */ var lodash_range__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(lodash_range__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var scroll_into_view__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! scroll-into-view */ "./node_modules/scroll-into-view/scrollIntoView.js");
-/* harmony import */ var scroll_into_view__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(scroll_into_view__WEBPACK_IMPORTED_MODULE_4__);
-/*
-  NOTE: When an annotation is shared and seen on a computer with bookmarks there could be a conflict between the users
-        bookmarks and the shared bookmark. Not sure what to do in this case...
-
-        An idea:
-        Disable highlighting annotations on the paragraph of the shared annotation:w
-
-        Approach:
-        Load all bookmarks except that of a shared annotation.
-        Add a close button to the shared annotation
-        When the close button is pressed then add the omitted bookmark
-
-*/
-
-
-
-
-
-
-const key = __webpack_require__(/*! ../_config/key */ "./src/js/modules/_config/key.js"); //persist shared annotation so it can be unwraped when closed
-
-
-let sharedAnnotation;
-/*
-  check if user has bookmark that was not highlighted due to shared annotion and
-  highlight the bookmarks annotations. This is called if there is a problem getting
-  the requested bookmark and when the user closes the share raised segment
-*/
-
-function clearSharedAnnotation() {
-  console.log("clearSharedAnnotation"); //unwrap shared annotation
-
-  if (sharedAnnotation.selectedText) {
-    sharedAnnotation.selectedText.wrap.unwrap();
-  } //remove wrapper
-
-
-  $("#shared-annotation-wrapper > .header").remove();
-  $(".shared-selected-annotation").unwrap();
-  $(".selected-annotation").removeClass("shared-selected-annotation");
-  $(".bookmark-selected-text.shared").removeClass("shared"); //highlight user annotations that were skipped because they were on same paragraph as shared annotation
-
-  Object(_bookmark_selection__WEBPACK_IMPORTED_MODULE_2__["highlightSkippedAnnotations"])();
-}
-
-function initCloseHandler() {
-  $(".share-annotation-close").on("click", function (e) {
-    e.preventDefault();
-    clearSharedAnnotation();
-  });
-} //highlights an annotation by wrapping it in a segment
-
-
-function wrapRange(annotation) {
-  let rangeArray = [annotation.rangeStart, annotation.rangeEnd];
-  let numericRange = rangeArray.map(r => parseInt(r.substr(1), 10));
-  let annotationRange = lodash_range__WEBPACK_IMPORTED_MODULE_3___default()(numericRange[0], numericRange[1] + 1);
-  let header = `
-    <h4 class="ui header">
-      <i title="Close" class="share-annotation-close small window close icon"></i>
-      <div class="content">
-        ${annotation.Comment ? annotation.Comment : "No Comment"}
-      </div>
-    </h4>
-  `;
-
-  for (let i = 0; i < annotationRange.length; i++) {
-    $(`#p${annotationRange[i]}`).addClass("shared-selected-annotation");
-  }
-
-  $(".shared-selected-annotation").wrapAll("<div id='shared-annotation-wrapper' class='ui raised segment'></div>");
-  $("#shared-annotation-wrapper").prepend(header); //scroll into view
-
-  scroll_into_view__WEBPACK_IMPORTED_MODULE_4___default()(document.getElementById("shared-annotation-wrapper"), {
-    align: {
-      top: 0.2
-    }
-  });
-}
-/*
-  Display annotation requested by query parameter "as"
-  ?as=pid:annotationId:userId
-*/
-
-
-function showAnnotation() {
-  let info = Object(_util_url__WEBPACK_IMPORTED_MODULE_0__["showAnnotation"])();
-
-  if (!info) {
-    return false;
-  }
-
-  let [pid, aid, uid] = decodeURIComponent(info).split(":"); //make sure pid exists
-
-  if (!pid) {
-    return false;
-  }
-
-  if ($(`#${pid}`).length === 0) {
-    // console.log("invalid pid: %s", pid);
-    return false;
-  }
-
-  let bookmarkId = key.genParagraphKey(pid);
-  /*
-    fetch shared bookmark and wrap it in a raised segment
-    - if user has a bookmark in the same paragraph as the shared annotation, it will not be highlighted so
-      if we fail to get the bookmark or can't find the shared annotation we need to highlight the users
-      annotations for the paragraph before returning
-  */
-
-  Object(_bookmark_bmnet__WEBPACK_IMPORTED_MODULE_1__["fetchBookmark"])(bookmarkId, uid).then(response => {
-    //bookmark not found
-    if (!response.Item) {
-      // console.log("bookmark not found");
-      Object(_bookmark_selection__WEBPACK_IMPORTED_MODULE_2__["highlightSkippedAnnotations"])();
-      return;
-    }
-
-    let bookmark = response.Item.bookmark; // console.log("bookmark from fetch: %o", bookmark);
-
-    let annotation = bookmark.find(a => a.creationDate.toString(10) === aid);
-
-    if (!annotation) {
-      // console.log("annotation not found");
-      Object(_bookmark_selection__WEBPACK_IMPORTED_MODULE_2__["highlightSkippedAnnotations"])();
-      return;
-    } // console.log("annotation: %o", annotation);
-
-
-    let node = document.getElementById(annotation.rangeStart);
-
-    if (annotation.selectedText) {
-      Object(_bookmark_selection__WEBPACK_IMPORTED_MODULE_2__["highlight"])(annotation.selectedText, node);
-    }
-
-    $(`[data-aid="${aid}"]`).addClass("shared");
-    wrapRange(annotation);
-    sharedAnnotation = annotation;
-    initCloseHandler(); //console.log("sharing pid: %s", pid);
-    //stop page loading indicator
-
-    Object(_util_url__WEBPACK_IMPORTED_MODULE_0__["loadComplete"])();
-  }).catch(err => {
-    //stop page loading indicator
-    Object(_util_url__WEBPACK_IMPORTED_MODULE_0__["loadComplete"])();
-    console.error(err);
-  });
-  return pid;
-}
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-  initialize: function () {
-    return showAnnotation();
-  }
-});
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/src/jquery.js")))
-
-/***/ }),
-
 /***/ "./src/js/modules/_util/facebook.js":
 /*!******************************************!*\
   !*** ./src/js/modules/_util/facebook.js ***!
@@ -2710,24 +2534,19 @@ __webpack_require__.r(__webpack_exports__);
 /* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var _vendor_semantic_semantic_min_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../vendor/semantic/semantic.min.js */ "./src/vendor/semantic/semantic.min.js");
 /* harmony import */ var _vendor_semantic_semantic_min_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_vendor_semantic_semantic_min_js__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _modules_util_url__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modules/_util/url */ "./src/js/modules/_util/url.js");
-/* harmony import */ var _modules_config_config__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modules/_config/config */ "./src/js/modules/_config/config.js");
-/* harmony import */ var _modules_bookmark_shareByEmail__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/_bookmark/shareByEmail */ "./src/js/modules/_bookmark/shareByEmail.js");
-/* harmony import */ var _modules_bookmark_bookmark__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./modules/_bookmark/bookmark */ "./src/js/modules/_bookmark/bookmark.js");
-/* harmony import */ var _modules_search_search__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./modules/_search/search */ "./src/js/modules/_search/search.js");
-/* harmony import */ var _modules_user_netlify__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./modules/_user/netlify */ "./src/js/modules/_user/netlify.js");
-/* harmony import */ var _modules_contents_toc__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./modules/_contents/toc */ "./src/js/modules/_contents/toc.js");
-/* harmony import */ var _modules_audio_audio__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./modules/_audio/audio */ "./src/js/modules/_audio/audio.js");
-/* harmony import */ var _modules_util_facebook__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./modules/_util/facebook */ "./src/js/modules/_util/facebook.js");
-/* harmony import */ var _modules_share_share__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./modules/_share/share */ "./src/js/modules/_share/share.js");
-/* harmony import */ var _modules_about_about__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./modules/_about/about */ "./src/js/modules/_about/about.js");
-/* harmony import */ var _modules_forms_contact__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./modules/_forms/contact */ "./src/js/modules/_forms/contact.js");
-/* harmony import */ var _modules_video_acq__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./modules/_video/acq */ "./src/js/modules/_video/acq.js");
+/* harmony import */ var _modules_user_netlify__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modules/_user/netlify */ "./src/js/modules/_user/netlify.js");
+/* harmony import */ var _modules_util_facebook__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/_util/facebook */ "./src/js/modules/_util/facebook.js");
+/* harmony import */ var _modules_page_startup__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./modules/_page/startup */ "./src/js/modules/_page/startup.js");
+/* harmony import */ var _modules_config_config__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./modules/_config/config */ "./src/js/modules/_config/config.js");
+/* harmony import */ var _modules_bookmark_start__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./modules/_bookmark/start */ "./src/js/modules/_bookmark/start.js");
+/* harmony import */ var _modules_search_search__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./modules/_search/search */ "./src/js/modules/_search/search.js");
+/* harmony import */ var _modules_contents_toc__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./modules/_contents/toc */ "./src/js/modules/_contents/toc.js");
+/* harmony import */ var _modules_audio_audio__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./modules/_audio/audio */ "./src/js/modules/_audio/audio.js");
+/* harmony import */ var _modules_about_about__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./modules/_about/about */ "./src/js/modules/_about/about.js");
+/* harmony import */ var _modules_forms_contact__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./modules/_forms/contact */ "./src/js/modules/_forms/contact.js");
+/* harmony import */ var _modules_video_acq__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./modules/_video/acq */ "./src/js/modules/_video/acq.js");
 /* eslint no-console: off */
-
-/*
-  semantic requires jquery which is loaded used
-  webpack.ProvidePlugin
-*/
+ //common modules
 
 
 
@@ -2740,112 +2559,30 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-
-
-/*
- * For all transcript paragraphs -
- *   That are not footnotes and that don't have class .omit
- *
- * Assign id="p + paragraph number" and class="cmiTranPara"
- *
- * This is used for bookmarks and audio playback and also represent
- * paragraphs that are indexed for search
- *
- * This code is specific to transcript pages but included in
- * common.js because bookmarks and playfromhere features depend
- * on paragraphs having class cmiTranPara.
- */
-
-function labelParagraphs() {
-  var count = 0;
-  var omit = 0;
-  var transcriptParagraphs = $(".transcript p");
-
-  if (transcriptParagraphs.length === 0) {
-    return;
-  } //add .cmiTranPara, #id and paragraph numbers to each paragraph that doesn't have .omit
-
-
-  transcriptParagraphs.each(function (idx) {
-    //skip omitted paragraphs (they are omitted in the markdown file)
-    if ($(this).hasClass("omit")) {
-      omit++;
-      return;
-    } //skip footnote paragraphs
-
-
-    if ($(this).parents("div.footnotes").length > 0) {
-      //console.log("footnote paragraph");
-      return;
-    }
-
-    count++;
-    $(this).attr("id", "p" + idx).addClass("cmiTranPara").prepend(`<span class='pnum'>(p${idx})&nbsp;</span>`);
-  }); //log number of not omitted paragraphs
-  //-- used to verify search indexing
-
-  console.log("page: number of paragraphs: %s", count + omit); //console.log("conf: number of paragraphs: %s", config.unit.pNum);
-}
-/*
-  Fix main menu to top of page when scrolled
-*/
-
-
-function initStickyMenu() {
-  // fix main menu to page on passing
-  $(".main.menu").visibility({
-    type: "fixed"
-  }); // show dropdown on hover
-
-  $(".main.menu  .ui.dropdown").dropdown({
-    on: "hover"
-  });
-} //create listener to toggle display of paragraph numbers
-
-
-function createParagraphNumberToggleListener() {
-  $(".toggle-paragraph-markers").on("click", function (e) {
-    e.preventDefault();
-    let el = $(".transcript.ui.text.container");
-
-    if (el.hasClass("hide-pnum")) {
-      el.removeClass("hide-pnum");
-    } else {
-      el.addClass("hide-pnum");
-    }
-  });
-}
 
 $(document).ready(() => {
-  initStickyMenu();
   Object(_modules_util_url__WEBPACK_IMPORTED_MODULE_1__["loadStart"])();
-  labelParagraphs();
-  createParagraphNumberToggleListener();
-  _modules_user_netlify__WEBPACK_IMPORTED_MODULE_6__["default"].initialize();
-  _modules_util_facebook__WEBPACK_IMPORTED_MODULE_9__["default"].initialize();
-  _modules_about_about__WEBPACK_IMPORTED_MODULE_11__["default"].initialize();
-  _modules_forms_contact__WEBPACK_IMPORTED_MODULE_12__["default"].initialize("acq-contact-form");
-  Object(_modules_video_acq__WEBPACK_IMPORTED_MODULE_13__["initialize"])(); //load config file and do initializations that depend on a loaded config file
+  Object(_modules_page_startup__WEBPACK_IMPORTED_MODULE_4__["initTranscriptPage"])();
+  _modules_user_netlify__WEBPACK_IMPORTED_MODULE_2__["default"].initialize();
+  _modules_util_facebook__WEBPACK_IMPORTED_MODULE_3__["default"].initialize();
+  _modules_about_about__WEBPACK_IMPORTED_MODULE_10__["default"].initialize();
+  _modules_forms_contact__WEBPACK_IMPORTED_MODULE_11__["default"].initialize("acq-contact-form");
+  Object(_modules_video_acq__WEBPACK_IMPORTED_MODULE_12__["initialize"])(); //load config file and do initializations that depend on a loaded config file
 
-  Object(_modules_config_config__WEBPACK_IMPORTED_MODULE_2__["loadConfig"])(Object(_modules_contents_toc__WEBPACK_IMPORTED_MODULE_7__["getBookId"])()).then(result => {
-    _modules_search_search__WEBPACK_IMPORTED_MODULE_5__["default"].initialize();
+  Object(_modules_config_config__WEBPACK_IMPORTED_MODULE_5__["loadConfig"])(Object(_modules_contents_toc__WEBPACK_IMPORTED_MODULE_8__["getBookId"])()).then(result => {
+    _modules_search_search__WEBPACK_IMPORTED_MODULE_7__["default"].initialize();
     /*
       result of 0 indicates no contents config found
       - toc, and audio depend on config file
     */
 
     if (result !== 0) {
-      _modules_contents_toc__WEBPACK_IMPORTED_MODULE_7__["default"].initialize("transcript");
-      _modules_audio_audio__WEBPACK_IMPORTED_MODULE_8__["default"].initialize();
+      _modules_contents_toc__WEBPACK_IMPORTED_MODULE_8__["default"].initialize("transcript");
+      _modules_audio_audio__WEBPACK_IMPORTED_MODULE_9__["default"].initialize();
     }
 
-    Object(_modules_util_url__WEBPACK_IMPORTED_MODULE_1__["showParagraph"])(); //get pid of shared annotation and pass it to bookmark.initizalize
-    //so any bookmarks defined on the shared paragraph won't be highlighted
-    //until the share window is closed
-
-    let pid = _modules_share_share__WEBPACK_IMPORTED_MODULE_10__["default"].initialize();
-    _modules_bookmark_bookmark__WEBPACK_IMPORTED_MODULE_4__["default"].initialize(pid);
-    Object(_modules_bookmark_shareByEmail__WEBPACK_IMPORTED_MODULE_3__["initShareByEmail"])();
+    Object(_modules_util_url__WEBPACK_IMPORTED_MODULE_1__["showParagraph"])();
+    Object(_modules_bookmark_start__WEBPACK_IMPORTED_MODULE_6__["bookmarkStart"])("transcript");
 
     if ($(".disable-paragraph-marker").length > 0) {
       $(".toggle-paragraph-markers").eq(0).trigger("click");

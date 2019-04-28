@@ -25,9 +25,7 @@ One of the goals of this site is to bring all the bits and pieces of a teaching 
 
 Another goal is to integrate audio, where present, with the written word so you can read along as you listen and not loose your place. See the <em>Get Acquainted</em> guide for details of this and other features of the library.
 
-The intent of the library is to offer simple, readable, and uncluttered access to the material herein. The interface is terse by design so be sure to poke around and get familiar with the features available. Start by clicking the <i class="question icon"></i> option in the menu bar of each page. Video documentation is coming soon.
-
-If you've used the library before you'll notice big changes. The old site is still available by clicking the Original Edition below.
+The intent of the library is to offer simple, readable, and uncluttered access to the material herein. The interface is terse by design so be sure to poke around and get familiar with the features available. Start by clicking the <i class="question icon"></i> option in the menu bar of each page. Video documentation is also available.
 
 <div id="page-contents" class="ui three cards">
   <div class="card">

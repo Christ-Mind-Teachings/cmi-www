@@ -37,10 +37,15 @@ export function createLinkListener(getLink) {
   $(".transcript").on("click", "td.follow-link-item", function(e) {
     e.preventDefault();
 
+    //get link info
     let index = $(this).parent("tr").attr("data-index");
     let linkInfo = getLink(index);
 
+    //build url
     let link = JSON.parse(linkInfo.link);
-    console.log("url: %s", getUrl(link.desc.source, link.key));
+    let url = getUrl(link.desc.source, link.key);
+
+    //console.log("url: %s", url);
+    location.href = `${url}?v=${link.desc.pid}`;
   });
 }

@@ -147,7 +147,7 @@
 /******/
 /******/
 /******/ 	// add entry module to deferred list
-/******/ 	deferredModules.push([2,"vendors~page~profile~transcript","vendors~page","page~profile~transcript"]);
+/******/ 	deferredModules.push([2,"vendors~page~profile~transcript","page~profile~transcript"]);
 /******/ 	// run deferred modules when ready
 /******/ 	return checkDeferredModules();
 /******/ })
@@ -232,14 +232,15 @@ function createSubmitHandler($form) {
 __webpack_require__.r(__webpack_exports__);
 /* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var _vendor_semantic_semantic_min_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../vendor/semantic/semantic.min.js */ "./src/vendor/semantic/semantic.min.js");
 /* harmony import */ var _vendor_semantic_semantic_min_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_vendor_semantic_semantic_min_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _modules_bookmark_bookmark__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modules/_bookmark/bookmark */ "./src/js/modules/_bookmark/bookmark.js");
-/* harmony import */ var _modules_search_search__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modules/_search/search */ "./src/js/modules/_search/search.js");
-/* harmony import */ var _modules_contents_toc__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/_contents/toc */ "./src/js/modules/_contents/toc.js");
-/* harmony import */ var _modules_user_netlify__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./modules/_user/netlify */ "./src/js/modules/_user/netlify.js");
-/* harmony import */ var _modules_about_about__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./modules/_about/about */ "./src/js/modules/_about/about.js");
-/* harmony import */ var _modules_forms_subscribe__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./modules/_forms/subscribe */ "./src/js/modules/_forms/subscribe.js");
-/* harmony import */ var gsap__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! gsap */ "./node_modules/gsap/index.js");
+/* harmony import */ var _modules_user_netlify__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modules/_user/netlify */ "./src/js/modules/_user/netlify.js");
+/* harmony import */ var _modules_page_startup__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modules/_page/startup */ "./src/js/modules/_page/startup.js");
+/* harmony import */ var _modules_bookmark_start__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/_bookmark/start */ "./src/js/modules/_bookmark/start.js");
+/* harmony import */ var _modules_search_search__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./modules/_search/search */ "./src/js/modules/_search/search.js");
+/* harmony import */ var _modules_contents_toc__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./modules/_contents/toc */ "./src/js/modules/_contents/toc.js");
+/* harmony import */ var _modules_about_about__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./modules/_about/about */ "./src/js/modules/_about/about.js");
+/* harmony import */ var _modules_forms_subscribe__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./modules/_forms/subscribe */ "./src/js/modules/_forms/subscribe.js");
 /* eslint no-console: off */
+ //common modules
 
 
 
@@ -247,57 +248,17 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-
-
-function initAnimation() {
-  let delay = 0.2; //$("#page-contents").on("mouseover", "[data-book]", function(e) {
-
-  $("#page-contents").on("mouseover", ".card > a", function (e) {
-    console.log("mouse over");
-    gsap__WEBPACK_IMPORTED_MODULE_7__["TweenMax"].to($(this), delay, {
-      className: "+=gsap-hover"
-    });
-    gsap__WEBPACK_IMPORTED_MODULE_7__["TweenMax"].to($(this), delay, {
-      scale: "1.1"
-    });
-  }); //$("#page-contents").on("mouseout", "[data-book]", function(e) {
-
-  $("#page-contents").on("mouseout", ".card > a", function (e) {
-    console.log("mouse over");
-    gsap__WEBPACK_IMPORTED_MODULE_7__["TweenMax"].to($(this), delay, {
-      className: "-=gsap-hover"
-    });
-    gsap__WEBPACK_IMPORTED_MODULE_7__["TweenMax"].to($(this), delay, {
-      scale: "1.0"
-    });
-  });
-}
-/*
-  Fix main menu to top of page when scrolled
-*/
-
-
-function initStickyMenu() {
-  // fix main menu to page on passing
-  $(".main.menu").visibility({
-    type: "fixed"
-  }); //show dropdown on hover
-
-  $(".main.menu  .ui.dropdown").dropdown({
-    on: "hover"
-  });
-}
 
 $(document).ready(() => {
-  initStickyMenu();
-  _modules_bookmark_bookmark__WEBPACK_IMPORTED_MODULE_1__["default"].initialize();
-  _modules_search_search__WEBPACK_IMPORTED_MODULE_2__["default"].initialize();
-  _modules_user_netlify__WEBPACK_IMPORTED_MODULE_4__["default"].initialize();
-  _modules_contents_toc__WEBPACK_IMPORTED_MODULE_3__["default"].initialize("page");
-  _modules_about_about__WEBPACK_IMPORTED_MODULE_5__["default"].initialize(); //init subscribe form in footer
+  Object(_modules_page_startup__WEBPACK_IMPORTED_MODULE_2__["initStickyMenu"])();
+  Object(_modules_bookmark_start__WEBPACK_IMPORTED_MODULE_3__["bookmarkStart"])("page");
+  _modules_search_search__WEBPACK_IMPORTED_MODULE_4__["default"].initialize();
+  _modules_user_netlify__WEBPACK_IMPORTED_MODULE_1__["default"].initialize();
+  _modules_contents_toc__WEBPACK_IMPORTED_MODULE_5__["default"].initialize("page");
+  _modules_about_about__WEBPACK_IMPORTED_MODULE_6__["default"].initialize(); //init subscribe form in footer
 
-  _modules_forms_subscribe__WEBPACK_IMPORTED_MODULE_6__["default"].initialize();
-  initAnimation();
+  _modules_forms_subscribe__WEBPACK_IMPORTED_MODULE_7__["default"].initialize();
+  Object(_modules_page_startup__WEBPACK_IMPORTED_MODULE_2__["initAnimation"])(".card > a");
 });
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/src/jquery.js")))
 

@@ -1,19 +1,21 @@
 
-//import {getPageInfo} from "../_config/config";
 import intersection from "lodash/intersection";
 import intersectionWith from "lodash/intersectionWith";
 import range from "lodash/range";
 import store from "store";
 import scroll from "scroll-into-view";
-import {getUserInfo} from "../_user/netlify";
 import notify from "toastr";
+
 import {shareByEmail} from "./shareByEmail";
 import clipboard from "./clipboard";
+import {getUserInfo} from "../_user/netlify";
 
-//import {getSourceId, genPageKey} from "../_config/key";
-const transcript = require("../_config/key");
-const bm_modal_store = "bm.www.modal";
-const bm_list_store = "bm.www.list";
+//const transcript = require("../_config/key");
+//const bm_modal_store = "bm.www.modal";
+//const bm_list_store = "bm.www.list";
+
+//teaching specific constants
+let teaching = {};
 
 let shareEventListenerCreated = false;
 let gPageKey;
@@ -117,7 +119,7 @@ function getBookmarkUrl(bookmarks, pageKey, pid) {
   }
   else {
     //we have a bookmark with no selected text, have to get the url in another way
-    url = `${url_prefix}${transcript.getUrl(pageKey)}?bkmk=${bookmark[0].rangeStart}`;
+    url = `${url_prefix}${teaching.keyInfo.getUrl(pageKey)}?bkmk=${bookmark[0].rangeStart}`;
   }
 
   /*
@@ -130,7 +132,7 @@ function getBookmarkUrl(bookmarks, pageKey, pid) {
         }
         else {
           //we have a bookmark with no selected text, have to get the url in another way
-          url = `${transcript.getUrl(pageKey)}?bkmk=${bookmark[prop][0].rangeStart}`;
+          url = `${teaching.keyInfo.getUrl(pageKey)}?bkmk=${bookmark[prop][0].rangeStart}`;
         }
         break;
       }
@@ -457,10 +459,10 @@ function getCurrentBookmark(pageKey, actualPid, allBookmarks, bmModal, whoCalled
   arg: pid - paragraph id.
 */
 function bookmarkManager(actualPid) {
-  let sourceId = transcript.getSourceId();
-  let pageKey = transcript.genPageKey().toString(10);
-  let bmList = store.get(bm_list_store);
-  let bmModal = store.get(bm_modal_store);
+  let sourceId = teaching.keyInfo.getSourceId();
+  let pageKey = teaching.keyInfo.genPageKey().toString(10);
+  let bmList = store.get(teaching.bm_list_store);
+  let bmModal = store.get(teaching.bm_modal_store);
 
   if (bmList) {
     //store globally
@@ -511,7 +513,7 @@ function bookmarkManager(actualPid) {
       });
   }
   else {
-    console.log(bm_list_store);
+    console.log(teaching.bm_list_store);
   }
 }
 
@@ -524,8 +526,8 @@ function bookmarkManager(actualPid) {
 */
 function updateNavigator(pid, update) {
   //console.log("updateNavigator, pid: %s, update: %s", pid, update);
-  let bmList = store.get(bm_list_store);
-  let bmModal = store.get(bm_modal_store);
+  let bmList = store.get(teaching.bm_list_store);
+  let bmModal = store.get(teaching.bm_modal_store);
   getCurrentBookmark(gPageKey, pid, bmList, bmModal, update);
 }
 
@@ -782,6 +784,7 @@ function initClickListeners() {
 
   Initialize the bookmark navigator so they can follow the list of bookmarks
 */
-export function initNavigator(actualPid) {
+export function initNavigator(actualPid, constants) {
+  teaching = constants;
   bookmarkManager(actualPid);
 }

@@ -1,13 +1,12 @@
 import notify from "toastr";
 import store from "store";
-import net, {getBookmark}  from "./bmnet";
+import net, {netInit, getBookmark}  from "./bmnet";
 import differenceWith from "lodash/differenceWith";
 import cloneDeep from "lodash/cloneDeep";
 import startCase from "lodash/startCase";
 import { showBookmark } from "../_util/url";
 import {initNavigator} from "./navigator";
 import list from "./list";
-//const topicsEndPoint = "https://s3.amazonaws.com/assets.christmind.info/wom/topics.json";
 import topics from "./topics";
 import {
   markSelection,
@@ -21,10 +20,17 @@ import {
 import {getLink} from "../_bookmark/annotate";
 import { createLinkListener } from "../_link/setup";
 
-const bm_creation_state = "bm.www.creation";
+//teaching specific constants, assigned at initialization
+let teaching = {};
+
+export function getTeachingInfo() {
+  return teaching;
+}
+
+//const bm_creation_state = "bm.www.creation";
 
 //add bookmark topics to bookmark selected text to support 
-//selective display of hightlight based on topic
+//selective display of highlight based on topic
 function addTopicsAsClasses(bookmark) {
   if (bookmark.topicList && bookmark.topicList.length > 0) {
     let topicList = bookmark.topicList.reduce((result, topic) => {
@@ -243,16 +249,16 @@ function bookmarkFeatureHandler() {
     let el = $(".transcript");
 
     if (el.hasClass("disable-selection") && el.hasClass("user")) {
-      console.log("removing selection guard - user initiated")
+      //console.log("removing selection guard - user initiated")
       el.removeClass("disable-selection user");
       $(".toggle-bookmark-selection").text("Disable Bookmark Creation");
-      store.set(bm_creation_state, "enabled");
+      store.set(teaching.bm_creation_state, "enabled");
     }
     else {
-      console.log("adding selection guard - user initiated")
+      //console.log("adding selection guard - user initiated")
       el.addClass("disable-selection user");
       $(".toggle-bookmark-selection").text("Enable Bookmark Creation");
-      store.set(bm_creation_state, "disabled");
+      store.set(teaching.bm_creation_state, "disabled");
     }
   });
 }
@@ -262,7 +268,7 @@ function bookmarkFeatureHandler() {
  * it has been disabled by the user. If so, disable it on page load.
  */
 function initializeBookmarkFeatureState() {
-  let state = store.get(bm_creation_state);
+  let state = store.get(teaching.bm_creation_state);
 
   if (state && state === "disabled") {
     console.log("triggering selection guard disable");
@@ -280,7 +286,7 @@ function initTranscriptPage(sharePid) {
   getPageBookmarks(sharePid);
 
   //add support for text selection
-  selectInit();
+  selectInit(teaching);
 
   //show/hide bookmark highlights
   highlightHandler();
@@ -295,7 +301,7 @@ function initTranscriptPage(sharePid) {
   //setup bookmark navigator if requested
   let pid = showBookmark();
   if (pid) {
-    initNavigator(pid);
+    initNavigator(pid, teaching);
   }
 }
 
@@ -374,19 +380,19 @@ export const annotation = {
   }
 };
 
-/*
-  if we're on a transcript page
-  - add bookmark icons to each paragraph
-  - create bookmark toggle listener
-*/
 export default {
-  initialize: function(pid) {
+  initialize: function(pid, constants) {
+    teaching = constants;
+
+    //provide teaching constants to bmnet
+    netInit(teaching);
+
     if ($(".transcript").length) {
       //this is a transcript page
       initTranscriptPage(pid);
     }
 
     //initialize bookmark list modal - available on all pages
-    list.initialize();
+    list.initialize(constants);
   }
 };

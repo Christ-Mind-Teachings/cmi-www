@@ -1,12 +1,16 @@
 import net from "./bmnet";
-import key from "../_config/key";
 import notify from "toastr";
-import {annotation} from "./bookmark";
+import {getTeachingInfo, annotation} from "./bookmark";
 import {getBookmark} from "./bmnet";
 import range from "lodash/range";
 import {initShareDialog} from "./navigator";
-import {getUserInfo} from "../_user/netlify";
 import clipboard from "./clipboard";
+import {getUserInfo} from "../_user/netlify";
+
+//import key from "../_config/key";
+
+//teaching specific constants, assigned at initialization
+let teaching = {};
 
 var warningIssued = false;
 function warnNotSignedIn() {
@@ -26,6 +30,9 @@ const form = `
     <input class="hidden-field" type="text" name="aid" readonly>
     <input class="hidden-field" type="text" readonly="" name="rangeStart">
     <div class="fields">
+      <div class="three wide field">
+        <input id="rangeEnd" type="text" name="rangeEnd" maxlength="4" placeholder="End">
+      </div>
       <div class="three wide field">
         <input id="rangeEnd" type="text" name="rangeEnd" maxlength="4" placeholder="End">
       </div>
@@ -130,7 +137,7 @@ function makeTableRow(item, index) {
 
 function validateLink(pid, link) {
   let rawLink;
-  let pKey = key.genParagraphKey(pid);
+  let pKey = teaching.keyInfo.genParagraphKey(pid);
 
   try {
     rawLink = JSON.parse(link);
@@ -158,7 +165,15 @@ function validateLink(pid, link) {
  */
 function formatLink(link) {
   let raw = JSON.parse(link);
-  let display = `${raw.desc.source}:${raw.desc.book}:${raw.desc.unit}:${raw.desc.pid}`;
+  let display = `${raw.desc.source}:${raw.desc.book}:${raw.desc.unit}`;
+
+  //WOM has questions
+  if (raw.desc.question) {
+    display = `${display}:${raw.desc.question}:${raw.desc.pid}`;
+  }
+  else {
+    display = `${display}:${raw.desc.pid}`;
+  }
   return display;
 }
 
@@ -594,8 +609,8 @@ function hoverHandler() {
  * Format: pageKey.000:aid:uid
  */
 function createBookmarkLink(pid, aid) {
-  let pKey = key.genParagraphKey(pid);
-  let keyInfo = key.describeKey(pKey);
+  let pKey = teaching.keyInfo.genParagraphKey(pid);
+  let keyInfo = teaching.keyInfo.describeKey(pKey);
   let userInfo = getUserInfo();
 
   let link = {userId: userInfo.userId, key: pKey, aid: aid, desc: keyInfo};
@@ -856,6 +871,8 @@ function deleteHandler() {
   initialize annotation event handlers
 */
 export function initialize() {
+  teaching = getTeachingInfo();
+
   submitHandler();
   cancelHandler();
   shareHandler();
