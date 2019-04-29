@@ -1907,16 +1907,10 @@ const form = `
       <div class="three wide field">
         <input id="rangeEnd" type="text" name="rangeEnd" maxlength="4" placeholder="End">
       </div>
-      <div class="three wide field">
-        <input id="rangeEnd" type="text" name="rangeEnd" maxlength="4" placeholder="End">
-      </div>
       <div id="available-topics" class="twelve wide field"></div>
       </div>
     </div>
     <div class="field">
-      <!--
-      <textarea name="Comment" placeholder="Comment" rows="1"></textarea>
-      -->
       <input type="text" name="Comment" placeholder="Comment">
     </div>
     <div class="field">

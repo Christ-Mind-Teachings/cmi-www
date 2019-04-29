@@ -15,10 +15,12 @@
     "start": "npm run jekyll & npm run watch",
     "d:jekyll": "JEKYLL_ENV=development bundle exec jekyll build",
     "deploy:dev": "npm run d:webpack && npm run d:jekyll",
-    "p:webpack": "webpack --mode production",
+    "p:webpack": "webpack --mode development",
     "d:webpack": "webpack --mode development",
     "p:jekyll": "JEKYLL_ENV=production bundle exec jekyll build --config ./_config.prod.yml",
-    "deploy:prod": "npm run p:webpack && npm run p:jekyll"
+    "deploy:prod": "npm run p:webpack && npm run p:jekyll",
+    "preview:jekyll": "JEKYLL_ENV=production bundle exec jekyll s --config ./_config.prod.yml",
+    "preview": "npm run p:webpack && npm run preview:jekyll"
   },
   "keywords": [
     "cmi",
