@@ -33,6 +33,15 @@ function getUrl(source, key) {
   return url;
 }
 
+export function getLinkHref(link) {
+  let url = getUrl(link.desc.source, link.key);
+  
+  if (location.pathname === url) {
+    return `#${link.desc.pid}`;
+  }
+  return `${url}?v=${link.desc.pid}`;
+}
+
 export function createLinkListener(getLink) {
   $(".transcript").on("click", "td.follow-link-item", function(e) {
     e.preventDefault();
@@ -43,9 +52,10 @@ export function createLinkListener(getLink) {
 
     //build url
     let link = JSON.parse(linkInfo.link);
-    let url = getUrl(link.desc.source, link.key);
+
+    //let url = getUrl(link.desc.source, link.key);
 
     //console.log("url: %s", url);
-    location.href = `${url}?v=${link.desc.pid}`;
+    location.href = getLinkHref(link);
   });
 }

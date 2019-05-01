@@ -18,7 +18,7 @@ import {
   updateSelectionTopicList
 } from "./selection";
 import {getLink} from "../_bookmark/annotate";
-import { createLinkListener } from "../_link/setup";
+import { createLinkListener, getLinkHref } from "../_link/setup";
 
 //teaching specific constants, assigned at initialization
 let teaching = {};
@@ -27,7 +27,30 @@ export function getTeachingInfo() {
   return teaching;
 }
 
-//const bm_creation_state = "bm.www.creation";
+function formatLink(link) {
+  let raw = JSON.parse(link.link);
+  let href = getLinkHref(raw);
+
+  let display = `${raw.desc.source}:${raw.desc.book}:${raw.desc.unit}`;
+
+  //WOM has questions
+  if (raw.desc.question) {
+    display = `${display}:${raw.desc.question}:${raw.desc.pid}`;
+  }
+  else {
+    display = `${display}:${raw.desc.pid}`;
+  }
+  return `<a class="item" href="${href}">${link.reference}[${display}]</a>`;
+}
+
+//generate html for bookmark links
+function generateLinkList(links) {
+  return `
+    ${links.map((item) => `
+      ${formatLink(item)}
+    `).join("")}
+  `;
+}
 
 //add bookmark topics to bookmark selected text to support 
 //selective display of highlight based on topic
@@ -44,6 +67,79 @@ function addTopicsAsClasses(bookmark) {
   }
 }
 
+function addNoteHighlight(pid, bm) {
+  $(`#p${pid} > span.pnum`)
+    .addClass("has-annotation")
+    .attr("data-aid", bm.creationDate);
+  
+  //mark all paragraphs in bookmark with class .note-style-bookmark
+  let end = parseInt(bm.rangeEnd.substr(1), 10);
+  let start = pid;
+  do {
+    $(`#p${start}`).addClass("note-style-bookmark");
+    if (start === pid) {
+      $(`#p${start}`).addClass("note-style-bookmark-start");
+    }
+    if (start === end) {
+      $(`#p${start}`).addClass("note-style-bookmark-end");
+    }
+    start++;
+  } while(start <= end);
+}
+
+/*
+  Add linkify icon after bookmark so user can click to view links
+*/
+export function setQuickLinks(bm, type) {
+  if (bm.links) {
+    $(`[data-aid="${bm.creationDate}"]`)
+      .after(`<i data-link-aid="${bm.creationDate}" data-type="${type}" class="small bm-link-list linkify icon"></i>`);
+  }
+}
+
+/*
+  Bookmark link click handler. Links are placed on both note and selected text
+  bookmarks. When clicked, get the bookmark and display a list of links defined
+  in the bookmark. User can optionally click a  link. 
+*/
+function initBmLinkHandler() {
+  $(".transcript").on("click", ".bm-link-list.linkify", function(e) {
+    e.preventDefault();
+
+    let type = $(this).attr("data-type");
+    let pid = $(this).parent("p").attr("id");
+    let aid;
+
+    if (type === "note") {
+      aid = parseInt($(this).prev("span").attr("data-aid"), 10);
+    }
+    else if (type === "highlight") {
+      aid = parseInt($(this).prev("mark").attr("data-aid"), 10);
+    }
+    console.log("bookmark type: %s, pid: %s, aid: %s", type, pid, aid);
+
+    //bookmark wont be found if it is still being created
+    let bookmarkData = getBookmark(pid);
+    if (!bookmarkData.bookmark) {
+      return;
+    }
+
+    let annotation = bookmarkData.bookmark.find(value => value.creationDate === aid);
+
+    //sometimes the annotation won't be found because it is being created, so just return
+    if (!annotation) {
+      return;
+    }
+
+    let linkList = generateLinkList(annotation.links);
+    $(".bm-link-list-popup").html(linkList);
+    $(this)
+      .popup({popup: ".bm-link-info.popup", hoverable: true, on: "click"})
+      .popup("show");
+
+  });
+}
+
 /*
   Highlight all annotations with selected text
   ** except for paragraph of a shared annotation 0 sharePid
@@ -56,7 +152,7 @@ function getPageBookmarks(sharePid) {
         //mark each paragraph containing bookmarks
         for (let id in response) {
           let hasBookmark = false;
-          let hasAnnotation = false;
+          //let hasAnnotation = false;
           let pid = id - 1;
           let count = 0;
 
@@ -64,13 +160,14 @@ function getPageBookmarks(sharePid) {
             if (bm.selectedText) {
               markSelection(bm.selectedText, count, sharePid);
               addTopicsAsClasses(bm);
+              setQuickLinks(bm, "highlight");
               topics.add(bm);
               count++;
               hasBookmark = true;
             }
             else {
-              $(`#p${pid} > span.pnum`).attr("data-aid", bm.creationDate);
-              hasAnnotation = true;
+              addNoteHighlight(pid, bm);
+              setQuickLinks(bm, "note");
             }
           }
 
@@ -78,9 +175,11 @@ function getPageBookmarks(sharePid) {
             $(`#p${pid} > span.pnum`).addClass("has-bookmark");
           }
 
+          /*
           if (hasAnnotation) {
             $(`#p${pid} > span.pnum`).addClass("has-annotation");
           }
+          */
         }
         topics.bookmarksLoaded();
       }
@@ -95,7 +194,7 @@ function getPageBookmarks(sharePid) {
   Clean up form values and prepare to send to API  
 */
 function createAnnotation(formValues) {
-  console.log("createAnnotation");
+  //console.log("createAnnotation");
 
   let annotation = cloneDeep(formValues);
 
@@ -297,6 +396,7 @@ function initTranscriptPage(sharePid) {
 
   //setup bookmark link listener
   createLinkListener(getLink);
+  initBmLinkHandler();
 
   //setup bookmark navigator if requested
   let pid = showBookmark();
@@ -327,6 +427,21 @@ export const annotation = {
     if (!formData.aid) {
       //bookmark has no selected text
       $(`#${formData.rangeStart} > span.pnum`).addClass("has-annotation");
+      
+      //mark all paragraphs in bookmark with class .note-style-bookmark
+      let end = parseInt(formData.rangeEnd.substr(1), 10);
+      let start = parseInt(formData.rangeStart.substr(1), 10);
+      let pid = start;
+      do {
+        $(`#p${start}`).addClass("note-style-bookmark");
+        if (start === pid) {
+          $(`#p${start}`).addClass("note-style-bookmark-start");
+        }
+        if (start === end) {
+          $(`#p${start}`).addClass("note-style-bookmark-end");
+        }
+        start++;
+      } while(start <= end);
     }
     else {
       $(`#${formData.rangeStart} > span.pnum`).addClass("has-bookmark");
@@ -366,6 +481,26 @@ export const annotation = {
     else {
       //remove mark from paragraph
       $(`#${formData.rangeStart} > span.pnum`).removeClass("has-annotation");
+      
+      //remove all paragraphs in bookmark with class .note-style-bookmark
+      let end = parseInt(formData.rangeEnd.substr(1), 10);
+      let start = parseInt(formData.rangeStart.substr(1), 10);
+      let pid = start;
+      do {
+        $(`#p${start}`).removeClass("note-style-bookmark");
+        if (start === pid) {
+          $(`#p${start}`).removeClass("note-style-bookmark-start");
+        }
+        if (start === end) {
+          $(`#p${start}`).removeClass("note-style-bookmark-end");
+        }
+        start++;
+      } while(start <= end);
+    }
+
+    //if annotation has links, remove the linkify icon
+    if (formData.links) {
+      $(`i[data-link-aid="${formData.creationDate}"]`).remove();
     }
 
     //mark as having no annotations if all have been deleted

@@ -200,3 +200,21 @@
   cursor: pointer;
 }
 
+.transcript:not(.hide-bookmark-highlights) .note-style-bookmark {
+  background-color: #f2f5ff;
+  border-radius: 10px;
+}
+
+.transcript:not(.hide-bookmark-highlights) .note-style-bookmark.note-style-bookmark-start {
+  border-top: 1px solid darkblue;
+}
+
+.transcript:not(.hide-bookmark-highlights) .note-style-bookmark.note-style-bookmark-end {
+  border-bottom: 1px solid darkblue;
+}
+
+.bm-link-list-popup,
+i.linkify.bm-link-list.icon {
+  cursor: pointer;
+}
+

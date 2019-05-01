@@ -208,7 +208,7 @@ function createLinkHandlers() {
     $("#link-form").form("clear");
   });
 
-  //delete
+  //delete; link deleted from bookmark link array
   $(".transcript").on("click", "#bookmark-link-list td.delete-link-item", function(e) {
     e.stopPropagation();
     e.preventDefault();
@@ -333,13 +333,6 @@ function generateComment(comment) {
 function initializeForm(pid, aid, annotation) {
   let form = $("#annotation-form");
   let linkform = $("#link-form");
-
-  /*
-  linkform.form("set values", {
-    linkNote: "Hi Rick",
-    link: "a:b:c"
-  });
- */
 
   //set link array to empty
   linkArray = [];
@@ -475,6 +468,12 @@ function noteHandler() {
 function hoverNoteHandler() {
   $(".transcript").on("mouseenter", ".has-annotation", function(e) {
     e.preventDefault();
+
+    //if bookmark highlights are hidden, return without showing popup
+    if ($(".transcript").hasClass("hide-bookmark-highlights")) {
+      $(this).popup("hide").popup("destroy");
+      return;
+    }
 
     let aid = $(this).data("aid");
     let pid = $(this).parent("p").attr("id");
@@ -725,6 +724,15 @@ function submitHandler() {
     if (links.length > 0) {
       formData.links = links;
     }
+    else {
+      //check for deleted links
+      let deleted = linkArray.filter(l => l.deleted === true);
+
+      //links were deleted so remove linkify icon from page if this is not a new annotation
+      if (deleted.length > 0 && formData.creationDate.length > 0) {
+        $(`i[data-link-aid="${formData.creationDate}"]`).remove();
+      }
+    }
 
     annotation.submit(formData);
     $(".transcript .annotation-edit").removeClass("annotation-edit annotation-note");
@@ -846,6 +854,9 @@ function shareHandler() {
   initShareDialog("annotate.js");
 }
 
+/*
+  bookmark deleted
+*/
 function deleteHandler() {
   $(".transcript").on("click", "#annotation-form .annotation-delete", function(e) {
     e.preventDefault();
@@ -855,6 +866,12 @@ function deleteHandler() {
 
     let formData = getFormData();
     unwrap();
+
+    //add links to formData so the linkify icon can be removed
+    let links = linkArray;
+    if (links.length > 0) {
+      formData.links = links;
+    }
 
     annotation.delete(formData);
     $(".transcript .annotation-edit").removeClass("annotation-edit");

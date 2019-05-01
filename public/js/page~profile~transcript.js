@@ -2085,7 +2085,7 @@ function createLinkHandlers() {
     }
 
     $("#link-form").form("clear");
-  }); //delete
+  }); //delete; link deleted from bookmark link array
 
   $(".transcript").on("click", "#bookmark-link-list td.delete-link-item", function (e) {
     e.stopPropagation();
@@ -2202,14 +2202,7 @@ function generateComment(comment) {
 
 function initializeForm(pid, aid, annotation) {
   let form = $("#annotation-form");
-  let linkform = $("#link-form");
-  /*
-  linkform.form("set values", {
-    linkNote: "Hi Rick",
-    link: "a:b:c"
-  });
-  */
-  //set link array to empty
+  let linkform = $("#link-form"); //set link array to empty
 
   linkArray = []; //a new annotation
 
@@ -2337,7 +2330,13 @@ function noteHandler() {
 
 function hoverNoteHandler() {
   $(".transcript").on("mouseenter", ".has-annotation", function (e) {
-    e.preventDefault();
+    e.preventDefault(); //if bookmark highlights are hidden, return without showing popup
+
+    if ($(".transcript").hasClass("hide-bookmark-highlights")) {
+      $(this).popup("hide").popup("destroy");
+      return;
+    }
+
     let aid = $(this).data("aid");
     let pid = $(this).parent("p").attr("id"); //bookmark wont be found if it is still being created
 
@@ -2582,6 +2581,13 @@ function submitHandler() {
 
     if (links.length > 0) {
       formData.links = links;
+    } else {
+      //check for deleted links
+      let deleted = linkArray.filter(l => l.deleted === true); //links were deleted so remove linkify icon from page if this is not a new annotation
+
+      if (deleted.length > 0 && formData.creationDate.length > 0) {
+        $(`i[data-link-aid="${formData.creationDate}"]`).remove();
+      }
     }
 
     _bookmark__WEBPACK_IMPORTED_MODULE_2__["annotation"].submit(formData);
@@ -2692,6 +2698,10 @@ function shareHandler() {
 
   Object(_navigator__WEBPACK_IMPORTED_MODULE_4__["initShareDialog"])("annotate.js");
 }
+/*
+  bookmark deleted
+*/
+
 
 function deleteHandler() {
   $(".transcript").on("click", "#annotation-form .annotation-delete", function (e) {
@@ -2699,7 +2709,14 @@ function deleteHandler() {
 
     removeSelectionGuard();
     let formData = getFormData();
-    unwrap();
+    unwrap(); //add links to formData so the linkify icon can be removed
+
+    let links = linkArray;
+
+    if (links.length > 0) {
+      formData.links = links;
+    }
+
     _bookmark__WEBPACK_IMPORTED_MODULE_2__["annotation"].delete(formData);
     $(".transcript .annotation-edit").removeClass("annotation-edit");
   });
@@ -2822,6 +2839,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _user_netlify__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../_user/netlify */ "./src/js/modules/_user/netlify.js");
 /* harmony import */ var _selection__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./selection */ "./src/js/modules/_bookmark/selection.js");
 /* harmony import */ var _globals__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../globals */ "./src/js/globals.js");
+/* harmony import */ var _bookmark__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./bookmark */ "./src/js/modules/_bookmark/bookmark.js");
 /*
   Bookmark data implementation
 
@@ -2834,6 +2852,7 @@ __webpack_require__.r(__webpack_exports__);
   Operations for create, modify, and delete are performed locally and sent to the server
   for signed in users.
 */
+
 
 
 
@@ -3332,12 +3351,21 @@ function storeAnnotation(annotation, creationDate) {
     }
   } //new annotation
   else {
+      let type;
       annotation.creationDate = creationDate; //add creation date to the selectedText attribute of new annotations
 
       if (annotation.selectedText) {
+        type = "highlight";
         annotation.selectedText.aid = creationDate.toString(10); //add data-aid to new highlite so that it can be edited with a click
 
         Object(_selection__WEBPACK_IMPORTED_MODULE_7__["updateSelectedText"])(annotation.selectedText.id, annotation.selectedText.aid);
+      } else {
+        type = "note";
+      } //if annotation has links, add linkify icon so it can be clicked
+
+
+      if (annotation.links) {
+        Object(_bookmark__WEBPACK_IMPORTED_MODULE_9__["setQuickLinks"])(annotation, type);
       }
 
       if (!data) {
@@ -3406,12 +3434,13 @@ function deleteLocalAnnotation(pid, aid) {
 /*!**********************************************!*\
   !*** ./src/js/modules/_bookmark/bookmark.js ***!
   \**********************************************/
-/*! exports provided: getTeachingInfo, annotation, default */
+/*! exports provided: getTeachingInfo, setQuickLinks, annotation, default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* WEBPACK VAR INJECTION */(function($) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getTeachingInfo", function() { return getTeachingInfo; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setQuickLinks", function() { return setQuickLinks; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "annotation", function() { return annotation; });
 /* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! toastr */ "./node_modules/toastr/toastr.js");
 /* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(toastr__WEBPACK_IMPORTED_MODULE_0__);
@@ -3448,9 +3477,32 @@ __webpack_require__.r(__webpack_exports__);
 let teaching = {};
 function getTeachingInfo() {
   return teaching;
-} //const bm_creation_state = "bm.www.creation";
-//add bookmark topics to bookmark selected text to support 
+}
+
+function formatLink(link) {
+  let raw = JSON.parse(link.link);
+  let href = Object(_link_setup__WEBPACK_IMPORTED_MODULE_12__["getLinkHref"])(raw);
+  let display = `${raw.desc.source}:${raw.desc.book}:${raw.desc.unit}`; //WOM has questions
+
+  if (raw.desc.question) {
+    display = `${display}:${raw.desc.question}:${raw.desc.pid}`;
+  } else {
+    display = `${display}:${raw.desc.pid}`;
+  }
+
+  return `<a class="item" href="${href}">${link.reference}[${display}]</a>`;
+} //generate html for bookmark links
+
+
+function generateLinkList(links) {
+  return `
+    ${links.map(item => `
+      ${formatLink(item)}
+    `).join("")}
+  `;
+} //add bookmark topics to bookmark selected text to support 
 //selective display of highlight based on topic
+
 
 function addTopicsAsClasses(bookmark) {
   if (bookmark.topicList && bookmark.topicList.length > 0) {
@@ -3464,6 +3516,79 @@ function addTopicsAsClasses(bookmark) {
     $(`[data-annotation-id="${bookmark.aid}"]`).addClass(topicList);
   }
 }
+
+function addNoteHighlight(pid, bm) {
+  $(`#p${pid} > span.pnum`).addClass("has-annotation").attr("data-aid", bm.creationDate); //mark all paragraphs in bookmark with class .note-style-bookmark
+
+  let end = parseInt(bm.rangeEnd.substr(1), 10);
+  let start = pid;
+
+  do {
+    $(`#p${start}`).addClass("note-style-bookmark");
+
+    if (start === pid) {
+      $(`#p${start}`).addClass("note-style-bookmark-start");
+    }
+
+    if (start === end) {
+      $(`#p${start}`).addClass("note-style-bookmark-end");
+    }
+
+    start++;
+  } while (start <= end);
+}
+/*
+  Add linkify icon after bookmark so user can click to view links
+*/
+
+
+function setQuickLinks(bm, type) {
+  if (bm.links) {
+    $(`[data-aid="${bm.creationDate}"]`).after(`<i data-link-aid="${bm.creationDate}" data-type="${type}" class="small bm-link-list linkify icon"></i>`);
+  }
+}
+/*
+  Bookmark link click handler. Links are placed on both note and selected text
+  bookmarks. When clicked, get the bookmark and display a list of links defined
+  in the bookmark. User can optionally click a  link. 
+*/
+
+function initBmLinkHandler() {
+  $(".transcript").on("click", ".bm-link-list.linkify", function (e) {
+    e.preventDefault();
+    let type = $(this).attr("data-type");
+    let pid = $(this).parent("p").attr("id");
+    let aid;
+
+    if (type === "note") {
+      aid = parseInt($(this).prev("span").attr("data-aid"), 10);
+    } else if (type === "highlight") {
+      aid = parseInt($(this).prev("mark").attr("data-aid"), 10);
+    }
+
+    console.log("bookmark type: %s, pid: %s, aid: %s", type, pid, aid); //bookmark wont be found if it is still being created
+
+    let bookmarkData = Object(_bmnet__WEBPACK_IMPORTED_MODULE_2__["getBookmark"])(pid);
+
+    if (!bookmarkData.bookmark) {
+      return;
+    }
+
+    let annotation = bookmarkData.bookmark.find(value => value.creationDate === aid); //sometimes the annotation won't be found because it is being created, so just return
+
+    if (!annotation) {
+      return;
+    }
+
+    let linkList = generateLinkList(annotation.links);
+    $(".bm-link-list-popup").html(linkList);
+    $(this).popup({
+      popup: ".bm-link-info.popup",
+      hoverable: true,
+      on: "click"
+    }).popup("show");
+  });
+}
 /*
   Highlight all annotations with selected text
   ** except for paragraph of a shared annotation 0 sharePid
@@ -3476,8 +3601,8 @@ function getPageBookmarks(sharePid) {
     if (response) {
       //mark each paragraph containing bookmarks
       for (let id in response) {
-        let hasBookmark = false;
-        let hasAnnotation = false;
+        let hasBookmark = false; //let hasAnnotation = false;
+
         let pid = id - 1;
         let count = 0;
 
@@ -3485,22 +3610,25 @@ function getPageBookmarks(sharePid) {
           if (bm.selectedText) {
             Object(_selection__WEBPACK_IMPORTED_MODULE_10__["markSelection"])(bm.selectedText, count, sharePid);
             addTopicsAsClasses(bm);
+            setQuickLinks(bm, "highlight");
             _topics__WEBPACK_IMPORTED_MODULE_9__["default"].add(bm);
             count++;
             hasBookmark = true;
           } else {
-            $(`#p${pid} > span.pnum`).attr("data-aid", bm.creationDate);
-            hasAnnotation = true;
+            addNoteHighlight(pid, bm);
+            setQuickLinks(bm, "note");
           }
         }
 
         if (hasBookmark) {
           $(`#p${pid} > span.pnum`).addClass("has-bookmark");
         }
-
+        /*
         if (hasAnnotation) {
           $(`#p${pid} > span.pnum`).addClass("has-annotation");
         }
+        */
+
       }
 
       _topics__WEBPACK_IMPORTED_MODULE_9__["default"].bookmarksLoaded();
@@ -3516,7 +3644,7 @@ function getPageBookmarks(sharePid) {
 
 
 function createAnnotation(formValues) {
-  console.log("createAnnotation");
+  //console.log("createAnnotation");
   let annotation = lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_4___default()(formValues);
   annotation.rangeStart = annotation.rangeStart.trim();
   annotation.rangeEnd = annotation.rangeEnd.trim();
@@ -3706,7 +3834,8 @@ function initTranscriptPage(sharePid) {
   bookmarkFeatureHandler();
   initializeBookmarkFeatureState(); //setup bookmark link listener
 
-  Object(_link_setup__WEBPACK_IMPORTED_MODULE_12__["createLinkListener"])(_bookmark_annotate__WEBPACK_IMPORTED_MODULE_11__["getLink"]); //setup bookmark navigator if requested
+  Object(_link_setup__WEBPACK_IMPORTED_MODULE_12__["createLinkListener"])(_bookmark_annotate__WEBPACK_IMPORTED_MODULE_11__["getLink"]);
+  initBmLinkHandler(); //setup bookmark navigator if requested
 
   let pid = Object(_util_url__WEBPACK_IMPORTED_MODULE_6__["showBookmark"])();
 
@@ -3734,7 +3863,25 @@ const annotation = {
 
     if (!formData.aid) {
       //bookmark has no selected text
-      $(`#${formData.rangeStart} > span.pnum`).addClass("has-annotation");
+      $(`#${formData.rangeStart} > span.pnum`).addClass("has-annotation"); //mark all paragraphs in bookmark with class .note-style-bookmark
+
+      let end = parseInt(formData.rangeEnd.substr(1), 10);
+      let start = parseInt(formData.rangeStart.substr(1), 10);
+      let pid = start;
+
+      do {
+        $(`#p${start}`).addClass("note-style-bookmark");
+
+        if (start === pid) {
+          $(`#p${start}`).addClass("note-style-bookmark-start");
+        }
+
+        if (start === end) {
+          $(`#p${start}`).addClass("note-style-bookmark-end");
+        }
+
+        start++;
+      } while (start <= end);
     } else {
       $(`#${formData.rangeStart} > span.pnum`).addClass("has-bookmark"); //this is a new annotation
 
@@ -3772,7 +3919,30 @@ const annotation = {
       Object(_selection__WEBPACK_IMPORTED_MODULE_10__["deleteSelection"])(formData.aid);
     } else {
       //remove mark from paragraph
-      $(`#${formData.rangeStart} > span.pnum`).removeClass("has-annotation");
+      $(`#${formData.rangeStart} > span.pnum`).removeClass("has-annotation"); //remove all paragraphs in bookmark with class .note-style-bookmark
+
+      let end = parseInt(formData.rangeEnd.substr(1), 10);
+      let start = parseInt(formData.rangeStart.substr(1), 10);
+      let pid = start;
+
+      do {
+        $(`#p${start}`).removeClass("note-style-bookmark");
+
+        if (start === pid) {
+          $(`#p${start}`).removeClass("note-style-bookmark-start");
+        }
+
+        if (start === end) {
+          $(`#p${start}`).removeClass("note-style-bookmark-end");
+        }
+
+        start++;
+      } while (start <= end);
+    } //if annotation has links, remove the linkify icon
+
+
+    if (formData.links) {
+      $(`i[data-link-aid="${formData.creationDate}"]`).remove();
     } //mark as having no annotations if all have been deleted
 
 
@@ -7082,12 +7252,13 @@ function getBookId() {
 /*!***************************************!*\
   !*** ./src/js/modules/_link/setup.js ***!
   \***************************************/
-/*! exports provided: createLinkListener */
+/*! exports provided: getLinkHref, createLinkListener */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* WEBPACK VAR INJECTION */(function($) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createLinkListener", function() { return createLinkListener; });
+/* WEBPACK VAR INJECTION */(function($) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getLinkHref", function() { return getLinkHref; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createLinkListener", function() { return createLinkListener; });
 const {
   getUrl: www_getUrl
 } = __webpack_require__(/*! ../_config/key */ "./src/js/modules/_config/key.js");
@@ -7147,6 +7318,15 @@ function getUrl(source, key) {
   return url;
 }
 
+function getLinkHref(link) {
+  let url = getUrl(link.desc.source, link.key);
+
+  if (location.pathname === url) {
+    return `#${link.desc.pid}`;
+  }
+
+  return `${url}?v=${link.desc.pid}`;
+}
 function createLinkListener(getLink) {
   $(".transcript").on("click", "td.follow-link-item", function (e) {
     e.preventDefault(); //get link info
@@ -7154,10 +7334,10 @@ function createLinkListener(getLink) {
     let index = $(this).parent("tr").attr("data-index");
     let linkInfo = getLink(index); //build url
 
-    let link = JSON.parse(linkInfo.link);
-    let url = getUrl(link.desc.source, link.key); //console.log("url: %s", url);
+    let link = JSON.parse(linkInfo.link); //let url = getUrl(link.desc.source, link.key);
+    //console.log("url: %s", url);
 
-    location.href = `${url}?v=${link.desc.pid}`;
+    location.href = getLinkHref(link);
   });
 }
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/src/jquery.js")))

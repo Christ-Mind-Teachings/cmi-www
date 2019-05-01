@@ -21,6 +21,7 @@ import cloneDeep from "lodash/cloneDeep";
 import {getUserInfo} from "../_user/netlify";
 import {updateSelectedText} from "./selection";
 import globals from "../../globals";
+import { setQuickLinks } from "./bookmark";
 
 //const transcript = require("../_config/key");
 //const bm_list_store = "bm.www.list";
@@ -547,14 +548,24 @@ function storeAnnotation(annotation, creationDate) {
   }
   //new annotation
   else {
+    let type;
     annotation.creationDate = creationDate;
 
     //add creation date to the selectedText attribute of new annotations
     if (annotation.selectedText) {
+      type = "highlight";
       annotation.selectedText.aid = creationDate.toString(10);
 
       //add data-aid to new highlite so that it can be edited with a click
       updateSelectedText(annotation.selectedText.id, annotation.selectedText.aid);
+    }
+    else {
+      type = "note";
+    }
+
+    //if annotation has links, add linkify icon so it can be clicked
+    if (annotation.links) {
+      setQuickLinks(annotation, type);
     }
 
     if (!data) {
