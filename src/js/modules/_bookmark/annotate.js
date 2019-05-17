@@ -93,7 +93,8 @@ export function getLink(index) {
   return linkArray[index];
 }
 
-function populateTable(links) {
+function populateTable(annotation) {
+  let links = annotation.links;
   return `
     ${links.map((item, index) => `
       <tr data-index="${index}">
@@ -101,7 +102,7 @@ function populateTable(links) {
         <td title="Edit" class="edit-link-item"><i class="yellow pencil alternate icon"></i></td>
         <td data-name="reference">${item.reference}</td>
         <td data-name="link">${formatLink(item.link)}</td>
-        <td title="Follow" class="follow-link-item"><i class="green share icon"></i></td>
+        <td data-pid="${annotation.rangeStart}" data-aid="${annotation.creationDate}" title="Follow" class="follow-link-item"><i class="green share icon"></i></td>
       </tr>
     `).join("")}
   `;
@@ -117,14 +118,20 @@ function setIndex(index) {
   $("#link-form [type='submit']").data("index", index);
 }
 
-function makeTableRow(item, index) {
+function makeTableRow(item, index, aid, pid) {
+  let classValue = "green";
+  //aid is "" for a new bookmark, disable follow
+  if (aid.length === 0) {
+    classValue = "red disabled";
+  }
+
   return `
     <tr data-index="${index}">
       <td title="Delete" class="delete-link-item"><i class="red trash alternate icon"></i></td>
       <td title="Edit" class="edit-link-item"><i class="yellow pencil alternate icon"></i></td>
       <td data-name="reference">${item.reference}</td>
       <td data-name="link">${item.link}</td>
-      <td title="Follow" class="follow-link-item"><i class="green share icon"></i></td>
+      <td data-pid="${pid}" data-aid="${aid}" title="Follow" class="follow-link-item"><i class="${classValue} share icon"></i></td>
     </tr>
   `;
 }
@@ -191,8 +198,11 @@ function createLinkHandlers() {
 
     let linkDisplay = formatLink(form.link);
     if (state === "new") {
+      //aid will be "" for new bookmark
+      let {creationDate:aid, rangeStart:pid} = $("#annotation-form").form("get values", ["creationDate", "rangeStart"]);
+
       linkArray.push({reference: form.reference, link: form.link, deleted: false});
-      let row = makeTableRow({reference: form.reference, link: linkDisplay}, linkArray.length - 1);
+      let row = makeTableRow({reference: form.reference, link: linkDisplay}, linkArray.length - 1, aid, pid);
       $("#bookmark-link-list").append(row);
     }
     else {
@@ -355,7 +365,7 @@ function initializeForm(pid, aid, annotation) {
     if (annotation.links) {
       linkArray = annotation.links;
 
-      let html = populateTable(linkArray);
+      let html = populateTable(annotation);
       $("#bookmark-link-list").html(html);
     }
 

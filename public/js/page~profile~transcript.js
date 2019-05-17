@@ -1775,6 +1775,7 @@ __webpack_require__.r(__webpack_exports__);
   Global constants
 */
 /* harmony default export */ __webpack_exports__["default"] = ({
+  linkOriginKey: "link-origin",
   share: "https://rcd7l4adth.execute-api.us-east-1.amazonaws.com/latest/share",
   user: "https://93e93isn03.execute-api.us-east-1.amazonaws.com/latest/user",
   topicsEndPoint: "https://93e93isn03.execute-api.us-east-1.amazonaws.com/latest",
@@ -1966,7 +1967,8 @@ function getLink(index) {
   return linkArray[index];
 }
 
-function populateTable(links) {
+function populateTable(annotation) {
+  let links = annotation.links;
   return `
     ${links.map((item, index) => `
       <tr data-index="${index}">
@@ -1974,7 +1976,7 @@ function populateTable(links) {
         <td title="Edit" class="edit-link-item"><i class="yellow pencil alternate icon"></i></td>
         <td data-name="reference">${item.reference}</td>
         <td data-name="link">${formatLink(item.link)}</td>
-        <td title="Follow" class="follow-link-item"><i class="green share icon"></i></td>
+        <td data-pid="${annotation.rangeStart}" data-aid="${annotation.creationDate}" title="Follow" class="follow-link-item"><i class="green share icon"></i></td>
       </tr>
     `).join("")}
   `;
@@ -1989,14 +1991,20 @@ function setIndex(index) {
   $("#link-form [type='submit']").data("index", index);
 }
 
-function makeTableRow(item, index) {
+function makeTableRow(item, index, aid, pid) {
+  let classValue = "green"; //aid is "" for a new bookmark, disable follow
+
+  if (aid.length === 0) {
+    classValue = "red disabled";
+  }
+
   return `
     <tr data-index="${index}">
       <td title="Delete" class="delete-link-item"><i class="red trash alternate icon"></i></td>
       <td title="Edit" class="edit-link-item"><i class="yellow pencil alternate icon"></i></td>
       <td data-name="reference">${item.reference}</td>
       <td data-name="link">${item.link}</td>
-      <td title="Follow" class="follow-link-item"><i class="green share icon"></i></td>
+      <td data-pid="${pid}" data-aid="${aid}" title="Follow" class="follow-link-item"><i class="${classValue} share icon"></i></td>
     </tr>
   `;
 }
@@ -2061,6 +2069,11 @@ function createLinkHandlers() {
     let linkDisplay = formatLink(form.link);
 
     if (state === "new") {
+      //aid will be "" for new bookmark
+      let {
+        creationDate: aid,
+        rangeStart: pid
+      } = $("#annotation-form").form("get values", ["creationDate", "rangeStart"]);
       linkArray.push({
         reference: form.reference,
         link: form.link,
@@ -2069,7 +2082,7 @@ function createLinkHandlers() {
       let row = makeTableRow({
         reference: form.reference,
         link: linkDisplay
-      }, linkArray.length - 1);
+      }, linkArray.length - 1, aid, pid);
       $("#bookmark-link-list").append(row);
     } else {
       //update array
@@ -2221,7 +2234,7 @@ function initializeForm(pid, aid, annotation) {
 
     if (annotation.links) {
       linkArray = annotation.links;
-      let html = populateTable(linkArray);
+      let html = populateTable(annotation);
       $("#bookmark-link-list").html(html);
     }
 
@@ -2910,7 +2923,7 @@ function getBookmarks() {
     //get bookmarks from server
     if (userInfo) {
       axios__WEBPACK_IMPORTED_MODULE_0___default.a.get(`${_globals__WEBPACK_IMPORTED_MODULE_8__["default"].bookmarkApi}/bookmark/query/${userInfo.userId}/${pageKey}`).then(response => {
-        //convert to local data structure and store locally 
+        //convert to local data structure and store locally
         if (response.data.response) {
           let bookmarks = {};
           response.data.response.forEach(b => {
@@ -2973,7 +2986,7 @@ function queryBookmarks(key) {
 
 
       axios__WEBPACK_IMPORTED_MODULE_0___default.a.get(`${_globals__WEBPACK_IMPORTED_MODULE_8__["default"].bookmarkApi}/bookmark/query/${userInfo.userId}/${key}`).then(response => {
-        //convert to local data structure and store locally 
+        //convert to local data structure and store locally
         if (response.data.response) {
           //console.log("bookmarks: %o", response.data.response);
           //convert selectedText from JSON to object
@@ -3078,7 +3091,7 @@ function buildBookmarkListFromServer(response, keyInfo) {
   return bookmarks;
 }
 /*
-  Persist annotation 
+  Persist annotation
     - in local storage and to server if user is signed in
 
   args: annotation
@@ -3176,7 +3189,7 @@ function fetchBookmark(bookmarkId, userId) {
 }
 /*
   When user is signed in the bookmark has been returned from the server
-  and saved to local storage. We get the bookmark from there rather than 
+  and saved to local storage. We get the bookmark from there rather than
   having to go back to the server.
 
   We get the bookmark from local storage when the user is not signed in also.
@@ -3196,6 +3209,10 @@ function getAnnotation(pid, aid) {
 
   if (!data[pid]) {
     throw new Error(`Expected annotations not found for pid ${pid}`);
+  }
+
+  if (typeof aid === "string") {
+    aid = parseInt(aid, 10);
   } //filter requested annotation from array
 
 
@@ -3434,13 +3451,14 @@ function deleteLocalAnnotation(pid, aid) {
 /*!**********************************************!*\
   !*** ./src/js/modules/_bookmark/bookmark.js ***!
   \**********************************************/
-/*! exports provided: getTeachingInfo, setQuickLinks, annotation, default */
+/*! exports provided: getTeachingInfo, setQuickLinks, setReturnLinks, annotation, default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* WEBPACK VAR INJECTION */(function($) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getTeachingInfo", function() { return getTeachingInfo; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setQuickLinks", function() { return setQuickLinks; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setReturnLinks", function() { return setReturnLinks; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "annotation", function() { return annotation; });
 /* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! toastr */ "./node_modules/toastr/toastr.js");
 /* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(toastr__WEBPACK_IMPORTED_MODULE_0__);
@@ -3457,9 +3475,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _navigator__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./navigator */ "./src/js/modules/_bookmark/navigator.js");
 /* harmony import */ var _list__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./list */ "./src/js/modules/_bookmark/list.js");
 /* harmony import */ var _topics__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./topics */ "./src/js/modules/_bookmark/topics.js");
-/* harmony import */ var _selection__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./selection */ "./src/js/modules/_bookmark/selection.js");
-/* harmony import */ var _bookmark_annotate__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../_bookmark/annotate */ "./src/js/modules/_bookmark/annotate.js");
-/* harmony import */ var _link_setup__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../_link/setup */ "./src/js/modules/_link/setup.js");
+/* harmony import */ var _globals__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../../globals */ "./src/js/globals.js");
+/* harmony import */ var _selection__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./selection */ "./src/js/modules/_bookmark/selection.js");
+/* harmony import */ var _bookmark_annotate__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../_bookmark/annotate */ "./src/js/modules/_bookmark/annotate.js");
+/* harmony import */ var _link_setup__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../_link/setup */ "./src/js/modules/_link/setup.js");
+
 
 
 
@@ -3479,9 +3499,9 @@ function getTeachingInfo() {
   return teaching;
 }
 
-function formatLink(link) {
+function formatLink(link, aid, pid) {
   let raw = JSON.parse(link.link);
-  let href = Object(_link_setup__WEBPACK_IMPORTED_MODULE_12__["getLinkHref"])(raw);
+  let href = Object(_link_setup__WEBPACK_IMPORTED_MODULE_13__["getLinkHref"])(raw);
   let display = `${raw.desc.source}:${raw.desc.book}:${raw.desc.unit}`; //WOM has questions
 
   if (raw.desc.question) {
@@ -3490,17 +3510,37 @@ function formatLink(link) {
     display = `${display}:${raw.desc.pid}`;
   }
 
-  return `<a class="item" href="${href}">${link.reference}[${display}]</a>`;
+  return `<a data-pid="${pid}" data-aid="${aid}" class="follow-bm-link item" href="${href}">${link.reference} [${display}]</a>`;
 } //generate html for bookmark links
 
 
-function generateLinkList(links) {
+function generateLinkList(annotation) {
+  let links = annotation.links;
   return `
     ${links.map(item => `
-      ${formatLink(item)}
+      ${formatLink(item, annotation.creationDate, annotation.rangeStart)}
     `).join("")}
   `;
-} //add bookmark topics to bookmark selected text to support 
+}
+/*
+  generate link to return to page containing the annotation passed as an argument
+  and links for all annotation.links accept the one with aid equaling the argument
+  target.
+  args:
+    annotation: the return to annotation.
+    target: the aid linked to, when generating links we don't want
+            to include this one since we're there now.
+*/
+
+
+function generateReturnList(annotation, target) {
+  let links = annotation.links;
+  return `
+    ${links.map(item => `
+      ${formatLink(item, annotation.creationDate, annotation.rangeStart)}
+    `).join("")}
+  `;
+} //add bookmark topics to bookmark selected text to support
 //selective display of highlight based on topic
 
 
@@ -3548,9 +3588,26 @@ function setQuickLinks(bm, type) {
   }
 }
 /*
+  Add return icon after bookmark so user can return to linked bookmark
+
+  If the bookmarks has links place return icon after linkify icon
+*/
+
+function setReturnLinks(aid, type) {
+  //delay to allow page bookmarks to load
+  setTimeout(() => {
+    //check if bookmark has links
+    if ($(`[data-link-aid="${aid}"]`).length > 0) {
+      $(`[data-link-aid="${aid}"]`).after(`<i data-target-aid="${aid}" data-type="${type}" class="small bm-return-list red recycle icon"></i>`);
+    } else {
+      $(`[data-aid="${aid}"]`).after(`<i data-target-aid="${aid}" data-type="${type}" class="small bm-return-list red recycle icon"></i>`);
+    }
+  }, 1000);
+}
+/*
   Bookmark link click handler. Links are placed on both note and selected text
   bookmarks. When clicked, get the bookmark and display a list of links defined
-  in the bookmark. User can optionally click a  link. 
+  in the bookmark. User can optionally click a  link.
 */
 
 function initBmLinkHandler() {
@@ -3564,9 +3621,8 @@ function initBmLinkHandler() {
       aid = parseInt($(this).prev("span").attr("data-aid"), 10);
     } else if (type === "highlight") {
       aid = parseInt($(this).prev("mark").attr("data-aid"), 10);
-    }
+    } //bookmark wont be found if it is still being created
 
-    console.log("bookmark type: %s, pid: %s, aid: %s", type, pid, aid); //bookmark wont be found if it is still being created
 
     let bookmarkData = Object(_bmnet__WEBPACK_IMPORTED_MODULE_2__["getBookmark"])(pid);
 
@@ -3580,7 +3636,28 @@ function initBmLinkHandler() {
       return;
     }
 
-    let linkList = generateLinkList(annotation.links);
+    let linkList = generateLinkList(annotation);
+    $(".bm-link-list-popup").html(linkList);
+    $(this).popup({
+      popup: ".bm-link-info.popup",
+      hoverable: true,
+      on: "click"
+    }).popup("show");
+  });
+}
+
+function initBmReturnHandler() {
+  $(".transcript").on("click", ".bm-return-list.recycle", function (e) {
+    e.preventDefault(); //we linked from this annotation
+
+    let annotation = store__WEBPACK_IMPORTED_MODULE_1___default.a.get(_globals__WEBPACK_IMPORTED_MODULE_10__["default"].linkOriginKey);
+    let aid = $(this).attr("data-target-aid"); //not expected
+
+    if (!annotation) {
+      return;
+    }
+
+    let linkList = generateReturnList(annotation, aid);
     $(".bm-link-list-popup").html(linkList);
     $(this).popup({
       popup: ".bm-link-info.popup",
@@ -3608,7 +3685,7 @@ function getPageBookmarks(sharePid) {
 
         for (const bm of response[id]) {
           if (bm.selectedText) {
-            Object(_selection__WEBPACK_IMPORTED_MODULE_10__["markSelection"])(bm.selectedText, count, sharePid);
+            Object(_selection__WEBPACK_IMPORTED_MODULE_11__["markSelection"])(bm.selectedText, count, sharePid);
             addTopicsAsClasses(bm);
             setQuickLinks(bm, "highlight");
             _topics__WEBPACK_IMPORTED_MODULE_9__["default"].add(bm);
@@ -3639,7 +3716,7 @@ function getPageBookmarks(sharePid) {
   });
 }
 /*
-  Clean up form values and prepare to send to API  
+  Clean up form values and prepare to send to API
 */
 
 
@@ -3669,7 +3746,7 @@ function createAnnotation(formValues) {
   if (annotation.aid === "") {
     delete annotation.aid;
   } else {
-    annotation.selectedText = Object(_selection__WEBPACK_IMPORTED_MODULE_10__["getSelection"])(annotation.aid);
+    annotation.selectedText = Object(_selection__WEBPACK_IMPORTED_MODULE_11__["getSelection"])(annotation.aid);
 
     if (annotation.creationDate) {
       annotation.selectedText.aid = annotation.creationDate.toString(10);
@@ -3683,7 +3760,7 @@ function createAnnotation(formValues) {
   } //keep track of topics added or deleted
 
 
-  Object(_selection__WEBPACK_IMPORTED_MODULE_10__["updateSelectionTopicList"])(annotation);
+  Object(_selection__WEBPACK_IMPORTED_MODULE_11__["updateSelectionTopicList"])(annotation);
   delete annotation.newTopics;
   delete annotation.hasAnnotation; //persist the bookmark
 
@@ -3827,20 +3904,31 @@ function initTranscriptPage(sharePid) {
   //get existing bookmarks for page
   getPageBookmarks(sharePid); //add support for text selection
 
-  Object(_selection__WEBPACK_IMPORTED_MODULE_10__["initialize"])(teaching); //show/hide bookmark highlights
+  Object(_selection__WEBPACK_IMPORTED_MODULE_11__["initialize"])(teaching); //show/hide bookmark highlights
 
   highlightHandler(); //disable/enable bookmark creation feature
 
   bookmarkFeatureHandler();
   initializeBookmarkFeatureState(); //setup bookmark link listener
 
-  Object(_link_setup__WEBPACK_IMPORTED_MODULE_12__["createLinkListener"])(_bookmark_annotate__WEBPACK_IMPORTED_MODULE_11__["getLink"]);
-  initBmLinkHandler(); //setup bookmark navigator if requested
+  Object(_link_setup__WEBPACK_IMPORTED_MODULE_13__["createLinkListener"])(_bookmark_annotate__WEBPACK_IMPORTED_MODULE_12__["getLink"]);
+  initBmLinkHandler();
+  initBmReturnHandler(); //setup bookmark navigator if requested
 
   let pid = Object(_util_url__WEBPACK_IMPORTED_MODULE_6__["showBookmark"])();
 
   if (pid) {
     Object(_navigator__WEBPACK_IMPORTED_MODULE_7__["initNavigator"])(pid, teaching);
+    return;
+  } //setup link back
+
+
+  let linkInfo = Object(_util_url__WEBPACK_IMPORTED_MODULE_6__["linkToBookmark"])();
+
+  if (linkInfo.pid) {
+    setReturnLinks(linkInfo.aid, "return"); //set up link back
+
+    return;
   }
 }
 
@@ -3899,7 +3987,7 @@ const annotation = {
           }, 0);
         }
 
-        Object(_selection__WEBPACK_IMPORTED_MODULE_10__["updateHighlightColor"])(formData.aid, annotationCount);
+        Object(_selection__WEBPACK_IMPORTED_MODULE_11__["updateHighlightColor"])(formData.aid, annotationCount);
       }
     }
   },
@@ -3908,7 +3996,7 @@ const annotation = {
   cancel(formData) {
     //no creationDate means a new annotation that hasn't been stored
     if (!formData.creationDate && formData.aid) {
-      Object(_selection__WEBPACK_IMPORTED_MODULE_10__["deleteNewSelection"])(formData.aid);
+      Object(_selection__WEBPACK_IMPORTED_MODULE_11__["deleteNewSelection"])(formData.aid);
     }
   },
 
@@ -3916,7 +4004,7 @@ const annotation = {
   delete(formData) {
     //if annotation has selected text unwrap and delete it
     if (formData.aid) {
-      Object(_selection__WEBPACK_IMPORTED_MODULE_10__["deleteSelection"])(formData.aid);
+      Object(_selection__WEBPACK_IMPORTED_MODULE_11__["deleteSelection"])(formData.aid);
     } else {
       //remove mark from paragraph
       $(`#${formData.rangeStart} > span.pnum`).removeClass("has-annotation"); //remove all paragraphs in bookmark with class .note-style-bookmark
@@ -7252,13 +7340,18 @@ function getBookId() {
 /*!***************************************!*\
   !*** ./src/js/modules/_link/setup.js ***!
   \***************************************/
-/*! exports provided: getLinkHref, createLinkListener */
+/*! exports provided: getLinkHref, getLinkReturnHref, createLinkListener */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* WEBPACK VAR INJECTION */(function($) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getLinkHref", function() { return getLinkHref; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getLinkReturnHref", function() { return getLinkReturnHref; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createLinkListener", function() { return createLinkListener; });
+/* harmony import */ var _bookmark_bmnet__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../_bookmark/bmnet */ "./src/js/modules/_bookmark/bmnet.js");
+/* harmony import */ var _globals__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../globals */ "./src/js/globals.js");
+/* harmony import */ var store__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! store */ "./node_modules/store/dist/store.legacy.js");
+/* harmony import */ var store__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(store__WEBPACK_IMPORTED_MODULE_2__);
 const {
   getUrl: www_getUrl
 } = __webpack_require__(/*! ../_config/key */ "./src/js/modules/_config/key.js");
@@ -7282,6 +7375,10 @@ const {
 const {
   getUrl: wom_getUrl
 } = __webpack_require__(/*! wom/modules/_config/key */ "../cmi-wom/src/js/modules/_config/key.js");
+
+
+
+
 
 function getUrl(source, key) {
   let url;
@@ -7325,19 +7422,64 @@ function getLinkHref(link) {
     return `#${link.desc.pid}`;
   }
 
-  return `${url}?v=${link.desc.pid}`;
+  return `${url}?link=${link.desc.pid}&aid=${link.aid}`;
 }
+function getLinkReturnHref(annotation) {
+  let url = annotation.uri;
+
+  if (location.pathname === url) {
+    return `#${annotation.rangeStart}`;
+  }
+
+  return `${url}?return=${annotation.rangeStart}&aid=${annotation.creationDate}`;
+}
+/*
+  Set up click handler for links clicked from annotation editor and quickLink icon.
+*/
+
 function createLinkListener(getLink) {
-  $(".transcript").on("click", "td.follow-link-item", function (e) {
+  $(".transcript").on("click", "td.follow-link-item > i:not(.disabled)", function (e) {
     e.preventDefault(); //get link info
 
-    let index = $(this).parent("tr").attr("data-index");
+    let index = $(this).parents("tr").attr("data-index");
     let linkInfo = getLink(index); //build url
 
-    let link = JSON.parse(linkInfo.link); //let url = getUrl(link.desc.source, link.key);
-    //console.log("url: %s", url);
+    let link = JSON.parse(linkInfo.link); //aid of this annotation
 
-    location.href = getLinkHref(link);
+    let aid = $(this).parent("td").attr("data-aid");
+    let pid = $(this).parent("td").attr("data-pid"); //get annotation link list and store in local storage so destination
+    //page can offer link back and to link to other destinations in annotation.
+
+    let annotation = _bookmark_bmnet__WEBPACK_IMPORTED_MODULE_0__["default"].getAnnotation(pid, aid);
+    annotation.uri = location.pathname; //close bookmark editor
+
+    $(".annotation-cancel").trigger("click"); //store annotation to local storage
+
+    store__WEBPACK_IMPORTED_MODULE_2___default.a.set(_globals__WEBPACK_IMPORTED_MODULE_1__["default"].linkOriginKey, annotation);
+    let href = getLinkHref(link); //console.log("td.follow-link-item url: %s, pid: %s", href, aid, pid);
+    //console.log("annotation: %o", annotation);
+
+    location.href = href;
+  });
+  /*
+    User clicked link in linkify popup
+  */
+
+  $(".bm-link-list-popup").on("click", "a.follow-bm-link", function (e) {
+    e.preventDefault(); //get link info
+
+    let href = $(this).attr("href");
+    let aid = $(this).attr("data-aid");
+    let pid = $(this).attr("data-pid");
+    let annotation = _bookmark_bmnet__WEBPACK_IMPORTED_MODULE_0__["default"].getAnnotation(pid, aid);
+    annotation.uri = location.pathname; //store annotation to local storage
+
+    store__WEBPACK_IMPORTED_MODULE_2___default.a.set(_globals__WEBPACK_IMPORTED_MODULE_1__["default"].linkOriginKey, annotation); //close bookmark editor
+
+    $(".annotation-cancel").trigger("click"); //console.log("follow-bm-item href: %s, aid: %s, pid: %s", href, aid, pid);
+    //console.log("annotation: %o", annotation);
+
+    location.href = href;
   });
 }
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/src/jquery.js")))
@@ -8883,7 +9025,7 @@ function transcriptDriver() {
 /*!*************************************!*\
   !*** ./src/js/modules/_util/url.js ***!
   \*************************************/
-/*! exports provided: loadComplete, loadStart, showParagraph, showBookmark, showSearchMatch, showAnnotation, getUser */
+/*! exports provided: loadComplete, loadStart, showParagraph, linkToBookmark, showBookmark, showSearchMatch, showAnnotation, getUser */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -8891,6 +9033,7 @@ __webpack_require__.r(__webpack_exports__);
 /* WEBPACK VAR INJECTION */(function($) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "loadComplete", function() { return loadComplete; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "loadStart", function() { return loadStart; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "showParagraph", function() { return showParagraph; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "linkToBookmark", function() { return linkToBookmark; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "showBookmark", function() { return showBookmark; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "showSearchMatch", function() { return showSearchMatch; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "showAnnotation", function() { return showAnnotation; });
@@ -8935,6 +9078,33 @@ function scrollIntoView(id, caller) {
   }, type => {
     scrollComplete(`scroll from url.js ${caller}(${id})`, type);
   });
+}
+
+function scrollAndShake(id, aid) {
+  scroll_into_view__WEBPACK_IMPORTED_MODULE_0___default()(document.getElementById(id), {
+    align: {
+      top: 0.2
+    }
+  }, () => {
+    shakeAnnotation(aid);
+  });
+}
+/*
+  Briefly highlight annotation after scroll complete.
+*/
+
+
+function shakeAnnotation(aid) {
+  let el = $(`[data-aid="${aid}"]`); //check if this is a note style bookmark
+
+  if (el.hasClass("has-annotation")) {
+    el = el.parent("p");
+  }
+
+  el.addClass("link-highlight");
+  setTimeout(() => {
+    el.removeClass("link-highlight");
+  }, 1000);
 } //called when query request is complete
 
 
@@ -8961,12 +9131,34 @@ function showParagraph() {
 
   if (pId) {
     setTimeout(scrollIntoView, INTERVAL, pId, "showParagraph");
+    history.pushState && history.pushState({
+      path: location.pathname
+    }, "", location.pathname);
   }
+}
+function linkToBookmark() {
+  let info = {
+    pid: getQueryString("link"),
+    aid: getQueryString("aid")
+  };
+
+  if (info.pid) {
+    //setTimeout(scrollIntoView, INTERVAL, info.pid, "linkToBookmark");
+    setTimeout(scrollAndShake, INTERVAL, info.pid, info.aid);
+    history.pushState && history.pushState({
+      path: location.pathname
+    }, "", location.pathname);
+  }
+
+  return info;
 }
 function showBookmark() {
   let pId = getQueryString("bkmk");
 
   if (pId) {
+    history.pushState && history.pushState({
+      path: location.pathname
+    }, "", location.pathname);
     return pId;
   }
 
@@ -8977,6 +9169,9 @@ function showSearchMatch() {
 
   if (pId) {
     //setTimeout(scrollIntoView, INTERVAL, pId, "showSearchMatch");
+    history.pushState && history.pushState({
+      path: location.pathname
+    }, "", location.pathname);
     return pId;
   }
 
@@ -8986,6 +9181,9 @@ function showAnnotation() {
   let aInfo = getQueryString("as");
 
   if (aInfo) {
+    history.pushState && history.pushState({
+      path: location.pathname
+    }, "", location.pathname);
     return aInfo;
   }
 

@@ -1,9 +1,13 @@
 const {getUrl: www_getUrl} = require("../_config/key");
-const {getUrl: acim_getUrl} = require("acim/modules/_config/key"); 
-const {getUrl: acol_getUrl} = require("acol/modules/_config/key"); 
-const {getUrl: jsb_getUrl} = require("jsb/modules/_config/key"); 
-const {getUrl: raj_getUrl} = require("raj/modules/_config/key"); 
-const {getUrl: wom_getUrl} = require("wom/modules/_config/key"); 
+const {getUrl: acim_getUrl} = require("acim/modules/_config/key");
+const {getUrl: acol_getUrl} = require("acol/modules/_config/key");
+const {getUrl: jsb_getUrl} = require("jsb/modules/_config/key");
+const {getUrl: raj_getUrl} = require("raj/modules/_config/key");
+const {getUrl: wom_getUrl} = require("wom/modules/_config/key");
+
+import net from "../_bookmark/bmnet";
+import globals from "../../globals";
+import store from "store";
 
 function getUrl(source, key) {
   let url;
@@ -35,27 +39,79 @@ function getUrl(source, key) {
 
 export function getLinkHref(link) {
   let url = getUrl(link.desc.source, link.key);
-  
+
   if (location.pathname === url) {
     return `#${link.desc.pid}`;
   }
-  return `${url}?v=${link.desc.pid}`;
+  return `${url}?link=${link.desc.pid}&aid=${link.aid}`;
 }
 
+export function getLinkReturnHref(annotation) {
+  let url = annotation.uri;
+
+  if (location.pathname === url) {
+    return `#${annotation.rangeStart}`;
+  }
+  return `${url}?return=${annotation.rangeStart}&aid=${annotation.creationDate}`;
+}
+
+/*
+  Set up click handler for links clicked from annotation editor and quickLink icon.
+*/
 export function createLinkListener(getLink) {
-  $(".transcript").on("click", "td.follow-link-item", function(e) {
+  $(".transcript").on("click", "td.follow-link-item > i:not(.disabled)", function(e) {
     e.preventDefault();
 
     //get link info
-    let index = $(this).parent("tr").attr("data-index");
+    let index = $(this).parents("tr").attr("data-index");
     let linkInfo = getLink(index);
 
     //build url
     let link = JSON.parse(linkInfo.link);
 
-    //let url = getUrl(link.desc.source, link.key);
+    //aid of this annotation
+    let aid = $(this).parent("td").attr("data-aid");
+    let pid = $(this).parent("td").attr("data-pid");
 
-    //console.log("url: %s", url);
-    location.href = getLinkHref(link);
+    //get annotation link list and store in local storage so destination
+    //page can offer link back and to link to other destinations in annotation.
+    let annotation = net.getAnnotation(pid, aid);
+    annotation.uri = location.pathname;
+
+    //close bookmark editor
+    $(".annotation-cancel").trigger("click");
+
+    //store annotation to local storage
+    store.set(globals.linkOriginKey, annotation);
+
+    let href = getLinkHref(link);
+    //console.log("td.follow-link-item url: %s, pid: %s", href, aid, pid);
+    //console.log("annotation: %o", annotation);
+    location.href = href;
+  });
+
+  /*
+    User clicked link in linkify popup
+  */
+  $(".bm-link-list-popup").on("click", "a.follow-bm-link", function(e) {
+    e.preventDefault();
+
+    //get link info
+    let href = $(this).attr("href");
+    let aid = $(this).attr("data-aid");
+    let pid = $(this).attr("data-pid");
+
+    let annotation = net.getAnnotation(pid, aid);
+    annotation.uri = location.pathname;
+
+    //store annotation to local storage
+    store.set(globals.linkOriginKey, annotation);
+
+    //close bookmark editor
+    $(".annotation-cancel").trigger("click");
+
+    //console.log("follow-bm-item href: %s, aid: %s, pid: %s", href, aid, pid);
+    //console.log("annotation: %o", annotation);
+    location.href = href;
   });
 }

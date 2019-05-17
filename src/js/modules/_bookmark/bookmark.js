@@ -4,10 +4,11 @@ import net, {netInit, getBookmark}  from "./bmnet";
 import differenceWith from "lodash/differenceWith";
 import cloneDeep from "lodash/cloneDeep";
 import startCase from "lodash/startCase";
-import { showBookmark } from "../_util/url";
+import {linkToBookmark, showBookmark } from "../_util/url";
 import {initNavigator} from "./navigator";
 import list from "./list";
 import topics from "./topics";
+import globals from "../../globals";
 import {
   markSelection,
   getSelection,
@@ -27,7 +28,7 @@ export function getTeachingInfo() {
   return teaching;
 }
 
-function formatLink(link) {
+function formatLink(link, aid, pid) {
   let raw = JSON.parse(link.link);
   let href = getLinkHref(raw);
 
@@ -40,19 +41,38 @@ function formatLink(link) {
   else {
     display = `${display}:${raw.desc.pid}`;
   }
-  return `<a class="item" href="${href}">${link.reference}[${display}]</a>`;
+  return `<a data-pid="${pid}" data-aid="${aid}" class="follow-bm-link item" href="${href}">${link.reference} [${display}]</a>`;
 }
 
 //generate html for bookmark links
-function generateLinkList(links) {
+function generateLinkList(annotation) {
+  let links = annotation.links;
   return `
     ${links.map((item) => `
-      ${formatLink(item)}
+      ${formatLink(item, annotation.creationDate, annotation.rangeStart)}
     `).join("")}
   `;
 }
 
-//add bookmark topics to bookmark selected text to support 
+/*
+  generate link to return to page containing the annotation passed as an argument
+  and links for all annotation.links accept the one with aid equaling the argument
+  target.
+  args:
+    annotation: the return to annotation.
+    target: the aid linked to, when generating links we don't want
+            to include this one since we're there now.
+*/
+function generateReturnList(annotation, target) {
+  let links = annotation.links;
+  return `
+    ${links.map((item) => `
+      ${formatLink(item, annotation.creationDate, annotation.rangeStart)}
+    `).join("")}
+  `;
+}
+
+//add bookmark topics to bookmark selected text to support
 //selective display of highlight based on topic
 function addTopicsAsClasses(bookmark) {
   if (bookmark.topicList && bookmark.topicList.length > 0) {
@@ -71,7 +91,7 @@ function addNoteHighlight(pid, bm) {
   $(`#p${pid} > span.pnum`)
     .addClass("has-annotation")
     .attr("data-aid", bm.creationDate);
-  
+
   //mark all paragraphs in bookmark with class .note-style-bookmark
   let end = parseInt(bm.rangeEnd.substr(1), 10);
   let start = pid;
@@ -98,9 +118,29 @@ export function setQuickLinks(bm, type) {
 }
 
 /*
+  Add return icon after bookmark so user can return to linked bookmark
+
+  If the bookmarks has links place return icon after linkify icon
+*/
+export function setReturnLinks(aid, type) {
+  //delay to allow page bookmarks to load
+  setTimeout(() => {
+    //check if bookmark has links
+    if ($(`[data-link-aid="${aid}"]`).length > 0) {
+      $(`[data-link-aid="${aid}"]`)
+        .after(`<i data-target-aid="${aid}" data-type="${type}" class="small bm-return-list red recycle icon"></i>`);
+    }
+    else {
+      $(`[data-aid="${aid}"]`)
+        .after(`<i data-target-aid="${aid}" data-type="${type}" class="small bm-return-list red recycle icon"></i>`);
+    }
+  }, 1000);
+}
+
+/*
   Bookmark link click handler. Links are placed on both note and selected text
   bookmarks. When clicked, get the bookmark and display a list of links defined
-  in the bookmark. User can optionally click a  link. 
+  in the bookmark. User can optionally click a  link.
 */
 function initBmLinkHandler() {
   $(".transcript").on("click", ".bm-link-list.linkify", function(e) {
@@ -116,7 +156,6 @@ function initBmLinkHandler() {
     else if (type === "highlight") {
       aid = parseInt($(this).prev("mark").attr("data-aid"), 10);
     }
-    console.log("bookmark type: %s, pid: %s, aid: %s", type, pid, aid);
 
     //bookmark wont be found if it is still being created
     let bookmarkData = getBookmark(pid);
@@ -131,7 +170,29 @@ function initBmLinkHandler() {
       return;
     }
 
-    let linkList = generateLinkList(annotation.links);
+    let linkList = generateLinkList(annotation);
+    $(".bm-link-list-popup").html(linkList);
+    $(this)
+      .popup({popup: ".bm-link-info.popup", hoverable: true, on: "click"})
+      .popup("show");
+
+  });
+}
+
+function initBmReturnHandler() {
+  $(".transcript").on("click", ".bm-return-list.recycle", function(e) {
+    e.preventDefault();
+
+    //we linked from this annotation
+    let annotation = store.get(globals.linkOriginKey);
+    let aid = $(this).attr("data-target-aid");
+
+    //not expected
+    if (!annotation) {
+      return;
+    }
+
+    let linkList = generateReturnList(annotation, aid);
     $(".bm-link-list-popup").html(linkList);
     $(this)
       .popup({popup: ".bm-link-info.popup", hoverable: true, on: "click"})
@@ -191,7 +252,7 @@ function getPageBookmarks(sharePid) {
 }
 
 /*
-  Clean up form values and prepare to send to API  
+  Clean up form values and prepare to send to API
 */
 function createAnnotation(formValues) {
   //console.log("createAnnotation");
@@ -318,7 +379,7 @@ function addToTopicList(newTopics, formValues) {
     .catch(() => {
       throw new Error("error in removing duplicate topics");
     });
-} 
+}
 
 //toggle selected text highlights
 function highlightHandler() {
@@ -397,11 +458,21 @@ function initTranscriptPage(sharePid) {
   //setup bookmark link listener
   createLinkListener(getLink);
   initBmLinkHandler();
+  initBmReturnHandler();
 
   //setup bookmark navigator if requested
   let pid = showBookmark();
   if (pid) {
     initNavigator(pid, teaching);
+    return;
+  }
+
+  //setup link back
+  let linkInfo = linkToBookmark();
+  if (linkInfo.pid) {
+    setReturnLinks(linkInfo.aid, "return");
+    //set up link back
+    return;
   }
 }
 
@@ -427,7 +498,7 @@ export const annotation = {
     if (!formData.aid) {
       //bookmark has no selected text
       $(`#${formData.rangeStart} > span.pnum`).addClass("has-annotation");
-      
+
       //mark all paragraphs in bookmark with class .note-style-bookmark
       let end = parseInt(formData.rangeEnd.substr(1), 10);
       let start = parseInt(formData.rangeStart.substr(1), 10);
@@ -481,7 +552,7 @@ export const annotation = {
     else {
       //remove mark from paragraph
       $(`#${formData.rangeStart} > span.pnum`).removeClass("has-annotation");
-      
+
       //remove all paragraphs in bookmark with class .note-style-bookmark
       let end = parseInt(formData.rangeEnd.substr(1), 10);
       let start = parseInt(formData.rangeStart.substr(1), 10);
@@ -508,7 +579,7 @@ export const annotation = {
 
     if (remainingAnnotations === 0) {
       $(`#${formData.rangeStart} > span.pnum`).removeClass("has-bookmark");
-    } 
+    }
 
     //delete topics from the page topic list
     topics.delete(formData);

@@ -1,10 +1,22 @@
 /* transcript css */
-.transcript.ui.text.container, 
+.transcript.ui.text.container,
 .transcript.ui.text.container .ui.segment {
   font-size: 20px;
   line-height: 1.5;
   margin-bottom: 60px;
 }
+
+/* Playing with numbering paragraphs using css counters
+.transcript {
+  counter-reset: pcounter;
+  counter-increment: pcounter -1;
+}
+
+p.cmiTranPara::before {
+  content: '(p' counter(pcounter) ') ';
+  counter-increment: pcounter;
+}
+*/
 
 .clearBoth {
   clear: both;
@@ -71,7 +83,7 @@
 }
 
 .mejs__ptoggle.mejs-ptoggle-visible > button {
-  background-color: red; 
+  background-color: red;
 }
 
 .mejs__ptoggle.mejs-ptoggle-hidden > button {
@@ -156,22 +168,22 @@
 
 .transcript:not(.topic-filter-active):not(.hide-bookmark-highlights) mark.colorClass3,
 .transcript:not(.hide-bookmark-highlights) mark.colorClass3.show {
-  background-color: #51c4f34f; 
+  background-color: #51c4f34f;
 }
 
 .transcript:not(.topic-filter-active):not(.hide-bookmark-highlights) mark.colorClass4,
 .transcript:not(.hide-bookmark-highlights) mark.colorClass4.show {
-  background-color: #d972f93b; 
+  background-color: #d972f93b;
 }
 
 .transcript:not(.topic-filter-active):not(.hide-bookmark-highlights) mark.colorClass5,
 .transcript:not(.hide-bookmark-highlights) mark.colorClass5.show {
-  background-color: #f9728336;  
+  background-color: #f9728336;
 }
 
 .transcript:not(.topic-filter-active):not(.hide-bookmark-highlights) mark.colorClass6,
 .transcript:not(.hide-bookmark-highlights) mark.colorClass6.show {
-  background-color: #f9d07252; 
+  background-color: #f9d07252;
 }
 
 .transcript:not(.topic-filter-active):not(.hide-bookmark-highlights) mark.bookmark-selected-text.shared {
@@ -216,5 +228,11 @@
 .bm-link-list-popup,
 i.linkify.bm-link-list.icon {
   cursor: pointer;
+}
+
+.link-highlight {
+  background-color: black!important;
+  color: white!important;
+  padding: 10px!important;
 }
 

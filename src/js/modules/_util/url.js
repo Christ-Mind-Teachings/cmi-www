@@ -35,6 +35,29 @@ function scrollIntoView(id, caller) {
   });
 }
 
+function scrollAndShake(id, aid) {
+  scroll(document.getElementById(id), {align: {top: 0.2}}, () => {
+    shakeAnnotation(aid);
+  });
+}
+
+/*
+  Briefly highlight annotation after scroll complete.
+*/
+function shakeAnnotation(aid) {
+  let el = $(`[data-aid="${aid}"]`);
+
+  //check if this is a note style bookmark
+  if (el.hasClass("has-annotation")) {
+    el = el.parent("p");
+  }
+
+  el.addClass("link-highlight");
+  setTimeout(() => {
+    el.removeClass("link-highlight");
+  }, 1000);
+}
+
 //called when query request is complete
 export function loadComplete() {
   $("#transcript-page-loading").removeClass("active");
@@ -59,13 +82,26 @@ export function showParagraph() {
   let pId = getQueryString("v");
   if (pId) {
     setTimeout(scrollIntoView, INTERVAL, pId, "showParagraph");
+    history.pushState && history.pushState({path:location.pathname}, "", location.pathname);
   }
+}
+
+export function linkToBookmark() {
+  let info = {pid: getQueryString("link"), aid: getQueryString("aid")};
+  if (info.pid) {
+    //setTimeout(scrollIntoView, INTERVAL, info.pid, "linkToBookmark");
+    setTimeout(scrollAndShake, INTERVAL, info.pid, info.aid);
+    history.pushState && history.pushState({path:location.pathname}, "", location.pathname);
+  }
+
+  return info;
 }
 
 export function showBookmark() {
   let pId = getQueryString("bkmk");
 
   if (pId) {
+    history.pushState && history.pushState({path:location.pathname}, "", location.pathname);
     return pId;
   }
   return null;
@@ -76,6 +112,7 @@ export function showSearchMatch() {
 
   if (pId) {
     //setTimeout(scrollIntoView, INTERVAL, pId, "showSearchMatch");
+    history.pushState && history.pushState({path:location.pathname}, "", location.pathname);
     return pId;
   }
   return null;
@@ -85,6 +122,7 @@ export function showAnnotation() {
   let aInfo = getQueryString("as");
 
   if (aInfo) {
+    history.pushState && history.pushState({path:location.pathname}, "", location.pathname);
     return aInfo;
   }
   return null;
