@@ -88,6 +88,16 @@ body {
   border-radius: 5px;
 }
 
+i.toc-share.icon {
+  display: inline-block!important;
+  font-size: 1em!important;
+  cursor: pointer;
+}
+
+.toc.modal > .message {
+  margin: 10px;
+}
+
 /*
 .toc.ui.modal {
   overflow: hidden;
@@ -107,7 +117,7 @@ body {
 }
 
 /* bookmark list modal */
-.ui.list .list > .hide-bookmark-item.bookmark-item.item, 
+.ui.list .list > .hide-bookmark-item.bookmark-item.item,
 .ui.list .list.hide-bookmarks {
   display: none
 }

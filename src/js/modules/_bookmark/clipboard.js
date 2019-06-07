@@ -6,7 +6,17 @@ var clipboard = new Map();
 
 function setEvents(clip) {
   clip.on("success", (e) => {
-    notify.info("Link Copied to Clipboard");
+    //console.log("e.text: %s", e.text);
+    if (e.text.indexOf("tocbook") > -1) {
+      //modal dialog is displayed so notify won't work
+      $(".toc.modal > .message").html("<p>Url copied to clipboard</p>");
+      setTimeout(() => {
+        $(".toc.modal > .message > p").remove();
+      }, 2000);
+    }
+    else {
+      notify.info("Link Copied to Clipboard");
+    }
     e.clearSelection();
   });
 

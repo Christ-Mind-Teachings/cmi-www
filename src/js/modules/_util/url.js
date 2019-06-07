@@ -62,6 +62,17 @@ export function showParagraph() {
   }
 }
 
+/*
+  Check for query string containing ?tocbook. This is a request to display
+  the table of contents for the specified book
+*/
+export function showTOC() {
+  let book = getQueryString("tocbook");
+  if (book) {
+    $(`[data-book="${book}"]`).trigger("click");
+  }
+}
+
 export function showBookmark() {
   let pId = getQueryString("bkmk");
 

@@ -3985,7 +3985,7 @@ const annotation = {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var clipboard__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! clipboard */ "./node_modules/clipboard/dist/clipboard.js");
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var clipboard__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! clipboard */ "./node_modules/clipboard/dist/clipboard.js");
 /* harmony import */ var clipboard__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(clipboard__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! toastr */ "./node_modules/toastr/toastr.js");
 /* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(toastr__WEBPACK_IMPORTED_MODULE_1__);
@@ -3996,7 +3996,17 @@ var clipboard = new Map();
 
 function setEvents(clip) {
   clip.on("success", e => {
-    toastr__WEBPACK_IMPORTED_MODULE_1___default.a.info("Link Copied to Clipboard");
+    //console.log("e.text: %s", e.text);
+    if (e.text.indexOf("tocbook") > -1) {
+      //modal dialog is displayed so notify won't work
+      $(".toc.modal > .message").html("<p>Url copied to clipboard</p>");
+      setTimeout(() => {
+        $(".toc.modal > .message > p").remove();
+      }, 2000);
+    } else {
+      toastr__WEBPACK_IMPORTED_MODULE_1___default.a.info("Link Copied to Clipboard");
+    }
+
     e.clearSelection();
   });
   clip.on("error", () => {
@@ -4030,6 +4040,7 @@ function createInstance(selector) {
     }
   }
 });
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/src/jquery.js")))
 
 /***/ }),
 
@@ -8883,7 +8894,7 @@ function transcriptDriver() {
 /*!*************************************!*\
   !*** ./src/js/modules/_util/url.js ***!
   \*************************************/
-/*! exports provided: loadComplete, loadStart, showParagraph, showBookmark, showSearchMatch, showAnnotation, getUser */
+/*! exports provided: loadComplete, loadStart, showParagraph, showTOC, showBookmark, showSearchMatch, showAnnotation, getUser */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -8891,6 +8902,7 @@ __webpack_require__.r(__webpack_exports__);
 /* WEBPACK VAR INJECTION */(function($) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "loadComplete", function() { return loadComplete; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "loadStart", function() { return loadStart; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "showParagraph", function() { return showParagraph; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "showTOC", function() { return showTOC; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "showBookmark", function() { return showBookmark; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "showSearchMatch", function() { return showSearchMatch; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "showAnnotation", function() { return showAnnotation; });
@@ -8961,6 +8973,18 @@ function showParagraph() {
 
   if (pId) {
     setTimeout(scrollIntoView, INTERVAL, pId, "showParagraph");
+  }
+}
+/*
+  Check for query string containing ?tocbook. This is a request to display
+  the table of contents for the specified book
+*/
+
+function showTOC() {
+  let book = getQueryString("tocbook");
+
+  if (book) {
+    $(`[data-book="${book}"]`).trigger("click");
   }
 }
 function showBookmark() {
