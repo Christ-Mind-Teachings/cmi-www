@@ -28,6 +28,7 @@ Another goal is to integrate audio, where present, with the written word so you 
 The intent of the library is to offer simple, readable, and uncluttered access to the material herein. The interface is terse by design so be sure to poke around and get familiar with the features available. Start by clicking the <i class="question icon"></i> option in the menu bar of each page. Video documentation is also available.
 
 <div id="page-contents" class="ui three cards">
+<!--
   <div class="card">
     <a id="original-edition" href="https://orig.christmind.info" class="small image" data-tooltip="Click to visit the original CMI website." data-position="bottom center">
       <img src="/public/img/cmi/orig-big.jpg">
@@ -38,6 +39,7 @@ The intent of the library is to offer simple, readable, and uncluttered access t
       </div>
     </div>
   </div>
+  -->
   <div class="card">
     <a id="get-acquainted" href="#" data-book="acq" class="toc-modal-open image" data-tooltip="Click to view the Getting Acquainted table of contents." data-position="bottom center">
       <img src="/public/img/cmi/acq-big.jpg">

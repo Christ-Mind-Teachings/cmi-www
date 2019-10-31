@@ -1,5 +1,4 @@
 # Netlify url rewrite file
-# - used to comply with the DMCA Takedown Request from SCF over WOM content
 
 /library                  /
 /acim/*                   /t/acim/
