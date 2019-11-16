@@ -9,25 +9,25 @@ let login_state_key = "login.state";
 let userInfo;
 
 let testUsers = {
-  "rick": { 
+  "rick": {
     email: "rmercer33@gmail.com",
     userId: md5("rmercer33@gmail.com"),
     name: "Rick Mercer",
     roles: ["acol", "timer", "editor"]
   },
-  "julie": { 
+  "julie": {
     email: "julief8@me.com",
     userId: md5("julief8@me.com"),
     name: "Julie Franklin",
     roles: ["timer", "editor"]
   },
-  "yodi": { 
+  "yodi": {
     email: "yodi@yodith.com",
     userId: md5("yodi@yodith.com"),
     name: "Yodi Debebe",
     roles: ["timer"]
   },
-  "hettie": { 
+  "hettie": {
     email: "hcmercer@gmail.com",
     userId: md5("hcmercer@gmail.com"),
     name: "Hettie Mercer",
@@ -76,12 +76,11 @@ export function getUserInfo(name) {
 }
 
 /*
-  Modify menubar icons "bookmark" and "sign in" to 
+  Modify menubar icons "bookmark" and "sign in" to
   indicate user is signed in
 */
 function setAsSignedIn() {
   let userInfo = getUserInfo();
-  console.log("setAsSignedIn()");
 
   //change sign-in icon to sign-out and change color from red to green
   $(".login-menu-option > span")
@@ -101,12 +100,11 @@ function setAsSignedIn() {
 }
 
 /*
-  Modify menubar icons "bookmark" and "sign in" to 
+  Modify menubar icons "bookmark" and "sign in" to
   indicate user is signed in
 */
 function setAsSignedOut() {
   //change sign-in icon to sign-out and change color from red to green
-  console.log("setAsSignedOut()");
   $(".login-menu-option > span")
     .html("<i class='red sign in icon'></i>")
     .attr("data-tooltip", "Sign In");
@@ -139,17 +137,16 @@ function manageState(state) {
       //state 'init' on page load
       store.set(login_state_key, state);
       break;
-    case "dialog": 
+    case "dialog":
       store.set(login_state_key, state);
       break;
-    case "login": 
+    case "login":
       if (currentState === "dialog") {
         //if user has "acol" role, refresh page to enable access to all content
         if (userInfo.app_metadata.roles && userInfo.app_metadata.roles.find(r => r === "acol")) {
           //if user is on an acol transcript page
           if (location.pathname.startsWith(acolHome) && location.pathname !== acolHome) {
             //refresh page
-            console.log("refreshing page");
             location.href = acolHome;
           }
         }
@@ -168,20 +165,17 @@ export default {
      * if user already logged in, change icon to log out
      */
     user.on("init", user => {
-      console.log("user.on('init')");
       //userInfo = user;
       manageState("init");
     });
 
     user.on("login", login => {
-      console.log("user.on('login')");
       userInfo = login;
       setAsSignedIn();
       manageState("login");
     });
 
     user.on("logout", () => {
-      console.log("user.logout()");
       setAsSignedOut();
       userInfo = null;
       location.href = "/t/acol";
@@ -198,7 +192,6 @@ export default {
         user.logout();
       }
       else {
-        console.log("logon menu item pressed");
         manageState("dialog");
         user.open();
       }

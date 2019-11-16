@@ -4,7 +4,7 @@ masthead: home
 search: false
 title: "The CMI Library"
 fb:
-  desc: "Visit the Library of Christ Mind Teachings; an integrated, searchable and comprehensive collection of modern day spiritual teachings." 
+  desc: "Visit the Library of Christ Mind Teachings; an integrated, searchable and comprehensive collection of modern day spiritual teachings."
   image:
     - "cmi/acim-toc.jpg"
     - "cmi/acq-toc.jpg"
@@ -16,7 +16,7 @@ footer:
   subscribe: true
 ---
 
-## Welcome to The Library of Christ Mind Teachings! 
+## Welcome to The Library of Christ Mind Teachings!
 {: .ui.header}
 
 This library of Christ Mind teachings is offered to you from a deep appreciation and love of the content contained herein and for the love expressed and demonstrated in the words of each teaching. Within these words is found the motivation and power for real and lasting transformation of the human condition through love. Approached with honesty, curiosity, patience and a genuine desire for change the materials presented here will serve as a trusted guide and friend on the journey of awakening.
@@ -83,7 +83,7 @@ The intent of the library is to offer simple, readable, and uncluttered access t
   {% if jekyll.environment == "development" %}
   <div class="card">
     <a id="acol-christmind-info" href="/t/acol/" class="image" data-tooltip="Click to view A Course Of Love" data-position="bottom center">
-      <img src="/public/img/cmi/acol-big.jpg">
+      <img src="/public/img/cmi/acol2-big.jpg">
     </a>
     <div class="content">
       <div class="description">

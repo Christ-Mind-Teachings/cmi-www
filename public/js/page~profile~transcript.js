@@ -391,7 +391,7 @@ module.exports = {
     units: 999        //units are chapters that make up a book
     paragraphs: 999   //max number of paragraphs in a unit
 
-  NOTE: This module is used by code running in the browser and Node so the 
+  NOTE: This module is used by code running in the browser and Node so the
         common.js module system is used
 */
 //import indexOf from "lodash/indexOf";
@@ -406,11 +406,11 @@ const sourceId = 14;
 const sid = "acol";
 const prefix = "/t/acol"; //length of pageKey excluding decimal portion
 
-const keyLength = 7; //Raj material books (bid)
+const keyLength = 7; //ACOL material books (bid)
 
 const books = ["course", "treatise", "dialog", "acq"];
 const bookIds = ["xxx", ...books];
-const acq = ["xxx", "welcome", "book"];
+const acq = ["xxx", "welcome", "book", "access"];
 const course = ["xxx", "introduction", "prelude", "chap01", "chap02", "chap03", "chap04", "chap05", "chap06", "chap07", "chap08", "chap09", "chap10", "chap11", "chap12", "chap13", "chap14", "chap15", "chap16", "chap17", "chap18", "chap19", "chap20", "chap21", "chap22", "chap23", "chap24", "chap25", "chap26", "chap27", "chap28", "chap29", "chap30", "chap31", "chap32"];
 const treatise = ["xxx", "t1chap01", "t1chap02", "t1chap03", "t1chap04", "t1chap05", "t1chap06", "t1chap07", "t1chap08", "t1chap09", "t1chap10", "t2chap01", "t2chap02", "t2chap03", "t2chap04", "t2chap05", "t2chap06", "t2chap07", "t2chap08", "t2chap09", "t2chap10", "t2chap11", "t2chap12", "t2chap13", "t3chap01", "t3chap02", "t3chap03", "t3chap04", "t3chap05", "t3chap06", "t3chap07", "t3chap08", "t3chap09", "t3chap10", "t3chap11", "t3chap12", "t3chap13", "t3chap14", "t3chap15", "t3chap16", "t3chap17", "t3chap18", "t3chap19", "t3chap20", "t3chap21", "t3chap22", "t4chap01", "t4chap02", "t4chap03", "t4chap04", "t4chap05", "t4chap06", "t4chap07", "t4chap08", "t4chap09", "t4chap10", "t4chap11", "t4chap12"];
 const dialog = ["xxx", "chap01", "chap02", "chap03", "chap04", "chap05", "chap06", "chap07", "chap08", "chap09", "chap10", "chap11", "chap12", "chap13", "chap14", "chap15", "chap16", "chap17", "day01", "day02", "day03", "day04", "day05", "day06", "day07", "day08", "day09", "day10", "day11", "day12", "day13", "day14", "day15", "day16", "day17", "day18", "day19", "day20", "day21", "day22", "day23", "day24", "day25", "day26", "day27", "day28", "day29", "day30", "day31", "day32", "day33", "day34", "day35", "day36", "day37", "day38", "day39", "day40", "epilogue"];
@@ -527,8 +527,8 @@ function genPageKey(url = location.pathname) {
   let numericKey = parseInt(compositeKey, 10);
   return numericKey;
 }
-/* 
-  genParagraphKey(paragraphId, key: url || pageKey) 
+/*
+  genParagraphKey(paragraphId, key: url || pageKey)
 
   args:
     pid: a string representing a transcript paragraph, starts as "p0"..."pnnn"
@@ -609,7 +609,7 @@ function getBooks() {
   return books;
 }
 /*
-  Return the number of chapters in the book (bid). 
+  Return the number of chapters in the book (bid).
   Subtract one from length because of 'xxx' (fake chapter)
 */
 
@@ -1414,7 +1414,7 @@ const books = ["tjl", "wos", "early", "woh", "wot", "wok", "acq"];
 const bookIds = ["xxx", ...books];
 const acq = ["xxx", "welcome", "wom", "web"];
 const tjl = ["xxx", "ack", "foreword", "chap01", "chap02", "chap03", "chap04", "chap05", "chap06", "chap07", "chap08", "chap09", "chap10", "chap11", "chap12", "epilogue"];
-const wos = ["xxx", "foreword", "preface", "chap01", "chap02", "chap03", "chap04", "afterwords", "epilogue", "prayer"];
+const wos = ["xxx", "foreword", "preface", "chap01", "chap02", "chap03", "chap04", "afterwords", "epilog", "prayer"];
 const early = ["xxx", "ble", "c2s", "hoe", "ign", "com", "dbc", "dth", "fem", "gar", "hea", "hoi", "hsp", "joy1", "joy2", "lht", "moa", "mot", "wak", "wlk"];
 const contents = {
   acq: acq,
@@ -1775,7 +1775,9 @@ __webpack_require__.r(__webpack_exports__);
   Global constants
 */
 /* harmony default export */ __webpack_exports__["default"] = ({
+  acolManager: "rmercer33+acol@gmail.com",
   share: "https://rcd7l4adth.execute-api.us-east-1.amazonaws.com/latest/share",
+  acol: "https://rcd7l4adth.execute-api.us-east-1.amazonaws.com/latest/acol/access",
   user: "https://93e93isn03.execute-api.us-east-1.amazonaws.com/latest/user",
   audit: "https://93e93isn03.execute-api.us-east-1.amazonaws.com/latest",
   topicsEndPoint: "https://93e93isn03.execute-api.us-east-1.amazonaws.com/latest",
@@ -8455,13 +8457,12 @@ function getUserInfo(name) {
   */
 }
 /*
-  Modify menubar icons "bookmark" and "sign in" to 
+  Modify menubar icons "bookmark" and "sign in" to
   indicate user is signed in
 */
 
 function setAsSignedIn() {
-  let userInfo = getUserInfo();
-  console.log("setAsSignedIn()"); //change sign-in icon to sign-out and change color from red to green
+  let userInfo = getUserInfo(); //change sign-in icon to sign-out and change color from red to green
 
   $(".login-menu-option > span").html("<i class='green sign out icon'></i>").attr("data-tooltip", `Sign Out: ${userInfo.name}`); //change bookmark menu icon to green from red
 
@@ -8472,14 +8473,13 @@ function setAsSignedIn() {
   $(".hide.profile-management.item").removeClass("hide");
 }
 /*
-  Modify menubar icons "bookmark" and "sign in" to 
+  Modify menubar icons "bookmark" and "sign in" to
   indicate user is signed in
 */
 
 
 function setAsSignedOut() {
   //change sign-in icon to sign-out and change color from red to green
-  console.log("setAsSignedOut()");
   $(".login-menu-option > span").html("<i class='red sign in icon'></i>").attr("data-tooltip", "Sign In"); //change bookmark menu icon to green from red
 
   $(".main.menu a > span > i.bookmark.icon").addClass("red").removeClass("green"); //removed signed-in class
@@ -8518,7 +8518,6 @@ function manageState(state) {
           //if user is on an acol transcript page
           if (location.pathname.startsWith(acolHome) && location.pathname !== acolHome) {
             //refresh page
-            console.log("refreshing page");
             location.href = acolHome;
           }
         }
@@ -8537,18 +8536,15 @@ function manageState(state) {
      * if user already logged in, change icon to log out
      */
     netlify_identity_widget__WEBPACK_IMPORTED_MODULE_0___default.a.on("init", user => {
-      console.log("user.on('init')"); //userInfo = user;
-
+      //userInfo = user;
       manageState("init");
     });
     netlify_identity_widget__WEBPACK_IMPORTED_MODULE_0___default.a.on("login", login => {
-      console.log("user.on('login')");
       userInfo = login;
       setAsSignedIn();
       manageState("login");
     });
     netlify_identity_widget__WEBPACK_IMPORTED_MODULE_0___default.a.on("logout", () => {
-      console.log("user.logout()");
       setAsSignedOut();
       userInfo = null;
       location.href = "/t/acol";
@@ -8562,7 +8558,6 @@ function manageState(state) {
       if (userInfo) {
         netlify_identity_widget__WEBPACK_IMPORTED_MODULE_0___default.a.logout();
       } else {
-        console.log("logon menu item pressed");
         manageState("dialog");
         netlify_identity_widget__WEBPACK_IMPORTED_MODULE_0___default.a.open();
       }
