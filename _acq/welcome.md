@@ -20,21 +20,6 @@ Click on an image to display a table of contents for a book or to go to the home
 
 <div class="ui items">
   <div class="item">
-    <a id="orig-christmind-info" href="https://orig.christmind.info" class="ui tiny image"
-      data-tooltip="Click to visit the original CMI website.">
-      <img src="/public/img/cmi/orig-toc.jpg">
-    </a>
-    <div class="content">
-      <a id="orig-christmind-info" class="header">Original Christ Mind Site</a>
-      <div class="description">
-        <p>
-          This is the original https://www.christmind.info site. It will be available here until
-          the new site is ready to go and documented. 
-        </p>
-      </div>
-    </div>
-  </div>
-  <div class="item">
     <a href="#" data-book="acq" class="toc-modal-open ui tiny image" data-tooltip="Click to view the Getting Acquainted table of contents.">
       <img src="/public/img/cmi/acq-toc.jpg">
     </a>
@@ -96,7 +81,6 @@ Click on an image to display a table of contents for a book or to go to the home
       </div>
     </div>
   </div>
-  {% if jekyll_environmet == "development" %}
   <div class="item">
     <a href="/t/acol/" class="ui tiny image" data-tooltip="Click to view A Course Of Love">
       <img src="/public/img/cmi/acol-toc.jpg">
@@ -104,13 +88,15 @@ Click on an image to display a table of contents for a book or to go to the home
     <div class="content">
       <a href="/t/acol/" class="header">A Course Of Love</a>
       <div class="description">
+        <p>
         Forty years ago Jesus dictated ACIM to the scribe Helen Schucman. More recently, over three years, he similarly dictated A Course of Love to Mari Perron. Students of ACIM will recognize the Voice. Jesus describes ACOL as a "continuation" of A Course in Miracles. Students of truth, whatever their background, will find that ACOL resonates with the heart.
+        </p>
         <p>
           Click on the cover image to go the ACOL homepage.
         </p>
       </div>
     </div>
-  {% endif %}
+  </div>
   <div class="item">
     <a href="/t/jsb/" class="ui tiny image" data-tooltip="Click to view The Impersonal Life.">
       <img src="/public/img/cmi/jsb-toc.jpg">

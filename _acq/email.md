@@ -64,5 +64,19 @@ list in the footer at the bottom of the page.
       </div>
     </div>
   </div>
+  <div class="item">
+    <a href="/email/010320/" class="ui small image"
+      data-tooltip="A Course Of Love Now Available">
+      <img src="https://s3.amazonaws.com/assets.christmind.info/email/img/cmi/acol2new-big.jpg">
+    </a>
+    <div class="content">
+      <a id="orig-christmind-info" class="header">January 3, 2020</a>
+      <div class="description">
+        <p>
+          Announcing the addition of A Course Of Love to the Library.
+        </p>
+      </div>
+    </div>
+  </div>
 </div>
 

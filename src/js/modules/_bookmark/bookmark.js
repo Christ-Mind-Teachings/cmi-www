@@ -52,7 +52,7 @@ function generateLinkList(links) {
   `;
 }
 
-//add bookmark topics to bookmark selected text to support 
+//add bookmark topics to bookmark selected text to support
 //selective display of highlight based on topic
 function addTopicsAsClasses(bookmark) {
   if (bookmark.topicList && bookmark.topicList.length > 0) {
@@ -71,7 +71,7 @@ function addNoteHighlight(pid, bm) {
   $(`#p${pid} > span.pnum`)
     .addClass("has-annotation")
     .attr("data-aid", bm.creationDate);
-  
+
   //mark all paragraphs in bookmark with class .note-style-bookmark
   let end = parseInt(bm.rangeEnd.substr(1), 10);
   let start = pid;
@@ -100,7 +100,7 @@ export function setQuickLinks(bm, type) {
 /*
   Bookmark link click handler. Links are placed on both note and selected text
   bookmarks. When clicked, get the bookmark and display a list of links defined
-  in the bookmark. User can optionally click a  link. 
+  in the bookmark. User can optionally click a  link.
 */
 function initBmLinkHandler() {
   $(".transcript").on("click", ".bm-link-list.linkify", function(e) {
@@ -191,7 +191,7 @@ function getPageBookmarks(sharePid) {
 }
 
 /*
-  Clean up form values and prepare to send to API  
+  Clean up form values and prepare to send to API
 */
 function createAnnotation(formValues) {
   //console.log("createAnnotation");
@@ -297,6 +297,9 @@ function addToTopicList(newTopics, formValues) {
     .then((response) => {
       //remove duplicate topics from and return the rest in difference[]
       let newUniqueTopics = differenceWith(newTopics, response.topics, (n,t) => {
+        if (!t.value) {
+          return t === n.value;
+        }
         return t.value === n.value;
       });
 
@@ -315,10 +318,11 @@ function addToTopicList(newTopics, formValues) {
         createAnnotation(formValues);
       }
     })
-    .catch(() => {
-      throw new Error("error in removing duplicate topics");
+    .catch((err) => {
+      //error
+      throw new Error(`bookmark.js:addToTopicList() error: ${err}`);
     });
-} 
+}
 
 //toggle selected text highlights
 function highlightHandler() {
@@ -427,7 +431,7 @@ export const annotation = {
     if (!formData.aid) {
       //bookmark has no selected text
       $(`#${formData.rangeStart} > span.pnum`).addClass("has-annotation");
-      
+
       //mark all paragraphs in bookmark with class .note-style-bookmark
       let end = parseInt(formData.rangeEnd.substr(1), 10);
       let start = parseInt(formData.rangeStart.substr(1), 10);
@@ -481,7 +485,7 @@ export const annotation = {
     else {
       //remove mark from paragraph
       $(`#${formData.rangeStart} > span.pnum`).removeClass("has-annotation");
-      
+
       //remove all paragraphs in bookmark with class .note-style-bookmark
       let end = parseInt(formData.rangeEnd.substr(1), 10);
       let start = parseInt(formData.rangeStart.substr(1), 10);
@@ -508,7 +512,7 @@ export const annotation = {
 
     if (remainingAnnotations === 0) {
       $(`#${formData.rangeStart} > span.pnum`).removeClass("has-bookmark");
-    } 
+    }
 
     //delete topics from the page topic list
     topics.delete(formData);

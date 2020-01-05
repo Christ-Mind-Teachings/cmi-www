@@ -83,10 +83,14 @@ function getNumberOfUnits(bid) {
 }
 
 function splitUrl(url) {
-  let u = url; //remove leading and trailing "/"
+  let u = url; //remove leading
 
-  u = url.substr(1);
-  u = u.substr(0, u.length - 1);
+  u = url.substr(1); //remove trailing '/' if it exists
+
+  if (u[u.length - 1] === "/") {
+    u = u.substr(0, u.length - 1);
+  }
+
   return u.split("/");
 }
 
@@ -411,9 +415,9 @@ const keyLength = 7; //ACOL material books (bid)
 const books = ["course", "treatise", "dialog", "acq"];
 const bookIds = ["xxx", ...books];
 const acq = ["xxx", "welcome", "book", "access"];
-const course = ["xxx", "introduction", "prelude", "chap01", "chap02", "chap03", "chap04", "chap05", "chap06", "chap07", "chap08", "chap09", "chap10", "chap11", "chap12", "chap13", "chap14", "chap15", "chap16", "chap17", "chap18", "chap19", "chap20", "chap21", "chap22", "chap23", "chap24", "chap25", "chap26", "chap27", "chap28", "chap29", "chap30", "chap31", "chap32"];
-const treatise = ["xxx", "t1chap01", "t1chap02", "t1chap03", "t1chap04", "t1chap05", "t1chap06", "t1chap07", "t1chap08", "t1chap09", "t1chap10", "t2chap01", "t2chap02", "t2chap03", "t2chap04", "t2chap05", "t2chap06", "t2chap07", "t2chap08", "t2chap09", "t2chap10", "t2chap11", "t2chap12", "t2chap13", "t3chap01", "t3chap02", "t3chap03", "t3chap04", "t3chap05", "t3chap06", "t3chap07", "t3chap08", "t3chap09", "t3chap10", "t3chap11", "t3chap12", "t3chap13", "t3chap14", "t3chap15", "t3chap16", "t3chap17", "t3chap18", "t3chap19", "t3chap20", "t3chap21", "t3chap22", "t4chap01", "t4chap02", "t4chap03", "t4chap04", "t4chap05", "t4chap06", "t4chap07", "t4chap08", "t4chap09", "t4chap10", "t4chap11", "t4chap12"];
-const dialog = ["xxx", "chap01", "chap02", "chap03", "chap04", "chap05", "chap06", "chap07", "chap08", "chap09", "chap10", "chap11", "chap12", "chap13", "chap14", "chap15", "chap16", "chap17", "day01", "day02", "day03", "day04", "day05", "day06", "day07", "day08", "day09", "day10", "day11", "day12", "day13", "day14", "day15", "day16", "day17", "day18", "day19", "day20", "day21", "day22", "day23", "day24", "day25", "day26", "day27", "day28", "day29", "day30", "day31", "day32", "day33", "day34", "day35", "day36", "day37", "day38", "day39", "day40", "epilogue"];
+const course = ["xxx", "intro", "prelude", "chap01", "chap02", "chap03", "chap04", "chap05", "chap06", "chap07", "chap08", "chap09", "chap10", "chap11", "chap12", "chap13", "chap14", "chap15", "chap16", "chap17", "chap18", "chap19", "chap20", "chap21", "chap22", "chap23", "chap24", "chap25", "chap26", "chap27", "chap28", "chap29", "chap30", "chap31", "chap32", "learning1"];
+const treatise = ["xxx", "t1chap01", "t1chap02", "t1chap03", "t1chap04", "t1chap05", "t1chap06", "t1chap07", "t1chap08", "t1chap09", "t1chap10", "t2chap01", "t2chap02", "t2chap03", "t2chap04", "t2chap05", "t2chap06", "t2chap07", "t2chap08", "t2chap09", "t2chap10", "t2chap11", "t2chap12", "t2chap13", "t3chap01", "t3chap02", "t3chap03", "t3chap04", "t3chap05", "t3chap06", "t3chap07", "t3chap08", "t3chap09", "t3chap10", "t3chap11", "t3chap12", "t3chap13", "t3chap14", "t3chap15", "t3chap16", "t3chap17", "t3chap18", "t3chap19", "t3chap20", "t3chap21", "t3chap22", "t4chap01", "t4chap02", "t4chap03", "t4chap04", "t4chap05", "t4chap06", "t4chap07", "t4chap08", "t4chap09", "t4chap10", "t4chap11", "t4chap12", "learning2"];
+const dialog = ["xxx", "chap01", "chap02", "chap03", "chap04", "chap05", "chap06", "chap07", "chap08", "chap09", "chap10", "chap11", "chap12", "chap13", "chap14", "chap15", "chap16", "chap17", "day01", "day02", "day03", "day04", "day05", "day06", "day07", "day08", "day09", "day10", "day11", "day12", "day13", "day14", "day15", "day16", "day17", "day18", "day19", "day20", "day21", "day22", "day23", "day24", "day25", "day26", "day27", "day28", "day29", "day30", "day31", "day32", "day33", "day34", "day35", "day36", "day37", "day38", "day39", "day40", "epilog", "learning3", "dialog"];
 const contents = {
   course: course,
   treatise: treatise,
@@ -424,8 +428,12 @@ const contents = {
 function splitUrl(url) {
   let u = url; //remove leading and trailing "/"
 
-  u = url.substr(1);
-  u = u.substr(0, u.length - 1);
+  u = url.substr(1); //remove trailing '/' if it exists
+
+  if (u[u.length - 1] === "/") {
+    u = u.substr(0, u.length - 1);
+  }
+
   return u.split("/");
 }
 /*
@@ -739,10 +747,14 @@ const contents = {
 };
 
 function splitUrl(url) {
-  let u = url; //remove leading and trailing "/"
+  let u = url; //remove leading "/"
 
-  u = url.substr(1);
-  u = u.substr(0, u.length - 1);
+  u = url.substr(1); //remove trailing '/' if it exists
+
+  if (u[u.length - 1] === "/") {
+    u = u.substr(0, u.length - 1);
+  }
+
   return u.split("/");
 }
 /*
@@ -1034,7 +1046,7 @@ module.exports = {
         uuu: unit Id
         ppp: paragraph number - not positional
 
-  NOTE: This module is used by code running in the browser and Node so the 
+  NOTE: This module is used by code running in the browser and Node so the
         common.js module system is used
 */
 //import indexOf from "lodash/indexOf";
@@ -1053,7 +1065,7 @@ const keyLength = 7; //Raj material books (bid)
 
 const books = ["yaa", "grad", "sg2002", "sg2003", "sg2004", "sg2005", "sg2006", "sg2007", "sg2008", "sg2009", "sg2010", "sg2011", "sg2012", "sg2013", "sg2014", "sg2015", "sg2016", "sg2017", "sg2018", "acq"];
 const bookIds = ["xxx", ...books];
-const acq = ["xxx", "welcome", "raj", "download", "acim", "web"];
+const acq = ["xxx", "welcome", "raj", "download", "web"];
 const grad = ["xxx", "g000002", "g000003", "g010491", "g010591", "g011491", "g011591", "g011691", "g011891", "g012091", "g012591", "g012791", "g020291", "g020591", "g020691", "g021291", "g021391", "g021491", "g022091", "g022591", "g030291", "g030891", "g031491", "g031991", "g032091", "g032191", "g032291", "g032591", "g032991"];
 const sg2002 = ["xxx", "061202", "073102", "080702", "081402", "082802", "090402", "091102", "091802", "092502", "100202", "101002", "101702", "102402", "103102", "110702", "112102", "120502", "121202", "121902"];
 const sg2003 = ["xxx", "010203", "010903", "011603", "012303", "020603", "021303", "022003", "022703", "030603", "031303", "032003", "032703", "040303", "041003", "042403", "050103", "051103", "051803", "052503", "060103", "060803", "061503", "062203", "062903", "070603", "071303", "072003", "072703", "080303", "081003", "081703", "082403", "083103", "090703", "091403", "092103", "092803", "101203", "101903", "102603", "110203", "110903", "111603", "112303", "120703", "121403", "122103"];
@@ -1097,10 +1109,14 @@ const contents = {
 };
 
 function splitUrl(url) {
-  let u = url; //remove leading and trailing "/"
+  let u = url; //remove leading "/"
 
-  u = url.substr(1);
-  u = u.substr(0, u.length - 1);
+  u = url.substr(1); //remove trailing '/' if it exists
+
+  if (u[u.length - 1] === "/") {
+    u = u.substr(0, u.length - 1);
+  }
+
   return u.split("/");
 }
 /*
@@ -1202,8 +1218,8 @@ function genPageKey(url = location.pathname) {
   let numericKey = parseInt(compositeKey, 10);
   return numericKey;
 }
-/* 
-  genParagraphKey(paragraphId, key: url || pageKey) 
+/*
+  genParagraphKey(paragraphId, key: url || pageKey)
 
   args:
     pid: a string representing a transcript paragraph, starts as "p0"..."pnnn"
@@ -1274,7 +1290,7 @@ function getBooks() {
   return books;
 }
 /*
-  Return the number of chapters in the book (bid). 
+  Return the number of chapters in the book (bid).
   Subtract one from length because of 'xxx' (fake chapter)
 */
 
@@ -1424,10 +1440,14 @@ const contents = {
 };
 
 function splitUrl(url) {
-  let u = url; //remove leading and trailing "/"
+  let u = url; //remove leading "/"
 
-  u = url.substr(1);
-  u = u.substr(0, u.length - 1);
+  u = url.substr(1); //remove trailing '/' if it exists
+
+  if (u[u.length - 1] === "/") {
+    u = u.substr(0, u.length - 1);
+  }
+
   return u.split("/");
 }
 /*
@@ -3503,7 +3523,7 @@ function generateLinkList(links) {
       ${formatLink(item)}
     `).join("")}
   `;
-} //add bookmark topics to bookmark selected text to support 
+} //add bookmark topics to bookmark selected text to support
 //selective display of highlight based on topic
 
 
@@ -3553,7 +3573,7 @@ function setQuickLinks(bm, type) {
 /*
   Bookmark link click handler. Links are placed on both note and selected text
   bookmarks. When clicked, get the bookmark and display a list of links defined
-  in the bookmark. User can optionally click a  link. 
+  in the bookmark. User can optionally click a  link.
 */
 
 function initBmLinkHandler() {
@@ -3642,7 +3662,7 @@ function getPageBookmarks(sharePid) {
   });
 }
 /*
-  Clean up form values and prepare to send to API  
+  Clean up form values and prepare to send to API
 */
 
 
@@ -3750,6 +3770,10 @@ function addToTopicList(newTopics, formValues) {
   _bmnet__WEBPACK_IMPORTED_MODULE_2__["default"].fetchTopics().then(response => {
     //remove duplicate topics from and return the rest in difference[]
     let newUniqueTopics = lodash_differenceWith__WEBPACK_IMPORTED_MODULE_3___default()(newTopics, response.topics, (n, t) => {
+      if (!t.value) {
+        return t === n.value;
+      }
+
       return t.value === n.value;
     }); //these are the new topics
 
@@ -3763,8 +3787,9 @@ function addToTopicList(newTopics, formValues) {
 
       createAnnotation(formValues);
     }
-  }).catch(() => {
-    throw new Error("error in removing duplicate topics");
+  }).catch(err => {
+    //error
+    throw new Error(`bookmark.js:addToTopicList() error: ${err}`);
   });
 } //toggle selected text highlights
 
@@ -6801,10 +6826,14 @@ const contents = {
 };
 
 function splitUrl(url) {
-  let u = url; //remove leading and trailing "/"
+  let u = url; //remove leading "/"
 
-  u = url.substr(1);
-  u = u.substr(0, u.length - 1);
+  u = url.substr(1); //remove trailing '/' if it exists
+
+  if (u[u.length - 1] === "/") {
+    u = u.substr(0, u.length - 1);
+  }
+
   return u.split("/");
 }
 /*
