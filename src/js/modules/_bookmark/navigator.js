@@ -72,7 +72,7 @@ function generateAnnotation(annotation, topics = []) {
             ${generateHorizontalList(annotation.topicList)}
           </div>
           <div class="description">
-            <a data-aid="${annotation.aid}" class="annotation-item" data-range="${annotation.rangeStart}/${annotation.rangeEnd}">   
+            <a data-aid="${annotation.aid}" class="annotation-item" data-range="${annotation.rangeStart}/${annotation.rangeEnd}">
               ${annotation.Comment?annotation.Comment:"No Comment"}
             </a>
           </div>
@@ -119,7 +119,7 @@ function getBookmarkUrl(bookmarks, pageKey, pid) {
   }
   else {
     //we have a bookmark with no selected text, have to get the url in another way
-    url = `${url_prefix}${teaching.keyInfo.getUrl(pageKey)}?bkmk=${bookmark[0].rangeStart}`;
+    url = `${teaching.url_prefix}${teaching.keyInfo.getUrl(pageKey)}?bkmk=${bookmark[0].rangeStart}`;
   }
 
   /*
@@ -384,7 +384,7 @@ function getCurrentBookmark(pageKey, actualPid, allBookmarks, bmModal, whoCalled
   let pidKey;
   let topics = [];
   let filterTopics;
-  
+
   if (bmModal["modal"].filter) {
     topics = bmModal["modal"].topics;
     filterTopics = generateHorizontalList(bmModal["modal"].fullTopic);
@@ -418,7 +418,7 @@ function getCurrentBookmark(pageKey, actualPid, allBookmarks, bmModal, whoCalled
   let pageMarks = Object.keys(allBookmarks[pageKey]);
   let pos = pageMarks.indexOf(pidKey);
 
-  //if topic filtering is enabled 
+  //if topic filtering is enabled
   let prevActualPid;
   let nextActualPid;
 
@@ -518,7 +518,7 @@ function bookmarkManager(actualPid) {
 }
 
 /*
-  Update previous and next bookmark links on navigator. 
+  Update previous and next bookmark links on navigator.
 
   args:
     pid: the actual pid to display
