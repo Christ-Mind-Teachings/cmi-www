@@ -24,7 +24,7 @@ This library of Christ Mind teachings is offered to you from a deep appreciation
 
 One of the goals of this site is to bring all the bits and pieces of a teaching together in an easily discoverable and usable format. This is particularly true for <em>The Way of Mastery</em> and <em>The Raj Material</em> which, because of the volume of content, was difficult to compile into an approachable package.
 
-Another goal is to integrate audio, where present, with the written word so you can read along as you listen and not loose your place. See the <em>Get Acquainted</em> guide for details of this and other features of the library.
+Another goal is to integrate audio, where present, with the written word so you can read along as you listen and not lose your place. See the <em>Get Acquainted</em> guide for details of this and other features of the library.
 
 The intent of the library is to offer simple, readable, and uncluttered access to the material herein. The interface is terse by design so be sure to poke around and get familiar with the features available. Start by clicking the <i class="question icon"></i> option in the menu bar of each page. Video documentation is also available.
 
