@@ -65,7 +65,7 @@ function nextPrev(bid, $el) {
 }
 
 /*
-  If we're on a transcript page, highlight the 
+  If we're on a transcript page, highlight the
   current transcript in the list and calc prev and next
   links
 
@@ -75,7 +75,7 @@ function nextPrev(bid, $el) {
     Bid is needed in case next and previous are determinded differently depending on book
 */
 function highlightCurrentTranscript(bid) {
-  if ($(".transcript").length > 0) {
+  if ($(".transcript").length > 0 || $(".profile-page").length > 0) {
     let page = location.pathname;
     let $el = $(`.toc-list a[href='${page}']`);
 
@@ -127,7 +127,7 @@ export function getBookId() {
 export default {
 
   /*
-   * Init the modal dialog with data from JSON file 
+   * Init the modal dialog with data from JSON file
    * or local storage
    */
   initialize: function(env) {
@@ -146,7 +146,7 @@ export default {
     /*
      * TOC populated by JSON file from AJAX call if not found
      * in local storage.
-     * 
+     *
      * Read value of data-book attribute to identify name of file
      * with contents.
      */

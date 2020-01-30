@@ -14,7 +14,7 @@
         uuu: unit Id
         ppp: paragraph number - not positional
 
-  NOTE: This module is used by code running in the browser and Node so the 
+  NOTE: This module is used by code running in the browser and Node so the
         common.js module system is used
 */
 
@@ -26,7 +26,7 @@ const sprintf = require("sprintf-js").sprintf;
 //JSB = 11
 //ACIM = 12
 //RAJ = 13
-//WWW = 99 This is the Library 
+//WWW = 99 This is the Library
 const sourceId = 99;
 const sid = "www";
 const prefix = "";
@@ -38,7 +38,7 @@ const keyLength = 7;
 const books = ["acq", "profile" ];
 
 const bookIds = ["xxx", ...books];
-const profile = ["xxx", "email"];
+const profile = ["xxx", "email", "topicMgt"];
 const acq = ["xxx", "welcome", "overview", "quick", "bookmark", "search", "audio",
   "accounts", "profile", "video", "email", "tech", "contact"];
 
@@ -155,8 +155,8 @@ function genPageKey(url = location.pathname) {
   return numericKey;
 }
 
-/* 
-  genParagraphKey(paragraphId, key: url || pageKey) 
+/*
+  genParagraphKey(paragraphId, key: url || pageKey)
 
   args:
     pid: a string representing a transcript paragraph, starts as "p0"..."pnnn"
@@ -227,7 +227,7 @@ function getBooks() {
 }
 
 /*
-  Return the number of chapters in the book (bid). 
+  Return the number of chapters in the book (bid).
   Subtract one from length because of 'xxx' (fake chapter)
 */
 function getNumberOfUnits(bid) {

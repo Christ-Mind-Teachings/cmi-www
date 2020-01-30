@@ -1796,6 +1796,7 @@ __webpack_require__.r(__webpack_exports__);
 */
 /* harmony default export */ __webpack_exports__["default"] = ({
   acolManager: "rmercer33+acol@gmail.com",
+  sources: "/public/config/sources.json",
   share: "https://rcd7l4adth.execute-api.us-east-1.amazonaws.com/latest/share",
   acol: "https://rcd7l4adth.execute-api.us-east-1.amazonaws.com/latest/acol/access",
   user: "https://93e93isn03.execute-api.us-east-1.amazonaws.com/latest/user",
@@ -1855,6 +1856,10 @@ function createClickHandlers() {
 
     if ($(this).hasClass("profile-management")) {
       location.href = "/profile/email/";
+    }
+
+    if ($(this).hasClass("topic-management")) {
+      location.href = "/profile/topicMgt/";
     }
   }); //quick links
 
@@ -6798,7 +6803,7 @@ function getPageInfo(pageKey, data = false) {
         uuu: unit Id
         ppp: paragraph number - not positional
 
-  NOTE: This module is used by code running in the browser and Node so the 
+  NOTE: This module is used by code running in the browser and Node so the
         common.js module system is used
 */
 //import indexOf from "lodash/indexOf";
@@ -6807,7 +6812,7 @@ const sprintf = __webpack_require__(/*! sprintf-js */ "./node_modules/sprintf-js
 //JSB = 11
 //ACIM = 12
 //RAJ = 13
-//WWW = 99 This is the Library 
+//WWW = 99 This is the Library
 
 
 const sourceId = 99;
@@ -6818,7 +6823,7 @@ const keyLength = 7; // books (bid)
 
 const books = ["acq", "profile"];
 const bookIds = ["xxx", ...books];
-const profile = ["xxx", "email"];
+const profile = ["xxx", "email", "topicMgt"];
 const acq = ["xxx", "welcome", "overview", "quick", "bookmark", "search", "audio", "accounts", "profile", "video", "email", "tech", "contact"];
 const contents = {
   acq: acq,
@@ -6935,8 +6940,8 @@ function genPageKey(url = location.pathname) {
   let numericKey = parseInt(compositeKey, 10);
   return numericKey;
 }
-/* 
-  genParagraphKey(paragraphId, key: url || pageKey) 
+/*
+  genParagraphKey(paragraphId, key: url || pageKey)
 
   args:
     pid: a string representing a transcript paragraph, starts as "p0"..."pnnn"
@@ -7007,7 +7012,7 @@ function getBooks() {
   return books;
 }
 /*
-  Return the number of chapters in the book (bid). 
+  Return the number of chapters in the book (bid).
   Subtract one from length because of 'xxx' (fake chapter)
 */
 
@@ -7095,8 +7100,8 @@ module.exports = {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "status", function() { return status; });
 const status = {
-  acq: "Tue Mar 26 18:01:19 WITA 2019",
-  profile: "Mon Feb 18 13:42:38 WITA 2019"
+  acq: "Tue Mar 26 00:01:19 HST 2019",
+  profile: "Tue Jan 21 14:24:49 HST 2020"
 };
 
 /***/ }),
@@ -7180,7 +7185,7 @@ function nextPrev(bid, $el) {
   }
 }
 /*
-  If we're on a transcript page, highlight the 
+  If we're on a transcript page, highlight the
   current transcript in the list and calc prev and next
   links
 
@@ -7192,7 +7197,7 @@ function nextPrev(bid, $el) {
 
 
 function highlightCurrentTranscript(bid) {
-  if ($(".transcript").length > 0) {
+  if ($(".transcript").length > 0 || $(".profile-page").length > 0) {
     let page = location.pathname;
     let $el = $(`.toc-list a[href='${page}']`); //remove href to deactivate link for current page and
     //scroll into middle of viewport
@@ -7239,7 +7244,7 @@ function getBookId() {
 }
 /* harmony default export */ __webpack_exports__["default"] = ({
   /*
-   * Init the modal dialog with data from JSON file 
+   * Init the modal dialog with data from JSON file
    * or local storage
    */
   initialize: function (env) {
@@ -7258,7 +7263,7 @@ function getBookId() {
     /*
      * TOC populated by JSON file from AJAX call if not found
      * in local storage.
-     * 
+     *
      * Read value of data-book attribute to identify name of file
      * with contents.
      */

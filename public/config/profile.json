@@ -7,6 +7,10 @@
     {
       "title": "Manage Your Email List",
       "url": "/email/"
+    },
+    {
+      "title": "Manage Topics",
+      "url": "/topicMgt/"
     }
   ]
 }

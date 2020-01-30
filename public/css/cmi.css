@@ -142,6 +142,7 @@ i.toc-share.icon {
   margin-bottom: 20px;
 }
 
+#get-bookmarks-section.hide,
 #filter-topics-section.hide {
   display: none;
 }

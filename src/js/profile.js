@@ -10,19 +10,26 @@ import auth from "./modules/_user/netlify";
 import about from "./modules/_about/about";
 
 import {loadEmailListTable} from "./modules/_user/email";
+import {initializeTopicManager} from "./modules/_user/topicmgr";
 
 $(document).ready(() => {
   initStickyMenu();
   bookmarkStart("page");
   search.initialize();
   auth.initialize();
-  toc.initialize("page");
+  toc.initialize("transcript");
   about.initialize();
 
   //email mgt page
-  if ($(".manage-email-list")) {
+  if ($(".manage-email-list").length === 1) {
     console.log("loading email list table");
     loadEmailListTable();
+  }
+
+  //topic mgt page
+  if ($(".manage-topic-list").length === 1) {
+    console.log("loading topic list table");
+    initializeTopicManager();
   }
 
 });

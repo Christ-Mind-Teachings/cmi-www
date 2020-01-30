@@ -348,6 +348,318 @@ function saveChanges() {
 
 /***/ }),
 
+/***/ "./src/js/modules/_user/net.js":
+/*!*************************************!*\
+  !*** ./src/js/modules/_user/net.js ***!
+  \*************************************/
+/*! exports provided: getConfig, getTopics, getBookmarks */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getConfig", function() { return getConfig; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getTopics", function() { return getTopics; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getBookmarks", function() { return getBookmarks; });
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _globals__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../globals */ "./src/js/globals.js");
+
+
+function getConfig(key) {
+  let url = _globals__WEBPACK_IMPORTED_MODULE_1__["default"][key];
+
+  if (!url) {
+    throw `key: ${key} not found in globals`;
+  }
+
+  return axios__WEBPACK_IMPORTED_MODULE_0___default.a.get(url);
+}
+function getTopics(userId, sourceId) {
+  let url = _globals__WEBPACK_IMPORTED_MODULE_1__["default"]["topicsEndPoint"];
+
+  if (!url) {
+    throw `key: topicsEndPoint not found in globals`;
+  }
+
+  url = `${url}/user/${userId}/topics/${sourceId}`;
+  return axios__WEBPACK_IMPORTED_MODULE_0___default.a.get(url);
+}
+function getBookmarks(userId, sourceId) {
+  let url = _globals__WEBPACK_IMPORTED_MODULE_1__["default"]["bookmarkApi"];
+
+  if (!url) {
+    throw "key: 'bookmarkApi' not found in globals";
+  }
+
+  url = `${url}/bookmark/query/${userId}/${sourceId}`;
+  return axios__WEBPACK_IMPORTED_MODULE_0___default.a.get(url);
+}
+
+/***/ }),
+
+/***/ "./src/js/modules/_user/topicmgr.js":
+/*!******************************************!*\
+  !*** ./src/js/modules/_user/topicmgr.js ***!
+  \******************************************/
+/*! exports provided: initializeTopicManager */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* WEBPACK VAR INJECTION */(function($) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "initializeTopicManager", function() { return initializeTopicManager; });
+/* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! toastr */ "./node_modules/toastr/toastr.js");
+/* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(toastr__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _net__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./net */ "./src/js/modules/_user/net.js");
+/* harmony import */ var _netlify__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./netlify */ "./src/js/modules/_user/netlify.js");
+/* harmony import */ var lodash_intersectionWith__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lodash/intersectionWith */ "./node_modules/lodash/intersectionWith.js");
+/* harmony import */ var lodash_intersectionWith__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(lodash_intersectionWith__WEBPACK_IMPORTED_MODULE_3__);
+
+
+
+
+let sourceInfo = {
+  "0": [{
+    "value": "*",
+    "name": "-- Select Source --"
+  }],
+  "12": [{
+    "value": "*",
+    "name": "All Books"
+  }, {
+    "value": "text",
+    "name": "Text"
+  }, {
+    "value": "workbook",
+    "name": "Workbook for Students"
+  }, {
+    "value": "manual",
+    "name": "Manual for Teachers"
+  }, {
+    "value": "preface",
+    "name": "Preface"
+  }],
+  "14": [{
+    "value": "*",
+    "name": "All Books"
+  }, {
+    "value": "course",
+    "name": "The Course"
+  }, {
+    "value": "treatises",
+    "name": "The Treatises"
+  }, {
+    "value": "dialogues",
+    "name": "The Dialogues"
+  }],
+  "11": [{
+    "value": "*",
+    "name": "All Books"
+  }],
+  "13": [{
+    "value": "*",
+    "name": "All Books"
+  }, {
+    "value": "yaa",
+    "name": "You Are the Answer"
+  }, {
+    "value": "grad",
+    "name": "Graduation"
+  }, {
+    "value": "acim",
+    "name": "ACIM Study Group"
+  }],
+  "10": [{
+    "value": "*",
+    "name": "All Books"
+  }, {
+    "value": "tjl",
+    "name": "The Jeshua Letters"
+  }, {
+    "value": "wos",
+    "name": "The Way of the Servant"
+  }, {
+    "value": "early",
+    "name": "The Early Years"
+  }, {
+    "value": "woh",
+    "name": "The Way of the Heart"
+  }, {
+    "value": "wot",
+    "name": "The Way of Transformation"
+  }, {
+    "value": "wok",
+    "name": "The Way of Knowing"
+  }]
+};
+let bookmarks = {};
+let topics = {};
+let topicsLoaded = false;
+let sourceValue = "0";
+
+function makeTopicSelect(topics) {
+  return `
+    ${topics.map(topic => `<option value="${topic.value}">${topic.topic}</option>`).join("")}
+  `;
+}
+
+function makeBookSelectNew(books) {
+  return `
+    ${books.map(book => `<option value="${book.value}">${book.name}</option>`).join("")}
+  `;
+}
+
+function getFormData() {
+  return $("#topic-manager").form("get values");
+}
+
+function initForm() {
+  $("#book-list1.dropdown").dropdown();
+  $("#topic-list.dropdown").dropdown();
+  $("#source-list").on("change", function (e) {
+    let topicManager = getFormData(); //if user has topics selected, they must be deleted before
+    //source can be changed.
+
+    if (topicsLoaded && topicManager.topicList.length > 0) {
+      e.preventDefault();
+      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.error("Please delete selected topics before changing Source.");
+      $("#topic-manager").form("set value", "source", sourceValue);
+      return false;
+    }
+
+    let sourceId = e.target.selectedOptions[0].value;
+    sourceValue = e.target.selectedOptions[0].text;
+    let html = makeBookSelectNew(sourceInfo[sourceId]);
+    $("#book-list1").html(html); //enable Get Bookmarks button
+
+    $("#getBookmarksButton").removeAttr("disabled"); //disable buttons until topics have been loaded
+
+    $("#deleteTopicsButton").attr("disabled", "");
+    $("#renameTopicButton").attr("disabled", "");
+    $("#displayBookmarksButton").attr("disabled", "");
+    $("#bookmarksLabel").text("Bookmarks (0)"); //clear topic dropdown
+
+    if (topicsLoaded) {
+      let resetTopics = makeTopicSelect([{
+        "value": "*",
+        topic: "-- Select Source --"
+      }]);
+      $("#topic-list").html(resetTopics);
+      $("#topicsLabel").text("Topics (0)");
+    }
+  });
+  $("#getBookmarksButton").on("click", function (e) {
+    let topicManager = getFormData();
+
+    if (topicManager.source === "0") {
+      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info("To start, first select a source");
+      return;
+    }
+
+    let userInfo = Object(_netlify__WEBPACK_IMPORTED_MODULE_2__["getUserInfo"])();
+
+    if (!userInfo) {
+      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.error("You must be signed in to use this page");
+      return;
+    } //disable button until source is changed
+
+
+    $("#getBookmarksButton").attr("disabled", "");
+    $("#topic-manager").addClass("loading"); //get topics for source
+
+    if (!topics[topicManager.source]) {
+      Object(_net__WEBPACK_IMPORTED_MODULE_1__["getTopics"])(userInfo.userId, topicManager.source).then(response => {
+        topics[topicManager.source] = response.data.topics;
+        let html = makeTopicSelect(response.data.topics);
+        $("#topic-list").html(html);
+        $("#topicsLabel").text(`Topics (${response.data.topics.length})`);
+        toastr__WEBPACK_IMPORTED_MODULE_0___default.a.success(`${topics[topicManager.source].length} topics loaded`);
+        topicsLoaded = true;
+        $("#deleteTopicsButton").removeAttr("disabled");
+        $("#renameTopicButton").removeAttr("disabled");
+        $("#displayBookmarksButton").removeAttr("disabled");
+      });
+    } else {
+      let html = makeTopicSelect(topics[topicManager.source]);
+      $("#topic-list").html(html);
+      $("#topicsLabel").text(`Topics (${topics[topicManager.source].length})`);
+      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.success(`${topics[topicManager.source].length} topics loaded`);
+      $("#deleteTopicsButton").removeAttr("disabled");
+      $("#renameTopicButton").removeAttr("disabled");
+      $("#displayBookmarksButton").removeAttr("disabled");
+    } //get bookmarks for source
+
+
+    if (!bookmarks[topicManager.source]) {
+      Object(_net__WEBPACK_IMPORTED_MODULE_1__["getBookmarks"])(userInfo.userId, topicManager.source).then(response => {
+        bookmarks[topicManager.source] = response.data.response;
+        $("#bookmarksLabel").text(`Bookmarks (${bookmarks[topicManager.source].length})`);
+        toastr__WEBPACK_IMPORTED_MODULE_0___default.a.success(`${bookmarks[topicManager.source].length} bookmarks loaded`);
+        $("#topic-manager").removeClass("loading");
+      });
+    } else {
+      $("#topic-manager").removeClass("loading");
+      $("#bookmarksLabel").text(`Bookmarks (${bookmarks[topicManager.source].length})`);
+      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.success(`${bookmarks[topicManager.source].length} bookmarks loaded`);
+    }
+  });
+  $("#deleteTopicsButton").on("click", function () {
+    let topicManager = getFormData();
+
+    if (topicManager.topicList.length === 0) {
+      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info("Select topic(s) to be deleted.");
+      return;
+    }
+  });
+  $("#renameTopicButton").on("click", function () {
+    let topicManager = getFormData();
+
+    if (topicManager.topicList.length === 0) {
+      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info("Select topic to be renamed.");
+      return;
+    }
+
+    if (topicManager.topicList.length > 1) {
+      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info("Select only ONE topic to be renamed.");
+      return;
+    }
+  });
+  $("#displayBookmarksButton").on("click", function () {
+    let topicManager = getFormData();
+
+    if (topicManager.topicList.length === 0) {
+      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info("Select at least one topic.");
+      return;
+    }
+  });
+}
+
+function showBookmarks(sourceInfo, topicsInfo) {
+  console.log("sourceInfo: %o", sourceInfo);
+  console.log("topicsInfo: %o", topicsInfo); //console.log("bookmarks: %o", bookmarks[sourceInfo.sourceList]);
+  //find bookmarks containing selected topics
+
+  bookmarks[sourceInfo.sourceList].forEach(item => {
+    item.bookmark.forEach(bmark => {
+      let intersection;
+
+      if (bmark.topicList) {
+        intersection = lodash_intersectionWith__WEBPACK_IMPORTED_MODULE_3___default()(topicsInfo.topicList, bmark.topicList);
+
+        if (intersection.length > 0) {
+          console.log(bmark.topicList);
+        }
+      }
+    }); //console.log("bookmark: %o", item);
+  });
+}
+
+function initializeTopicManager() {
+  initForm();
+}
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/src/jquery.js")))
+
+/***/ }),
+
 /***/ "./src/js/profile.js":
 /*!***************************!*\
   !*** ./src/js/profile.js ***!
@@ -366,7 +678,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_user_netlify__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./modules/_user/netlify */ "./src/js/modules/_user/netlify.js");
 /* harmony import */ var _modules_about_about__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./modules/_about/about */ "./src/js/modules/_about/about.js");
 /* harmony import */ var _modules_user_email__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./modules/_user/email */ "./src/js/modules/_user/email.js");
+/* harmony import */ var _modules_user_topicmgr__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./modules/_user/topicmgr */ "./src/js/modules/_user/topicmgr.js");
 /* eslint no-console: off */
+
 
 
 
@@ -380,12 +694,18 @@ $(document).ready(() => {
   Object(_modules_bookmark_start__WEBPACK_IMPORTED_MODULE_2__["bookmarkStart"])("page");
   _modules_search_search__WEBPACK_IMPORTED_MODULE_3__["default"].initialize();
   _modules_user_netlify__WEBPACK_IMPORTED_MODULE_5__["default"].initialize();
-  _modules_contents_toc__WEBPACK_IMPORTED_MODULE_4__["default"].initialize("page");
+  _modules_contents_toc__WEBPACK_IMPORTED_MODULE_4__["default"].initialize("transcript");
   _modules_about_about__WEBPACK_IMPORTED_MODULE_6__["default"].initialize(); //email mgt page
 
-  if ($(".manage-email-list")) {
+  if ($(".manage-email-list").length === 1) {
     console.log("loading email list table");
     Object(_modules_user_email__WEBPACK_IMPORTED_MODULE_7__["loadEmailListTable"])();
+  } //topic mgt page
+
+
+  if ($(".manage-topic-list").length === 1) {
+    console.log("loading topic list table");
+    Object(_modules_user_topicmgr__WEBPACK_IMPORTED_MODULE_8__["initializeTopicManager"])();
   }
 });
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/src/jquery.js")))

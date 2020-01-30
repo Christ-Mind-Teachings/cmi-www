@@ -4,7 +4,7 @@ search: false
 ---
 
 ## Manage Email List
-{: .ui.header.manage-email-list}
+{: .ui.header.manage-email-list.profile-page}
 
 Add, modify, or delete email addresses here. This list is available when sharing bookmarks via email and helps to ensure that you're using correct email addresses.
 

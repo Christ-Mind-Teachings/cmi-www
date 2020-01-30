@@ -1,0 +1,123 @@
+{
+  "contents": [
+    {
+      "name": "A Course in Miracles",
+      "sourceId": 12,
+      "sid": "acim",
+      "books": [
+        {
+          "value": "*",
+          "name": "All Books"
+        },
+        {
+          "value": "text",
+          "name": "Text"
+        },
+        {
+          "value": "workbook",
+          "name": "Workbook for Students"
+        },
+        {
+          "value": "manual",
+          "name": "Manual for Teachers"
+        },
+        {
+          "value": "preface",
+          "name": "Preface"
+        }
+      ]
+    },
+    {
+      "name": "A Course Of Love",
+      "sourceId": 14,
+      "sid": "acol",
+      "books": [
+        {
+          "value": "*",
+          "name": "All Books"
+        },
+        {
+          "value": "course",
+          "name": "The Course"
+        },
+        {
+          "value": "treatises",
+          "name": "The Treatises"
+        },
+        {
+          "value": "dialogues",
+          "name": "The Dialogues"
+        }
+      ]
+    },
+    {
+      "name": "The Impersonal Life",
+      "sourceId": 11,
+      "sid": "jsb",
+      "books": [
+        {
+          "value": "*",
+          "name": "All Books"
+        }
+      ]
+    },
+    {
+      "name": "The Raj Material",
+      "sourceId": 13,
+      "sid": "raj",
+      "books": [
+        {
+          "value": "*",
+          "name": "All Books"
+        },
+        {
+          "value": "yaa",
+          "name": "You Are the Answer"
+        },
+        {
+          "value": "grad",
+          "name": "Graduation"
+        },
+        {
+          "value": "acim",
+          "name": "ACIM Study Group"
+        }
+      ]
+    },
+    {
+      "name": "The Way of Mastery",
+      "sourceId": 10,
+      "sid": "wom",
+      "books": [
+        {
+          "value": "*",
+          "name": "All Books"
+        },
+        {
+          "value": "tjl",
+          "name": "The Jeshua Letters"
+        },
+        {
+          "value": "wos",
+          "name": "The Way of the Servant"
+        },
+        {
+          "value": "early",
+          "name": "The Early Years"
+        },
+        {
+          "value": "woh",
+          "name": "The Way of the Heart"
+        },
+        {
+          "value": "wot",
+          "name": "The Way of Transformation"
+        },
+        {
+          "value": "wok",
+          "name": "The Way of Knowing"
+        }
+      ]
+    }
+  ]
+}
