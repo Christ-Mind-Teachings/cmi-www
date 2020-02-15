@@ -147,7 +147,7 @@
 /******/
 /******/
 /******/ 	// add entry module to deferred list
-/******/ 	deferredModules.push([2,"vendors~page~profile~transcript","page~profile~transcript"]);
+/******/ 	deferredModules.push([5,"vendors~page~profile~transcript","page~profile~transcript"]);
 /******/ 	// run deferred modules when ready
 /******/ 	return checkDeferredModules();
 /******/ })
@@ -264,7 +264,7 @@ $(document).ready(() => {
 
 /***/ }),
 
-/***/ 2:
+/***/ 5:
 /*!******************************!*\
   !*** multi ./src/js/page.js ***!
   \******************************/

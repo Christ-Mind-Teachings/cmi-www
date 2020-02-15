@@ -161,3 +161,9 @@ i.toc-share.icon {
   margin-top: 10px;
 }
 
+#topicSelect > a[data-value*="*"],
+.ui.selection .menu > .item.deleted {
+  text-decoration: line-through;
+  color: red;
+}
+

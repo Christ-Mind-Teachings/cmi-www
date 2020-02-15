@@ -1,5 +1,5 @@
 import notify from "toastr";
-import {getConfig, getTopics, getBookmarks} from "./net";
+import {getBookmarkText, getTopics, getBookmarks} from "./net";
 import {getUserInfo} from "./netlify";
 import intersectionWith from "lodash/intersectionWith";
 
@@ -16,19 +16,19 @@ let sourceInfo = {
       "name": "All Books"
     },
     {
-      "value": "text",
+      "value": "122",
       "name": "Text"
     },
     {
-      "value": "workbook",
+      "value": "123",
       "name": "Workbook for Students"
     },
     {
-      "value": "manual",
+      "value": "124",
       "name": "Manual for Teachers"
     },
     {
-      "value": "preface",
+      "value": "121",
       "name": "Preface"
     }
   ],
@@ -38,15 +38,15 @@ let sourceInfo = {
       "name": "All Books"
     },
     {
-      "value": "course",
+      "value": "1404",
       "name": "The Course"
     },
     {
-      "value": "treatises",
+      "value": "1402",
       "name": "The Treatises"
     },
     {
-      "value": "dialogues",
+      "value": "1403",
       "name": "The Dialogues"
     }
   ],
@@ -62,16 +62,80 @@ let sourceInfo = {
       "name": "All Books"
     },
     {
-      "value": "yaa",
+      "value": "1301",
       "name": "You Are the Answer"
     },
     {
-      "value": "grad",
+      "value": "1302",
       "name": "Graduation"
     },
     {
-      "value": "acim",
-      "name": "ACIM Study Group"
+      "value": "1303",
+      "name": "ACIM Study Group 2002"
+    },
+    {
+      "value": "1304",
+      "name": "ACIM Study Group 2003"
+    },
+    {
+      "value": "1305",
+      "name": "ACIM Study Group 2004"
+    },
+    {
+      "value": "1306",
+      "name": "ACIM Study Group 2005"
+    },
+    {
+      "value": "1307",
+      "name": "ACIM Study Group 2006"
+    },
+    {
+      "value": "1308",
+      "name": "ACIM Study Group 2007"
+    },
+    {
+      "value": "1309",
+      "name": "ACIM Study Group 2008"
+    },
+    {
+      "value": "1310",
+      "name": "ACIM Study Group 2009"
+    },
+    {
+      "value": "1311",
+      "name": "ACIM Study Group 2010"
+    },
+    {
+      "value": "1312",
+      "name": "ACIM Study Group 2011"
+    },
+    {
+      "value": "1313",
+      "name": "ACIM Study Group 2012"
+    },
+    {
+      "value": "1314",
+      "name": "ACIM Study Group 2013"
+    },
+    {
+      "value": "1315",
+      "name": "ACIM Study Group 2014"
+    },
+    {
+      "value": "1316",
+      "name": "ACIM Study Group 2015"
+    },
+    {
+      "value": "1317",
+      "name": "ACIM Study Group 2016"
+    },
+    {
+      "value": "1318",
+      "name": "ACIM Study Group 2017"
+    },
+    {
+      "value": "1319",
+      "name": "ACIM Study Group 2018"
     }
   ],
   "10": [
@@ -80,27 +144,27 @@ let sourceInfo = {
       "name": "All Books"
     },
     {
-      "value": "tjl",
+      "value": "101",
       "name": "The Jeshua Letters"
     },
     {
-      "value": "wos",
+      "value": "102",
       "name": "The Way of the Servant"
     },
     {
-      "value": "early",
+      "value": "103",
       "name": "The Early Years"
     },
     {
-      "value": "woh",
+      "value": "104",
       "name": "The Way of the Heart"
     },
     {
-      "value": "wot",
+      "value": "105",
       "name": "The Way of Transformation"
     },
     {
-      "value": "wok",
+      "value": "106",
       "name": "The Way of Knowing"
     }
   ]
@@ -108,12 +172,72 @@ let sourceInfo = {
 
 let bookmarks = {};
 let topics = {};
-let topicsLoaded = false;
-let sourceValue = "0";
+
+function generateHorizontalList(listArray) {
+  if (!listArray || listArray.length === 0) {
+    return `
+      <div class="item">
+        <em>Annotation has no topics</em>
+      </div>
+    `;
+  }
+  return `
+    ${listArray.map((item) => `
+      <div class="item">
+        <em>${item.topic}</em>
+      </div>
+    `).join("")}
+  `;
+}
+
+function generateContent(content) {
+  return (`
+    ${content.map((p) => `
+      <p>
+        ${p.text}
+      </p>
+    `).join("")}
+  `);
+}
+
+function generateSection(bm) {
+  return (`
+    <div class="ui sizer vertical segment">
+      <div class="ui small header">
+        <a target="_blank" href="${bm.mgr.url}?v=${bm.mgr.pid}">${bm.mgr.title}</a>
+      </div>
+      <div class="ui tiny header">
+        <div class="ui horizontal bulleted link list">
+          ${generateHorizontalList(bm.bookmark.topicList)}
+        </div>
+      </div>
+      ${generateContent(bm.mgr.content)}
+    </div>
+  `);
+}
+
+function generateBookmarkTextHtml(bookmarks, topics) {
+  return (`
+    <h2 class="ui header">
+      ${generateHorizontalList(topics)}
+    </h2>
+    ${bookmarks.map(bookmark => `${generateSection(bookmark)}`).join("")}
+  `);
+}
+
+function generateBookmarkText(bookmarks, topics) {
+  let promises = getBookmarkText(bookmarks);
+
+  Promise.all(promises).then(responses => {
+    //console.log("promise.all: %o", responses);
+    let html = generateBookmarkTextHtml(responses, topics);
+    $("#activity-report").html(html);
+  });
+}
 
 function makeTopicSelect(topics) {
   return (`
-    ${topics.map(topic => `<option value="${topic.value}">${topic.topic}</option>`).join("")}
+    ${topics.map(topic => `<div class="item ${topic.deleted?" deleted":""}" data-value="${topic.deleted?"*":""}${topic.value}">${topic.deleted?"*":""}${topic.topic}</div>`).join("")}
   `);
 }
 
@@ -128,24 +252,56 @@ function getFormData() {
 }
 
 function initForm() {
+  $("#source-list").dropdown();
   $("#book-list1.dropdown").dropdown();
-  $("#topic-list.dropdown").dropdown();
+  $("#topicSelect").dropdown();
 
-  $("#source-list").on("change", function(e) {
+  //delete confirmation modal
+  $("#confirmDelete").modal({
+    closable  : false,
+    onDeny    : function() {
+      notify.info("Delete Canceled.");
+      //$("#topicSelect").dropdown("clear");
+    },
+    onApprove : function() {
+      let topicManager = getFormData();
+      let deleted = filterTopics(topicManager.topicList);
+
+      //clear selected topics
+      $("#topicSelect").dropdown("clear");
+      if (deleted.length === 0) {
+        notify.info("No topic(s) selected.");
+        return;
+      }
+
+      //mark topics as deleted
+      markTopicsDeleted(topicManager.source, deleted);
+
+      //find bookmarks with deleted topics
+      let bookmarksWithDeletedTopics = getBookmarksByTopic(topicManager.source, deleted);
+      console.log("matches: %o", bookmarksWithDeletedTopics);
+
+      //remove deleted topics from bookmarks
+      if (bookmarksWithDeletedTopics.length > 0) {
+        deleteBookmarkTopics(topicManager.source, bookmarksWithDeletedTopics, deleted);
+      }
+
+      //update topics select control
+      let html = makeTopicSelect(topics[topicManager.source]);
+      $("#topic-list").html(html);
+
+      notify.success("Topics Deleted.");
+    }
+  });
+
+  $("#source-list").on("change", function() {
     let topicManager = getFormData();
 
-    //if user has topics selected, they must be deleted before
-    //source can be changed.
-    if (topicsLoaded && topicManager.topicList.length > 0) {
-      e.preventDefault();
+    //clear topic list
+    $("#topicsLabel").text("Topics (0)");
 
-      notify.error("Please delete selected topics before changing Source.");
-      $("#topic-manager").form("set value", "source", sourceValue);
-      return false;
-    }
-
-    let sourceId = e.target.selectedOptions[0].value;
-    sourceValue = e.target.selectedOptions[0].text;
+    //let sourceId = e.target.selectedOptions[0].value;
+    let sourceId = topicManager.source;
 
     let html = makeBookSelectNew(sourceInfo[sourceId]);
     $("#book-list1").html(html);
@@ -161,9 +317,9 @@ function initForm() {
     $("#bookmarksLabel").text("Bookmarks (0)");
 
     //clear topic dropdown
-    if (topicsLoaded) {
-      let resetTopics = makeTopicSelect([{"value": "*", topic:"-- Select Source --"}]);
-      $("#topic-list").html(resetTopics);
+    if ($("#topic-list > div").length > 0) {
+      $("#topic-list").html("");
+      $("#topicSelect").dropdown("clear");
       $("#topicsLabel").text("Topics (0)");
     }
   });
@@ -197,7 +353,6 @@ function initForm() {
         $("#topicsLabel").text(`Topics (${response.data.topics.length})`);
         notify.success(`${topics[topicManager.source].length} topics loaded`);
 
-        topicsLoaded = true;
         $("#deleteTopicsButton").removeAttr("disabled");
         $("#renameTopicButton").removeAttr("disabled");
         $("#displayBookmarksButton").removeAttr("disabled");
@@ -222,6 +377,11 @@ function initForm() {
         notify.success(`${bookmarks[topicManager.source].length} bookmarks loaded`);
 
         $("#topic-manager").removeClass("loading");
+
+        //add modified indicator, set to false
+        bookmarks[topicManager.source].forEach(i => {
+          i.modified = false;
+        });
       });
     }
     else {
@@ -234,10 +394,15 @@ function initForm() {
   $("#deleteTopicsButton").on("click", function() {
     let topicManager = getFormData();
 
-    if (topicManager.topicList.length === 0) {
-      notify.info("Select topic(s) to be deleted.");
+    let deleted = filterTopics(topicManager.topicList);
+    if (deleted.length === 0) {
+      $("#topicSelect").dropdown("clear");
+      notify.info("No topic(s) selected.");
       return;
     }
+
+    $("#topicsToDelete").html(`<em>${topicManager.topicList}</em>`);
+    $("#confirmDelete").modal("show");
   });
 
   $("#renameTopicButton").on("click", function() {
@@ -256,32 +421,175 @@ function initForm() {
 
   $("#displayBookmarksButton").on("click", function() {
     let topicManager = getFormData();
+    let topicArray = filterTopics(topicManager.topicList);
 
-    if (topicManager.topicList.length === 0) {
+    if (topicArray.length === 0) {
       notify.info("Select at least one topic.");
       return;
     }
+
+    let matches = getBookmarksWithAllTopic(topicManager.source, topicArray);
+    if (matches.length === 0) {
+      notify.info("No bookmarks contain selected topics");
+      return;
+    }
+    //console.log("matches: %o", matches);
+
+    //filter matched bookmarks if user restricted by book
+    //console.log("topicManager: %o", topicManager);
+    if (topicManager.book !== "*") {
+      matches = matches.filter(bm => {
+        let bmid = bm.id + "x";
+        return bmid.startsWith(topicManager.book);
+      });
+    }
+
+    if (matches.length === 0) {
+      notify.info("No bookmarks restricted by book contain selected topics");
+      return;
+    }
+
+    //generated html
+    generateBookmarkText(matches, topicArray);
+
   });
 }
 
-function showBookmarks(sourceInfo, topicsInfo) {
-  console.log("sourceInfo: %o", sourceInfo);
-  console.log("topicsInfo: %o", topicsInfo);
-  //console.log("bookmarks: %o", bookmarks[sourceInfo.sourceList]);
+/*
+ * Given a comma separated string of user selected topics, filter deleted
+ * topics and return an array.
+ */
+function filterTopics(topicString) {
+  let topicArray = topicString.split(",").filter(item => {
+    if (item === "") {
+      return false;
+    }
+    if (item.startsWith("*")) {
+      return false;
+    }
+    return true;
+  });
+  return topicArray;
+}
 
-  //find bookmarks containing selected topics
-  bookmarks[sourceInfo.sourceList].forEach((item) => {
+/*
+ * Mark topics as deleted
+ * Args: source: Source Id
+ *       deletedTopics: array of deleted topics
+ */
+function markTopicsDeleted(source, deletedTopics) {
+  topics[source].forEach(topic => {
+    deletedTopics.forEach(dt => {
+      if (dt === topic.value) {
+        topic.deleted = true;
+        //console.log("deleted topic: %o", topic);
+      }
+    });
+  });
+}
+
+/*
+ * Find bookmarks containing ALL topics
+ * Args: source: Source Id
+ *       topics: array of topics
+ */
+function getBookmarksWithAllTopic(source, topics) {
+  let matches = [];
+  if (topics.length === 0) {
+    return matches;
+  }
+  bookmarks[source].forEach((item) => {
     item.bookmark.forEach((bmark) => {
-      let intersection;
-      if (bmark.topicList) {
-        intersection = intersectionWith(topicsInfo.topicList, bmark.topicList);
-        if (intersection.length > 0) {
-          console.log(bmark.topicList);
+      if (bmark.topicList && bmark.topicList.length > 0) {
+        let index;
+        let findCount = 0;
+        topics.forEach(t => {
+          index = bmark.topicList.findIndex(bt => {
+            if (bt.value === t) {
+              return true;
+            }
+            return false;
+          });
+          if (index > -1) {
+            findCount++;
+          }
+        });
+        if (findCount === topics.length) {
+          matches.push({id: item.id, bookmark: bmark});
         }
       }
     });
-    //console.log("bookmark: %o", item);
   });
+  return matches;
+}
+
+/*
+ * Find bookmarks containing topics
+ * Args: source: Source Id
+ *       topics: array of topics
+ */
+function getBookmarksByTopic(source, topics) {
+  //find bookmarks containing selected topics
+  let matches = [];
+  bookmarks[source].forEach((item) => {
+    item.bookmark.forEach((bmark) => {
+      let intersection;
+      if (bmark.topicList) {
+        intersection = intersectionWith(topics, bmark.topicList, function(t, bt) {
+          if (t === bt.value) {
+            return true;
+          }
+          return false;
+        });
+        if (intersection.length > 0) {
+          matches.push({id: item.id, bookmark: bmark});
+        }
+      }
+    });
+  });
+  return matches;
+}
+
+/*
+ * Delete topics in bookmarks if found in the argument array topics
+ */
+function deleteBookmarkTopics(sourceId, bookmarks, topics) {
+  bookmarks.forEach(item => {
+    if (item.bookmark.topicList && item.bookmark.topicList.length > 0) {
+      item.bookmark.topicList.forEach(t => {
+        if (topics.includes(t.value)) {
+          t.deleted = true;
+        }
+      });
+      item.bookmark.deletedTopicList = item.bookmark.topicList.filter(t => {
+        if (t.deleted) {
+          return true;
+        }
+        return false;
+      });
+      item.bookmark.topicList = item.bookmark.topicList.filter(t => {
+        if (!t.deleted) {
+          return true;
+        }
+        delete t.deleted;
+        return false;
+      });
+    }
+    markModified(sourceId, item.id);
+  });
+}
+
+function markModified(sourceId, bookmarkId) {
+  let b = bookmarks[sourceId].find(i => {
+    if (i.id === bookmarkId) {
+      return true;
+    }
+    return false;
+  });
+
+  if (b) {
+    b.modified = true;
+  }
 }
 
 export function initializeTopicManager() {

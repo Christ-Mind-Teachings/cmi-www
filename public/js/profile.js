@@ -352,7 +352,7 @@ function saveChanges() {
 /*!*************************************!*\
   !*** ./src/js/modules/_user/net.js ***!
   \*************************************/
-/*! exports provided: getConfig, getTopics, getBookmarks */
+/*! exports provided: getConfig, getTopics, getBookmarks, getBookmarkText */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -360,11 +360,28 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getConfig", function() { return getConfig; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getTopics", function() { return getTopics; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getBookmarks", function() { return getBookmarks; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getBookmarkText", function() { return getBookmarkText; });
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _globals__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../globals */ "./src/js/globals.js");
 
 
+
+const acimKey = __webpack_require__(/*! acim/modules/_config/key */ "../cmi-acim/src/js/modules/_config/key.js");
+
+const acolKey = __webpack_require__(/*! acol/modules/_config/key */ "../cmi-acol/src/js/modules/_config/key.js");
+
+const rajKey = __webpack_require__(/*! raj/modules/_config/key */ "../cmi-raj/src/js/modules/_config/key.js");
+
+const jsbKey = __webpack_require__(/*! jsb/modules/_config/key */ "../cmi-jsb/src/js/modules/_config/key.js");
+
+const womKey = __webpack_require__(/*! wom/modules/_config/key */ "../cmi-wom/src/js/modules/_config/key.js");
+
+const ACIMSOURCEID = "12";
+const ACOLSOURCEID = "14";
+const RAJSOURCEID = "13";
+const WOMSOURCEID = "10";
+const JSBSOURCEID = "11";
 function getConfig(key) {
   let url = _globals__WEBPACK_IMPORTED_MODULE_1__["default"][key];
 
@@ -378,7 +395,7 @@ function getTopics(userId, sourceId) {
   let url = _globals__WEBPACK_IMPORTED_MODULE_1__["default"]["topicsEndPoint"];
 
   if (!url) {
-    throw `key: topicsEndPoint not found in globals`;
+    throw "key: topicsEndPoint not found in globals";
   }
 
   url = `${url}/user/${userId}/topics/${sourceId}`;
@@ -393,6 +410,94 @@ function getBookmarks(userId, sourceId) {
 
   url = `${url}/bookmark/query/${userId}/${sourceId}`;
   return axios__WEBPACK_IMPORTED_MODULE_0___default.a.get(url);
+} //transcript Node cache
+
+let htmlCache = {};
+
+function getNoteTranscript(id, url) {
+  if (htmlCache[id]) {
+    return Promise.resolve(htmlCache[id]);
+  }
+
+  const config = {
+    responseType: "document"
+  };
+  return axios__WEBPACK_IMPORTED_MODULE_0___default.a.get(url, config).then(response => {
+    let transcriptNode = response.data.getElementsByClassName("transcript")[0];
+    htmlCache[id] = transcriptNode;
+    return Promise.resolve(transcriptNode);
+  });
+}
+
+function getNoteUrl(key) {
+  let url;
+  let akey = key + "";
+
+  if (akey.startsWith(ACIMSOURCEID)) {
+    url = acimKey.getUrl(key, true);
+  } else if (akey.startsWith(ACOLSOURCEID)) {
+    url = acolKey.getUrl(key, true);
+  } else if (akey.startsWith(JSBSOURCEID)) {
+    url = jsbKey.getUrl(key, true);
+  } else if (akey.startsWith(RAJSOURCEID)) {
+    url = rajKey.getUrl(key, true);
+  } else if (akey.startsWith(WOMSOURCEID)) {
+    url = womKey.getUrl(key, true);
+  }
+
+  return url;
+}
+
+function getBookmarkText(bookmarks) {
+  let promises = bookmarks.map(bm => {
+    if (bm.bookmark.selectedText) {
+      if (!bm.mgr) {
+        bm.mgr = {};
+        let st = JSON.parse(bm.bookmark.selectedText);
+        bm.mgr.title = st.title;
+        bm.mgr.url = st.url;
+        bm.mgr.pid = st.pid;
+        bm.mgr.content = [{
+          pid: st.pid,
+          text: st.target.selector[1].exact
+        }];
+        bm.mgr.comment = bm.bookmark.Comment;
+        bm.mgr.note = bm.bookmark.Note;
+        bm.mgr.type = "selected";
+      }
+
+      return Promise.resolve(bm);
+    } //Note style bookmark
+    else if (!bm.mgr) {
+        let url = getNoteUrl(bm.id);
+        bm.mgr = {};
+        bm.mgr.type = "note";
+        bm.mgr.title = bm.bookmark.bookTitle;
+        bm.mgr.url = url;
+        bm.mgr.pid = bm.bookmark.rangeStart;
+        bm.mgr.comment = bm.bookmark.Comment;
+        bm.mgr.note = bm.bookmark.Note; //get 'document' response from axios
+
+        return getNoteTranscript(bm.id, url).then(resp => {
+          let paragraphs = resp.getElementsByTagName("p");
+          let rangeStart = parseInt(bm.bookmark.rangeStart.substring(1), 10);
+          let rangeEnd = parseInt(bm.bookmark.rangeEnd.substring(1), 10);
+          bm.mgr.content = [];
+
+          for (let p = rangeStart; p <= rangeEnd; p++) {
+            bm.mgr.content.push({
+              pid: `p${p}`,
+              text: paragraphs[p].textContent
+            });
+          }
+
+          return Promise.resolve(bm);
+        });
+      } else {
+        return Promise.resolve(bm);
+      }
+  });
+  return promises;
 }
 
 /***/ }),
@@ -426,29 +531,29 @@ let sourceInfo = {
     "value": "*",
     "name": "All Books"
   }, {
-    "value": "text",
+    "value": "122",
     "name": "Text"
   }, {
-    "value": "workbook",
+    "value": "123",
     "name": "Workbook for Students"
   }, {
-    "value": "manual",
+    "value": "124",
     "name": "Manual for Teachers"
   }, {
-    "value": "preface",
+    "value": "121",
     "name": "Preface"
   }],
   "14": [{
     "value": "*",
     "name": "All Books"
   }, {
-    "value": "course",
+    "value": "1404",
     "name": "The Course"
   }, {
-    "value": "treatises",
+    "value": "1402",
     "name": "The Treatises"
   }, {
-    "value": "dialogues",
+    "value": "1403",
     "name": "The Dialogues"
   }],
   "11": [{
@@ -459,46 +564,154 @@ let sourceInfo = {
     "value": "*",
     "name": "All Books"
   }, {
-    "value": "yaa",
+    "value": "1301",
     "name": "You Are the Answer"
   }, {
-    "value": "grad",
+    "value": "1302",
     "name": "Graduation"
   }, {
-    "value": "acim",
-    "name": "ACIM Study Group"
+    "value": "1303",
+    "name": "ACIM Study Group 2002"
+  }, {
+    "value": "1304",
+    "name": "ACIM Study Group 2003"
+  }, {
+    "value": "1305",
+    "name": "ACIM Study Group 2004"
+  }, {
+    "value": "1306",
+    "name": "ACIM Study Group 2005"
+  }, {
+    "value": "1307",
+    "name": "ACIM Study Group 2006"
+  }, {
+    "value": "1308",
+    "name": "ACIM Study Group 2007"
+  }, {
+    "value": "1309",
+    "name": "ACIM Study Group 2008"
+  }, {
+    "value": "1310",
+    "name": "ACIM Study Group 2009"
+  }, {
+    "value": "1311",
+    "name": "ACIM Study Group 2010"
+  }, {
+    "value": "1312",
+    "name": "ACIM Study Group 2011"
+  }, {
+    "value": "1313",
+    "name": "ACIM Study Group 2012"
+  }, {
+    "value": "1314",
+    "name": "ACIM Study Group 2013"
+  }, {
+    "value": "1315",
+    "name": "ACIM Study Group 2014"
+  }, {
+    "value": "1316",
+    "name": "ACIM Study Group 2015"
+  }, {
+    "value": "1317",
+    "name": "ACIM Study Group 2016"
+  }, {
+    "value": "1318",
+    "name": "ACIM Study Group 2017"
+  }, {
+    "value": "1319",
+    "name": "ACIM Study Group 2018"
   }],
   "10": [{
     "value": "*",
     "name": "All Books"
   }, {
-    "value": "tjl",
+    "value": "101",
     "name": "The Jeshua Letters"
   }, {
-    "value": "wos",
+    "value": "102",
     "name": "The Way of the Servant"
   }, {
-    "value": "early",
+    "value": "103",
     "name": "The Early Years"
   }, {
-    "value": "woh",
+    "value": "104",
     "name": "The Way of the Heart"
   }, {
-    "value": "wot",
+    "value": "105",
     "name": "The Way of Transformation"
   }, {
-    "value": "wok",
+    "value": "106",
     "name": "The Way of Knowing"
   }]
 };
 let bookmarks = {};
 let topics = {};
-let topicsLoaded = false;
-let sourceValue = "0";
+
+function generateHorizontalList(listArray) {
+  if (!listArray || listArray.length === 0) {
+    return `
+      <div class="item">
+        <em>Annotation has no topics</em>
+      </div>
+    `;
+  }
+
+  return `
+    ${listArray.map(item => `
+      <div class="item">
+        <em>${item.topic}</em>
+      </div>
+    `).join("")}
+  `;
+}
+
+function generateContent(content) {
+  return `
+    ${content.map(p => `
+      <p>
+        ${p.text}
+      </p>
+    `).join("")}
+  `;
+}
+
+function generateSection(bm) {
+  return `
+    <div class="ui sizer vertical segment">
+      <div class="ui small header">
+        <a target="_blank" href="${bm.mgr.url}?v=${bm.mgr.pid}">${bm.mgr.title}</a>
+      </div>
+      <div class="ui tiny header">
+        <div class="ui horizontal bulleted link list">
+          ${generateHorizontalList(bm.bookmark.topicList)}
+        </div>
+      </div>
+      ${generateContent(bm.mgr.content)}
+    </div>
+  `;
+}
+
+function generateBookmarkTextHtml(bookmarks, topics) {
+  return `
+    <h2 class="ui header">
+      ${generateHorizontalList(topics)}
+    </h2>
+    ${bookmarks.map(bookmark => `${generateSection(bookmark)}`).join("")}
+  `;
+}
+
+function generateBookmarkText(bookmarks, topics) {
+  let promises = Object(_net__WEBPACK_IMPORTED_MODULE_1__["getBookmarkText"])(bookmarks);
+  Promise.all(promises).then(responses => {
+    //console.log("promise.all: %o", responses);
+    let html = generateBookmarkTextHtml(responses, topics);
+    $("#activity-report").html(html);
+  });
+}
 
 function makeTopicSelect(topics) {
   return `
-    ${topics.map(topic => `<option value="${topic.value}">${topic.topic}</option>`).join("")}
+    ${topics.map(topic => `<div class="item ${topic.deleted ? " deleted" : ""}" data-value="${topic.deleted ? "*" : ""}${topic.value}">${topic.deleted ? "*" : ""}${topic.topic}</div>`).join("")}
   `;
 }
 
@@ -513,21 +726,48 @@ function getFormData() {
 }
 
 function initForm() {
+  $("#source-list").dropdown();
   $("#book-list1.dropdown").dropdown();
-  $("#topic-list.dropdown").dropdown();
-  $("#source-list").on("change", function (e) {
-    let topicManager = getFormData(); //if user has topics selected, they must be deleted before
-    //source can be changed.
+  $("#topicSelect").dropdown(); //delete confirmation modal
 
-    if (topicsLoaded && topicManager.topicList.length > 0) {
-      e.preventDefault();
-      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.error("Please delete selected topics before changing Source.");
-      $("#topic-manager").form("set value", "source", sourceValue);
-      return false;
+  $("#confirmDelete").modal({
+    closable: false,
+    onDeny: function () {
+      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info("Delete Canceled."); //$("#topicSelect").dropdown("clear");
+    },
+    onApprove: function () {
+      let topicManager = getFormData();
+      let deleted = filterTopics(topicManager.topicList); //clear selected topics
+
+      $("#topicSelect").dropdown("clear");
+
+      if (deleted.length === 0) {
+        toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info("No topic(s) selected.");
+        return;
+      } //mark topics as deleted
+
+
+      markTopicsDeleted(topicManager.source, deleted); //find bookmarks with deleted topics
+
+      let bookmarksWithDeletedTopics = getBookmarksByTopic(topicManager.source, deleted);
+      console.log("matches: %o", bookmarksWithDeletedTopics); //remove deleted topics from bookmarks
+
+      if (bookmarksWithDeletedTopics.length > 0) {
+        deleteBookmarkTopics(topicManager.source, bookmarksWithDeletedTopics, deleted);
+      } //update topics select control
+
+
+      let html = makeTopicSelect(topics[topicManager.source]);
+      $("#topic-list").html(html);
+      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.success("Topics Deleted.");
     }
+  });
+  $("#source-list").on("change", function () {
+    let topicManager = getFormData(); //clear topic list
 
-    let sourceId = e.target.selectedOptions[0].value;
-    sourceValue = e.target.selectedOptions[0].text;
+    $("#topicsLabel").text("Topics (0)"); //let sourceId = e.target.selectedOptions[0].value;
+
+    let sourceId = topicManager.source;
     let html = makeBookSelectNew(sourceInfo[sourceId]);
     $("#book-list1").html(html); //enable Get Bookmarks button
 
@@ -538,12 +778,9 @@ function initForm() {
     $("#displayBookmarksButton").attr("disabled", "");
     $("#bookmarksLabel").text("Bookmarks (0)"); //clear topic dropdown
 
-    if (topicsLoaded) {
-      let resetTopics = makeTopicSelect([{
-        "value": "*",
-        topic: "-- Select Source --"
-      }]);
-      $("#topic-list").html(resetTopics);
+    if ($("#topic-list > div").length > 0) {
+      $("#topic-list").html("");
+      $("#topicSelect").dropdown("clear");
       $("#topicsLabel").text("Topics (0)");
     }
   });
@@ -573,7 +810,6 @@ function initForm() {
         $("#topic-list").html(html);
         $("#topicsLabel").text(`Topics (${response.data.topics.length})`);
         toastr__WEBPACK_IMPORTED_MODULE_0___default.a.success(`${topics[topicManager.source].length} topics loaded`);
-        topicsLoaded = true;
         $("#deleteTopicsButton").removeAttr("disabled");
         $("#renameTopicButton").removeAttr("disabled");
         $("#displayBookmarksButton").removeAttr("disabled");
@@ -594,7 +830,11 @@ function initForm() {
         bookmarks[topicManager.source] = response.data.response;
         $("#bookmarksLabel").text(`Bookmarks (${bookmarks[topicManager.source].length})`);
         toastr__WEBPACK_IMPORTED_MODULE_0___default.a.success(`${bookmarks[topicManager.source].length} bookmarks loaded`);
-        $("#topic-manager").removeClass("loading");
+        $("#topic-manager").removeClass("loading"); //add modified indicator, set to false
+
+        bookmarks[topicManager.source].forEach(i => {
+          i.modified = false;
+        });
       });
     } else {
       $("#topic-manager").removeClass("loading");
@@ -604,11 +844,16 @@ function initForm() {
   });
   $("#deleteTopicsButton").on("click", function () {
     let topicManager = getFormData();
+    let deleted = filterTopics(topicManager.topicList);
 
-    if (topicManager.topicList.length === 0) {
-      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info("Select topic(s) to be deleted.");
+    if (deleted.length === 0) {
+      $("#topicSelect").dropdown("clear");
+      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info("No topic(s) selected.");
       return;
     }
+
+    $("#topicsToDelete").html(`<em>${topicManager.topicList}</em>`);
+    $("#confirmDelete").modal("show");
   });
   $("#renameTopicButton").on("click", function () {
     let topicManager = getFormData();
@@ -625,32 +870,199 @@ function initForm() {
   });
   $("#displayBookmarksButton").on("click", function () {
     let topicManager = getFormData();
+    let topicArray = filterTopics(topicManager.topicList);
 
-    if (topicManager.topicList.length === 0) {
+    if (topicArray.length === 0) {
       toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info("Select at least one topic.");
       return;
     }
+
+    let matches = getBookmarksWithAllTopic(topicManager.source, topicArray);
+
+    if (matches.length === 0) {
+      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info("No bookmarks contain selected topics");
+      return;
+    } //console.log("matches: %o", matches);
+    //filter matched bookmarks if user restricted by book
+    //console.log("topicManager: %o", topicManager);
+
+
+    if (topicManager.book !== "*") {
+      matches = matches.filter(bm => {
+        let bmid = bm.id + "x";
+        return bmid.startsWith(topicManager.book);
+      });
+    }
+
+    if (matches.length === 0) {
+      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info("No bookmarks restricted by book contain selected topics");
+      return;
+    } //generated html
+
+
+    generateBookmarkText(matches, topicArray);
   });
 }
+/*
+ * Given a comma separated string of user selected topics, filter deleted
+ * topics and return an array.
+ */
 
-function showBookmarks(sourceInfo, topicsInfo) {
-  console.log("sourceInfo: %o", sourceInfo);
-  console.log("topicsInfo: %o", topicsInfo); //console.log("bookmarks: %o", bookmarks[sourceInfo.sourceList]);
+
+function filterTopics(topicString) {
+  let topicArray = topicString.split(",").filter(item => {
+    if (item === "") {
+      return false;
+    }
+
+    if (item.startsWith("*")) {
+      return false;
+    }
+
+    return true;
+  });
+  return topicArray;
+}
+/*
+ * Mark topics as deleted
+ * Args: source: Source Id
+ *       deletedTopics: array of deleted topics
+ */
+
+
+function markTopicsDeleted(source, deletedTopics) {
+  topics[source].forEach(topic => {
+    deletedTopics.forEach(dt => {
+      if (dt === topic.value) {
+        topic.deleted = true; //console.log("deleted topic: %o", topic);
+      }
+    });
+  });
+}
+/*
+ * Find bookmarks containing ALL topics
+ * Args: source: Source Id
+ *       topics: array of topics
+ */
+
+
+function getBookmarksWithAllTopic(source, topics) {
+  let matches = [];
+
+  if (topics.length === 0) {
+    return matches;
+  }
+
+  bookmarks[source].forEach(item => {
+    item.bookmark.forEach(bmark => {
+      if (bmark.topicList && bmark.topicList.length > 0) {
+        let index;
+        let findCount = 0;
+        topics.forEach(t => {
+          index = bmark.topicList.findIndex(bt => {
+            if (bt.value === t) {
+              return true;
+            }
+
+            return false;
+          });
+
+          if (index > -1) {
+            findCount++;
+          }
+        });
+
+        if (findCount === topics.length) {
+          matches.push({
+            id: item.id,
+            bookmark: bmark
+          });
+        }
+      }
+    });
+  });
+  return matches;
+}
+/*
+ * Find bookmarks containing topics
+ * Args: source: Source Id
+ *       topics: array of topics
+ */
+
+
+function getBookmarksByTopic(source, topics) {
   //find bookmarks containing selected topics
-
-  bookmarks[sourceInfo.sourceList].forEach(item => {
+  let matches = [];
+  bookmarks[source].forEach(item => {
     item.bookmark.forEach(bmark => {
       let intersection;
 
       if (bmark.topicList) {
-        intersection = lodash_intersectionWith__WEBPACK_IMPORTED_MODULE_3___default()(topicsInfo.topicList, bmark.topicList);
+        intersection = lodash_intersectionWith__WEBPACK_IMPORTED_MODULE_3___default()(topics, bmark.topicList, function (t, bt) {
+          if (t === bt.value) {
+            return true;
+          }
+
+          return false;
+        });
 
         if (intersection.length > 0) {
-          console.log(bmark.topicList);
+          matches.push({
+            id: item.id,
+            bookmark: bmark
+          });
         }
       }
-    }); //console.log("bookmark: %o", item);
+    });
   });
+  return matches;
+}
+/*
+ * Delete topics in bookmarks if found in the argument array topics
+ */
+
+
+function deleteBookmarkTopics(sourceId, bookmarks, topics) {
+  bookmarks.forEach(item => {
+    if (item.bookmark.topicList && item.bookmark.topicList.length > 0) {
+      item.bookmark.topicList.forEach(t => {
+        if (topics.includes(t.value)) {
+          t.deleted = true;
+        }
+      });
+      item.bookmark.deletedTopicList = item.bookmark.topicList.filter(t => {
+        if (t.deleted) {
+          return true;
+        }
+
+        return false;
+      });
+      item.bookmark.topicList = item.bookmark.topicList.filter(t => {
+        if (!t.deleted) {
+          return true;
+        }
+
+        delete t.deleted;
+        return false;
+      });
+    }
+
+    markModified(sourceId, item.id);
+  });
+}
+
+function markModified(sourceId, bookmarkId) {
+  let b = bookmarks[sourceId].find(i => {
+    if (i.id === bookmarkId) {
+      return true;
+    }
+
+    return false;
+  });
+
+  if (b) {
+    b.modified = true;
+  }
 }
 
 function initializeTopicManager() {

@@ -12,14 +12,18 @@ Modify or delete topics and view related bookmarks.
   <div class="fields">
     <div class="field">
       <label>Select Source</label>
-      <select name="source" id="source-list" class="search ui dropdown">
-        <option value="0">Select Source</option>
-        <option value="14">A Course Of Love</option>
-        <option value="10">The Way of Mastery</option>
-        <option value="13">The Raj Material</option>
-        <option value="12">A Course in Miracles</option>
-        <option value="11">The Impersonal Life</option>
-      </select>
+      <div id="source-list" class="ui dropdown">
+        <input type="hidden" name="source">
+        <i class="dropdown icon"></i>
+        <div class="default text">Select Source</div>
+        <div class="menu">
+          <div class="item" data-value="14">A Course Of Love</div>
+          <div class="item" data-value="10">The Way of Mastery</div>
+          <div class="item" data-value="13">The Raj Material</div>
+          <div class="item" data-value="12">A Course in Miracles</div>
+          <div class="item" data-value="11">The Impersonal Life</div>
+        </div>
+      </div>
     </div>
     <div class="field">
       <label id="bookmarksLabel">Bookmarks (0)</label>
@@ -35,9 +39,12 @@ Modify or delete topics and view related bookmarks.
     </div>
     <div class="field">
       <label id="topicsLabel">Topics (0)</label>
-      <select name="topicList" id="topic-list" multiple class="search ui dropdown">
-        <option value="*">-- Select Source --</option>
-      </select>
+      <div id="topicSelect" class="ui multiple selection search dropdown">
+        <input name="topicList" type="hidden">
+        <i class="dropdown icon"></i>
+        <div class="default text">Select Topics(s)</div>
+        <div id="topic-list" class="menu"> </div>
+      </div>
     </div>
   </div>
   <div class="fields">
@@ -58,5 +65,16 @@ Modify or delete topics and view related bookmarks.
 
 <hr/>
 
-<div id="bookmarkedText" class="ui text container"></div>
+<div id="activity-report" class="ui text container"></div>
 
+<div id="confirmDelete" class="ui mini modal">
+  <div class="header">Delete Topic(s)?</div>
+  <div class="content">
+    <p>Selected topic(s) will be deleted from Topic list and all bookmarks.</p>
+    <p id="topicsToDelete"></p>
+  </div>
+  <div class="actions">
+    <div class="ui green approve button">Approve</div>
+    <div class="ui red cancel button">Cancel</div>
+  </div>
+</div>
