@@ -57,6 +57,10 @@ Modify or delete topics and view related bookmarks.
       <button id="renameTopicButton" disabled class="ui yellow button"> Rename </button>
     </div>
     <div class="field">
+      <label>Find Friends</label>
+      <button id="findFriendsButton" disabled class="ui purple button"> Friends </button>
+    </div>
+    <div class="field">
       <label>Display Bookmarks</label>
       <button id="displayBookmarksButton" disabled class="ui green button"> Display </button>
     </div>

@@ -2,8 +2,17 @@ import notify from "toastr";
 import {getBookmarkText, getTopics, getBookmarks} from "./net";
 import {getUserInfo} from "./netlify";
 import intersectionWith from "lodash/intersectionWith";
+import differenceWith from "lodash/differenceWith";
+import uniqWith from "lodash/uniqWith";
 
 let sourceInfo = {
+  title: {
+    "10": "The Way of Mastery",
+    "11": "The Impersonal Life",
+    "12": "A Course in Miracles",
+    "13": "The Raj Material",
+    "14": "A Course Of Love"
+  },
   "0": [
     {
       "value": "*",
@@ -173,7 +182,19 @@ let sourceInfo = {
 let bookmarks = {};
 let topics = {};
 
-function generateHorizontalList(listArray) {
+function generateTopicList(topics) {
+  return (`
+    <div class="ui list">
+      ${topics.map((t) => `
+        <div class="item">
+          ${t.topic}
+        </div>
+      `).join("")}
+    </div>
+  `);
+}
+
+function generateHorizontalList(listArray, flat = false) {
   if (!listArray || listArray.length === 0) {
     return `
       <div class="item">
@@ -184,7 +205,7 @@ function generateHorizontalList(listArray) {
   return `
     ${listArray.map((item) => `
       <div class="item">
-        <em>${item.topic}</em>
+        <em>${flat?item:item.topic}</em>
       </div>
     `).join("")}
   `;
@@ -203,34 +224,40 @@ function generateContent(content) {
 function generateSection(bm) {
   return (`
     <div class="ui sizer vertical segment">
-      <div class="ui small header">
-        <a target="_blank" href="${bm.mgr.url}?v=${bm.mgr.pid}">${bm.mgr.title}</a>
-      </div>
-      <div class="ui tiny header">
+      <div class="ui small header bookmark-header">
+        <a target="_blank" href="${bm.mgr.url}?v=${bm.mgr.pid}">${bm.mgr.title?bm.mgr.title:bm.mgr.url}</a>
+        <br/>
         <div class="ui horizontal bulleted link list">
           ${generateHorizontalList(bm.bookmark.topicList)}
         </div>
+        ${bm.mgr.comment?"<br/>":""}
+        ${bm.mgr.comment?bm.mgr.comment:""}
       </div>
       ${generateContent(bm.mgr.content)}
     </div>
   `);
 }
 
-function generateBookmarkTextHtml(bookmarks, topics) {
+function generateBookmarkTextHtml(bookmarks, topicManager) {
   return (`
-    <h2 class="ui header">
-      ${generateHorizontalList(topics)}
-    </h2>
+    <p>
+      <button class="hide-headers ui primary button">Hide Headers</button>
+    </p>
+    <p>
+      ${sourceInfo.title[topicManager.source]}<br/>
+      ${bookmarks.length} Bookmarks include topics: <em>${topicManager.topicArray.join(" / ")}</em> <br/>
+      ${new Date().toLocaleString()}
+    </p>
     ${bookmarks.map(bookmark => `${generateSection(bookmark)}`).join("")}
   `);
 }
 
-function generateBookmarkText(bookmarks, topics) {
+function generateBookmarkText(bookmarks, topicManager) {
   let promises = getBookmarkText(bookmarks);
 
   Promise.all(promises).then(responses => {
     //console.log("promise.all: %o", responses);
-    let html = generateBookmarkTextHtml(responses, topics);
+    let html = generateBookmarkTextHtml(responses, topicManager);
     $("#activity-report").html(html);
   });
 }
@@ -255,6 +282,17 @@ function initForm() {
   $("#source-list").dropdown();
   $("#book-list1.dropdown").dropdown();
   $("#topicSelect").dropdown();
+
+  $("#activity-report").on("click", ".hide-headers", function(e) {
+    if ($(this).hasClass("hide")) {
+      $(this).removeClass("hide").html("Hide Headers");
+      $("#activity-report .bookmark-header").removeClass("hide");
+    }
+    else {
+      $(this).addClass("hide").html("Show Headers");
+      $("#activity-report .bookmark-header").addClass("hide");
+    }
+  });
 
   //delete confirmation modal
   $("#confirmDelete").modal({
@@ -306,12 +344,16 @@ function initForm() {
     let html = makeBookSelectNew(sourceInfo[sourceId]);
     $("#book-list1").html(html);
 
+    //clear activity report
+    clearActivityReport();
+
     //enable Get Bookmarks button
     $("#getBookmarksButton").removeAttr("disabled");
 
     //disable buttons until topics have been loaded
     $("#deleteTopicsButton").attr("disabled","");
     $("#renameTopicButton").attr("disabled","");
+    $("#findFriendsButton").attr("disabled","");
     $("#displayBookmarksButton").attr("disabled","");
 
     $("#bookmarksLabel").text("Bookmarks (0)");
@@ -355,6 +397,7 @@ function initForm() {
 
         $("#deleteTopicsButton").removeAttr("disabled");
         $("#renameTopicButton").removeAttr("disabled");
+        $("#findFriendsButton").removeAttr("disabled");
         $("#displayBookmarksButton").removeAttr("disabled");
       });
     }
@@ -366,6 +409,7 @@ function initForm() {
 
       $("#deleteTopicsButton").removeAttr("disabled");
       $("#renameTopicButton").removeAttr("disabled");
+      $("#findFriendsButton").removeAttr("disabled");
       $("#displayBookmarksButton").removeAttr("disabled");
     }
 
@@ -419,6 +463,53 @@ function initForm() {
     }
   });
 
+  $("#findFriendsButton").on("click", function() {
+    let topicManager = getFormData();
+    let topicArray = filterTopics(topicManager.topicList);
+
+    if (topicArray.length === 0) {
+      notify.info("Select at least one topic.");
+      return;
+    }
+
+    //find bookmarks containing selected topics
+    let matches = findMatches(topicManager.source, topicManager.book, topicArray);
+
+    //get topics from matches but don't include those in topicArray
+    let friends = [];
+    matches.forEach((bm) => {
+      let diff = differenceWith(bm.bookmark.topicList, topicArray, (v1, v2) => {
+        if (v1.value === v2) {
+          return true;
+        }
+        return false;
+      });
+      friends = friends.concat(diff);
+    });
+
+    //remove duplicates
+    friends = uniqWith(friends, (v1, v2) => {
+      if (v1.value === v2.value) {
+        return true;
+      }
+      return false;
+    });
+
+    //sort
+    friends.sort((v1, v2) => {
+      if (v1.value < v2.value) {
+        return -1;
+      }
+      if (v1.value > v2.value) {
+        return 1;
+      }
+      return 0;
+    });
+
+    let html = generateTopicList(friends);
+    $("#activity-report").html(html);
+  });
+
   $("#displayBookmarksButton").on("click", function() {
     let topicManager = getFormData();
     let topicArray = filterTopics(topicManager.topicList);
@@ -428,31 +519,57 @@ function initForm() {
       return;
     }
 
-    let matches = getBookmarksWithAllTopic(topicManager.source, topicArray);
+    let matches = findMatches(topicManager.source, topicManager.book, topicArray);
+
+    // let matches = getBookmarksWithAllTopic(topicManager.source, topicArray);
+    // if (matches.length === 0) {
+    //   notify.info("No bookmarks contain selected topics");
+    //   return;
+    // }
+
+    // //filter matched bookmarks if user restricted by book
+    // if (topicManager.book !== "*") {
+    //   matches = matches.filter(bm => {
+    //     let bmid = bm.id + "x";
+    //     return bmid.startsWith(topicManager.book);
+    //   });
+    // }
+
     if (matches.length === 0) {
       notify.info("No bookmarks contain selected topics");
-      return;
-    }
-    //console.log("matches: %o", matches);
-
-    //filter matched bookmarks if user restricted by book
-    //console.log("topicManager: %o", topicManager);
-    if (topicManager.book !== "*") {
-      matches = matches.filter(bm => {
-        let bmid = bm.id + "x";
-        return bmid.startsWith(topicManager.book);
-      });
-    }
-
-    if (matches.length === 0) {
-      notify.info("No bookmarks restricted by book contain selected topics");
+      clearActivityReport();
       return;
     }
 
     //generated html
-    generateBookmarkText(matches, topicArray);
+    topicManager.topicArray = topicArray;
+    generateBookmarkText(matches, topicManager);
 
   });
+}
+
+function clearActivityReport() {
+  $("#activity-report").html("");
+}
+
+/*
+ * Search through bookmarks by source and filter by book for topics
+ */
+function findMatches(source, book, topics) {
+  let matches = getBookmarksWithAllTopic(source, topics);
+  if (matches.length === 0) {
+    return matches;
+  }
+
+  //filter matched bookmarks if user restricted by book
+  if (book !== "*") {
+    matches = matches.filter(bm => {
+      let bmid = bm.id + "x";
+      return bmid.startsWith(book);
+    });
+  }
+
+  return matches;
 }
 
 /*

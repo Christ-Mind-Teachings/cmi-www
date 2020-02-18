@@ -134,6 +134,7 @@ i.toc-share.icon {
   box-shadow: 1rem 1rem 1rem;
 }
 
+.bookmark-header.hide,
 .note-and-links.hide {
   display: none;
 }
