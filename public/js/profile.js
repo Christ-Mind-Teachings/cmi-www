@@ -704,7 +704,7 @@ function generateSection(bm) {
   return `
     <div class="ui sizer vertical segment">
       <div class="ui small header bookmark-header">
-        <a target="_blank" href="${bm.mgr.url}?v=${bm.mgr.pid}">${bm.mgr.title ? bm.mgr.title : bm.mgr.url}</a>
+        <a target="_blank" href="${bm.mgr.url}?v=${bm.mgr.pid}&key=${bm.id}">${bm.mgr.title ? bm.mgr.title : bm.mgr.url}</a>
         <br/>
         <div class="ui horizontal bulleted link list">
           ${generateHorizontalList(bm.bookmark.topicList)}
