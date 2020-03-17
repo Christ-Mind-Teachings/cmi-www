@@ -2515,7 +2515,12 @@ function editHandler() {
   $(".transcript").on("click", "[data-annotation-id]", function (e) {
     e.preventDefault();
     let aid = $(this).attr("data-annotation-id");
-    let pid = $(this).parent("p").attr("id"); //we're already editing this annotation
+    let pid = $(this).parent("p").attr("id"); //pid can be undefined when selected content is emphasized <em>
+
+    if (pid === undefined) {
+      pid = $(this).parents("p").attr("id");
+    } //we're already editing this annotation
+
 
     if (annotationFormOpen(pid) || bookmarkNavigatorActive()) {
       return;
@@ -2938,7 +2943,7 @@ function getBookmarks() {
     //get bookmarks from server
     if (userInfo) {
       axios__WEBPACK_IMPORTED_MODULE_0___default.a.get(`${_globals__WEBPACK_IMPORTED_MODULE_8__["default"].bookmarkApi}/bookmark/query/${userInfo.userId}/${pageKey}`).then(response => {
-        //convert to local data structure and store locally 
+        //convert to local data structure and store locally
         if (response.data.response) {
           let bookmarks = {};
           response.data.response.forEach(b => {
@@ -3001,7 +3006,7 @@ function queryBookmarks(key) {
 
 
       axios__WEBPACK_IMPORTED_MODULE_0___default.a.get(`${_globals__WEBPACK_IMPORTED_MODULE_8__["default"].bookmarkApi}/bookmark/query/${userInfo.userId}/${key}`).then(response => {
-        //convert to local data structure and store locally 
+        //convert to local data structure and store locally
         if (response.data.response) {
           //console.log("bookmarks: %o", response.data.response);
           //convert selectedText from JSON to object
@@ -3106,7 +3111,7 @@ function buildBookmarkListFromServer(response, keyInfo) {
   return bookmarks;
 }
 /*
-  Persist annotation 
+  Persist annotation
     - in local storage and to server if user is signed in
 
   args: annotation
@@ -3204,7 +3209,7 @@ function fetchBookmark(bookmarkId, userId) {
 }
 /*
   When user is signed in the bookmark has been returned from the server
-  and saved to local storage. We get the bookmark from there rather than 
+  and saved to local storage. We get the bookmark from there rather than
   having to go back to the server.
 
   We get the bookmark from local storage when the user is not signed in also.
@@ -6749,7 +6754,7 @@ function getReservation(url) {
   returns: book title, page title, url and optionally subtitle.
 
   args:
-    pageKey: a key uniuely identifying a transcript page
+    pageKey: a key uniquely identifying a transcript page
     data: optional, data that will be added to the result, used for convenience
 */
 
@@ -7452,8 +7457,8 @@ function labelParagraphs() {
     $(this).attr("id", "p" + idx).addClass("cmiTranPara").prepend(`<span class='pnum'>(p${idx})&nbsp;</span>`);
   }); //log number of not omitted paragraphs
   //-- used to verify search indexing
-
-  console.log("page: number of paragraphs: %s", count + omit); //console.log("conf: number of paragraphs: %s", config.unit.pNum);
+  //console.log("page: number of paragraphs: %s", count + omit);
+  //console.log("conf: number of paragraphs: %s", config.unit.pNum);
 } //create listener to toggle display of paragraph numbers
 
 

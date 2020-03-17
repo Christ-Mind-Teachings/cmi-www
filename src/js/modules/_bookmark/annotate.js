@@ -630,6 +630,11 @@ function editHandler() {
     let aid = $(this).attr("data-annotation-id");
     let pid = $(this).parent("p").attr("id");
 
+    //pid can be undefined when selected content is emphasized <em>
+    if (pid === undefined) {
+      pid = $(this).parents("p").attr("id");
+    }
+
     //we're already editing this annotation
     if (annotationFormOpen(pid) || bookmarkNavigatorActive()) {
       return;

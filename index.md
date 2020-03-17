@@ -8,6 +8,7 @@ fb:
   image:
     - "cmi/acq-toc.jpg"
     - "cmi/acim-toc.jpg"
+    - "cmi/acimoe-toc.jpg"
     - "cmi/acol-toc.jpg"
     - "cmi/jsb-toc.jpg"
     - "cmi/raj-toc.jpg"
@@ -43,12 +44,12 @@ The intent of the library is to offer simple, readable, and uncluttered access t
   </div>
   <div class="ui three cards">
     <div class="card">
-      <a id="acim-christmind-info" href="/t/acim/" class="image" data-tooltip="Click to view the ACIM Sparkly Edition." data-position="bottom center">
-        <img src="/public/img/cmi/acim-big.jpg">
+      <a id="acimoe-christmind-info" href="/t/acimoe/" class="image" data-tooltip="Click to view the ACIM Original Edition." data-position="bottom center">
+        <img src="/public/img/cmi/acimoe-big.jpg">
       </a>
       <div class="content">
         <div class="description">
-          Received by Helen Schucman through inner dictation from Jesus and first published in 1976 <em>The Course</em> contains a curriculum for spiritual transformation consisting of three sections entitled "Text", "Workbook for Students", and "Manual for Teachers".
+          Add description here.
         </div>
       </div>
     </div>
@@ -89,6 +90,16 @@ The intent of the library is to offer simple, readable, and uncluttered access t
       <div class="content">
         <div class="description">
           In 1914, Joseph S. Benner published <em>The Impersonal Life</em> under the pseudonym <em>Anonymous</em> and believed it words were recorded directly from God.
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <a id="acim-christmind-info" href="/t/acim/" class="image" data-tooltip="Click to view the ACIM Sparkly Edition." data-position="bottom center">
+        <img src="/public/img/cmi/acim-big.jpg">
+      </a>
+      <div class="content">
+        <div class="description">
+          Received by Helen Schucman through inner dictation from Jesus and first published in 1976 <em>The Course</em> contains a curriculum for spiritual transformation consisting of three sections entitled "Text", "Workbook for Students", and "Manual for Teachers".
         </div>
       </div>
     </div>

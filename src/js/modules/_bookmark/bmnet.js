@@ -74,7 +74,7 @@ function getBookmarks() {
       axios.get(`${globals.bookmarkApi}/bookmark/query/${userInfo.userId}/${pageKey}`)
         .then((response) => {
 
-          //convert to local data structure and store locally 
+          //convert to local data structure and store locally
           if (response.data.response) {
             let bookmarks = {};
             response.data.response.forEach((b) => {
@@ -141,7 +141,7 @@ function queryBookmarks(key) {
       //get from the server
       axios.get(`${globals.bookmarkApi}/bookmark/query/${userInfo.userId}/${key}`)
         .then((response) => {
-          //convert to local data structure and store locally 
+          //convert to local data structure and store locally
           if (response.data.response) {
             //console.log("bookmarks: %o", response.data.response);
 
@@ -248,7 +248,7 @@ function buildBookmarkListFromServer(response, keyInfo) {
 }
 
 /*
-  Persist annotation 
+  Persist annotation
     - in local storage and to server if user is signed in
 
   args: annotation
@@ -357,7 +357,7 @@ export function fetchBookmark(bookmarkId, userId) {
 
 /*
   When user is signed in the bookmark has been returned from the server
-  and saved to local storage. We get the bookmark from there rather than 
+  and saved to local storage. We get the bookmark from there rather than
   having to go back to the server.
 
   We get the bookmark from local storage when the user is not signed in also.
@@ -531,7 +531,7 @@ function storeAnnotation(annotation, creationDate) {
     if (!data[pid]) {
       throw new Error(`Expected bookmark ${pid} not found.`);
     }
-    
+
     //find the index of the annotation in the bookmark
     let index = findIndex(data[pid], a => a.creationDate === annotation.creationDate);
     if (index === -1) {

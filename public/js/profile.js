@@ -702,7 +702,7 @@ function generateContent(content) {
 
 function generateSection(bm) {
   return `
-    <div class="ui sizer vertical segment">
+    <div class="ui vertical segment">
       <div class="ui small header bookmark-header">
         <a target="_blank" href="${bm.mgr.url}?v=${bm.mgr.pid}&key=${bm.id}">${bm.mgr.title ? bm.mgr.title : bm.mgr.url}</a>
         <br/>
@@ -848,7 +848,12 @@ function initForm() {
 
     if (!topics[topicManager.source]) {
       Object(_net__WEBPACK_IMPORTED_MODULE_1__["getTopics"])(userInfo.userId, topicManager.source).then(response => {
-        topics[topicManager.source] = response.data.topics;
+        topics[topicManager.source] = response.data.topics; //add "All Topics" topic
+
+        topics[topicManager.source].unshift({
+          value: "<>",
+          topic: "< All Topics >"
+        });
         let html = makeTopicSelect(response.data.topics);
         $("#topic-list").html(html);
         $("#topicsLabel").text(`Topics (${response.data.topics.length})`);
@@ -915,7 +920,15 @@ function initForm() {
   });
   $("#findFriendsButton").on("click", function () {
     let topicManager = getFormData();
-    let topicArray = filterTopics(topicManager.topicList);
+    let topicArray = filterTopics(topicManager.topicList); //don't all the 'All Topics' topic
+
+    topicArray = topicArray.filter(t => {
+      if (t === "<>") {
+        return false;
+      }
+
+      return true;
+    });
 
     if (topicArray.length === 0) {
       toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info("Select at least one topic.");
@@ -968,18 +981,7 @@ function initForm() {
       return;
     }
 
-    let matches = findMatches(topicManager.source, topicManager.book, topicArray); // let matches = getBookmarksWithAllTopic(topicManager.source, topicArray);
-    // if (matches.length === 0) {
-    //   notify.info("No bookmarks contain selected topics");
-    //   return;
-    // }
-    // //filter matched bookmarks if user restricted by book
-    // if (topicManager.book !== "*") {
-    //   matches = matches.filter(bm => {
-    //     let bmid = bm.id + "x";
-    //     return bmid.startsWith(topicManager.book);
-    //   });
-    // }
+    let matches = findMatches(topicManager.source, topicManager.book, topicArray);
 
     if (matches.length === 0) {
       toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info("No bookmarks contain selected topics");
@@ -1048,7 +1050,7 @@ function filterTopics(topicString) {
 function markTopicsDeleted(source, deletedTopics) {
   topics[source].forEach(topic => {
     deletedTopics.forEach(dt => {
-      if (dt === topic.value) {
+      if (dt !== "<>" && dt === topic.value) {
         topic.deleted = true; //console.log("deleted topic: %o", topic);
       }
     });
@@ -1063,35 +1065,48 @@ function markTopicsDeleted(source, deletedTopics) {
 
 function getBookmarksWithAllTopic(source, topics) {
   let matches = [];
+  let wildcard = false;
 
   if (topics.length === 0) {
     return matches;
+  } //return all bookmarks
+
+
+  if (topics.includes("<>")) {
+    wildcard = true;
   }
 
   bookmarks[source].forEach(item => {
     item.bookmark.forEach(bmark => {
-      if (bmark.topicList && bmark.topicList.length > 0) {
-        let index;
-        let findCount = 0;
-        topics.forEach(t => {
-          index = bmark.topicList.findIndex(bt => {
-            if (bt.value === t) {
-              return true;
-            }
-
-            return false;
-          });
-
-          if (index > -1) {
-            findCount++;
-          }
+      if (wildcard) {
+        matches.push({
+          id: item.id,
+          bookmark: bmark
         });
+      } else {
+        if (bmark.topicList && bmark.topicList.length > 0) {
+          let index;
+          let findCount = 0;
+          topics.forEach(t => {
+            index = bmark.topicList.findIndex(bt => {
+              if (bt.value === t) {
+                return true;
+              }
 
-        if (findCount === topics.length) {
-          matches.push({
-            id: item.id,
-            bookmark: bmark
+              return false;
+            });
+
+            if (index > -1) {
+              findCount++;
+            }
           });
+
+          if (findCount === topics.length) {
+            matches.push({
+              id: item.id,
+              bookmark: bmark
+            });
+          }
         }
       }
     });

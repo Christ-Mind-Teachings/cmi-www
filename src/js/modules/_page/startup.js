@@ -51,7 +51,7 @@ function labelParagraphs() {
 
   //log number of not omitted paragraphs
   //-- used to verify search indexing
-  console.log("page: number of paragraphs: %s", count + omit);
+  //console.log("page: number of paragraphs: %s", count + omit);
   //console.log("conf: number of paragraphs: %s", config.unit.pNum);
 }
 

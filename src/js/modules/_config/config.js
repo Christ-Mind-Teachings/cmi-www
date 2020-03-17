@@ -230,7 +230,7 @@ export function getReservation(url) {
   returns: book title, page title, url and optionally subtitle.
 
   args:
-    pageKey: a key uniuely identifying a transcript page
+    pageKey: a key uniquely identifying a transcript page
     data: optional, data that will be added to the result, used for convenience
 */
 export function getPageInfo(pageKey, data = false) {
