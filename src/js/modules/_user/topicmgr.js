@@ -9,9 +9,10 @@ let sourceInfo = {
   title: {
     "10": "The Way of Mastery",
     "11": "The Impersonal Life",
-    "12": "A Course in Miracles",
+    "12": "ACIM Sparkley Edition",
     "13": "The Raj Material",
-    "14": "A Course Of Love"
+    "14": "A Course Of Love",
+    "15": "ACIM Original Edition"
   },
   "0": [
     {
@@ -39,6 +40,24 @@ let sourceInfo = {
     {
       "value": "121",
       "name": "Preface"
+    }
+  ],
+  "15": [
+    {
+      "value": "*",
+      "name": "All Books"
+    },
+    {
+      "value": "151",
+      "name": "Text"
+    },
+    {
+      "value": "152",
+      "name": "Workbook for Students"
+    },
+    {
+      "value": "153",
+      "name": "Manual for Teachers"
     }
   ],
   "14": [

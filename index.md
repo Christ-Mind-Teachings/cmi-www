@@ -21,13 +21,31 @@ footer:
 ## Welcome to The Library of Christ Mind Teachings!
 {: .ui.header}
 
-This library of Christ Mind teachings is offered to you from a deep appreciation and love of the content contained herein and for the love expressed and demonstrated in the words of each teaching. Within these words is found the motivation and power for real and lasting transformation of the human condition through love. Approached with honesty, curiosity, patience and a genuine desire for change the materials presented here will serve as a trusted guide and friend on the journey of awakening.
+This library of Christ Mind teachings is offered to you from a deep
+appreciation and love of the content contained herein and for the love
+expressed and demonstrated in the words of each teaching. Within these
+words is found the motivation and power for real and lasting
+transformation of the human condition through love. Approached with
+honesty, curiosity, patience and a genuine desire for change the
+materials presented here will serve as a trusted guide and friend on the
+journey of awakening.
 
-One of the goals of this site is to bring all the bits and pieces of a teaching together in an easily discoverable and usable format. This is particularly true for <em>The Way of Mastery</em> and <em>The Raj Material</em> which, because of the volume of content, was difficult to compile into an approachable package.
+One of the goals of this site is to bring all the bits and pieces of a
+teaching together in an easily discoverable and usable format. This is
+particularly true for <em>The Way of Mastery</em> and <em>The Raj
+Material</em> which, because of the volume of content, was difficult to
+compile into an approachable package.
 
-Another goal is to integrate audio, where present, with the written word so you can read along as you listen and not lose your place. See the <em>Get Acquainted</em> guide for details of this and other features of the library.
+Another goal is to integrate audio, where present, with the written word
+so you can read along as you listen and not lose your place. See the
+<em>Get Acquainted</em> guide for details of this and other features of
+the library.
 
-The intent of the library is to offer simple, readable, and uncluttered access to the material herein. The interface is terse by design so be sure to poke around and get familiar with the features available. Start by clicking the <i class="question icon"></i> option in the menu bar of each page. Video documentation is also available.
+The intent of the library is to offer simple, readable, and uncluttered
+access to the material herein. The interface is terse by design so be
+sure to poke around and get familiar with the features available. Start
+by clicking the <i class="question icon"></i> option in the menu bar of
+each page. Video documentation is also available.
 
 <div id="page-contents">
   <div class="ui three cards">
@@ -49,7 +67,8 @@ The intent of the library is to offer simple, readable, and uncluttered access t
       </a>
       <div class="content">
         <div class="description">
-          Add description here.
+          <em>A Course in Miracles</em> Original Edition published by
+          the Course in Miracles Society.
         </div>
       </div>
     </div>
@@ -79,7 +98,13 @@ The intent of the library is to offer simple, readable, and uncluttered access t
       </a>
       <div class="content">
         <div class="description">
-          Forty years ago Jesus dictated ACIM to the scribe Helen Schucman. More recently, over three years, he similarly dictated A Course of Love to Mari Perron. Students of ACIM will recognize the Voice. Jesus describes ACOL as a "continuation" of A Course in Miracles. Students of truth, whatever their background, will find that ACOL resonates with the heart.
+          Forty years ago Jesus dictated ACIM to the scribe Helen
+          Schucman. More recently, over three years, he similarly
+          dictated A Course of Love to Mari Perron. Students of ACIM
+          will recognize the Voice. Jesus describes ACOL as a
+          "continuation" of A Course in Miracles. Students of truth,
+          whatever their background, will find that ACOL resonates with
+          the heart.
         </div>
       </div>
     </div>
@@ -89,7 +114,9 @@ The intent of the library is to offer simple, readable, and uncluttered access t
       </a>
       <div class="content">
         <div class="description">
-          In 1914, Joseph S. Benner published <em>The Impersonal Life</em> under the pseudonym <em>Anonymous</em> and believed it words were recorded directly from God.
+          In 1914, Joseph S. Benner published <em>The Impersonal
+          Life</em> under the pseudonym <em>Anonymous</em> and believed
+          it words were recorded directly from God.
         </div>
       </div>
     </div>
@@ -99,7 +126,11 @@ The intent of the library is to offer simple, readable, and uncluttered access t
       </a>
       <div class="content">
         <div class="description">
-          Received by Helen Schucman through inner dictation from Jesus and first published in 1976 <em>The Course</em> contains a curriculum for spiritual transformation consisting of three sections entitled "Text", "Workbook for Students", and "Manual for Teachers".
+          Received by Helen Schucman through inner dictation from Jesus
+          and first published in 1976 <em>The Course</em> contains a
+          curriculum for spiritual transformation consisting of three
+          sections entitled "Text", "Workbook for Students", and "Manual
+          for Teachers".
         </div>
       </div>
     </div>

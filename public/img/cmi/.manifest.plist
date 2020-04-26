@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Assets</key>
+	<dict>
+		<key>0BD0DAC6-24B3-463C-9159-4CB59C6F88E5</key>
+		<dict>
+			<key>HREF</key>
+			<string>00008-Search%20Match.jpg</string>
+			<key>Last Modified</key>
+			<date>2020-04-26T01:58:20Z</date>
+			<key>Size</key>
+			<integer>127322</integer>
+		</dict>
+		<key>33ADE927-5C4C-4966-BC0A-499599E1DD9A</key>
+		<dict>
+			<key>HREF</key>
+			<string>00006-Search.jpg</string>
+			<key>Last Modified</key>
+			<date>2020-04-26T01:58:18Z</date>
+			<key>Size</key>
+			<integer>61063</integer>
+		</dict>
+		<key>44B3052B-3E4C-4B44-BADF-0086474D8AED</key>
+		<dict>
+			<key>HREF</key>
+			<string>00002-Unified%20Overview.jpg</string>
+			<key>Last Modified</key>
+			<date>2020-04-26T01:58:14Z</date>
+			<key>Size</key>
+			<integer>107153</integer>
+		</dict>
+		<key>501D4525-D1AA-4EFA-B66C-B073938A0DA6</key>
+		<dict>
+			<key>HREF</key>
+			<string>00007-Search%20Results.jpg</string>
+			<key>Last Modified</key>
+			<date>2020-04-26T01:58:19Z</date>
+			<key>Size</key>
+			<integer>94598</integer>
+		</dict>
+		<key>6F6466BC-6891-4EDC-B1C6-B7F51EFDBC53</key>
+		<dict>
+			<key>HREF</key>
+			<string>00003-Pages.jpg</string>
+			<key>Last Modified</key>
+			<date>2020-04-26T01:58:15Z</date>
+			<key>Size</key>
+			<integer>21513</integer>
+		</dict>
+		<key>790B3ECF-9AFD-4A1E-AA84-544645568B18</key>
+		<dict>
+			<key>HREF</key>
+			<string>00001-Separate%20Overview.jpg</string>
+			<key>Last Modified</key>
+			<date>2020-04-26T01:58:13Z</date>
+			<key>Size</key>
+			<integer>130580</integer>
+		</dict>
+		<key>CD485318-C3F6-4C1B-B48A-2E6EEBCEAE4E</key>
+		<dict>
+			<key>HREF</key>
+			<string>00004-Landing%20Page.jpg</string>
+			<key>Last Modified</key>
+			<date>2020-04-26T01:58:16Z</date>
+			<key>Size</key>
+			<integer>29410</integer>
+		</dict>
+		<key>ECF7606C-7934-47AA-8E7C-8FA6309A4D58</key>
+		<dict>
+			<key>HREF</key>
+			<string>00005-Document%20Page.jpg</string>
+			<key>Last Modified</key>
+			<date>2020-04-26T01:58:17Z</date>
+			<key>Size</key>
+			<integer>34683</integer>
+		</dict>
+	</dict>
+	<key>Settings</key>
+	<dict>
+		<key>Compression Factor</key>
+		<real>0.80000001192092896</real>
+		<key>Image Type</key>
+		<integer>0</integer>
+		<key>Max Width</key>
+		<integer>1024</integer>
+		<key>Scale Image to Max Width</key>
+		<false/>
+		<key>Use Idea Space Size</key>
+		<false/>
+	</dict>
+</dict>
+</plist>

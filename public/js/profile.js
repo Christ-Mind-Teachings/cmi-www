@@ -10,7 +10,7 @@
 /******/ 		var moduleId, chunkId, i = 0, resolves = [];
 /******/ 		for(;i < chunkIds.length; i++) {
 /******/ 			chunkId = chunkIds[i];
-/******/ 			if(installedChunks[chunkId]) {
+/******/ 			if(Object.prototype.hasOwnProperty.call(installedChunks, chunkId) && installedChunks[chunkId]) {
 /******/ 				resolves.push(installedChunks[chunkId][0]);
 /******/ 			}
 /******/ 			installedChunks[chunkId] = 0;
@@ -46,6 +46,7 @@
 /******/ 				result = __webpack_require__(__webpack_require__.s = deferredModule[0]);
 /******/ 			}
 /******/ 		}
+/******/
 /******/ 		return result;
 /******/ 	}
 /******/
@@ -532,9 +533,10 @@ let sourceInfo = {
   title: {
     "10": "The Way of Mastery",
     "11": "The Impersonal Life",
-    "12": "A Course in Miracles",
+    "12": "ACIM Sparkley Edition",
     "13": "The Raj Material",
-    "14": "A Course Of Love"
+    "14": "A Course Of Love",
+    "15": "ACIM Original Edition"
   },
   "0": [{
     "value": "*",
@@ -555,6 +557,19 @@ let sourceInfo = {
   }, {
     "value": "121",
     "name": "Preface"
+  }],
+  "15": [{
+    "value": "*",
+    "name": "All Books"
+  }, {
+    "value": "151",
+    "name": "Text"
+  }, {
+    "value": "152",
+    "name": "Workbook for Students"
+  }, {
+    "value": "153",
+    "name": "Manual for Teachers"
   }],
   "14": [{
     "value": "*",

@@ -10837,7 +10837,7 @@ function getUser() {
         r = e(this),
         s = e(n),
         l = r.selector || "",
-        c = "ontouchstart" in n.documentElement,
+        c = ("ontouchstart" in n.documentElement),
         u = new Date().getTime(),
         d = [],
         f = arguments[0],
