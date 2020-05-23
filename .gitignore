@@ -7,5 +7,4 @@ project/
 t/
 *.map
 *.old
-Gemfile.lock
 
