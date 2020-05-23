@@ -20,7 +20,7 @@ You can use the CMI Library without creating a user account and have full access
           When you are signed into your account and create a bookmark it is stored in the Cloud and is then available on any device you use to view the Library.
         </p>
         <p>
-          When you are not signed in bookmarks are stored to your device and available only when using that device to view the Library. 
+          When you are not signed in bookmarks are stored to your device and available only when using that device to view the Library.
         </p>
         <p>
           The practical effect of this is when you create bookmarks using your computer at home without being logged in and then access the Library from your tablet or phone at the coffee shop none of your bookmarks will be available and you will be given the message that you don't have any. You will have to create them again on your other devices.
@@ -46,7 +46,7 @@ You can use the CMI Library without creating a user account and have full access
 
 ## Create An Account
 
-You must first create an account before you can sign in. Start by clicking the <i class="sign in icon"></i> icon.
+You must first create an account before you can sign in. Start by clicking the <i class="sign in icon"></i> icon in the menu bar.
 
 <div class="ui container" markdown="1">
   ![Sign Up](/public/img/cmi/sign-up.jpg)
@@ -60,9 +60,7 @@ An email will be sent to the email address you entered. Click the link in the em
   ![Sign Up Email](/public/img/cmi/sign-up-email.jpg)
 </div>
 
-Click the link to confirm your email address. Notice that the account is created for The Raj Material. When you click the link to confirm your email address the landing page for The Raj Material will open and you will be automatically signed in.
-
-Unless you explicity sign out you will be automatically signed in each time you enter the site.
+Click the link to confirm your email address. Unless you explicity sign out you will be automatically signed in each time you enter the site.
 
 When you hover the cursor over the <i class="sign out icon"></i> icon, which shows green when your are signed in, your name will be displayed.
 
@@ -75,9 +73,3 @@ When you hover the cursor over the <i class="sign out icon"></i> icon, which sho
 Signing in is usually done automatically. You will need to sign in only when you access the site with a new computer or after you explicitly sign out.
 
 Easy.
-
-## Accounts are Teaching Specific
-
-An account created when in The Raj Material, for example, applies only to the parts of the Library related to Raj. Other parts, such as The Way of Mastery and ACIM, are not included. This means that you will need to create an account for each teaching necessary. Each account can use the same email address and password.
-
-

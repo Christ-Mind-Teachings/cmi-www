@@ -22,7 +22,7 @@ function showNote(noteName) {
     if (note.content) {
       $(".notes.modal .notes-content").html(note.content);
     }
-  }  
+  }
   notes.__current__ = noteName;
   $(uiNotesModal).modal("show");
 }

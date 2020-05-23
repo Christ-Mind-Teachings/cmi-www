@@ -253,6 +253,9 @@ function generateSection(bm) {
         ${bm.mgr.comment?bm.mgr.comment:""}
       </div>
       ${generateContent(bm.mgr.content)}
+      <p>
+        ~ ${bm.id}
+      </p>
     </div>
   `);
 }

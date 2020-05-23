@@ -94,7 +94,7 @@ each page. Video documentation is also available.
     </div>
     <div class="card">
       <a id="acol-christmind-info" href="/t/acol/" class="image" data-tooltip="Click to view A Course Of Love" data-position="bottom center">
-        <img src="/public/img/cmi/acol2new-big.jpg">
+        <img src="/public/img/cmi/acol2-big.jpg">
       </a>
       <div class="content">
         <div class="description">

@@ -65,14 +65,6 @@ function prodUserInfo() {
 
 export function getUserInfo(name) {
   return prodUserInfo();
-  /*
-  if (location.hostname !== "localhost") {
-    return prodUserInfo();
-  }
-  else {
-    return devUserInfo(name);
-  }
-  */
 }
 
 /*
@@ -178,7 +170,7 @@ export default {
     user.on("logout", () => {
       setAsSignedOut();
       userInfo = null;
-      location.href = "/t/acol";
+      location.href = "/";
     });
 
     user.on("error", (err) => {

@@ -1,9 +1,10 @@
 const {getUrl: www_getUrl} = require("../_config/key");
-const {getUrl: acim_getUrl} = require("acim/modules/_config/key"); 
-const {getUrl: acol_getUrl} = require("acol/modules/_config/key"); 
-const {getUrl: jsb_getUrl} = require("jsb/modules/_config/key"); 
-const {getUrl: raj_getUrl} = require("raj/modules/_config/key"); 
-const {getUrl: wom_getUrl} = require("wom/modules/_config/key"); 
+const {getUrl: acim_getUrl} = require("acim/modules/_config/key");
+const {getUrl: oe_getUrl} = require("oe/modules/_config/key");
+const {getUrl: acol_getUrl} = require("acol/modules/_config/key");
+const {getUrl: jsb_getUrl} = require("jsb/modules/_config/key");
+const {getUrl: raj_getUrl} = require("raj/modules/_config/key");
+const {getUrl: wom_getUrl} = require("wom/modules/_config/key");
 
 function getUrl(source, key) {
   let url;
@@ -13,6 +14,9 @@ function getUrl(source, key) {
       break;
     case "acim":
       url = acim_getUrl(key, true);
+      break;
+    case "acimoe":
+      url = oe_getUrl(key, true);
       break;
     case "jsb":
       url = jsb_getUrl(key, true);
