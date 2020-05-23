@@ -1,0 +1,29 @@
+{
+    "base": "/t/acimoe/workbook/holyspirit/",
+    "time": [
+        {
+            "id": "p0",
+            "seconds": 0
+        },
+        {
+            "id": "p1",
+            "seconds": 5.186762
+        },
+        {
+            "id": "p2",
+            "seconds": 58.199085
+        },
+        {
+            "id": "p3",
+            "seconds": 102.6889
+        },
+        {
+            "id": "p4",
+            "seconds": 158.695922
+        },
+        {
+            "id": "p5",
+            "seconds": 193.446988
+        }
+    ]
+}

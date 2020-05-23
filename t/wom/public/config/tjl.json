@@ -1,0 +1,67 @@
+{
+  "bid": "tjl",
+  "title": "The Jeshua Letters",
+  "image": "/t/wom/public/img/wom/tjlN-toc.jpg",
+  "contents": [
+    {
+      "title": "Acknowledgements",
+      "url": "/t/wom/tjl/ack/"
+    },
+    {
+      "title": "Foreword",
+      "url": "/t/wom/tjl/foreword/"
+    },
+    {
+      "title": "Chapter One",
+      "url": "/t/wom/tjl/chap01/"
+    },
+    {
+      "title": "Chapter Two",
+      "url": "/t/wom/tjl/chap02/"
+    },
+    {
+      "title": "Chapter Three",
+      "url": "/t/wom/tjl/chap03/"
+    },
+    {
+      "title": "Chapter Four",
+      "url": "/t/wom/tjl/chap04/"
+    },
+    {
+      "title": "Chapter Five",
+      "url": "/t/wom/tjl/chap05/"
+    },
+    {
+      "title": "Chapter Six",
+      "url": "/t/wom/tjl/chap06/"
+    },
+    {
+      "title": "Chapter Seven",
+      "url": "/t/wom/tjl/chap07/"
+    },
+    {
+      "title": "Chapter Eight",
+      "url": "/t/wom/tjl/chap08/"
+    },
+    {
+      "title": "Chapter Nine",
+      "url": "/t/wom/tjl/chap09/"
+    },
+    {
+      "title": "Chapter Ten",
+      "url": "/t/wom/tjl/chap10/"
+    },
+    {
+      "title": "Chapter Eleven",
+      "url": "/t/wom/tjl/chap11/"
+    },
+    {
+      "title": "Chapter Twelve",
+      "url": "/t/wom/tjl/chap12/"
+    },
+    {
+      "title": "Epilogue",
+      "url": "/t/wom/tjl/epilogue/"
+    }
+  ]
+}

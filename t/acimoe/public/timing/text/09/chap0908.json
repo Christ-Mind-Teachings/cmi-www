@@ -1,0 +1,42 @@
+{
+    "base": "/t/acimoe/text/09/chap0908/",
+    "time": [
+        {
+            "id": "p0",
+            "seconds": 0
+        },
+        {
+            "id": "p1",
+            "seconds": 53.578356
+        },
+        {
+            "id": "p2",
+            "seconds": 113.068556
+        },
+        {
+            "id": "p3",
+            "seconds": 172.316035
+        },
+        {
+            "note": "Timing here is a guess, may need adjustment",
+            "id": "p4",
+            "seconds": 177.316035
+        },
+        {
+            "id": "p5",
+            "seconds": 194.412475
+        },
+        {
+            "id": "p6",
+            "seconds": 242.674199
+        },
+        {
+            "id": "p7",
+            "seconds": 300.411104
+        },
+        {
+            "id": "p8",
+            "seconds": 357.175534
+        }
+    ]
+}

@@ -1,0 +1,32 @@
+{
+  "bid": "acq",
+  "base": "/t/acimoe/acq",
+  "title": "Get Acquainted",
+  "image": "/t/acimoe/public/img/acim/acq-toc.jpg",
+  "contents": [
+    {
+      "title": "Welcome",
+      "url": "/welcome/"
+    },
+    {
+      "title": "About the Original Edition",
+      "url": "/acim/"
+    },
+    {
+      "title": "What is <em>Course in Miracles Society</em> (CIMS)",
+      "url": "/cims/"
+    },
+    {
+      "title": "Available Formats",
+      "url": "/formats/"
+    },
+    {
+      "title": "Contact Us",
+      "url": "/contact/"
+    },
+    {
+      "title": "Help Wanted",
+      "url": "/timers/"
+    }
+  ]
+}

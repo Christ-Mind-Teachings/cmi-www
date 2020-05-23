@@ -4,7 +4,6 @@ _site
 .DS_Store
 node_modules/
 project/
-t/
 *.map
 *.old
 

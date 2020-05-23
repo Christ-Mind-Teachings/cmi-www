@@ -1,0 +1,33 @@
+{
+    "base": "/t/acimoe/workbook/l036/",
+    "time": [
+        {
+            "id": "p0",
+            "seconds": 0
+        },
+        {
+            "id": "p1",
+            "seconds": 12.157927
+        },
+        {
+            "id": "p2",
+            "seconds": 73.663955
+        },
+        {
+            "id": "p3",
+            "seconds": 102.657317
+        },
+        {
+            "id": "p4",
+            "seconds": 131.155669
+        },
+        {
+            "id": "p5",
+            "seconds": 149.661867
+        },
+        {
+            "id": "p6",
+            "seconds": 167.650228
+        }
+    ]
+}

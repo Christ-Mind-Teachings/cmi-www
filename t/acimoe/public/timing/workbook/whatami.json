@@ -1,0 +1,29 @@
+{
+    "base": "/t/acimoe/workbook/whatami/",
+    "time": [
+        {
+            "id": "p0",
+            "seconds": 0
+        },
+        {
+            "id": "p1",
+            "seconds": 6.003813
+        },
+        {
+            "id": "p2",
+            "seconds": 59.994459
+        },
+        {
+            "id": "p3",
+            "seconds": 107.503023
+        },
+        {
+            "id": "p4",
+            "seconds": 154.74364
+        },
+        {
+            "id": "p5",
+            "seconds": 196.258286
+        }
+    ]
+}

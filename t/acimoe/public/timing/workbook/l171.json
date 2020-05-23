@@ -1,0 +1,25 @@
+{
+    "base": "/t/acimoe/workbook/l171/",
+    "time": [
+        {
+            "id": "p0",
+            "seconds": 0
+        },
+        {
+            "id": "p1",
+            "seconds": 12.439388
+        },
+        {
+            "id": "p2",
+            "seconds": 23.433373
+        },
+        {
+            "id": "p3",
+            "seconds": 31.179532
+        },
+        {
+            "id": "p4",
+            "seconds": 38.188738
+        }
+    ]
+}

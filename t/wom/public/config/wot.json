@@ -1,0 +1,161 @@
+{
+  "bid": "wot",
+  "title": "Way of Transformation",
+  "image": "/t/wom/public/img/wom/wotN-toc.jpg",
+  "contents": [
+    {
+      "title": "Lesson One",
+      "url": "/t/wom/wot/l01/",
+      "audio": "/wot/L13.mp3",
+      "timing": "/wot/l13.json",
+      "questions": [
+        {
+          "audio": "/questions/Q13.01.mp3",
+          "timing": "/questions/t01q1.json",
+          "title": "Q1. Who are the other Masters occasionally mentioned?",
+          "url": "/t/wom/wot/l01/q1/"
+        },
+        {
+          "audio": "/questions/Q13.02.mp3",
+          "timing": "/questions/t01q2.json",
+          "title": "Q2. What is the difference between judgment and discernment?",
+          "url": "/t/wom/wot/l01/q2/"
+        }
+      ]
+    },
+    {
+      "audio": "/wot/L14.mp3",
+      "timing": "/wot/l14.json",
+      "title": "Lesson Two",
+      "url": "/t/wom/wot/l02/"
+    },
+    {
+      "audio": "/wot/L15.mp3",
+      "timing": "/wot/l15.json",
+      "title": "Lesson Three",
+      "url": "/t/wom/wot/l03/"
+    },
+    {
+      "audio": "/wot/L16.mp3",
+      "timing": "/wot/l16.json",
+      "title": "Lesson Four",
+      "url": "/t/wom/wot/l04/"
+    },
+    {
+      "audio": "/wot/L17.mp3",
+      "timing": "/wot/l17.json",
+      "title": "Lesson Five",
+      "url": "/t/wom/wot/l05/"
+    },
+    {
+      "audio": "/wot/L18.mp3",
+      "timing": "/wot/l18.json",
+      "title": "Lesson Six",
+      "url": "/t/wom/wot/l06/",
+      "questions": [
+        {
+          "audio": "/questions/Q18.01.mp3",
+          "timing": "/questions/t06q1.json",
+          "title": "Q1. About vulnerability",
+          "url": "/t/wom/wot/l06/q1/"
+        },
+        {
+          "audio": "/questions/Q18.02.mp3",
+          "timing": "/questions/t06q2.json",
+          "title": "Q2. What was the message of the Cross?",
+          "url": "/t/wom/wot/l06/q2/"
+        }
+      ]
+    },
+    {
+      "title": "Lesson Seven",
+      "url": "/t/wom/wot/l07/",
+      "audio": "/wot/L19.mp3",
+      "timing": "/wot/l19.json",
+      "questions": [
+        {
+          "audio": "/questions/Q19.01.mp3",
+          "timing": "/questions/t07q1.json",
+          "title": "Q1. Please talk about Enlightenment",
+          "url": "/t/wom/wot/l07/q1/"
+        }
+      ]
+    },
+    {
+      "audio": "/wot/L20.mp3",
+      "timing": "/wot/l20.json",
+      "title": "Lesson Eight",
+      "url": "/t/wom/wot/l08/"
+    },
+    {
+      "title": "Lesson Nine",
+      "url": "/t/wom/wot/l09/",
+      "audio": "/wot/L21.mp3",
+      "timing": "/wot/l21.json",
+      "questions": [
+        {
+          "audio": "/questions/Q21.01.mp3",
+          "timing": "/questions/t09q1.json",
+          "title": "Q1. About guidance",
+          "url": "/t/wom/wot/l09/q1/"
+        },
+        {
+          "audio": "/questions/Q21.02.mp3",
+          "timing": "/questions/t09q2.json",
+          "title": "Q2. All events are neutral",
+          "url": "/t/wom/wot/l09/q2/"
+        },
+        {
+          "audio": "/questions/Q21.03.mp3",
+          "timing": "/questions/t09q3.json",
+          "title": "Q3. About Christ Consciousness and Individuality",
+          "url": "/t/wom/wot/l09/q3/"
+        },
+        {
+          "audio": "/questions/Q21.04.mp3",
+          "timing": "/questions/t09q4.json",
+          "title": "Q4. About not being in denial of the shadow",
+          "url": "/t/wom/wot/l09/q4/"
+        }
+      ]
+    },
+    {
+      "audio": "/wot/L22.mp3",
+      "timing": "/wot/l22.json",
+      "title": "Lesson Ten",
+      "url": "/t/wom/wot/l10/"
+    },
+    {
+      "title": "Lesson Eleven",
+      "url": "/t/wom/wot/l11/",
+      "audio": "/wot/L23.mp3",
+      "timing": "/wot/l23.json",
+      "questions": [
+        {
+          "audio": "/questions/Q23.01.mp3",
+          "timing": "/questions/t11q1.json",
+          "title": "Q1. Do you have our own unique purpose?",
+          "url": "/t/wom/wot/l11/q1/"
+        },
+        {
+          "audio": "/questions/Q23.02.mp3",
+          "timing": "/questions/t11q2.json",
+          "title": "Q2. About The Lineage",
+          "url": "/t/wom/wot/l11/q2/"
+        },
+        {
+          "audio": "/questions/Q23.03.mp3",
+          "timing": "/questions/t11q3.json",
+          "title": "Q3. About specialness, holiness, and sexuality",
+          "url": "/t/wom/wot/l11/q3/"
+        }
+      ]
+    },
+    {
+      "audio": "/wot/L24.mp3",
+      "timing": "/wot/l24.json",
+      "title": "Lesson Twelve",
+      "url": "/t/wom/wot/l12/"
+    }
+  ]
+}

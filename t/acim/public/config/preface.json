@@ -1,0 +1,12 @@
+{
+  "bid": "preface",
+  "base": "/t/acim/preface",
+  "image": "/t/acim/public/img/acim/manual-toc.jpg",
+  "title": "Preface to ACIM Sparkly Edition",
+  "contents": [
+    {
+      "title": "Preface",
+      "url": "/preface/"
+    }
+  ]
+}

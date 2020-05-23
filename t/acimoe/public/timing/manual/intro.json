@@ -1,0 +1,29 @@
+{
+    "base": "/t/acimoe/manual/intro/",
+    "time": [
+        {
+            "id": "p0",
+            "seconds": 0
+        },
+        {
+            "id": "p1",
+            "seconds": 4.704524
+        },
+        {
+            "id": "p2",
+            "seconds": 69.456035
+        },
+        {
+            "id": "p3",
+            "seconds": 143.947195
+        },
+        {
+            "id": "p4",
+            "seconds": 218.559683
+        },
+        {
+            "id": "p5",
+            "seconds": 273.303305
+        }
+    ]
+}

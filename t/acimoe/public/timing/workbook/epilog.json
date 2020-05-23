@@ -1,0 +1,33 @@
+{
+    "base": "/t/acimoe/workbook/epilog/",
+    "time": [
+        {
+            "id": "p0",
+            "seconds": 0
+        },
+        {
+            "id": "p1",
+            "seconds": 6.961811
+        },
+        {
+            "id": "p2",
+            "seconds": 54.230038
+        },
+        {
+            "id": "p3",
+            "seconds": 101.738118
+        },
+        {
+            "id": "p4",
+            "seconds": 148.225008
+        },
+        {
+            "id": "p5",
+            "seconds": 206.982421
+        },
+        {
+            "id": "p6",
+            "seconds": 260.239568
+        }
+    ]
+}

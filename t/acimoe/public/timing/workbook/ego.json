@@ -1,0 +1,29 @@
+{
+    "base": "/t/acimoe/workbook/ego/",
+    "time": [
+        {
+            "id": "p0",
+            "seconds": 0
+        },
+        {
+            "id": "p1",
+            "seconds": 5.524734
+        },
+        {
+            "id": "p2",
+            "seconds": 46.777523
+        },
+        {
+            "id": "p3",
+            "seconds": 88.514239
+        },
+        {
+            "id": "p4",
+            "seconds": 130.519646
+        },
+        {
+            "id": "p5",
+            "seconds": 173.281466
+        }
+    ]
+}

@@ -1,0 +1,11 @@
+{
+  "bid": "acq",
+  "title": "Get Acquainted",
+  "image": "/t/jsb/public/img/src/acq-toc.jpg",
+  "contents": [
+    {
+      "title": "Welcome",
+      "url": "/t/jsb/acq/welcome/"
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+    "base": "/t/acimoe/workbook/l111/",
+    "time": [
+        {
+            "id": "p0",
+            "seconds": 0
+        },
+        {
+            "id": "p1",
+            "seconds": 10.637787
+        },
+        {
+            "id": "p2",
+            "seconds": 14.399492
+        },
+        {
+            "id": "p3",
+            "seconds": 32.650256
+        },
+        {
+            "id": "p4",
+            "seconds": 40.903222
+        },
+        {
+            "id": "p5",
+            "seconds": 59.144267
+        },
+        {
+            "id": "p6",
+            "seconds": 60.894743
+        },
+        {
+            "id": "p7",
+            "seconds": 65.901431
+        },
+        {
+            "id": "p8",
+            "seconds": 67.642893
+        }
+    ]
+}

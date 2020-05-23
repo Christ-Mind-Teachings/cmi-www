@@ -1,0 +1,257 @@
+{
+  "bid": "early",
+  "title": "The Early Years",
+  "image": "/t/wom/public/img/wom/earlyN-toc.jpg",
+  "contents": [
+    {
+      "title": "The Blessing of Forgiveness",
+      "url": "/t/wom/early/ble/",
+      "audio": "/early/BLE.mp3",
+      "timing": "/early/ble.json",
+      "questions": [
+        {
+          "title": "Q1. Profound Time of Year",
+          "url": "/t/wom/early/ble/q1/",
+          "audio": "/questions/BLEQ1.mp3",
+          "timing": "/questions/bleq1.json"
+        },
+        {
+          "title": "Q2. Living in Community",
+          "url": "/t/wom/early/ble/q2/",
+          "audio": "/questions/BLEQ2.mp3",
+          "timing": "/questions/bleq2.json"
+        },
+        {
+          "title": "Q3. Co-creating Christ",
+          "url": "/t/wom/early/ble/q3/",
+          "audio": "/questions/BLEQ3.mp3",
+          "timing": "/questions/bleq3.json"
+        },
+        {
+          "title": "Q4. 12/12",
+          "url": "/t/wom/early/ble/q4/",
+          "audio": "/questions/BLEQ4.mp3",
+          "timing": "/questions/bleq4.json"
+        }
+      ]
+    },
+    {
+      "title": "Choose to See",
+      "url": "/t/wom/early/c2s/",
+      "audio": "/early/C2S.mp3",
+      "timing": "/early/c2s.json",
+      "questions": [
+        {
+          "title": "Q1. What is the symbolism of Crucifixion?",
+          "url": "/t/wom/early/c2s/q1/",
+          "audio": "/questions/C2SQ1.mp3",
+          "timing": "/questions/c2sq1.json"
+        },
+        {
+          "title": "Q2. How do I know when I have surrendered to the Holy Spirit?",
+          "url": "/t/wom/early/c2s/q2/",
+          "audio": "/questions/C2SQ2.mp3",
+          "timing": "/questions/c2sq2.json"
+        },
+        {
+          "title": "Q3. What is my role in bringing Heaven to Earth?",
+          "url": "/t/wom/early/c2s/q3/",
+          "audio": "/questions/C2SQ3.mp3",
+          "timing": "/questions/c2sq3.json"
+        },
+        {
+          "title": "Q4. Is Christ different from Jeshua?",
+          "url": "/t/wom/early/c2s/q4/",
+          "audio": "/questions/C2SQ4.mp3",
+          "timing": "/questions/c2sq4.json"
+        },
+        {
+          "title": "Q5. Please speak of non-physical reality.",
+          "url": "/t/wom/early/c2s/q5/",
+          "audio": "/questions/C2SQ5.mp3",
+          "timing": "/questions/c2sq5.json"
+        }
+      ]
+    },
+    {
+      "title": "Heaven on Earth",
+      "url": "/t/wom/early/hoe/",
+      "audio": "/early/HOE.mp3",
+      "timing": "/early/hoe.json",
+      "questions": [
+        {
+          "title": "Q1. About asking unclear questions.",
+          "url": "/t/wom/early/hoe/q1/",
+          "audio": "/questions/HOEQ1.mp3",
+          "timing": "/questions/hoeq1.json"
+        },
+        {
+          "title": "Q2. How to develop greater clarity.",
+          "url": "/t/wom/early/hoe/q2/",
+          "audio": "/questions/HOEQ2.mp3",
+          "timing": "/questions/hoeq2.json"
+        },
+        {
+          "title": "Q3. What is it like living as Christ?",
+          "url": "/t/wom/early/hoe/q3/",
+          "audio": "/questions/HOEQ3.mp3",
+          "timing": "/questions/hoeq3.json"
+        },
+        {
+          "title": "Q4. About Shanti Christo membership",
+          "url": "/t/wom/early/hoe/q4/",
+          "audio": "/questions/HOEQ4.mp3",
+          "timing": "/questions/hoeq4.json"
+        }
+      ]
+    },
+    {
+      "title": "Ignorance is Bliss",
+      "url": "/t/wom/early/ign/",
+      "audio": "/early/IGN.mp3",
+      "timing": "/early/ign.json"
+    },
+    {
+      "title": "Mastering Communication",
+      "url": "/t/wom/early/com/",
+      "audio": "/early/COM.mp3",
+      "questions": [
+        {
+          "title": "Q1. Please elaborate on two quotes from ACIM",
+          "url": "/t/wom/early/com/q1/",
+          "audio": "/questions/COMQ1.mp3",
+          "timing": "/questions/comq1.json"
+        }
+      ]
+    },
+    {
+      "title": "Decide to be Christ",
+      "url": "/t/wom/early/dbc/"
+    },
+    {
+      "title": "Death and Earth Changes",
+      "url": "/t/wom/early/dth/",
+      "audio": "/early/DTH.mp3",
+      "timing": "/early/dth.json",
+      "questions": [
+        {
+          "title": "Q1. About war and racial tension",
+          "url": "/t/wom/early/dth/q1/",
+          "audio": "/questions/DTHQ01.mp3",
+          "timing": "/questions/dthq1.json"
+        },
+        {
+          "title": "Q2. About physical Earth changes",
+          "url": "/t/wom/early/dth/q2/",
+          "audio": "/questions/DTHQ02.mp3",
+          "timing": "/questions/dthq2.json"
+        },
+        {
+          "title": "Q3. About the role of Shanti Christo",
+          "url": "/t/wom/early/dth/q3/",
+          "audio": "/questions/DTHQ03.mp3",
+          "timing": "/questions/dthq3.json"
+        },
+        {
+          "title": "Q4. Are we going to experience 3 days of darkness?",
+          "url": "/t/wom/early/dth/q4/",
+          "audio": "/questions/DTHQ04.mp3",
+          "timing": "/questions/dthq4.json"
+        },
+        {
+          "title": "Q5. What is the difference between Jeshua and Germaine?",
+          "url": "/t/wom/early/dth/q5/",
+          "audio": "/questions/DTHQ05.mp3",
+          "timing": "/questions/dthq5.json"
+        },
+        {
+          "title": "Q6. About being unaware of your death",
+          "url": "/t/wom/early/dth/q6/",
+          "audio": "/questions/DTHQ06.mp3",
+          "timing": "/questions/dthq6.json"
+        },
+        {
+          "title": "Q7. About going through the tunnel at death",
+          "url": "/t/wom/early/dth/q7/",
+          "audio": "/questions/DTHQ07.mp3",
+          "timing": "/questions/dthq7.json"
+        },
+        {
+          "title": "Q8. Is God self-aware?",
+          "url": "/t/wom/early/dth/q8/",
+          "audio": "/questions/DTHQ08.mp3",
+          "timing": "/questions/dthq8.json"
+        },
+        {
+          "title": "Q9. Is there a force outside of God?",
+          "url": "/t/wom/early/dth/q9/",
+          "audio": "/questions/DTHQ09.mp3",
+          "timing": "/questions/dthq9.json"
+        },
+        {
+          "title": "Q10. About Shanti Christo",
+          "url": "/t/wom/early/dth/q10/",
+          "audio": "/questions/DTHQ10.mp3",
+          "timing": "/questions/dthq10.json"
+        }
+      ]
+    },
+    {
+      "audio": "/early/FEM.mp3",
+      "timing": "/early/fem.json",
+      "title": "The Divine Feminine",
+      "url": "/t/wom/early/fem/"
+    },
+    {
+      "audio": "/early/GAR.mp3",
+      "timing": "/early/gar.json",
+      "title": "Grace as Reality",
+      "url": "/t/wom/early/gar/"
+    },
+    {
+      "title": "Healing",
+      "url": "/t/wom/early/hea/"
+    },
+    {
+      "title": "The Holy Instant",
+      "url": "/t/wom/early/hoi/"
+    },
+    {
+      "title": "The Holy Spirit",
+      "url": "/t/wom/early/hsp/"
+    },
+    {
+      "title": "Joy I",
+      "url": "/t/wom/early/joy1/"
+    },
+    {
+      "title": "Joy II",
+      "url": "/t/wom/early/joy2/"
+    },
+    {
+      "title": "Love Heals All Things",
+      "url": "/t/wom/early/lht/",
+      "audio": "/early/LHT.mp3"
+    },
+    {
+      "title": "Meaning of Ascension",
+      "url": "/t/wom/early/moa/",
+      "audio": "/early/MOA.mp3",
+      "timing": "/early/moa.json"
+    },
+    {
+      "title": "Become the Master of Time",
+      "url": "/t/wom/early/mot/"
+    },
+    {
+      "title": "Awakening",
+      "url": "/t/wom/early/wak/"
+    },
+    {
+      "title": "Walk with Me",
+      "url": "/t/wom/early/wlk/",
+      "audio": "/early/WLK.mp3",
+      "timing": "/early/wlk.json"
+    }
+  ]
+}

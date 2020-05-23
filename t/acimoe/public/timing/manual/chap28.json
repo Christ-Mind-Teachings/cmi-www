@@ -1,0 +1,33 @@
+{
+    "base": "/t/acimoe/manual/chap28/",
+    "time": [
+        {
+            "id": "p0",
+            "seconds": 0
+        },
+        {
+            "id": "p1",
+            "seconds": 5.427981
+        },
+        {
+            "id": "p2",
+            "seconds": 80.428912
+        },
+        {
+            "id": "p3",
+            "seconds": 132.174136
+        },
+        {
+            "id": "p4",
+            "seconds": 194.416497
+        },
+        {
+            "id": "p5",
+            "seconds": 248.914028
+        },
+        {
+            "id": "p6",
+            "seconds": 305.162775
+        }
+    ]
+}

@@ -1,0 +1,33 @@
+{
+    "base": "/t/acimoe/manual/chap10/",
+    "time": [
+        {
+            "id": "p0",
+            "seconds": 0
+        },
+        {
+            "id": "p1",
+            "seconds": 9.939162
+        },
+        {
+            "id": "p2",
+            "seconds": 88.499
+        },
+        {
+            "id": "p3",
+            "seconds": 165.614912
+        },
+        {
+            "id": "p4",
+            "seconds": 226.126819
+        },
+        {
+            "id": "p5",
+            "seconds": 290.632637
+        },
+        {
+            "id": "p6",
+            "seconds": 355.025796
+        }
+    ]
+}

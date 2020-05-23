@@ -1,0 +1,29 @@
+{
+    "base": "/t/acimoe/workbook/introp1/",
+    "time": [
+        {
+            "id": "p0",
+            "seconds": 0
+        },
+        {
+            "id": "p1",
+            "seconds": 15.002398
+        },
+        {
+            "id": "p2",
+            "seconds": 41.502612
+        },
+        {
+            "id": "p3",
+            "seconds": 65.740294
+        },
+        {
+            "id": "p4",
+            "seconds": 113.508763
+        },
+        {
+            "id": "p5",
+            "seconds": 175.506401
+        }
+    ]
+}

@@ -1,0 +1,25 @@
+{
+    "base": "/t/acimoe/text/26/chap2605/",
+    "time": [
+        {
+            "id": "p0",
+            "seconds": 0
+        },
+        {
+            "id": "p1",
+            "seconds": 75.228178
+        },
+        {
+            "id": "p2",
+            "seconds": 133.218207
+        },
+        {
+            "id": "p3",
+            "seconds": 213.721392
+        },
+        {
+            "id": "p4",
+            "seconds": 270.228837
+        }
+    ]
+}
