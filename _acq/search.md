@@ -84,9 +84,15 @@ The search operates by paragraph and matches are counted according to the number
 
 ### Match Fails to Highlight
 
-All punction is removed and capital letters converted to lower case before a search is performed and this can result in a situation where a match cannot be highlighted in the paragraph where it is found. This happens when non-alphabetic characters are part of the matched string.
+All punction is removed and capital letters converted to lower case
+before a search is performed and this can result in a situation where a
+match cannot be highlighted in the paragraph where it is found. This
+happens when non-alphabetic characters are part of the matched string.
 
-For example below, "so-and-so" was matched as "so and so" and the attempt to highlight the matched text failed because the "-" dashes were missing. A notification is displayed when this happens and you'll have to look carefully to find the matching text.
+For example below, "so-and-so" was matched as "so and so" and the
+attempt to highlight the matched text failed because the "-" dashes were
+missing. A notification is displayed when this happens and you'll have
+to look carefully to find the matching text.
 
 <div class="ui container" markdown="1">
   ![No Highlight](/public/img/cmi/no-match-highlight.jpg)
@@ -94,4 +100,8 @@ For example below, "so-and-so" was matched as "so and so" and the attempt to hig
 
 ### Searches are Saved
 
-Search results are saved and will be displayed whenever you open the search dialog. Performing a new search will overright the current result set however. The results are stored on your device and so a search made on your computer will not be available on the tablet - just so you know.
+Search results are saved and will be displayed whenever you open the
+search dialog. Performing a new search will overwrite the current result
+set however. The results are stored on your device and so a search made
+on your computer will not be available on the tablet - just so you know.
+
