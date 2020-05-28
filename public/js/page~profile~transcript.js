@@ -9350,6 +9350,11 @@ function scrollIntoView(id, caller) {
   }, type => {
     scrollComplete(`scroll from url.js ${caller}(${id})`, type);
   });
+} //remove query string from url
+
+
+function resetUrl() {
+  history.replaceState({}, document.title, location.origin + location.pathname);
 } //called when query request is complete
 
 
@@ -9362,6 +9367,7 @@ function loadStart() {
 
   if (aInfo) {
     $("#transcript-page-loading").addClass("active");
+    resetUrl();
   }
 }
 /*
@@ -9376,6 +9382,7 @@ function showParagraph() {
 
   if (pId) {
     setTimeout(scrollIntoView, INTERVAL, pId, "showParagraph");
+    resetUrl();
   }
 }
 /*
@@ -9388,12 +9395,14 @@ function showTOC() {
 
   if (book) {
     $(`[data-book="${book}"]`).trigger("click");
+    resetUrl();
   }
 }
 function showBookmark() {
   let pId = getQueryString("bkmk");
 
   if (pId) {
+    resetUrl();
     return pId;
   }
 
@@ -9403,7 +9412,7 @@ function showSearchMatch() {
   let pId = getQueryString("srch");
 
   if (pId) {
-    //setTimeout(scrollIntoView, INTERVAL, pId, "showSearchMatch");
+    resetUrl();
     return pId;
   }
 
@@ -9413,6 +9422,7 @@ function showAnnotation() {
   let aInfo = getQueryString("as");
 
   if (aInfo) {
+    resetUrl();
     return aInfo;
   }
 
@@ -9426,6 +9436,7 @@ function getUser() {
   let user = getQueryString("user");
 
   if (user) {
+    resetUrl();
     return user;
   }
 

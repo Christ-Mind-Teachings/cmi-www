@@ -35,6 +35,11 @@ function scrollIntoView(id, caller) {
   });
 }
 
+//remove query string from url
+function resetUrl() {
+  history.replaceState({}, document.title, location.origin + location.pathname);
+}
+
 //called when query request is complete
 export function loadComplete() {
   $("#transcript-page-loading").removeClass("active");
@@ -46,6 +51,7 @@ export function loadStart() {
 
   if (aInfo) {
     $("#transcript-page-loading").addClass("active");
+    resetUrl();
   }
 }
 
@@ -59,6 +65,7 @@ export function showParagraph() {
   let pId = getQueryString("v");
   if (pId) {
     setTimeout(scrollIntoView, INTERVAL, pId, "showParagraph");
+    resetUrl();
   }
 }
 
@@ -70,6 +77,7 @@ export function showTOC() {
   let book = getQueryString("tocbook");
   if (book) {
     $(`[data-book="${book}"]`).trigger("click");
+    resetUrl();
   }
 }
 
@@ -77,6 +85,7 @@ export function showBookmark() {
   let pId = getQueryString("bkmk");
 
   if (pId) {
+    resetUrl();
     return pId;
   }
   return null;
@@ -86,7 +95,7 @@ export function showSearchMatch() {
   let pId = getQueryString("srch");
 
   if (pId) {
-    //setTimeout(scrollIntoView, INTERVAL, pId, "showSearchMatch");
+    resetUrl();
     return pId;
   }
   return null;
@@ -96,6 +105,7 @@ export function showAnnotation() {
   let aInfo = getQueryString("as");
 
   if (aInfo) {
+    resetUrl();
     return aInfo;
   }
   return null;
@@ -108,6 +118,7 @@ export function getUser() {
   let user = getQueryString("user");
 
   if (user) {
+    resetUrl();
     return user;
   }
 
