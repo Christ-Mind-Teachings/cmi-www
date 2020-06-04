@@ -267,7 +267,7 @@ function initControls(pid) {
 
   let markFail = markSearchHits(lastSearch.flat, hitPositions.start, hitPositions.end, lastSearch.query, "show");
   if (markFail) {
-    notify.info(`Failed to hilight ${markFail} search results`);
+    notify.info(`Failed to highlight ${markFail} search results`);
   }
   initClickListeners(matches);
 

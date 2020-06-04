@@ -7,8 +7,6 @@ import {initShareDialog} from "./navigator";
 import clipboard from "./clipboard";
 import {getUserInfo} from "../_user/netlify";
 
-//import key from "../_config/key";
-
 //teaching specific constants, assigned at initialization
 let teaching = {};
 
@@ -678,7 +676,7 @@ function editHandler() {
 function removeSelectionGuard() {
   let guard = $("div.transcript.ui.disable-selection:not(.user)");
   if (guard.length > 0) {
-    console.log("removing selection guard");
+    //console.log("removing selection guard");
     guard.removeClass("disable-selection");
   }
 }
@@ -689,7 +687,7 @@ function removeSelectionGuard() {
 function addSelectionGuard() {
   let guard = $("div.transcript.ui");
   if (!guard.hasClass("disable-selection")) {
-    console.log("adding selection guard");
+    //console.log("adding selection guard");
     guard.addClass("disable-selection");
   }
 }
@@ -886,8 +884,13 @@ function deleteHandler() {
 /*
   initialize annotation event handlers
 */
-export function initialize() {
-  teaching = getTeachingInfo();
+export function initialize(constants) {
+  if (constants) {
+    teaching = constants;
+  }
+  else {
+    teaching = getTeachingInfo();
+  }
 
   submitHandler();
   cancelHandler();

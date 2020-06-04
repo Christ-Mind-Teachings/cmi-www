@@ -17,7 +17,7 @@ import {
   updateHighlightColor,
   updateSelectionTopicList
 } from "./selection";
-import {getLink} from "../_bookmark/annotate";
+import {getLink} from "./annotate";
 import { createLinkListener, getLinkHref } from "../_link/setup";
 
 //teaching specific constants, assigned at initialization
@@ -383,13 +383,13 @@ function initializeBookmarkFeatureState() {
 /*
   initialize transcript page
 */
-function initTranscriptPage(sharePid) {
+function initTranscriptPage(sharePid, constants) {
 
   //get existing bookmarks for page
   getPageBookmarks(sharePid);
 
   //add support for text selection
-  selectInit(teaching);
+  selectInit(constants);
 
   //show/hide bookmark highlights
   highlightHandler();
@@ -528,7 +528,7 @@ export default {
 
     if ($(".transcript").length) {
       //this is a transcript page
-      initTranscriptPage(pid);
+      initTranscriptPage(pid, constants);
     }
 
     //initialize bookmark list modal - available on all pages

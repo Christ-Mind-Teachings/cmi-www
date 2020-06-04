@@ -37,8 +37,8 @@ function displaySearchMessage(msgId, arg1, arg2, arg3) {
       break;
     case SOURCE_SELECTED:
       $(uiSearchMessage).removeClass("negative");
-      $(uiSearchMessageHeader).text("Search Source");
-      $(uiSearchMessageBody).html(`<p>Searching from <em>${arg1}</em></p>`);
+      $(uisearchmessageheader).text("search source");
+      $(uisearchmessagebody).html(`<p>searching from <em>${arg1}</em></p>`);
       break;
     case SEARCHING:
       $(uiSearchInputIcon).addClass("loading");

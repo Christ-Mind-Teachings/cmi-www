@@ -77,7 +77,6 @@ export function showTOC() {
   let book = getQueryString("tocbook");
   if (book) {
     $(`[data-book="${book}"]`).trigger("click");
-    resetUrl();
   }
 }
 

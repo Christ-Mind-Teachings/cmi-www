@@ -9395,7 +9395,6 @@ function showTOC() {
 
   if (book) {
     $(`[data-book="${book}"]`).trigger("click");
-    resetUrl();
   }
 }
 function showBookmark() {

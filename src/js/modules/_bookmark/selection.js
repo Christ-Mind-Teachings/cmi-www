@@ -277,7 +277,7 @@ function getSelectedText(range, fromNode = document.body) {
 /*
   Capture user text selection
 */
-export function initialize() {
+export function initialize(constants) {
 
   $("div.transcript.ui").on("mouseup", function(e) {
     e.preventDefault();
@@ -313,7 +313,7 @@ export function initialize() {
   });
 
   //init annotation input, edit, and delete
-  initAnnotation();
+  initAnnotation(constants);
 }
 
 /*
