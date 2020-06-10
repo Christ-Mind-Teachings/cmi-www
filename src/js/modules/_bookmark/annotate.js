@@ -6,6 +6,7 @@ import range from "lodash/range";
 import {initShareDialog} from "./navigator";
 import clipboard from "./clipboard";
 import {getUserInfo} from "../_user/netlify";
+import {getString, __lang} from "../_language/lang";
 
 //teaching specific constants, assigned at initialization
 let teaching = {};
@@ -15,76 +16,80 @@ function warnNotSignedIn() {
   let userInfo = getUserInfo();
   if (!userInfo && !warningIssued) {
     notify.options.timeOut = "10000";
-    notify.success("Cancel, Sign In, and create a new bookmark.");
-    notify.warning("You are not signed in. Bookmarks created when you are not signed in cannot be shared.");
+    notify.success(getString("annotate:m1"));
+    notify.warning(getString("annotate:m2"));
 
     warningIssued = true;
   }
 }
 
-const form = `
-  <form name="annotation" id="annotation-form" class="ui form">
-    <input class="hidden-field" type="text" readonly="" name="creationDate">
-    <input class="hidden-field" type="text" name="aid" readonly>
-    <input class="hidden-field" type="text" readonly="" name="rangeStart">
-    <div class="fields">
-      <div class="three wide field">
-        <input id="rangeEnd" type="text" name="rangeEnd" maxlength="4" placeholder="End">
-      </div>
-      <div id="available-topics" class="twelve wide field"></div>
-      </div>
-    </div>
-    <div class="field">
-      <input type="text" name="Comment" placeholder="Comment">
-    </div>
-    <div class="field">
-      <input type="text" name="newTopics" placeholder="New topics? Comma delimited list">
-    </div>
-    <div class="field">
-      <textarea name="Note" placeholder="Additional Notes" rows="3"></textarea>
-    </div>
-    <div class="fields">
-      <button class="annotation-submit ui green button" type="submit">Submit</button>
-      <button class="annotation-cancel ui red basic button">Cancel</button>
-      <button class="annotation-share ui green disabled basic button">Share</button>
-      <button class="annotation-note ui blue basic button">Links</button>
-      <div class="twelve wide field">
-        <button class="annotation-delete ui red disabled right floated button">Delete</button>
-      </div>
-    </div>
-  </form>
-  <div class="note-and-links hide">
-    <table id="bookmark-link-table" class="ui selectable celled table">
-      <thead>
-        <tr>
-          <th></th>
-          <th></th>
-          <th>Reference</th>
-          <th>Link</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody id="bookmark-link-list">
-      </tbody>
-    </table>
-    <form name="linkForm" id="link-form" class="ui form">
+function getAnnotationForm() {
+  let form = __lang`
+    <form name="annotation" id="annotation-form" class="ui form">
+      <input class="hidden-field" type="text" readonly="" name="creationDate">
+      <input class="hidden-field" type="text" name="aid" readonly>
+      <input class="hidden-field" type="text" readonly="" name="rangeStart">
       <div class="fields">
-        <div class="ten wide field">
-          <input required type="text" placeholder="Link note" name="reference">
+        <div class="three wide field">
+          <input id="rangeEnd" type="text" name="rangeEnd" maxlength="4" placeholder="${"label:end"}">
         </div>
-        <div class="five wide field">
-          <input required type="text" placeholder="Link" name="link">
+        <div id="available-topics" class="twelve wide field"></div>
         </div>
-        <button title="add or update" data-index="-1" type="submit" class="green ui icon button">
-          <i class="plus circle icon"></i>
-        </button>
-        <button title="clear fields" type="reset" class="yellow ui icon button">
-          <i class="minus circle icon"></i>
-        </button>
+      </div>
+      <div class="field">
+        <input type="text" name="Comment" placeholder="${"label:comment"}">
+      </div>
+      <div class="field">
+        <input type="text" name="newTopics" placeholder="${"label:newtopic"}">
+      </div>
+      <div class="field">
+        <textarea name="Note" placeholder="${"label:notes"}" rows="3"></textarea>
+      </div>
+      <div class="fields">
+        <button class="annotation-submit ui green button" type="submit">${"action:submit"}</button>
+        <button class="annotation-cancel ui red basic button">${"action:cancel"}</button>
+        <button class="annotation-share ui green disabled basic button">${"action:share"}</button>
+        <button class="annotation-note ui blue basic button">${"label:links"}</button>
+        <div class="twelve wide field">
+          <button class="annotation-delete ui red disabled right floated button">${"action:delete"}</button>
+        </div>
       </div>
     </form>
-  </div>
-`;
+    <div class="note-and-links hide">
+      <table id="bookmark-link-table" class="ui selectable celled table">
+        <thead>
+          <tr>
+            <th></th>
+            <th></th>
+            <th>${"label:linkref"}</th>
+            <th>${"label:link"}</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="bookmark-link-list">
+        </tbody>
+      </table>
+      <form name="linkForm" id="link-form" class="ui form">
+        <div class="fields">
+          <div class="ten wide field">
+            <input required type="text" placeholder="${"label:linknote"}" name="reference">
+          </div>
+          <div class="five wide field">
+            <input required type="text" placeholder="${"label:link"}" name="link">
+          </div>
+          <button title="add or update" data-index="-1" type="submit" class="green ui icon button">
+            <i class="plus circle icon"></i>
+          </button>
+          <button title="clear fields" type="reset" class="yellow ui icon button">
+            <i class="minus circle icon"></i>
+          </button>
+        </div>
+      </form>
+    </div>
+  `;
+
+  return form;
+}
 
 let linkArray = [];
 export function getLink(index) {
@@ -93,13 +98,13 @@ export function getLink(index) {
 
 function populateTable(links) {
   return `
-    ${links.map((item, index) => `
+    ${links.map((item, index) => __lang`
       <tr data-index="${index}">
-        <td title="Delete" class="delete-link-item"><i class="red trash alternate icon"></i></td>
-        <td title="Edit" class="edit-link-item"><i class="yellow pencil alternate icon"></i></td>
+        <td title="${"action:delete"}" class="delete-link-item"><i class="red trash alternate icon"></i></td>
+        <td title="${"action:edit"}" class="edit-link-item"><i class="yellow pencil alternate icon"></i></td>
         <td data-name="reference">${item.reference}</td>
         <td data-name="link">${formatLink(item.link)}</td>
-        <td title="Follow" class="follow-link-item"><i class="green share icon"></i></td>
+        <td title="${"action:follow"}" class="follow-link-item"><i class="green share icon"></i></td>
       </tr>
     `).join("")}
   `;
@@ -116,13 +121,13 @@ function setIndex(index) {
 }
 
 function makeTableRow(item, index) {
-  return `
+  return __lang`
     <tr data-index="${index}">
-      <td title="Delete" class="delete-link-item"><i class="red trash alternate icon"></i></td>
-      <td title="Edit" class="edit-link-item"><i class="yellow pencil alternate icon"></i></td>
+      <td title="${"action:delete"}" class="delete-link-item"><i class="red trash alternate icon"></i></td>
+      <td title="${"action:edit"}" class="edit-link-item"><i class="yellow pencil alternate icon"></i></td>
       <td data-name="reference">${item.reference}</td>
       <td data-name="link">${item.link}</td>
-      <td title="Follow" class="follow-link-item"><i class="green share icon"></i></td>
+      <td title="${"action:follow"}" class="follow-link-item"><i class="green share icon"></i></td>
     </tr>
   `;
 }
@@ -135,17 +140,17 @@ function validateLink(pid, link) {
     rawLink = JSON.parse(link);
   }
   catch(error) {
-    notify.error("Invalid link; invalid format, get link from bookmark popup.");
+    notify.error(getString("annotate:m3"));
     return false;
   }
 
   if (!rawLink.aid || !rawLink.desc || !rawLink.key || !rawLink.userId) {
-    notify.error("Invalid link; invalid format, get link from bookmark popup.");
+    notify.error(getString("annotate:m4"));
     return false;
   }
 
   if (rawLink.key === pKey) {
-    notify.error("Invalid link; it references itself.");
+    notify.error(getString("annotate:m5"));
     return false;
   }
 
@@ -218,7 +223,7 @@ function createLinkHandlers() {
 
     //remove item from table
     parent.remove();
-    console.log("after delete: link %o", linkArray);
+    //console.log("after delete: link %o", linkArray);
   });
 
   //edit
@@ -256,7 +261,7 @@ function generateHorizontalList(listArray) {
   if (!listArray || listArray.length === 0) {
     return `
       <div class="item">
-        <em>Annotation has no topics</em>
+        <em>${getString("annotate:m6")}</em>
       </div>
     `;
   }
@@ -314,7 +319,7 @@ function genExtrasItem(item) {
 
 function generateComment(comment) {
   if (!comment) {
-    return "No comment";
+    return getString("annotate:m6");
   }
   else {
     return comment;
@@ -384,7 +389,7 @@ function annotationFormOpen(currentPid) {
 
     //if currentPid === pid user clicked hidden link in editor, we just exit w/o notice
     if (currentPid !== pid) {
-      notify.info(`A bookmark is already being added at paragraph ${pid}. Please complete that first.`);
+      notify.info(__lang`${"annotate:m8"} ${pid}. ${"annotate:m9"}`);
     }
     return true;
   }
@@ -393,7 +398,7 @@ function annotationFormOpen(currentPid) {
 
 function bookmarkNavigatorActive() {
   if ($(".transcript").hasClass("bookmark-navigator-active")) {
-    notify.info("Annotation is disabled when the bookmark navigator is active.");
+    notify.info(getString("annotate:m10"));
     return true;
   }
   return false;
@@ -421,7 +426,7 @@ function editAnnotation(pid, aid, annotation) {
   addSelectionGuard();
 
   $(".annotation-edit").wrapAll(wrapper);
-  $(".annotate-wrapper").prepend(form);
+  $(".annotate-wrapper").prepend(getAnnotationForm());
   $(".annotation-delete.disabled").removeClass("disabled");
   $(".annotation-share.disabled").removeClass("disabled");
   getTopicList(pid, aid, annotation);
@@ -458,7 +463,7 @@ function noteHandler() {
     //new note for paragraph
     $(`#${pid}`).addClass("annotation-edit annotation-note");
     $(".annotation-edit").wrapAll(wrapper);
-    $(".annotate-wrapper").prepend(form);
+    $(".annotate-wrapper").prepend(getAnnotationForm());
     getTopicList(pid);
   });
 }
@@ -493,7 +498,7 @@ function hoverNoteHandler() {
     let comment = generateComment(annotation.Comment);
     let extraHtml = generateExtraList(annotation);
     $(".annotation-information .topic-list").html(topicList);
-    $(".annotation-information .range").html(`Range: ${annotation.rangeStart}/${annotation.rangeEnd}`);
+    $(".annotation-information .range").html(`${getString("label:range")}: ${annotation.rangeStart}/${annotation.rangeEnd}`);
     $(".annotation-information .description").html(`${comment}`);
     $(".annotation-information .extra").html(extraHtml);
     $(this)
@@ -576,7 +581,7 @@ function hoverHandler() {
     let comment = generateComment(annotation.Comment);
     let extraHtml = generateExtraList(annotation);
     $(".annotation-information .topic-list").html(topicList);
-    $(".annotation-information .range").html(`Range: ${annotation.rangeStart}/${annotation.rangeEnd}`);
+    $(".annotation-information .range").html(`${getString("label:range")}: ${annotation.rangeStart}/${annotation.rangeEnd}`);
     $(".annotation-information .description").html(`${comment}`);
     $(".annotation-information .extra").html(extraHtml);
     $(this)
@@ -810,28 +815,28 @@ function shareHandler() {
     if (userInfo.userId === "xxx") {
       header2 = `
         <h4 class="ui left floated header">
-          <i title="Sign into your account to share this bookmark to FB by email or to copy a link." class="red window close outline small icon"></i>
+          <i title="${getString("annotate:m11")}" class="red window close outline small icon"></i>
           <div class="content">
             ${formData.Comment}
           </div>
         </h4>
         <h4 class="ui right floated header">
-          <i title="Close Window" class="share-annotation window close small icon"></i>
+          <i title="${getString("action:closewin")}" class="share-annotation window close small icon"></i>
         </h4>
       `;
     }
     else {
       header2 = `
         <h4 class="ui left floated header">
-          <i title="Share to Facebook" class="share-annotation facebook small icon"></i>
-          <i title="Share via email" class="share-annotation envelope outline small icon"></i>
-          <i data-clipboard-text="${url}" title="Copy Url to Clipboard" class="share-annotation linkify small icon"></i>
+          <i title="${getString("action:fbshare")}" class="share-annotation facebook small icon"></i>
+          <i title="${getString("action:emailshare")}" class="share-annotation envelope outline small icon"></i>
+          <i data-clipboard-text="${url}" title="${getString("action:cp2clip")}" class="share-annotation linkify small icon"></i>
           <div class="content">
             ${formData.Comment}
           </div>
         </h4>
         <h4 class="ui right floated header">
-          <i title="Close Window" class="share-annotation window close small icon"></i>
+          <i title="${getString("action:closewin")}" class="share-annotation window close small icon"></i>
         </h4>
       `;
     }
@@ -926,7 +931,8 @@ export function getUserInput(highlight) {
 
   $(`#${highlight.pid}`).addClass("annotation-edit");
   $(".annotation-edit").wrapAll(wrapper);
-  $(".annotate-wrapper").prepend(form);
+  //$(".annotate-wrapper").prepend(form);
+  $(".annotate-wrapper").prepend(getAnnotationForm());
   getTopicList(highlight.pid, highlight.id);
 
   //show this highlight, all others are hidden
@@ -955,7 +961,7 @@ function generateOption(topic) {
 function makeTopicSelect(topics) {
   return (`
     <select name="topicList" id="annotation-topic-list" multiple="" class="search ui dropdown">
-      <option value="">Select Topic(s)</option>
+      <option value="">${getString("label:selecttopic")}</option>
       ${topics.map(topic => `${generateOption(topic)}`).join("")}
     </select>
   `);
@@ -976,6 +982,6 @@ function getTopicList(pid, aid, data) {
     })
     .catch(( error ) => {
       console.error("topic fetch error: ", error);
-      notify.error("Unable to fetch bookmark topic list: ", error);
+      notify.error(`${getString("annotate:m12")}: ${error}`);
     });
 }

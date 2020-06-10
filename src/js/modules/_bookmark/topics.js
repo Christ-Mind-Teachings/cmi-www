@@ -9,6 +9,7 @@
   because each highlight contains a class that corresponds to each topic the annotation 
   contains.
 */
+import {getString} from "../_language/lang";
 
 let topics = new Map();
 let listRefreshNeeded = true;
@@ -37,7 +38,7 @@ function makeTopicSelect(topics) {
 
 function formatTopic(topic) {
   if (topic === "__reset__") {
-    return "<div class='reset-filter item'>Clear Filter</div>";
+    return `<div class='reset-filter item'>${getString("label:clearfilter")}</div>`;
   }
   return `<div class="item">${topic}</div>`;
 }
@@ -79,7 +80,7 @@ function makeTopicList(topicMap) {
   listRefreshNeeded = false;
 
   if (topics.length === 0) {
-    return "<div class='ntf item'>Page has no topics</div>";
+    return `<div class='ntf item'>${getString("annotate:m15")}</div>`;
   }
   topics.sort();
   topics.unshift("__reset__");
@@ -125,7 +126,7 @@ function topicSelectHandler() {
       $(".transcript").removeClass("topic-filter-active");
 
       //reset header text
-      $("#topic-menu-item").prev(".header").text("Topic Filter: None");
+      $("#topic-menu-item").prev(".header").text(`${getString("label:topicfilter")}: None`);
       $("#topic-menu-item").prev(".header").attr("data-filter", "none");
 
       return;
@@ -163,7 +164,7 @@ function topicSelectHandler() {
     $(`mark.bookmark-selected-text.${topic}`).addClass("show");
 
     //mark menu option as having an active filter
-    $("#topic-menu-item").prev(".header").html(`Topic Filter: <span class="red">${topic}</span>`);
+    $("#topic-menu-item").prev(".header").html(`${getString("label:topicfilter")}: <span class="red">${topic}</span>`);
     $("#topic-menu-item").prev(".header").attr("data-filter", topic);
   });
 }
@@ -204,7 +205,7 @@ function updateTopicList() {
       $(".transcript").removeClass("topic-filter-active");
 
       //reset header text to indicate filter has cleared
-      $("#topic-menu-item").prev(".header").text("Topic Filter: None");
+      $("#topic-menu-item").prev(".header").text(`${getString("label:topicfilter")}: None`);
       $("#topic-menu-item").prev(".header").attr("data-filter", "none");
     }
 
@@ -338,7 +339,7 @@ export default {
 
 /*
   Get topic select element for page-topic-modal
-*/  
+*/
 function getTopicList() {
   if (!listRefreshNeeded) return;
   let selectHtml = makeTopicSelectElement();
@@ -448,7 +449,7 @@ function filterResetHandler() {
     $(".transcript").removeClass("topic-filter-active");
 
     //clear active filter from menu
-    $("#current-topic-filter").html("Topic Filter: None");
+    $("#current-topic-filter").html(`${getString("label:topicfilter")}: None`);
     $("#current-topic-filter").attr("data-filter", "");
 
     //mark bookmark icon green - no filter applied

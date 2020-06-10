@@ -22,6 +22,7 @@ import {getUserInfo} from "../_user/netlify";
 import {updateSelectedText} from "./selection";
 import globals from "../../globals";
 import { setQuickLinks } from "./bookmark";
+import {getString} from "../_language/lang";
 
 //const transcript = require("../_config/key");
 //const bm_list_store = "bm.www.list";
@@ -164,21 +165,6 @@ function queryBookmarks(key) {
         });
     }
     else {
-      /*
-      let sid = parseInt(keyInfo.sourceId, 10);
-      let bookmarks = [];
-
-      //build expected structure from local storage
-      store.each((value, key) => {
-        if (key.startsWith(sid)) {
-          if (!bookmarks[key]) {
-            bookmarks[key] = {};
-          }
-          bookmarks[key] = value;
-        }
-      });
-      console.log("queryBookmarks: list from local store, user not signed in");
-      */
       let bookmarks = buildBookmarkListFromLocalStore(keyInfo);
       resolve(bookmarks);
     }
@@ -298,7 +284,7 @@ function postAnnotation(annotation) {
       })
       .catch((err) => {
         console.error(`Error saving annotation: ${err}`);
-        notify.error("Error saving annotation, please try again");
+        notify.error(getString("error:e1"));
 
         //if error and this is a new annotation we need to remove the highlight from the page
         console.log("postBody", postBody);
@@ -599,7 +585,7 @@ function deleteLocalAnnotation(pid, aid) {
 
   let data = store.get(pageKey);
   if (!data) {
-    throw new Error("Expect bookmark data not found in local storage");
+    throw new Error("Expected bookmark data not found in local storage");
   }
 
   let annotations = data[pid];

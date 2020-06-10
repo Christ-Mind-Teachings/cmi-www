@@ -3,13 +3,16 @@ import notify from "toastr";
 const textPosition = require("dom-anchor-text-position");
 const textQuote = require("dom-anchor-text-quote");
 const wrapRange = require("wrap-range-text");
-const uuid = require("uuid/v4");
+
+//const uuid = require("uuid/v4");
+import { v4 as uuid } from 'uuid';
 
 import {getUserInput, initialize as initAnnotation} from "./annotate";
 import isFinite from "lodash/isFinite";
 import difference from "lodash/difference";
 
 import topics from "./topics";
+import {getString} from "../_language/lang";
 
 //all annotations on the page
 let pageAnnotations = {};
@@ -169,11 +172,11 @@ export function getSelection(id) {
 
 export function updateHighlightColor(id, sequence) {
   let colorClasses = [
-    "colorClass1", 
-    "colorClass2", 
-    "colorClass3", 
-    "colorClass4", 
-    "colorClass5", 
+    "colorClass1",
+    "colorClass2",
+    "colorClass3",
+    "colorClass4",
+    "colorClass5",
     "colorClass6"
   ];
   $(`[data-annotation-id="${id}"]`).addClass(colorClasses[sequence % 6]);
@@ -285,7 +288,7 @@ export function initialize(constants) {
     //ignore text selection when disabled by user or when annotation is 
     //being created
     if ($(this).hasClass("disable-selection")) {
-      console.log("selection prevented by selection guard");
+      //console.log("selection prevented by selection guard");
       return;
     }
 
@@ -327,13 +330,13 @@ function processSelection(range) {
   let endParent = range.endContainer.parentElement.localName;
 
   if (startParent === "span") {
-    notify.info("Don't include the paragraph number in your selection, please try again.");
+    notify.info(getString("error:e6"));
     console.log("selection includes <p>");
     return;
   }
 
   if (startParent === "mark" || endParent === "mark") {
-    notify.info("Your selection is overlapping with another; overlapping is not supported.");
+    notify.info(getString("error:e7"));
     console.log("overlapping selections");
 
     if (location.hostname === "localhost") {
@@ -367,7 +370,7 @@ function processSelection(range) {
 
   //not sure how to handl text selected across paragraphs, so disallow it.
   if (rangeStart !== rangeEnd) {
-    notify.info("Please limit selected text to a single paragraph");
+    notify.info(getString("error:e8"));
     console.log("multi paragraph selection: start: %s, end: %s", rangeStart, rangeEnd);
     return;
   }

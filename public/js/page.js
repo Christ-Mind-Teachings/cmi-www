@@ -240,6 +240,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_contents_toc__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./modules/_contents/toc */ "./src/js/modules/_contents/toc.js");
 /* harmony import */ var _modules_about_about__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./modules/_about/about */ "./src/js/modules/_about/about.js");
 /* harmony import */ var _modules_forms_subscribe__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./modules/_forms/subscribe */ "./src/js/modules/_forms/subscribe.js");
+/* harmony import */ var _modules_language_lang__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./modules/_language/lang */ "./src/js/modules/_language/lang.js");
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./constants */ "./src/js/constants.js");
 /* eslint no-console: off */
  //common modules
 
@@ -250,8 +252,11 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
+
 $(document).ready(() => {
   Object(_modules_page_startup__WEBPACK_IMPORTED_MODULE_2__["initStickyMenu"])();
+  Object(_modules_language_lang__WEBPACK_IMPORTED_MODULE_8__["setLanguage"])(_constants__WEBPACK_IMPORTED_MODULE_9__["default"]);
   Object(_modules_bookmark_start__WEBPACK_IMPORTED_MODULE_3__["bookmarkStart"])("page");
   _modules_search_search__WEBPACK_IMPORTED_MODULE_4__["default"].initialize();
   _modules_user_netlify__WEBPACK_IMPORTED_MODULE_1__["default"].initialize();

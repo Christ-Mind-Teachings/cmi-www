@@ -21,8 +21,11 @@ export function searchAudit(source, query, count, error) {
     body.error = error;
   }
 
-  axios.post(api, body)
-    .catch((err) => {
-      console.error(`searchAudit error: ${err}`);
-    });
+  //disable audit
+  if (1 == 2) {
+    axios.post(api, body)
+      .catch((err) => {
+        console.error(`searchAudit error: ${err}`);
+      });
+  }
 }

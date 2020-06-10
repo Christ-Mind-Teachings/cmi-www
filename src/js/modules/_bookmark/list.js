@@ -7,6 +7,7 @@ import notify from "toastr";
 import flatten from "lodash/flatten";
 import uniqWith from "lodash/uniqWith";
 import store from "store";
+import {getString, __lang} from "../_language/lang";
 
 //import {getSourceId, getKeyInfo} from "../_config/key";
 //const transcript = require("../_config/key");
@@ -51,7 +52,7 @@ function makeTopicSelect(topics) {
   return (`
     <label>Filter Topic(s)</label>
     <select name="topicList" id="bookmark-topic-list" multiple="" class="search ui dropdown">
-      <option value="">Select Topic(s)</option>
+      <option value="">${getString("label:selecttopic")}</option>
       ${topics.map(topic => `${generateOption(topic)}`).join("")}
     </select>
   `);
@@ -59,7 +60,7 @@ function makeTopicSelect(topics) {
 
 function generateHorizontalList(listArray) {
   if (!listArray || listArray.length === 0) {
-    return "No Topics";
+    return getString("annotate:m13");
   }
 
   return `
@@ -80,7 +81,7 @@ function generateParagraphList(pid, bkmk, url, pTopicList) {
         <i class="bookmark icon"></i>
         <div class="content">
           <div class="header">
-            <a href="${url}?bkmk=${pid}">Paragraph: ${pid}</a> 
+            <a href="${url}?bkmk=${pid}">${getString("label:para")}: ${pid}</a>
           </div>
         </div>
       </div> <!-- item: ${pid} -->
@@ -99,7 +100,7 @@ function generateParagraphList(pid, bkmk, url, pTopicList) {
       <i class="bookmark icon"></i>
       <div class="content">
         <div class="header">
-          <a href="${url}?bkmk=${pid}">Paragraph: ${pid}</a> 
+          <a href="${url}?bkmk=${pid}">${getString("label:para")}: ${pid}</a>
         </div>
         <div class="list">
           ${bkmk.map((annotation) => `
@@ -110,7 +111,7 @@ function generateParagraphList(pid, bkmk, url, pTopicList) {
                   ${generateHorizontalList(annotation.topicList)}
                 </div>
                 <div class="description">
-                  ${annotation.Comment?annotation.Comment:"No Comment"}
+                  ${annotation.Comment?annotation.Comment:getString("annotate:m7")}
                 </div>
               </div>
             </div> <!-- item: ${annotation.rangeStart}/${annotation.rangeEnd} -->
@@ -166,21 +167,20 @@ function generateBookmarksForBookPages(pages) {
 
 function generateBookmarkList(books) {
   if (books.length === 0) {
-    return `
+    return __lang`
       <h2 class="ui center aligned icon header">
         <i class="circular bookmark icon"></i>
-        You Don't Have Any Bookmarks Yet
+        ${"bmlist:header"}
       </h2>
       <p>
-        Bookmarks are expressive and powerful and you can assign them to categories to easily
-        view only the categories you want. There are two way to create bookmarks.
+        ${"bmlist:intro"}
       </p>
       <ul>
-        <li>Selecting text of interest or</li>
-        <li>Clicking on the paragraph number, eg: (p21)</li>
+        <li>${"bmlist:item1"}</li>
+        <li>${"bmlist:item2"}</li>
       </ul>
       <p>
-        See <a href="/acq/bookmark/">the Bookmark documentation</a> for more information.
+        ${"bmlist:link"}
       </p>
     `;
   }
@@ -514,7 +514,7 @@ function initList() {
       populateModal(response);
     })
     .catch((err) => {
-      notify.error("Failed to get bookmarks");
+      notify.error(getString("error:e4"));
       console.error("Error getting bookmarks for: %s from server", sourceId, err);
     });
 }

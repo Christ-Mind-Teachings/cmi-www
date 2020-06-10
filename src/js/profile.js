@@ -12,8 +12,12 @@ import about from "./modules/_about/about";
 import {loadEmailListTable} from "./modules/_user/email";
 import {initializeTopicManager} from "./modules/_user/topicmgr";
 
+import {setLanguage} from "./modules/_language/lang";
+import constants from "./constants";
+
 $(document).ready(() => {
   initStickyMenu();
+  setLanguage(constants);
   bookmarkStart("page");
   search.initialize();
   auth.initialize();

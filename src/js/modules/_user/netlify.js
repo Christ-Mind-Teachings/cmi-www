@@ -4,6 +4,7 @@ import user from "netlify-identity-widget";
 import md5 from "md5";
 import store from "store";
 import {getUser} from "../_util/url";
+import {getString} from "../_language/lang";
 
 let login_state_key = "login.state";
 let userInfo;
@@ -75,9 +76,11 @@ function setAsSignedIn() {
   let userInfo = getUserInfo();
 
   //change sign-in icon to sign-out and change color from red to green
-  $(".login-menu-option > span")
-    .html("<i class='green sign out icon'></i>")
-    .attr("data-tooltip", `Sign Out: ${userInfo.name}`);
+  getString("action:signout", true).then((resp) => {
+    $(".login-menu-option > span")
+      .html("<i class='green sign out icon'></i>")
+      .attr("data-tooltip", `${resp}: ${userInfo.name}`);
+  });
 
   //change bookmark menu icon to green from red
   $(".main.menu a > span > i.bookmark.icon")
@@ -97,9 +100,11 @@ function setAsSignedIn() {
 */
 function setAsSignedOut() {
   //change sign-in icon to sign-out and change color from red to green
-  $(".login-menu-option > span")
-    .html("<i class='red sign in icon'></i>")
-    .attr("data-tooltip", "Sign In");
+  getString("action:signin", true).then((resp) => {
+    $(".login-menu-option > span")
+      .html("<i class='red sign in icon'></i>")
+      .attr("data-tooltip", resp);
+  });
 
   //change bookmark menu icon to green from red
   $(".main.menu a > span > i.bookmark.icon")

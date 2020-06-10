@@ -2,6 +2,7 @@ import axios from "axios";
 import notify from "toastr";
 import globals from "../../globals";
 import {getUserInfo} from "../_user/netlify";
+import {getString} from "../_language/lang";
 
 //teaching specific constants
 let teaching = {};
@@ -18,7 +19,7 @@ export function initShareByEmail(constants) {
 
     const userInfo = getUserInfo();
     if (!userInfo) {
-      notify.warning("You must be signed in to share bookmarks.");
+      notify.warning(getString("annotate:m14"));
       $(".email-share-dialog-wrapper").addClass("hide");
       return;
     }
@@ -26,7 +27,7 @@ export function initShareByEmail(constants) {
     let formData = $("#email-share-form").form("get values");
 
     if (formData.mailList.length === 0 && formData.emailAddresses.length === 0) {
-      notify.info("Please enter at least one email address.");
+      notify.info(getString("error:e9"));
       return;
     }
 
@@ -55,7 +56,7 @@ export function initShareByEmail(constants) {
     axios.post(globals.share, shareInfo)
       .then((response) => {
         if (response.status === 200) {
-          notify.info("Email Sent!");
+          notify.info(getString("action:emailsent"));
         }
         else {
           notify.info(response.data.message);
@@ -82,9 +83,9 @@ function generateOption(item) {
 
 function makeMaillistSelect(maillist) {
   return (`
-    <label>Mail List Names</label>
+    <label>${getString("label:listnames")}</label>
     <select name="mailList" id="maillist-address-list" multiple="" class="search ui dropdown">
-      <option value="">Select Email Address(es)</option>
+      <option value="">${getString("label:selectaddress")}</option>
       ${maillist.map(item => `${generateOption(item)}`).join("")}
     </select>
   `);
@@ -113,7 +114,7 @@ function loadEmailList() {
       $("#maillist-address-list.dropdown").dropdown();
     })
     .catch(err => {
-      notify.error("Error getting email list: ", err);
+      notify.error(`${getString("error:e10")}: ${err}`);
     });
 }
 

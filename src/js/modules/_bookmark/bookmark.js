@@ -19,6 +19,7 @@ import {
 } from "./selection";
 import {getLink} from "./annotate";
 import { createLinkListener, getLinkHref } from "../_link/setup";
+import {getString} from "../_language/lang";
 
 //teaching specific constants, assigned at initialization
 let teaching = {};
@@ -116,7 +117,7 @@ function initBmLinkHandler() {
     else if (type === "highlight") {
       aid = parseInt($(this).prev("mark").attr("data-aid"), 10);
     }
-    console.log("bookmark type: %s, pid: %s, aid: %s", type, pid, aid);
+    //console.log("bookmark type: %s, pid: %s, aid: %s", type, pid, aid);
 
     //bookmark wont be found if it is still being created
     let bookmarkData = getBookmark(pid);
@@ -186,7 +187,7 @@ function getPageBookmarks(sharePid) {
     })
     .catch((error) => {
       console.error(error);
-      notify.error("Unable to load bookmarks");
+      notify.error(getString("error:e2"));
     });
 }
 
@@ -354,13 +355,13 @@ function bookmarkFeatureHandler() {
     if (el.hasClass("disable-selection") && el.hasClass("user")) {
       //console.log("removing selection guard - user initiated")
       el.removeClass("disable-selection user");
-      $(".toggle-bookmark-selection").text("Disable Bookmark Creation");
+      $(".toggle-bookmark-selection").text(getString("menu:m1"));
       store.set(teaching.bm_creation_state, "enabled");
     }
     else {
       //console.log("adding selection guard - user initiated")
       el.addClass("disable-selection user");
-      $(".toggle-bookmark-selection").text("Enable Bookmark Creation");
+      $(".toggle-bookmark-selection").text(getString("menu:m2"));
       store.set(teaching.bm_creation_state, "disabled");
     }
   });
@@ -374,9 +375,8 @@ function initializeBookmarkFeatureState() {
   let state = store.get(teaching.bm_creation_state);
 
   if (state && state === "disabled") {
-    console.log("triggering selection guard disable");
+    //console.log("triggering selection guard disable");
     $("#bookmark-toggle-disable-selection").trigger("click");
-    //$(".toggle-bookmark-selection").trigger("click");
   }
 }
 

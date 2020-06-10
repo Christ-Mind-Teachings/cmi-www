@@ -18,9 +18,13 @@ import about from "./modules/_about/about";
 import contact from "./modules/_forms/contact";
 import {initialize as acqVideoInit} from "./modules/_video/acq";
 
+import {setLanguage} from "./modules/_language/lang";
+import constants from "./constants";
+
 $(document).ready(() => {
 
   loadStart();
+  setLanguage(constants);
   initTranscriptPage();
   auth.initialize();
   fb.initialize();

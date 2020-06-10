@@ -16,6 +16,7 @@ import {fetchBookmark} from "../_bookmark/bmnet";
 import {highlightSkippedAnnotations, highlight} from "../_bookmark/selection";
 import range from "lodash/range";
 import scroll from "scroll-into-view";
+import {getString} from "../_language/lang";
 
 //const key = require("../_config/key");
 
@@ -62,9 +63,9 @@ function wrapRange(annotation) {
   let annotationRange = range(numericRange[0], numericRange[1] + 1);
   let header = `
     <h4 class="ui header">
-      <i title="Close" class="share-annotation-close small window close icon"></i>
+      <i title="${getString("action:close")}" class="share-annotation-close small window close icon"></i>
       <div class="content">
-        ${annotation.Comment?annotation.Comment:"No Comment"}
+        ${annotation.Comment?annotation.Comment:getString("annotate:m7")}
       </div>
     </h4>
   `;

@@ -9,6 +9,7 @@ import notify from "toastr";
 import {shareByEmail} from "./shareByEmail";
 import clipboard from "./clipboard";
 import {getUserInfo} from "../_user/netlify";
+import {getString, __lang} from "../_language/lang";
 
 //const transcript = require("../_config/key");
 //const bm_modal_store = "bm.www.modal";
@@ -22,7 +23,7 @@ let gPageKey;
 
 function generateHorizontalList(listArray) {
   if (!listArray || listArray.length === 0) {
-    return "No Topics";
+    return getString("annotate:m13");
   }
 
   return `
@@ -73,7 +74,7 @@ function generateAnnotation(annotation, topics = []) {
           </div>
           <div class="description">
             <a data-aid="${annotation.aid}" class="annotation-item" data-range="${annotation.rangeStart}/${annotation.rangeEnd}">
-              ${annotation.Comment?annotation.Comment:"No Comment"}
+              ${annotation.Comment?annotation.Comment:getString("annotate:m7")}
             </a>
           </div>
         </div>
@@ -121,24 +122,6 @@ function getBookmarkUrl(bookmarks, pageKey, pid) {
     //we have a bookmark with no selected text, have to get the url in another way
     url = `${teaching.url_prefix}${teaching.keyInfo.getUrl(pageKey)}?bkmk=${bookmark[0].rangeStart}`;
   }
-
-  /*
-  for (let prop in bookmark) {
-    if (bookmark.hasOwnProperty(prop)) {
-      if (bookmark[prop][0]) {
-        let selectedText = bookmark[prop][0].selectedText;
-        if (selectedText) {
-          url = `${bookmark[prop][0].selectedText.url}?bkmk=${bookmark[prop][0].rangeStart}`;
-        }
-        else {
-          //we have a bookmark with no selected text, have to get the url in another way
-          url = `${teaching.keyInfo.getUrl(pageKey)}?bkmk=${bookmark[prop][0].rangeStart}`;
-        }
-        break;
-      }
-    }
-  }
-  */
 
   //console.log("url: %s", url);
   return url;
@@ -429,27 +412,31 @@ function getCurrentBookmark(pageKey, actualPid, allBookmarks, bmModal, whoCalled
   //console.log("prev: %s, next: %s", prevActualPid, nextActualPid);
 
   //set previous to inactive
-  if (!prevActualPid) {
-    $(".bookmark-navigator .previous-bookmark").addClass("inactive");
-    $(".bookmark-navigator .previous-bookmark").html("<i class='up arrow icon'></i> Previous");
-  }
-  else {
-    //add data-pid attribute to link for previous bkmk
-    $(".bookmark-navigator .previous-bookmark").attr("data-pid", prevActualPid);
-    $(".bookmark-navigator .previous-bookmark").removeClass("inactive");
-    $(".bookmark-navigator .previous-bookmark").html(`<i class="up arrow icon"></i> Previous (${prevActualPid})`);
-  }
+  getString("action:prev", true).then((resp) => {
+    if (!prevActualPid) {
+      $(".bookmark-navigator .previous-bookmark").addClass("inactive");
+      $(".bookmark-navigator .previous-bookmark").html(`<i class='up arrow icon'></i>${resp}`);
+    }
+    else {
+      //add data-pid attribute to link for previous bkmk
+      $(".bookmark-navigator .previous-bookmark").attr("data-pid", prevActualPid);
+      $(".bookmark-navigator .previous-bookmark").removeClass("inactive");
+      $(".bookmark-navigator .previous-bookmark").html(`<i class="up arrow icon"></i> ${resp} (${prevActualPid})`);
+    }
+  });
 
-  if (!nextActualPid) {
-    $(".bookmark-navigator .next-bookmark").addClass("inactive");
-    $(".bookmark-navigator .next-bookmark").html("<i class='down arrow icon'></i> Next");
-  }
-  else {
-    //add data-pid attribute to link for next bkmk
-    $(".bookmark-navigator .next-bookmark").attr("data-pid", nextActualPid);
-    $(".bookmark-navigator .next-bookmark").removeClass("inactive");
-    $(".bookmark-navigator .next-bookmark").html(`<i class="down arrow icon"></i> Next (${nextActualPid})`);
-  }
+  getString("action:next", true).then((resp) => {
+    if (!nextActualPid) {
+      $(".bookmark-navigator .next-bookmark").addClass("inactive");
+      $(".bookmark-navigator .next-bookmark").html(`<i class='down arrow icon'></i> ${resp}`);
+    }
+    else {
+      //add data-pid attribute to link for next bkmk
+      $(".bookmark-navigator .next-bookmark").attr("data-pid", nextActualPid);
+      $(".bookmark-navigator .next-bookmark").removeClass("inactive");
+      $(".bookmark-navigator .next-bookmark").html(`<i class="down arrow icon"></i> ${resp} (${nextActualPid})`);
+    }
+  });
 
   return true;
 }
@@ -490,7 +477,7 @@ function bookmarkManager(actualPid) {
         //identify current bookmark in navigator
         //returns false if actualPid does not contain a bookmark
         if (!getCurrentBookmark(pageKey, actualPid, bmList, bmModal, "both")) {
-          notify.info(`A bookmark at ${actualPid} was not found.`);
+          notify.info(__lang`${"fragment:f1"} ${actualPid} ${"fragment:f2"}`);
           return;
         }
 
@@ -508,7 +495,7 @@ function bookmarkManager(actualPid) {
         console.error(err);
 
         if (err === "bookmark not found") {
-          notify.info(`A bookmark at ${actualPid} was not found.`);
+          notify.info(__lang`${"fragment:f1"} ${actualPid} ${"fragment:f2"}`);
         }
       });
   }
@@ -593,7 +580,7 @@ export function initShareDialog(source) {
 
     userInfo = getUserInfo();
     if (!userInfo) {
-      notify.info("You must be signed in to share selected text");
+      notify.info(getString("annotate:m14"));
       return;
     }
 
@@ -612,7 +599,7 @@ export function initShareDialog(source) {
     else if ($(this).hasClass("linkify")) {
       if (pos > -1) {
         //Houston, we've got a problem
-        notify.error("Sorry, there was a problem, an invalid link was copied to the clipboard, refresh the page and try again.");
+        notify.error(getString("error:e5"));
         return;
       }
 
@@ -638,7 +625,7 @@ export function initShareDialog(source) {
     if (channel === "facebook") {
       if (pos > -1) {
         //Houston, we've got a problem
-        notify.error("Sorry, there was a problem, refresh the page and try again.");
+        notify.error(getString("error:e5"));
         return;
       }
 
@@ -653,7 +640,7 @@ export function initShareDialog(source) {
     else if (channel === "email") {
       if (pos > -1) {
         //Houston, we've got a problem
-        notify.error("Sorry, there was a problem, refresh the page and try again.");
+        notify.error(getString("error:e5"));
         return;
       }
       shareByEmail(text, citation, url);
@@ -742,7 +729,7 @@ function initClickListeners() {
     if (userInfo.userId === "xxx") {
       header = `
         <h4 class="ui header">
-          <i title="Sign into your account to share this bookmark to FB by email or to copy a link." class="red window close outline small icon"></i>
+          <i title="${getString("annotate:m11")}" class="red window close outline small icon"></i>
           <div class="content">
             ${$(this).text()}
           </div>
@@ -750,11 +737,11 @@ function initClickListeners() {
       `;
     }
     else {
-      header = `
+      header = __lang`
         <h4 class="ui header">
-          <i title="Share to Facebook" class="share-annotation facebook small icon"></i>
-          <i title="Share via email" class="share-annotation envelope outline small icon"></i>
-          <i data-clipboard-text="${url}" title="Copy link to clipboard" class="share-annotation linkify small icon"></i>
+          <i title="${"action:fbshare"}" class="share-annotation facebook small icon"></i>
+          <i title="${"action:emailshare"}" class="share-annotation envelope outline small icon"></i>
+          <i data-clipboard-text="${url}" title="${"action:cp2clip"}" class="share-annotation linkify small icon"></i>
           <div class="content">
             ${$(this).text()}
           </div>
