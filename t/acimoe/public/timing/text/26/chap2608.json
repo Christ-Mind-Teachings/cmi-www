@@ -7,39 +7,40 @@
         },
         {
             "id": "p12",
-            "seconds": 1.962577
+            "note": "There is no audio for the first 12 paragraphs",
+            "seconds": 0.50000
         },
         {
             "id": "p13",
-            "seconds": 58.714238
+            "seconds": 54.730498
         },
         {
             "id": "p14",
-            "seconds": 122.466539
+            "seconds": 119.494548
         },
         {
             "id": "p15",
-            "seconds": 195.966554
+            "seconds": 193.241845
         },
         {
             "id": "p16",
-            "seconds": 255.456003
+            "seconds": 251.736468
         },
         {
             "id": "p17",
-            "seconds": 304.965989
+            "seconds": 302.493784
         },
         {
             "id": "p18",
-            "seconds": 365.212521
+            "seconds": 361.73486
         },
         {
             "id": "p19",
-            "seconds": 413.723825
+            "seconds": 408.984152
         },
         {
             "id": "p20",
-            "seconds": 469.985875
+            "seconds": 466.732905
         }
     ]
 }

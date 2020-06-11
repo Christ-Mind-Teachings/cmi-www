@@ -1,9 +1,10 @@
 /*
-  NOTE: When an annotation is shared and seen on a computer with bookmarks there could be a conflict between the users
-        bookmarks and the shared bookmark. Not sure what to do in this case...
+  NOTE: When an annotation is shared and seen on a computer with bookmarks
+        there could be a conflict between the users bookmarks and the shared
+        bookmark. Not sure what to do in this case...
 
         An idea:
-        Disable highlighting annotations on the paragraph of the shared annotation:w
+        Disable highlighting annotations on the paragraph of the shared annotation.
 
         Approach:
         Load all bookmarks except that of a shared annotation.
@@ -11,7 +12,7 @@
         When the close button is pressed then add the omitted bookmark
 
 */
-import {showAnnotation as showAnnotationRequest, loadComplete} from "../_util/url";
+import {showAnnotation as showAnnotationRequest, loadStart, loadComplete} from "../_util/url";
 import {fetchBookmark} from "../_bookmark/bmnet";
 import {highlightSkippedAnnotations, highlight} from "../_bookmark/selection";
 import range from "lodash/range";
@@ -104,6 +105,9 @@ function showAnnotation() {
   }
 
   let bookmarkId = teaching.keyInfo.genParagraphKey(pid);
+
+  //show loading indicator
+  loadStart();
 
   /*
     fetch shared bookmark and wrap it in a raised segment

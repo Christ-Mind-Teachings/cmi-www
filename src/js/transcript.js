@@ -3,7 +3,7 @@
 import "../vendor/semantic/semantic.min.js";
 
 //common modules
-import {showParagraph, loadStart} from "./modules/_util/url";
+import {showParagraph} from "./modules/_util/url";
 import auth from "./modules/_user/netlify";
 import fb from "./modules/_util/facebook";
 import {initTranscriptPage} from "./modules/_page/startup";
@@ -23,7 +23,6 @@ import constants from "./constants";
 
 $(document).ready(() => {
 
-  loadStart();
   setLanguage(constants);
   initTranscriptPage();
   auth.initialize();

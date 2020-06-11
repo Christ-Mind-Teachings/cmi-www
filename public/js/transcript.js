@@ -2566,7 +2566,6 @@ __webpack_require__.r(__webpack_exports__);
 
 
 $(document).ready(() => {
-  Object(_modules_util_url__WEBPACK_IMPORTED_MODULE_1__["loadStart"])();
   Object(_modules_language_lang__WEBPACK_IMPORTED_MODULE_13__["setLanguage"])(_constants__WEBPACK_IMPORTED_MODULE_14__["default"]);
   Object(_modules_page_startup__WEBPACK_IMPORTED_MODULE_4__["initTranscriptPage"])();
   _modules_user_netlify__WEBPACK_IMPORTED_MODULE_2__["default"].initialize();

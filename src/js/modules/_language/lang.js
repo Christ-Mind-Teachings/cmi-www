@@ -43,7 +43,7 @@ export function setLanguage(constants) {
       //console.log("language %o", response.data);
       language = response.data;
       status = LOADED;
-      console.log("%s loaded", lang);
+      //console.log("%s loaded", lang);
     })
     .catch((error) => {
       status = FAILED;
@@ -63,22 +63,24 @@ function waitForReady(s, k) {
   return new Promise((resolve, reject) => {
     function wait(s, k, ms, max=8, cnt=0) {
       if (status === LOADING) {
-        if (cnt < max) {
+        if (cnt <= max) {
           setTimeout(() => wait(s, k, ms, max, cnt+1), ms);
         }
         else {
-          console.log("terminating wait at count %s", cnt);
+          console.log("timeout waiting for language to load: '%s:%s'", s, k);
           resolve("timeout");
+          return;
         }
       }
       else {
-        //console.log("Language ready at wait count: %s", cnt);
+        //console.log("Language loaded at wait count: %s", cnt);
         resolve(keyValue(s,k));
+        return;
       }
     }
 
-    //if (language.hasOwnProperty("notReady")) {
     if (status == LOADING) {
+      //console.log("wait started for language to load: '%s:%s'", s, k);
       wait(s, k, 250);
     }
     else {
@@ -100,12 +102,24 @@ function waitForReady(s, k) {
  * translation when the file is ready.
  */
 function keyValue(s, k) {
+  let value;
+
   if (status === NOTLOADED) {
-    return "not loaded";
+    value = `not loaded(${s}:${k})`;
+    console.error(value);
+    return value;
   }
 
   if (status !== LOADED) {
-    return `${status===LOADING?`loading(${s}:${k})`:`failed(${s}:${k})`}`;
+    if (status === LOADING) {
+      value = `loading(${s}:${k})`;
+      console.error(value);
+    }
+    else {
+      value = `failed(${s}:${k})`;
+      console.error(value);
+    }
+    return value;
   }
 
   if (!language[s]) {

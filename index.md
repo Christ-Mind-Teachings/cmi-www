@@ -16,6 +16,8 @@ fb:
 footer:
   display: true
   subscribe: true
+  id: "CMI-WWW"
+  repohref: "https://github.com/Christ-Mind-Teachings/cmi-www"
 ---
 
 ## Welcome to The Library of Christ Mind Teachings!

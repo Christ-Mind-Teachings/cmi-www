@@ -7747,20 +7747,22 @@ function waitForReady(s, k) {
   return new Promise((resolve, reject) => {
     function wait(s, k, ms, max = 8, cnt = 0) {
       if (status === LOADING) {
-        if (cnt < max) {
+        if (cnt <= max) {
           setTimeout(() => wait(s, k, ms, max, cnt + 1), ms);
         } else {
-          console.log("terminating wait at count %s", cnt);
+          console.log("timeout waiting for language to load: '%s:%s'", s, k);
           resolve("timeout");
+          return;
         }
       } else {
-        //console.log("Language ready at wait count: %s", cnt);
+        console.log("Language loaded at wait count: %s", cnt);
         resolve(keyValue(s, k));
+        return;
       }
-    } //if (language.hasOwnProperty("notReady")) {
-
+    }
 
     if (status == LOADING) {
+      console.log("wait started for language to load: '%s:%s'", s, k);
       wait(s, k, 250);
     } else {
       resolve(keyValue(s, k));
@@ -8807,11 +8809,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var scroll_into_view__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(scroll_into_view__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var _language_lang__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../_language/lang */ "./src/js/modules/_language/lang.js");
 /*
-  NOTE: When an annotation is shared and seen on a computer with bookmarks there could be a conflict between the users
-        bookmarks and the shared bookmark. Not sure what to do in this case...
+  NOTE: When an annotation is shared and seen on a computer with bookmarks
+        there could be a conflict between the users bookmarks and the shared
+        bookmark. Not sure what to do in this case...
 
         An idea:
-        Disable highlighting annotations on the paragraph of the shared annotation:w
+        Disable highlighting annotations on the paragraph of the shared annotation.
 
         Approach:
         Load all bookmarks except that of a shared annotation.
@@ -8910,7 +8913,9 @@ function showAnnotation() {
     return false;
   }
 
-  let bookmarkId = teaching.keyInfo.genParagraphKey(pid);
+  let bookmarkId = teaching.keyInfo.genParagraphKey(pid); //show loading indicator
+
+  Object(_util_url__WEBPACK_IMPORTED_MODULE_0__["loadStart"])();
   /*
     fetch shared bookmark and wrap it in a raised segment
     - if user has a bookmark in the same paragraph as the shared annotation, it will not be highlighted so
@@ -9552,6 +9557,7 @@ function resetUrl() {
 
 function loadComplete() {
   $("#transcript-page-loading").removeClass("active");
+  resetUrl();
 } //show loading for long loading steps - like showing annotations
 
 function loadStart() {
@@ -9559,7 +9565,6 @@ function loadStart() {
 
   if (aInfo) {
     $("#transcript-page-loading").addClass("active");
-    resetUrl();
   }
 }
 /*
@@ -9613,7 +9618,6 @@ function showAnnotation() {
   let aInfo = getQueryString("as");
 
   if (aInfo) {
-    resetUrl();
     return aInfo;
   }
 

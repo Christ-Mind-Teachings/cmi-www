@@ -353,16 +353,18 @@ function bookmarkFeatureHandler() {
     let el = $(".transcript");
 
     if (el.hasClass("disable-selection") && el.hasClass("user")) {
-      //console.log("removing selection guard - user initiated")
-      el.removeClass("disable-selection user");
-      $(".toggle-bookmark-selection").text(getString("menu:m1"));
-      store.set(teaching.bm_creation_state, "enabled");
+      getString("menu:m1", true).then(value => {
+        el.removeClass("disable-selection user");
+        $(".toggle-bookmark-selection").text(value);
+        store.set(teaching.bm_creation_state, "enabled");
+      });
     }
     else {
-      //console.log("adding selection guard - user initiated")
-      el.addClass("disable-selection user");
-      $(".toggle-bookmark-selection").text(getString("menu:m2"));
-      store.set(teaching.bm_creation_state, "disabled");
+      getString("menu:m2", true).then(value => {
+        el.addClass("disable-selection user");
+        $(".toggle-bookmark-selection").text(value);
+        store.set(teaching.bm_creation_state, "disabled");
+      });
     }
   });
 }

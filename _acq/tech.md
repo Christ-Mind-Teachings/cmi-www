@@ -12,7 +12,7 @@ The Library of Christ Mind Teachings is a set of static sites generated
 by [Jekyll](https://jekyllrb.com/), hosted by [Netlify](app.netlify.com)
 and extended by API's implemented on [AWS](https://aws.amazon.com/). The
 software is open source and available on
-[GitHub](https://github.com/rmercer33).
+[GitHub](https://github.com/Christ-Mind-Teachings).
 
 The Library includes the following components.
 
@@ -31,16 +31,18 @@ The Library includes the following components.
           <div class="item">
             <i class="github square icon"></i>
             <div class="content">
-              <a href="https://github.com/rmercer33/cmi-www">
-                Git Repo: rmercer33/cmi-www
+              Git Repo:
+              <a href="https://github.com/Christ-Mind-Teachings/cmi-www">
+                Christ-Mind-Teachings/cmi-www
               </a>
             </div>
           </div>
           <div class="item">
             <i class="linkify icon"></i>
             <div class="content">
+              Website: 
               <a href="https://www.christmind.info">
-                Website: https://www.christmind.info
+                https://www.christmind.info
               </a>
             </div>
           </div>
@@ -53,22 +55,24 @@ The Library includes the following components.
       <div class="header">ACIM Sparkly Edition</div>
       <div class="description">
         <p>
-          The Sparkly Edition of ACIM.
+          The Sparkly Edition of <em>A Course in Miracles</em>.
         </p>
         <div class="ui list">
           <div class="item">
             <i class="github square icon"></i>
             <div class="content">
-              <a href="https://github.com/rmercer33/cmi-acim">
-                Git Repo: rmercer33/cmi-acim
+              Git Repo:
+              <a href="https://github.com/Christ-Mind-Teachings/cmi-acim">
+                Christ-Mind-Teachings/cmi-acim
               </a>
             </div>
           </div>
           <div class="item">
             <i class="linkify icon"></i>
             <div class="content">
+              Website: 
               <a href="https://www.christmind.info/t/acim">
-                Website: https://www.christmind.info/t/acim
+                https://www.christmind.info/t/acim
               </a>
             </div>
           </div>
@@ -97,16 +101,18 @@ The Library includes the following components.
           <div class="item">
             <i class="github square icon"></i>
             <div class="content">
-              <a href="https://github.com/rmercer33/cmi-raj">
-                Git Repo: rmercer33/cmi-raj
+              Git Repo:
+              <a href="https://github.com/Christ-Mind-Teachings/cmi-raj">
+                Christ-Mind-Teachings/cmi-raj
               </a>
             </div>
           </div>
           <div class="item">
             <i class="linkify icon"></i>
             <div class="content">
+              Website: 
               <a href="https://www.christmind.info/t/raj">
-                Website: https://www.christmind.info/t/raj
+                https://www.christmind.info/t/raj
               </a>
             </div>
           </div>
@@ -138,16 +144,18 @@ The Library includes the following components.
           <div class="item">
             <i class="github square icon"></i>
             <div class="content">
-              <a href="https://github.com/rmercer33/cmi-wom">
-                Git Repo: rmercer33/cmi-wom
+              Git Repo:
+              <a href="https://github.com/Christ-Mind-Teachings/cmi-wom">
+                Christ-Mind-Teachings/cmi-wom
               </a>
             </div>
           </div>
           <div class="item">
             <i class="linkify icon"></i>
             <div class="content">
+              Website:
               <a href="https://www.christmind.info/t/wom">
-                Website: https://www.christmind.info/t/wom
+                https://www.christmind.info/t/wom
               </a>
             </div>
           </div>
@@ -184,16 +192,18 @@ The Library includes the following components.
           <div class="item">
             <i class="github square icon"></i>
             <div class="content">
-              <a href="https://github.com/rmercer33/cmi-jsb">
-                Git Repo: rmercer33/cmi-jsb
+              Git Repo:
+              <a href="https://github.com/Christ-Mind-Teachings/cmi-jsb">
+                Christ-Mind-Teachings/cmi-jsb
               </a>
             </div>
           </div>
           <div class="item">
             <i class="linkify icon"></i>
             <div class="content">
+              Website:
               <a href="https://www.christmind.info/t/jsb">
-                Website: https://www.christmind.info/t/jsb
+                https://www.christmind.info/t/jsb
               </a>
             </div>
           </div>
@@ -219,16 +229,18 @@ The Library includes the following components.
           <div class="item">
             <i class="github square icon"></i>
             <div class="content">
-              <a href="https://github.com/rmercer33/cmi-acol">
-                Git Repo: rmercer33/cmi-acol
+              Git Repo:
+              <a href="https://github.com/Christ-Mind-Teachings/cmi-acol">
+                Christ-Mind-Teachings/cmi-acol
               </a>
             </div>
           </div>
           <div class="item">
             <i class="linkify icon"></i>
             <div class="content">
+              Website:
               <a href="https://www.christmind.info/t/acol">
-                Website: https://www.christmind.info/t/acol
+                https://www.christmind.info/t/acol
               </a>
             </div>
           </div>
@@ -255,17 +267,62 @@ The Library includes the following components.
           <div class="item">
             <i class="github square icon"></i>
             <div class="content">
-              <a href="https://github.com/rmercer33/cmi-oe">
-                Git Repo: rmercer33/cmi-oe
+              Git Repo:
+              <a href="https://github.com/Christ-Mind-Teachings/cmi-oe">
+                Christ-Mind-Teachings/cmi-oe
               </a>
             </div>
           </div>
           <div class="item">
             <i class="linkify icon"></i>
             <div class="content">
+              Website:
               <a href="https://www.christmind.info/t/oe">
-                Website: https://www.christmind.info/t/oe
+                https://www.christmind.info/t/oe
               </a>
+            </div>
+          </div>
+          <div class="item">
+            <i class="aws icon"></i>
+            <div class="content">
+              Audio stored in: S3 Bucket &ldquo;assets.christmind.info&rdquo;
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="item">
+    <div class="content">
+      <div class="header">The Way of Mastery - Polish Translation</div>
+      <div class="description">
+        <p markdown="1">
+          Content of the Way of Mastery Polish translation was obtained from Marek Konieczniak
+          and is used by permission.
+        </p>
+        <div class="ui list">
+          <div class="item">
+            <i class="github square icon"></i>
+            <div class="content">
+              Git Repo:
+              <a href="https://github.com/Christ-Mind-Teachings/cmi-pwom">
+                Christ-Mind-Teachings/cmi-pwom
+              </a>
+            </div>
+          </div>
+          <div class="item">
+            <i class="linkify icon"></i>
+            <div class="content">
+              Website:
+              <a href="https://www.christmind.info/t/pwom">
+                https://www.christmind.info/t/pwom
+              </a>
+            </div>
+          </div>
+          <div class="item">
+            <i class="aws icon"></i>
+            <div class="content">
+              Audio stored in: S3 Bucket &ldquo;assets.christmind.info&rdquo;
             </div>
           </div>
         </div>
@@ -273,41 +330,6 @@ The Library includes the following components.
     </div>
   </div>
 </div>
-
-# Project Contributors
-
-Those wishing to contribute to the project, you're most welcome.
-
-Install [nodejs](https://nodejs.org/en/) and [jekyll](https://jekyllrb.com/).
-
-To set up a local development environment clone the following
-repositories: 
-
-## Website and Teachings
-
-* cmi-www
-* cmi-jsb
-* cmi-raj
-* cmi-wom
-* cmi-acim
-* cmi-acol
-* cmi-oe
-
-## API's
-
-* cmi-search
-* cmi-bookmark
-* cmi-user
-
-# Build
-
-After installing Node, Jekyll and cloning the repositories, start by
-trying to build ACIM. Follow these steps.
-
-1.  cd cmi-acim
-2.  npm install #to install js dependencies
-3.  gen install #to install ruby dependencies
-4.  bundle exec jekyll s #to run jekyll and build the site
 
 # Hosting
 
@@ -319,5 +341,10 @@ thank you Netlify!
 Amazon Route 53 is our Domain Name Registrar, audio files are stored in
 an S3 bucket, DynamoDB is our database, and API Gateway and Lambda
 provide API's for search, bookmarks, and user functions.
+
+# Project Contributors
+
+Those wishing to contribute to the project, you're most welcome. See
+[README.md](https://www.github.com/Christ-Mind-Teachings/cmi-www).
 
 

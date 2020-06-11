@@ -177,34 +177,14 @@
 					"title": "Tx.4.II. Right Teaching and Right Learning",
 					"audio": "/text/04/chap0402.mp3",
           "timing": "/text/04/chap0402.json",
-          "timer": "onemillionchrists@gmail.com",
-					"nwffacim": [
-						{
-							"title": "Jul 06, 2003",
-							"url": "/nwff2003/070603/"
-						},
-						{
-							"title": "Apr 01, 2003",
-							"url": "/nwff2003/071303/"
-						}
-					]
+          "timer": "onemillionchrists@gmail.com"
 				},
 				{
 					"url": "chap0403/",
 					"title": "Tx.4.III. The Ego and False Autonomy",
 					"audio": "/text/04/chap0403.mp3",
           "timing": "/text/04/chap0403.json",
-          "timer": "onemillionchrists@gmail.com",
-					"nwffacim": [
-						{
-							"title": "Jul 20, 2003",
-							"url": "/nwff2003/072003/"
-						},
-						{
-							"title": "Jul 27, 2003",
-							"url": "/nwff2003/072703/"
-						}
-					]
+          "timer": "onemillionchrists@gmail.com"
 				},
 				{
 					"url": "chap0404/",
@@ -212,82 +192,42 @@
 					"audio": "/text/04/chap0404.mp3",
           "timing": "/text/04/chap0404.json",
           "note": "echo in audio",
-          "timer": "onemillionchrists@gmail.com",
-					"nwffacim": [
-						{
-							"title": "Aug 03, 2003",
-							"url": "/nwff2003/080303/"
-						}
-					]
+          "timer": "onemillionchrists@gmail.com"
 				},
 				{
 					"url": "chap0405/",
 					"title": "Tx.4.V. The Escape from Fear",
 					"audio": "/text/04/chap0405.mp3",
           "timing": "/text/04/chap0405.json",
-          "timer": "onemillionchrists@gmail.com",
-					"nwffacim": [
-						{
-							"title": "Aug 10, 2003",
-							"url": "/nwff2003/081003/"
-						}
-					]
+          "timer": "onemillionchrists@gmail.com"
 				},
 				{
 					"url": "chap0406/",
 					"title": "Tx.4.VI. The Ego-Body Illusion",
 					"audio": "/text/04/chap0406.mp3",
           "timing": "/text/04/chap0406.json",
-          "timer": "onemillionchrists@gmail.com",
-					"nwffacim": [
-						{
-							"title": "Aug 17, 2003",
-							"url": "/nwff2003/081703/"
-						},
-						{
-							"title": "Aug 24, 2003",
-							"url": "/nwff2003/082403/"
-						}
-					]
+          "timer": "onemillionchrists@gmail.com"
 				},
 				{
 					"url": "chap0407/",
 					"title": "Tx.4.VII. The Constant State",
 					"audio": "/text/04/chap0407.mp3",
           "timing": "/text/04/chap0407.json",
-          "timer": "onemillionchrists@gmail.com",
-					"nwffacim": [
-						{
-							"title": "Aug 24, 2003",
-							"url": "/nwff2003/082403/"
-						}
-					]
+          "timer": "onemillionchrists@gmail.com"
 				},
 				{
 					"url": "chap0408/",
 					"title": "Tx.4.VIII. Creation and Communication",
 					"audio": "/text/04/chap0408.mp3",
           "timing": "/text/04/chap0408.json",
-          "timer": "onemillionchrists@gmail.com",
-					"nwffacim": [
-						{
-							"title": "Aug 31, 2003",
-							"url": "/nwff2003/083103/"
-						}
-					]
+          "timer": "onemillionchrists@gmail.com"
 				},
 				{
 					"url": "chap0409/",
 					"title": "Tx.4.IX. True Rehabilitation",
 					"audio": "/text/04/chap0409.mp3",
           "timing": "/text/04/chap0409.json",
-          "timer": "onemillionchrists@gmail.com",
-					"nwffacim": [
-						{
-							"title": "Sep 07, 2003",
-							"url": "/nwff2003/090703/"
-						}
-					]
+          "timer": "onemillionchrists@gmail.com"
 				}
 			]
 		},
@@ -308,112 +248,56 @@
 					"audio": "/text/05/chap0502.mp3",
           "timer": "onemillionchrists@gmail.com",
           "timing": "/text/05/chap0502.json",
-					"title": "Tx.5.II. Healing as Joining",
-					"nwffacim": [
-						{
-							"title": "Sep 14, 2003",
-							"url": "/nwff2003/091403/"
-						}
-					]
+					"title": "Tx.5.II. Healing as Joining"
 				},
 				{
 					"url": "chap0503/",
 					"audio": "/text/05/chap0503.mp3",
           "timer": "onemillionchrists@gmail.com",
           "timing": "/text/05/chap0503.json",
-					"title": "Tx.5.III. The Mind of the Atonement",
-					"nwffacim": [
-						{
-							"title": "Sep 14, 2003",
-							"url": "/nwff2003/091403/"
-						}
-					]
+					"title": "Tx.5.III. The Mind of the Atonement"
 				},
 				{
 					"url": "chap0504/",
 					"title": "Tx.5.IV. The Voice for God",
 					"audio": "/text/05/chap0504.mp3",
           "timing": "/text/05/chap0504.json",
-          "timer": "onemillionchrists@gmail.com",
-					"nwffacim": [
-						{
-							"title": "Sep 21, 2003",
-							"url": "/nwff2003/092103/"
-						}
-					]
+          "timer": "onemillionchrists@gmail.com"
 				},
 				{
 					"url": "chap0505/",
 					"title": "Tx.5.V. The Guide to Salvation",
 					"audio": "/text/05/chap0505.mp3",
           "timing": "/text/05/chap0505.json",
-          "timer": "onemillionchrists@gmail.com",
-					"nwffacim": [
-						{
-							"title": "Sep 28, 2003",
-							"url": "/nwff2003/092803/"
-						},
-						{
-							"title": "Oct 19, 2003",
-							"url": "/nwff2003/101903/"
-						}
-					]
+          "timer": "onemillionchrists@gmail.com"
 				},
 				{
 					"url": "chap0506/",
 					"audio": "/text/05/chap0506.mp3",
           "timer": "onemillionchrists@gmail.com",
           "timing": "/text/05/chap0506.json",
-					"title": "Tx.5.VI. Therapy and Teaching",
-					"nwffacim": [
-						{
-							"title": "Oct 26, 2003",
-							"url": "/nwff2003/102603/"
-						}
-					]
+					"title": "Tx.5.VI. Therapy and Teaching"
 				},
 				{
 					"url": "chap0507/",
 					"audio": "/text/05/chap0507.mp3",
           "timer": "onemillionchrists@gmail.com",
           "timing": "/text/05/chap0507.json",
-					"title": "Tx.5.VII. The Two Decisions",
-					"nwffacim": [
-						{
-							"title": "Nov 02, 2003",
-							"url": "/nwff2003/110203/"
-						},
-						{
-							"title": "Nov 09, 2003",
-							"url": "/nwff2003/110903/"
-						}
-					]
+					"title": "Tx.5.VII. The Two Decisions"
 				},
 				{
 					"url": "chap0508/",
 					"audio": "/text/05/chap0508.mp3",
           "timer": "onemillionchrists@gmail.com",
           "timing": "/text/05/chap0508.json",
-					"title": "Tx.5.VIII. Time and Eternity",
-					"nwffacim": [
-						{
-							"title": "Nov 16, 2003",
-							"url": "/nwff2003/111603/"
-						}
-					]
+					"title": "Tx.5.VIII. Time and Eternity"
 				},
 				{
 					"url": "chap0509/",
 					"title": "Tx.5.IX. The Eternal Fixation",
 					"audio": "/text/05/chap0509.mp3",
           "timing": "/text/05/chap0509.json",
-          "timer": "onemillionchrists@gmail.com",
-					"nwffacim": [
-						{
-							"title": "Nov 23, 2003",
-							"url": "/nwff2003/112303/"
-						}
-					]
+          "timer": "onemillionchrists@gmail.com"
 				}
 			]
 		},
@@ -434,55 +318,21 @@
 					"audio": "/text/06/chap0602.mp3",
           "timing": "/text/06/chap0602.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.6.II. The Message of the Crucifixion",
-					"nwffacim": [
-						{
-							"title": "Dec 07, 2003",
-							"url": "/nwff2003/120703/"
-						},
-						{
-							"title": "Dec 14, 2003",
-							"url": "/nwff2003/121403/"
-						},
-						{
-							"title": "Dec 21, 2003",
-							"url": "/nwff2003/122103/"
-						}
-					]
+					"title": "Tx.6.II. The Message of the Crucifixion"
 				},
 				{
 					"url": "chap0603/",
 					"audio": "/text/06/chap0603.mp3",
           "timing": "/text/06/chap0603.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.6.III. The Uses of Projection",
-					"nwffacim": [
-						{
-							"title": "Jan 11, 2004",
-							"url": "/nwff2004/011104/"
-						},
-						{
-							"title": "Jan 18, 2004",
-							"url": "/nwff2004/011804/"
-						},
-						{
-							"title": "Jan 25, 2004",
-							"url": "/nwff2004/012504/"
-						}
-					]
+					"title": "Tx.6.III. The Uses of Projection"
 				},
 				{
 					"url": "chap0604/",
 					"audio": "/text/06/chap0604.mp3",
           "timing": "/text/06/chap0604.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.6.IV. The Relinquishment of Attack",
-					"nwffacim": [
-						{
-							"title": "Feb 01, 2004",
-							"url": "/nwff2004/020104/"
-						}
-					]
+					"title": "Tx.6.IV. The Relinquishment of Attack"
 				},
 				{
 					"url": "chap0605/",
@@ -490,29 +340,7 @@
 					"audio": "/text/06/chap0605.mp3",
           "timing": "/text/06/chap0605.json",
           "timer": "onemillionchrists@gmail.com",
-          "note": "audio ends early at p56",
-					"nwffacim": [
-						{
-							"title": "Feb 08, 2004",
-							"url": "/nwff2004/020804/"
-						},
-						{
-							"title": "Feb 15, 2004",
-							"url": "/nwff2004/021504/"
-						},
-						{
-							"title": "Feb 22, 2004",
-							"url": "/nwff2004/022204/"
-						},
-						{
-							"title": "Mar 07, 2004",
-							"url": "/nwff2004/030704/"
-						},
-						{
-							"title": "Mar 14, 2004",
-							"url": "/nwff2004/031404/"
-						}
-					]
+          "note": "audio ends early at p56"
 				}
 			]
 		},
@@ -526,176 +354,84 @@
 					"title": "Tx.7.I. Introduction",
 					"audio": "/text/07/chap0701.mp3",
           "timing": "/text/07/chap0701.json",
-          "timer": "onemillionchrists@gmail.com",
-					"nwffacim": [
-						{
-							"title": "Mar 28, 2004",
-							"url": "/nwff2004/032804/"
-						}
-					]
+          "timer": "onemillionchrists@gmail.com"
 				},
 				{
 					"url": "chap0702/",
 					"audio": "/text/07/chap0702.mp3",
           "timing": "/text/07/chap0702.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.7.II. Bargaining versus Healing",
-					"nwffacim": [
-						{
-							"title": "Apr 04, 2004",
-							"url": "/nwff2004/040404/"
-						}
-					]
+					"title": "Tx.7.II. Bargaining versus Healing"
 				},
 				{
 					"url": "chap0703/",
 					"audio": "/text/07/chap0703.mp3",
           "timing": "/text/07/chap0703.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.7.III. The Laws of Mind",
-					"nwffacim": [
-						{
-							"title": "Apr 04, 2004",
-							"url": "/nwff2004/040404/"
-						}
-					]
+					"title": "Tx.7.III. The Laws of Mind"
 				},
 				{
 					"url": "chap0704/",
 					"audio": "/text/07/chap0704.mp3",
           "timing": "/text/07/chap0704.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.7.IV. The Unified Curriculum",
-					"nwffacim": [
-						{
-							"title": "Apr 11, 2004",
-							"url": "/nwff2004/041104/"
-						},
-						{
-							"title": "Apr 18, 2004",
-							"url": "/nwff2004/041804/"
-						}
-					]
+					"title": "Tx.7.IV. The Unified Curriculum"
 				},
 				{
 					"url": "chap0705/",
 					"audio": "/text/07/chap0705.mp3",
           "timing": "/text/07/chap0705.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.7.V. The Recognition of Truth",
-					"nwffacim": [
-						{
-							"title": "Apr 25, 2004",
-							"url": "/nwff2004/042504/"
-						}
-					]
+					"title": "Tx.7.V. The Recognition of Truth"
 				},
 				{
 					"url": "chap0706/",
 					"audio": "/text/07/chap0706.mp3",
           "timing": "/text/07/chap0706.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.7.VI. Healing and the Changelessness of Mind",
-					"nwffacim": [
-						{
-							"title": "May 02, 2004",
-							"url": "/nwff2004/050204/"
-						}
-					]
+					"title": "Tx.7.VI. Healing and the Changelessness of Mind"
 				},
 				{
 					"url": "chap0707/",
 					"audio": "/text/07/chap0707.mp3",
           "timing": "/text/07/chap0707.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.7.VII. From Vigilance to Peace",
-					"nwffacim": [
-						{
-							"title": "May 09, 2004",
-							"url": "/nwff2004/050904/"
-						},
-						{
-							"title": "May 16, 2004",
-							"url": "/nwff2004/051604/"
-						},
-						{
-							"title": "May 23, 2004",
-							"url": "/nwff2004/052304/"
-						}
-					]
+					"title": "Tx.7.VII. From Vigilance to Peace"
 				},
 				{
 					"url": "chap0708/",
 					"audio": "/text/07/chap0708.mp3",
           "timing": "/text/07/chap0708.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.7.VIII. The Total Commitment",
-					"nwffacim": [
-						{
-							"title": "May 30, 2004",
-							"url": "/nwff2004/053004/"
-						},
-						{
-							"title": "Jun 13, 2004",
-							"url": "/nwff2004/061304/"
-						},
-						{
-							"title": "Jun 20, 2004",
-							"url": "/nwff2004/062004/"
-						}
-					]
+					"title": "Tx.7.VIII. The Total Commitment"
 				},
 				{
 					"url": "chap0709/",
 					"audio": "/text/07/chap0709.mp3",
           "timing": "/text/07/chap0709.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.7.IX. The Defense of Conflict",
-					"nwffacim": [
-						{
-							"title": "Jun 27, 2004",
-							"url": "/nwff2004/062704/"
-						}
-					]
+					"title": "Tx.7.IX. The Defense of Conflict"
 				},
 				{
 					"url": "chap0710/",
 					"audio": "/text/07/chap0710.mp3",
           "timing": "/text/07/chap0710.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.7.X. The Extension of the Kingdom",
-					"nwffacim": [
-						{
-							"title": "Jul 18, 2004",
-							"url": "/nwff2004/071804/"
-						}
-					]
+					"title": "Tx.7.X. The Extension of the Kingdom"
 				},
 				{
 					"url": "chap0711/",
 					"audio": "/text/07/chap0711.mp3",
           "timing": "/text/07/chap0711.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.7.XI. The Confusion of Strength and Weakness",
-					"nwffacim": [
-						{
-							"title": "Jul 25, 2004",
-							"url": "/nwff2004/072504/"
-						}
-					]
+					"title": "Tx.7.XI. The Confusion of Strength and Weakness"
 				},
 				{
 					"url": "chap0712/",
 					"audio": "/text/07/chap0712.mp3",
           "timing": "/text/07/chap0712.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.7.XII. The State of Grace",
-					"nwffacim": [
-						{
-							"title": "Aug 01, 2004",
-							"url": "/nwff2004/080104/"
-						}
-					]
+					"title": "Tx.7.XII. The State of Grace"
 				}
 			]
 		},
@@ -709,175 +445,77 @@
 					"audio": "/text/08/chap0801.mp3",
 					"timing": "/text/08/chap0801.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.8.I. Introduction",
-					"nwffacim": [
-						{
-							"title": "Aug 08, 2004",
-							"url": "/nwff2004/080804/"
-						}
-					]
+					"title": "Tx.8.I. Introduction"
 				},
 				{
 					"url": "chap0802/",
 					"audio": "/text/08/chap0802.mp3",
 					"timing": "/text/08/chap0802.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.8.II. The Direction of the Curriculum",
-					"nwffacim": [
-						{
-							"title": "Aug 15, 2004",
-							"url": "/nwff2004/081504/"
-						}
-					]
+					"title": "Tx.8.II. The Direction of the Curriculum"
 				},
 				{
 					"url": "chap0803/",
 					"audio": "/text/08/chap0803.mp3",
 					"timing": "/text/08/chap0803.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.8.III. The Rationale for Choice",
-					"nwffacim": [
-						{
-							"title": "Aug 22, 2004",
-							"url": "/nwff2004/082204/"
-						}
-					]
+					"title": "Tx.8.III. The Rationale for Choice"
 				},
 				{
 					"url": "chap0804/",
 					"audio": "/text/08/chap0804.mp3",
 					"timing": "/text/08/chap0804.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.8.IV. The Holy Encounter",
-					"nwffacim": [
-						{
-							"title": "Sep 05, 2004",
-							"url": "/nwff2004/090504/"
-						},
-						{
-							"title": "Sep 12, 2004",
-							"url": "/nwff2004/091204/"
-						}
-					]
+					"title": "Tx.8.IV. The Holy Encounter"
 				},
 				{
 					"url": "chap0805/",
 					"audio": "/text/08/chap0805.mp3",
 					"timing": "/text/08/chap0805.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.8.V. The Light of the World",
-					"nwffacim": [
-						{
-							"title": "Sep 19, 2004",
-							"url": "/nwff2004/091904/"
-						},
-						{
-							"title": "Sep 26, 2004",
-							"url": "/nwff2004/092604/"
-						},
-						{
-							"title": "Oct 03, 2004",
-							"url": "/nwff2004/100304/"
-						}
-					]
+					"title": "Tx.8.V. The Light of the World"
 				},
 				{
 					"url": "chap0806/",
 					"audio": "/text/08/chap0806.mp3",
 					"timing": "/text/08/chap0806.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.8.VI. The Power of Joint Decision",
-					"nwffacim": [
-						{
-							"title": "Oct 10, 2004",
-							"url": "/nwff2004/101004/"
-						},
-						{
-							"title": "Oct 17, 2004",
-							"url": "/nwff2004/101704/"
-						}
-					]
+					"title": "Tx.8.VI. The Power of Joint Decision"
 				},
 				{
 					"url": "chap0807/",
 					"audio": "/text/08/chap0807.mp3",
 					"timing": "/text/08/chap0807.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.8.VII. Communication and the Ego-Body Equation",
-					"nwffacim": [
-						{
-							"title": "Oct 24, 2004",
-							"url": "/nwff2004/102404/"
-						},
-						{
-							"title": "Nov 07, 2004",
-							"url": "/nwff2004/110704/"
-						}
-					]
+					"title": "Tx.8.VII. Communication and the Ego-Body Equation"
 				},
 				{
 					"url": "chap0808/",
 					"audio": "/text/08/chap0808.mp3",
 					"timing": "/text/08/chap0808.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.8.VIII. The Body as Means or End",
-					"nwffacim": [
-						{
-							"title": "Nov 07, 2004",
-							"url": "/nwff2004/110704/"
-						}
-					]
+					"title": "Tx.8.VIII. The Body as Means or End"
 				},
 				{
 					"url": "chap0809/",
 					"audio": "/text/08/chap0809.mp3",
 					"timing": "/text/08/chap0809.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.8.IX. Healing as Corrected Perception",
-					"nwffacim": [
-						{
-							"title": "Nov 21, 2004",
-							"url": "/nwff2004/112104/"
-						},
-						{
-							"title": "Nov 28, 2004",
-							"url": "/nwff2004/112804/"
-						}
-					]
+					"title": "Tx.8.IX. Healing as Corrected Perception"
 				},
 				{
 					"url": "chap0810/",
 					"audio": "/text/08/chap0810.mp3",
 					"timing": "/text/08/chap0810.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.8.X. The Acceptance of Reality",
-					"nwffacim": [
-						{
-							"title": "Dec 05, 2004",
-							"url": "/nwff2004/120504/"
-						},
-						{
-							"title": "Dec 12, 2004",
-							"url": "/nwff2004/121204/"
-						}
-					]
+					"title": "Tx.8.X. The Acceptance of Reality"
 				},
 				{
 					"url": "chap0811/",
 					"audio": "/text/08/chap0811.mp3",
 					"timing": "/text/08/chap0811.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.8.XI. The Answer to Prayer",
-					"nwffacim": [
-						{
-							"title": "Dec 19, 2004",
-							"url": "/nwff2004/121904/"
-						},
-						{
-							"title": "Jan 02, 2005",
-							"url": "/nwff2005/010205/"
-						}
-					]
+					"title": "Tx.8.XI. The Answer to Prayer"
 				}
 			]
 		},
@@ -891,60 +529,28 @@
 					"audio": "/text/09/chap0901.mp3",
 					"timing": "/text/09/chap0901.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.9.I. Introduction",
-					"nwffacim": [
-						{
-							"title": "Jan 16, 2005",
-							"url": "/nwff2005/011605/"
-						}
-					]
+					"title": "Tx.9.I. Introduction"
 				},
 				{
 					"url": "chap0902/",
 					"audio": "/text/09/chap0902.mp3",
 					"timing": "/text/09/chap0902.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.9.II. Sanity and Perception",
-					"nwffacim": [
-						{
-							"title": "Jan 16, 2005",
-							"url": "/nwff2005/011605/"
-						}
-					]
+					"title": "Tx.9.II. Sanity and Perception"
 				},
 				{
 					"url": "chap0903/",
 					"audio": "/text/09/chap0903.mp3",
 					"timing": "/text/09/chap0903.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.9.III. Atonement as a Lesson in Sharing",
-					"nwffacim": [
-						{
-							"title": "Jan 23, 2005",
-							"url": "/nwff2005/012305/"
-						},
-						{
-							"title": "Jan 30, 2005",
-							"url": "/nwff2005/013005/"
-						}
-					]
+					"title": "Tx.9.III. Atonement as a Lesson in Sharing"
 				},
 				{
 					"url": "chap0904/",
 					"audio": "/text/09/chap0904.mp3",
 					"timing": "/text/09/chap0904.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.9.IV. The Unhealed Healer",
-					"nwffacim": [
-						{
-							"title": "Feb 13, 2005",
-							"url": "/nwff2005/021305/"
-						},
-						{
-							"title": "Feb 20, 2005",
-							"url": "/nwff2005/022005/"
-						}
-					]
+					"title": "Tx.9.IV. The Unhealed Healer"
 				},
 				{
 					"url": "chap0905/",
@@ -958,38 +564,14 @@
 					"audio": "/text/09/chap0906.mp3",
 					"timing": "/text/09/chap0906.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.9.VI. Salvation and God’s Will",
-					"nwffacim": [
-						{
-							"title": "Mar 13, 2005",
-							"url": "/nwff2005/031305/"
-						},
-						{
-							"title": "Mar 27, 2005",
-							"url": "/nwff2005/032705/"
-						}
-					]
+					"title": "Tx.9.VI. Salvation and God’s Will"
 				},
 				{
 					"url": "chap0907/",
 					"audio": "/text/09/chap0907.mp3",
 					"timing": "/text/09/chap0907.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.9.VII. Grandeur versus Grandiosity",
-					"nwffacim": [
-						{
-							"title": "Apr 03, 2005",
-							"url": "/nwff2005/040305/"
-						},
-						{
-							"title": "Apr 10, 2005",
-							"url": "/nwff2005/041005/"
-						},
-						{
-							"title": "Apr 17, 2005",
-							"url": "/nwff2005/041705/"
-						}
-					]
+					"title": "Tx.9.VII. Grandeur versus Grandiosity"
 				},
 				{
 					"url": "chap0908/",
@@ -997,68 +579,28 @@
 					"timing": "/text/09/chap0908.json",
           "note": "timing edited to separate p3/p4",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.9.VIII. The Inclusiveness of Creation",
-					"nwffacim": [
-						{
-							"title": "Apr 24, 2005",
-							"url": "/nwff2005/042405/"
-						}
-					]
+					"title": "Tx.9.VIII. The Inclusiveness of Creation"
 				},
 				{
 					"url": "chap0909/",
 					"audio": "/text/09/chap0909.mp3",
 					"timing": "/text/09/chap0909.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.9.IX. The Decision to Forget",
-					"nwffacim": [
-						{
-							"title": "May 01, 2005",
-							"url": "/nwff2005/050105/"
-						},
-						{
-							"title": "May 08, 2005",
-							"url": "/nwff2005/050805/"
-						},
-						{
-							"title": "May 22, 2005",
-							"url": "/nwff2005/052205/"
-						}
-					]
+					"title": "Tx.9.IX. The Decision to Forget"
 				},
 				{
 					"url": "chap0910/",
 					"audio": "/text/09/chap0910.mp3",
 					"timing": "/text/09/chap0910.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.9.X. Magic versus Miracles",
-					"nwffacim": [
-						{
-							"title": "Jun 05, 2005",
-							"url": "/nwff2005/060505/"
-						}
-					]
+					"title": "Tx.9.X. Magic versus Miracles"
 				},
 				{
 					"url": "chap0911/",
 					"audio": "/text/09/chap0911.mp3",
 					"timing": "/text/09/chap0911.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.9.XI. The Denial of God",
-					"nwffacim": [
-						{
-							"title": "Jun 12, 2005",
-							"url": "/nwff2005/061205/"
-						},
-						{
-							"title": "Jun 19, 2005",
-							"url": "/nwff2005/061905/"
-						},
-						{
-							"title": "Jul 03, 2005",
-							"url": "/nwff2005/070305/"
-						}
-					]
+					"title": "Tx.9.XI. The Denial of God"
 				}
 			]
 		},
@@ -1072,140 +614,56 @@
 					"audio": "/text/10/chap1001.mp3",
 					"timing": "/text/10/chap1001.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.10.I. Introduction",
-					"nwffacim": [
-						{
-							"title": "Jul 10, 2005",
-							"url": "/nwff2005/071005/"
-						}
-					]
+					"title": "Tx.10.I. Introduction"
 				},
 				{
 					"url": "chap1002/",
 					"audio": "/text/10/chap1002.mp3",
 					"timing": "/text/10/chap1002.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.10.II. Projection versus Extension",
-					"nwffacim": [
-						{
-							"title": "Jul 17, 2005",
-							"url": "/nwff2005/071705/"
-						},
-						{
-							"title": "Jul 24, 2005",
-							"url": "/nwff2005/072405/"
-						},
-						{
-							"title": "Apr 23, 2017",
-							"url": "/nwff2017/042317/"
-						}
-					]
+					"title": "Tx.10.II. Projection versus Extension"
 				},
 				{
 					"url": "chap1003/",
 					"audio": "/text/10/chap1003.mp3",
 					"timing": "/text/10/chap1003.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.10.III. The Willingness for Healing",
-					"nwffacim": [
-						{
-							"title": "Aug 07, 2005",
-							"url": "/nwff2005/080705/"
-						}
-					]
+					"title": "Tx.10.III. The Willingness for Healing"
 				},
 				{
 					"url": "chap1004/",
 					"audio": "/text/10/chap1004.mp3",
 					"timing": "/text/10/chap1004.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.10.IV. From Darkness to Light",
-					"nwffacim": [
-						{
-							"title": "Aug 14, 2005",
-							"url": "/nwff2005/081405/"
-						},
-						{
-							"title": "Aug 21, 2005",
-							"url": "/nwff2005/082105/"
-						}
-					]
+					"title": "Tx.10.IV. From Darkness to Light"
 				},
 				{
 					"url": "chap1005/",
 					"audio": "/text/10/chap1005.mp3",
 					"timing": "/text/10/chap1005.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.10.V. The Inheritance of God’s Son",
-					"nwffacim": [
-						{
-							"title": "Aug 28, 2005",
-							"url": "/nwff2005/082805/"
-						}
-					]
+					"title": "Tx.10.V. The Inheritance of God’s Son"
 				},
 				{
 					"url": "chap1006/",
 					"audio": "/text/10/chap1006.mp3",
 					"timing": "/text/10/chap1006.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.10.VI. The “Dynamics” of the Ego",
-					"nwffacim": [
-						{
-							"title": "Sep 04, 2005",
-							"url": "/nwff2005/090405/"
-						},
-						{
-							"title": "Sep 11, 2005",
-							"url": "/nwff2005/091105/"
-						},
-						{
-							"title": "Sep 18, 2005",
-							"url": "/nwff2005/091805/"
-						},
-						{
-							"title": "Oct 02, 2005",
-							"url": "/nwff2005/100205/"
-						},
-						{
-							"title": "Oct 09, 2005",
-							"url": "/nwff2005/100905/"
-						}
-					]
+					"title": "Tx.10.VI. The “Dynamics” of the Ego"
 				},
 				{
 					"url": "chap1007/",
 					"audio": "/text/10/chap1007.mp3",
 					"timing": "/text/10/chap1007.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.10.VII. Experience and Perception",
-					"nwffacim": [
-						{
-							"title": "Oct 09, 2005 (p89)",
-							"url": "/nwff2005/100905/#p89"
-						},
-						{
-							"title": "Oct 16, 2005",
-							"url": "/nwff2005/101605/"
-						}
-					]
+					"title": "Tx.10.VII. Experience and Perception"
 				},
 				{
 					"url": "chap1008/",
 					"audio": "/text/10/chap1008.mp3",
 					"timing": "/text/10/chap1008.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.10.VIII. The Problem and the Answer",
-					"nwffacim": [
-						{
-							"title": "Oct 23, 2005",
-							"url": "/nwff2005/102305/"
-						},
-						{
-							"title": "Nov 06, 2005",
-							"url": "/nwff2005/110605/"
-						}
-					]
+					"title": "Tx.10.VIII. The Problem and the Answer"
 				}
 			]
 		},
@@ -1226,177 +684,63 @@
 					"audio": "/text/11/chap1102.mp3",
 					"timing": "/text/11/chap1102.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.11.II. The Judgement of the Holy Spirit",
-					"nwffacim": [
-						{
-							"title": "Nov 13, 2005",
-							"url": "/nwff2005/111305/"
-						},
-						{
-							"title": "Nov 20, 2005",
-							"url": "/nwff2005/112005/"
-						},
-						{
-							"title": "Dec 04, 2005",
-							"url": "/nwff2005/120405/"
-						}
-					]
+					"title": "Tx.11.II. The Judgement of the Holy Spirit"
 				},
 				{
 					"url": "chap1103/",
 					"audio": "/text/11/chap1103.mp3",
 					"timing": "/text/11/chap1103.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.11.III. The Mechanism of Miracles",
-					"nwffacim": [
-						{
-							"title": "Dec 18, 2005",
-							"url": "/nwff2005/121805/"
-						},
-						{
-							"title": "Jan 08, 2006",
-							"url": "/nwff2006/010806/"
-						}
-					]
+					"title": "Tx.11.III. The Mechanism of Miracles"
 				},
 				{
 					"url": "chap1104/",
 					"audio": "/text/11/chap1104.mp3",
 					"timing": "/text/11/chap1104.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.11.IV. The Investment in Reality",
-					"nwffacim": [
-						{
-							"title": "Jan 15, 2006",
-							"url": "/nwff2006/011506/"
-						},
-						{
-							"title": "Jan 22, 2006",
-							"url": "/nwff2006/012206/"
-						}
-					]
+					"title": "Tx.11.IV. The Investment in Reality"
 				},
 				{
 					"url": "chap1105/",
 					"audio": "/text/11/chap1105.mp3",
 					"timing": "/text/11/chap1105.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.11.V. Seeking and Finding",
-					"nwffacim": [
-						{
-							"title": "Jan 29, 2006",
-							"url": "/nwff2006/012906/"
-						}
-					]
+					"title": "Tx.11.V. Seeking and Finding"
 				},
 				{
 					"url": "chap1106/",
 					"audio": "/text/11/chap1106.mp3",
 					"timing": "/text/11/chap1106.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.11.VI. The Sane Curriculum",
-					"nwffacim": [
-						{
-							"title": "Feb 12, 2006",
-							"url": "/nwff2006/021206/"
-						}
-					]
+					"title": "Tx.11.VI. The Sane Curriculum"
 				},
 				{
 					"url": "chap1107/",
 					"audio": "/text/11/chap1107.mp3",
 					"timing": "/text/11/chap1107.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.11.VII. The Vision of Christ",
-					"nwffacim": [
-						{
-							"title": "Feb 26, 2006",
-							"url": "/nwff2006/022606/"
-						},
-						{
-							"title": "Mar 04, 2006",
-							"url": "/nwff2006/030406/"
-						}
-					]
+					"title": "Tx.11.VII. The Vision of Christ"
 				},
 				{
 					"url": "chap1108/",
 					"audio": "/text/11/chap1108.mp3",
 					"timing": "/text/11/chap1108.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.11.VIII. The Guide for Miracles",
-					"nwffacim": [
-						{
-							"title": "Mar 11, 2006",
-							"url": "/nwff2006/031106/"
-						},
-						{
-							"title": "Mar 19, 2006",
-							"url": "/nwff2006/031906/"
-						},
-						{
-							"title": "Apr 15, 2006",
-							"url": "/nwff2006/041506/"
-						},
-						{
-							"title": "Apr 29, 2006",
-							"url": "/nwff2006/042906/"
-						},
-						{
-							"title": "Oct 27, 2013",
-							"url": "/nwff2013/102713/"
-						}
-					]
+					"title": "Tx.11.VIII. The Guide for Miracles"
 				},
 				{
 					"url": "chap1109/",
 					"audio": "/text/11/chap1109.mp3",
 					"timing": "/text/11/chap1109.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.11.IX. Reality and Redemption",
-					"nwffacim": [
-						{
-							"title": "May 06, 2006",
-							"url": "/nwff2006/050606/"
-						},
-						{
-							"title": "May 27, 2006",
-							"url": "/nwff2006/052706/"
-						}
-					]
+					"title": "Tx.11.IX. Reality and Redemption"
 				},
 				{
 					"url": "chap1110/",
 					"audio": "/text/11/chap1110.mp3",
 					"timing": "/text/11/chap1110.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.11.X. Guiltlessness and Invulnerability",
-					"nwffacim": [
-						{
-							"title": "Jun 03, 2006",
-							"url": "/nwff2006/060306/"
-						},
-						{
-							"title": "Jun 10, 2006",
-							"url": "/nwff2006/061006/"
-						},
-						{
-							"title": "Jun 18, 2006",
-							"url": "/nwff2006/061806/"
-						},
-						{
-							"title": "Jun 24, 2006",
-							"url": "/nwff2006/062406/"
-						},
-						{
-							"title": "Jul 01, 2006",
-							"url": "/nwff2006/070106/"
-						},
-						{
-							"title": "Jul 15, 2006",
-							"url": "/nwff2006/071506/"
-						}
-					]
+					"title": "Tx.11.X. Guiltlessness and Invulnerability"
 				}
 			]
 		},
@@ -1417,89 +761,35 @@
 					"audio": "/text/12/chap1202.mp3",
 					"timing": "/text/12/chap1202.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.12.II. Crucifixion by Guilt",
-					"nwffacim": [
-						{
-							"title": "Jul 30, 2006",
-							"url": "/nwff2006/073006/"
-						},
-						{
-							"title": "Aug 05, 2006",
-							"url": "/nwff2006/080506/"
-						}
-					]
+					"title": "Tx.12.II. Crucifixion by Guilt"
 				},
 				{
 					"url": "chap1203/",
 					"audio": "/text/12/chap1203.mp3",
 					"timing": "/text/12/chap1203.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.12.III. The Fear of Redemption",
-					"nwffacim": [
-						{
-							"title": "Aug 12, 2006",
-							"url": "/nwff2006/081206/"
-						},
-						{
-							"title": "Aug 20, 2006",
-							"url": "/nwff2006/082006/"
-						}
-					]
+					"title": "Tx.12.III. The Fear of Redemption"
 				},
 				{
 					"url": "chap1204/",
 					"audio": "/text/12/chap1204.mp3",
 					"timing": "/text/12/chap1204.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.12.IV. Healing and Time",
-					"nwffacim": [
-						{
-							"title": "Sep 02, 2006",
-							"url": "/nwff2006/090206/"
-						}
-					]
+					"title": "Tx.12.IV. Healing and Time"
 				},
 				{
 					"url": "chap1205/",
 					"audio": "/text/12/chap1205.mp3",
 					"timing": "/text/12/chap1205.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.12.V. The Two Emotions",
-					"nwffacim": [
-						{
-							"title": "Sep 09, 2006",
-							"url": "/nwff2006/090906/"
-						},
-						{
-							"title": "Sep 23, 2006",
-							"url": "/nwff2006/092306/"
-						}
-					]
+					"title": "Tx.12.V. The Two Emotions"
 				},
 				{
 					"url": "chap1206/",
 					"audio": "/text/12/chap1206.mp3",
 					"timing": "/text/12/chap1206.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.12.VI. Finding the Present",
-					"nwffacim": [
-						{
-							"title": "Oct 07, 2006",
-							"url": "/nwff2006/100706/"
-						},
-						{
-							"title": "Oct 14, 2006",
-							"url": "/nwff2006/101406/"
-						},
-						{
-							"title": "Oct 21, 2006",
-							"url": "/nwff2006/102106/"
-						},
-						{
-							"title": "Oct 28, 2006",
-							"url": "/nwff2006/102806/"
-						}
-					]
+					"title": "Tx.12.VI. Finding the Present"
 				},
 				{
 					"url": "chap1207/",
@@ -1507,25 +797,7 @@
 					"timing": "/text/12/chap1207.json",
           "note": "check timing transition on 73 to 74",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.12.VII. Attainment of the Real World",
-					"nwffacim": [
-						{
-							"title": "Feb 12, 2006",
-							"url": "/nwff2006/021206/"
-						},
-						{
-							"title": "Nov 11, 2006",
-							"url": "/nwff2006/111106/"
-						},
-						{
-							"title": "Nov 18, 2006",
-							"url": "/nwff2006/111806/"
-						},
-						{
-							"title": "Dec 02, 2006",
-							"url": "/nwff2006/120206/"
-						}
-					]
+					"title": "Tx.12.VII. Attainment of the Real World"
 				}
 			]
 		},
@@ -1539,177 +811,63 @@
 					"audio": "/text/13/chap1301.mp3",
 					"timing": "/text/13/chap1301.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.13.I. Introduction",
-					"nwffacim": [
-						{
-							"title": "Aug 25, 2007",
-							"url": "/nwff2007/082507/"
-						}
-					]
+					"title": "Tx.13.I. Introduction"
 				},
 				{
 					"url": "chap1302/",
 					"audio": "/text/13/chap1302.mp3",
 					"timing": "/text/13/chap1302.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.13.II. The Role of Healing",
-					"nwffacim": [
-						{
-							"title": "Sep 09, 2007",
-							"url": "/nwff2007/090907/"
-						},
-						{
-							"title": "Sep 16, 2007",
-							"url": "/nwff2007/091607/"
-						},
-						{
-							"title": "Sep 22, 2007",
-							"url": "/nwff2007/092207/"
-						}
-					]
+					"title": "Tx.13.II. The Role of Healing"
 				},
 				{
 					"url": "chap1303/",
 					"audio": "/text/13/chap1303.mp3",
 					"timing": "/text/13/chap1303.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.13.III. The Shadow of Guilt",
-					"nwffacim": [
-						{
-							"title": "Oct 06, 2007",
-							"url": "/nwff2007/100607/"
-						},
-						{
-							"title": "Oct 14, 2007",
-							"url": "/nwff2007/101407/"
-						}
-					]
+					"title": "Tx.13.III. The Shadow of Guilt"
 				},
 				{
 					"url": "chap1304/",
 					"audio": "/text/13/chap1304.mp3",
 					"timing": "/text/13/chap1304.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.13.IV. Release and Restoration",
-					"nwffacim": [
-						{
-							"title": "Oct 27, 2007",
-							"url": "/nwff2007/102707/"
-						},
-						{
-							"title": "Nov 03, 2007",
-							"url": "/nwff2007/110307/"
-						},
-						{
-							"title": "Nov 10, 2007",
-							"url": "/nwff2007/111007/"
-						},
-						{
-							"title": "Nov 18, 2007",
-							"url": "/nwff2007/111807/"
-						},
-						{
-							"title": "Dec 08, 2007",
-							"url": "/nwff2007/120807/"
-						},
-						{
-							"title": "Dec 16, 2007",
-							"url": "/nwff2007/121607/"
-						}
-					]
+					"title": "Tx.13.IV. Release and Restoration"
 				},
 				{
 					"url": "chap1305/",
 					"audio": "/text/13/chap1305.mp3",
 					"timing": "/text/13/chap1305.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.13.V. The Guarantee of Heaven",
-					"nwffacim": [
-						{
-							"title": "Jan 20, 2008",
-							"url": "/nwff2008/012008/"
-						},
-						{
-							"title": "Jan 27, 2008",
-							"url": "/nwff2008/012708/"
-						},
-						{
-							"title": "Feb 10, 2008",
-							"url": "/nwff2008/021008/"
-						}
-					]
+					"title": "Tx.13.V. The Guarantee of Heaven"
 				},
 				{
 					"url": "chap1306/",
 					"audio": "/text/13/chap1306.mp3",
 					"timing": "/text/13/chap1306.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.13.VI. The Testimony of Miracles",
-					"nwffacim": [
-						{
-							"title": "Feb 17, 2008",
-							"url": "/nwff2008/021708/"
-						}
-					]
+					"title": "Tx.13.VI. The Testimony of Miracles"
 				},
 				{
 					"url": "chap1307/",
 					"audio": "/text/13/chap1307.mp3",
 					"timing": "/text/13/chap1307.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.13.VII. The Happy Learner",
-					"nwffacim": [
-						{
-							"title": "Feb 24, 2008",
-							"url": "/nwff2008/022408/"
-						},
-						{
-							"title": "Mar 02, 2008",
-							"url": "/nwff2008/030208/"
-						}
-					]
+					"title": "Tx.13.VII. The Happy Learner"
 				},
 				{
 					"url": "chap1308/",
 					"audio": "/text/13/chap1308.mp3",
 					"timing": "/text/13/chap1308.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.13.VIII. The Decision for Guiltlessness",
-					"nwffacim": [
-						{
-							"title": "Mar 09, 2008",
-							"url": "/nwff2008/030908/"
-						},
-						{
-							"title": "Mar 25, 2008",
-							"url": "/nwff2008/032508/"
-						},
-						{
-							"title": "Mar 30, 2008",
-							"url": "/nwff2008/033008/"
-						},
-						{
-							"title": "Apr 06, 2008",
-							"url": "/nwff2008/040608/"
-						}
-					]
+					"title": "Tx.13.VIII. The Decision for Guiltlessness"
 				},
 				{
 					"url": "chap1309/",
 					"audio": "/text/13/chap1309.mp3",
 					"timing": "/text/13/chap1309.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.13.IX. The Way of Salvation",
-					"nwffacim": [
-						{
-							"title": "Apr 13, 2008",
-							"url": "/nwff2008/041308/"
-						},
-						{
-							"title": "Jul 07, 2013",
-							"url": "/nwff2013/070713/"
-						}
-					]
+					"title": "Tx.13.IX. The Way of Salvation"
 				}
 			]
 		},
@@ -1723,147 +881,49 @@
 					"audio": "/text/14/chap1401.mp3",
 					"timing": "/text/14/chap1401.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.14.I. Introduction",
-					"nwffacim": [
-						{
-							"title": "Apr 20, 2008",
-							"url": "/nwff2008/042008/"
-						}
-					]
+					"title": "Tx.14.I. Introduction"
 				},
 				{
 					"url": "chap1402/",
 					"audio": "/text/14/chap1402.mp3",
 					"timing": "/text/14/chap1402.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.14.II. Guilt and Guiltlessness",
-					"nwffacim": [
-						{
-							"title": "May 04, 2008",
-							"url": "/nwff2008/050408/"
-						},
-						{
-							"title": "May 18, 2008",
-							"url": "/nwff2008/051808/"
-						},
-						{
-							"title": "May 25, 2008",
-							"url": "/nwff2008/052508/"
-						},
-						{
-							"title": "Jun 01, 2008",
-							"url": "/nwff2008/060108/"
-						}
-					]
+					"title": "Tx.14.II. Guilt and Guiltlessness"
 				},
 				{
 					"url": "chap1403/",
 					"audio": "/text/14/chap1403.mp3",
 					"timing": "/text/14/chap1403.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.14.III. Out of the Darkness",
-					"nwffacim": [
-						{
-							"title": "Jun 08, 2008",
-							"url": "/nwff2008/060808/"
-						}
-					]
+					"title": "Tx.14.III. Out of the Darkness"
 				},
 				{
 					"url": "chap1404/",
 					"audio": "/text/14/chap1404.mp3",
 					"timing": "/text/14/chap1404.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.14.IV. Perception without Deceit",
-					"nwffacim": [
-						{
-							"title": "Jun 15, 2008",
-							"url": "/nwff2008/061508/"
-						},
-						{
-							"title": "Jun 22, 2008",
-							"url": "/nwff2008/062208/"
-						},
-						{
-							"title": "Jul 06, 2008",
-							"url": "/nwff2008/070608/"
-						},
-						{
-							"title": "Jul 13, 2008",
-							"url": "/nwff2008/071308/"
-						}
-					]
+					"title": "Tx.14.IV. Perception without Deceit"
 				},
 				{
 					"url": "chap1405/",
 					"audio": "/text/14/chap1405.mp3",
 					"timing": "/text/14/chap1405.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.14.V. The Recognition of Holiness",
-					"nwffacim": [
-						{
-							"title": "Jul 27, 2008",
-							"url": "/nwff2008/072708/"
-						}
-					]
+					"title": "Tx.14.V. The Recognition of Holiness"
 				},
 				{
 					"url": "chap1406/",
 					"audio": "/text/14/chap1406.mp3",
 					"timing": "/text/14/chap1406.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.14.VI. The Shift to Miracles",
-					"nwffacim": [
-						{
-							"title": "Aug 17, 2008",
-							"url": "/nwff2008/081708/"
-						},
-						{
-							"title": "Aug 31, 2008",
-							"url": "/nwff2008/083108/"
-						},
-						{
-							"title": "Sep 07, 2008",
-							"url": "/nwff2008/090708/"
-						},
-						{
-							"title": "Jul 23, 2017",
-							"url": "/nwff2017/072317/"
-						}
-					]
+					"title": "Tx.14.VI. The Shift to Miracles"
 				},
 				{
 					"url": "chap1407/",
 					"audio": "/text/14/chap1407.mp3",
 					"timing": "/text/14/chap1407.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.14.VII. The Test of Truth",
-					"nwffacim": [
-						{
-							"title": "Sep 14, 2008",
-							"url": "/nwff2008/091408/"
-						},
-						{
-							"title": "Sep 21, 2008",
-							"url": "/nwff2008/092108/"
-						},
-						{
-							"title": "Oct 05, 2008",
-							"url": "/nwff2008/100508/"
-						},
-						{
-							"title": "Oct 19, 2008",
-							"url": "/nwff2008/101908/"
-						},
-						{
-							"title": "Sep 23, 2017",
-							"url": "/nwff2017/092317/"
-						},
-						{
-							"title": "Oct 01, 2017",
-							"url": "/nwff2017/100117/"
-						}
-					]
+					"title": "Tx.14.VII. The Test of Truth"
 				}
 			]
 		},
@@ -1877,263 +937,77 @@
 					"audio": "/text/15/chap1501.mp3",
 					"timing": "/text/15/chap1501.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.15.I. Introduction",
-					"nwffacim": [
-						{
-							"title": "Oct 26, 2008",
-							"url": "/nwff2008/102608/"
-						}
-					]
+					"title": "Tx.15.I. Introduction"
 				},
 				{
 					"url": "chap1502/",
 					"audio": "/text/15/chap1502.mp3",
 					"timing": "/text/15/chap1502.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.15.II. The Uses of Time",
-					"nwffacim": [
-						{
-							"title": "Oct 26, 2008 (p67)",
-							"url": "/nwff2008/102608/#p67"
-						},
-						{
-							"title": "Nov 02, 2008",
-							"url": "/nwff2008/110208/"
-						},
-						{
-							"title": "Nov 09, 2008",
-							"url": "/nwff2008/110908/"
-						},
-						{
-							"title": "Nov 24, 2013",
-							"url": "/nwff2013/112413/"
-						}
-					]
+					"title": "Tx.15.II. The Uses of Time"
 				},
 				{
 					"url": "chap1503/",
 					"audio": "/text/15/chap1503.mp3",
 					"timing": "/text/15/chap1503.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.15.III. Time and Eternity",
-					"nwffacim": [
-						{
-							"title": "Nov 23, 2008",
-							"url": "/nwff2008/112308/"
-						},
-						{
-							"title": "Jan 03, 2009",
-							"url": "/nwff2009/010309/"
-						},
-						{
-							"title": "Jan 10, 2009",
-							"url": "/nwff2009/011009/"
-						},
-						{
-							"title": "Jan 17, 2009",
-							"url": "/nwff2009/011709/"
-						}
-					]
+					"title": "Tx.15.III. Time and Eternity"
 				},
 				{
 					"url": "chap1504/",
 					"audio": "/text/15/chap1504.mp3",
 					"timing": "/text/15/chap1504.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.15.IV. Littleness versus Magnitude",
-					"nwffacim": [
-						{
-							"title": "Jan 17, 2009 (p83)",
-							"url": "/nwff2009/011709/#83"
-						},
-						{
-							"title": "Jan 24, 2009",
-							"url": "/nwff2009/012409/"
-						},
-						{
-							"title": "Feb 07, 2009",
-							"url": "/nwff2009/020709/"
-						},
-						{
-							"title": "Feb 28, 2009",
-							"url": "/nwff2009/022809/"
-						},
-						{
-							"title": "Mar 14, 2009",
-							"url": "/nwff2009/031409/"
-						}
-					]
+					"title": "Tx.15.IV. Littleness versus Magnitude"
 				},
 				{
 					"url": "chap1505/",
 					"audio": "/text/15/chap1505.mp3",
 					"timing": "/text/15/chap1505.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.15.V. Practicing the Holy Instant",
-					"nwffacim": [
-						{
-							"title": "Mar 28, 2009",
-							"url": "/nwff2009/032809/"
-						},
-						{
-							"title": "Apr 04, 2009",
-							"url": "/nwff2009/040409/"
-						},
-						{
-							"title": "Apr 12, 2009",
-							"url": "/nwff2009/041209/"
-						},
-						{
-							"title": "Apr 13, 2014",
-							"url": "/nwff2014/041314/"
-						},
-						{
-							"title": "Jul 03, 2016",
-							"url": "/nwff2016/070316/"
-						}
-					]
+					"title": "Tx.15.V. Practicing the Holy Instant"
 				},
 				{
 					"url": "chap1506/",
 					"audio": "/text/15/chap1506.mp3",
 					"timing": "/text/15/chap1506.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.15.VI. The Holy Instant and Special Relationships",
-					"nwffacim": [
-						{
-							"title": "Apr 12, 2009 (p60)",
-							"url": "/nwff2009/041209/#p60"
-						},
-						{
-							"title": "Apr 25, 2009",
-							"url": "/nwff2009/042509/"
-						},
-						{
-							"title": "May 09, 2009",
-							"url": "/nwff2009/050909/"
-						},
-						{
-							"title": "May 24, 2009",
-							"url": "/nwff2009/052409/"
-						},
-						{
-							"title": "May 31, 2009",
-							"url": "/nwff2009/053109/"
-						},
-						{
-							"title": "Jun 07, 2009",
-							"url": "/nwff2009/060709/"
-						}
-					]
+					"title": "Tx.15.VI. The Holy Instant and Special Relationships"
 				},
 				{
 					"url": "chap1507/",
 					"audio": "/text/15/chap1507.mp3",
 					"timing": "/text/15/chap1507.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.15.VII. The Holy Instant and the Laws of God",
-					"nwffacim": [
-						{
-							"title": "Jun 13, 2009",
-							"url": "/nwff2009/061309/"
-						},
-						{
-							"title": "Jun 20, 2009",
-							"url": "/nwff2009/062009/"
-						}
-					]
+					"title": "Tx.15.VII. The Holy Instant and the Laws of God"
 				},
 				{
 					"url": "chap1508/",
 					"audio": "/text/15/chap1508.mp3",
 					"timing": "/text/15/chap1508.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.15.VIII. The Holy Instant and Communication",
-					"nwffacim": [
-						{
-							"title": "Jul 25, 2009",
-							"url": "/nwff2009/072509/"
-						},
-						{
-							"title": "Aug 01, 2009",
-							"url": "/nwff2009/080109/"
-						},
-						{
-							"title": "Aug 08, 2009",
-							"url": "/nwff2009/080809/"
-						},
-						{
-							"title": "Aug 29, 2009",
-							"url": "/nwff2009/082909/"
-						},
-						{
-							"title": "Sep 05, 2009",
-							"url": "/nwff2009/090509/"
-						}
-					]
+					"title": "Tx.15.VIII. The Holy Instant and Communication"
 				},
 				{
 					"url": "chap1509/",
 					"audio": "/text/15/chap1509.mp3",
 					"timing": "/text/15/chap1509.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.15.IX. The Holy Instant and Real Relationships",
-					"nwffacim": [
-						{
-							"title": "Sep 12, 2009",
-							"url": "/nwff2009/091209/"
-						},
-						{
-							"title": "Sep 19, 2009",
-							"url": "/nwff2009/091909/"
-						},
-						{
-							"title": "Sep 27, 2009",
-							"url": "/nwff2009/092709/"
-						},
-						{
-							"title": "Oct 10, 2009",
-							"url": "/nwff2009/101009/"
-						}
-					]
+					"title": "Tx.15.IX. The Holy Instant and Real Relationships"
 				},
 				{
 					"url": "chap1510/",
 					"audio": "/text/15/chap1510.mp3",
 					"timing": "/text/15/chap1510.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.15.X. The Time of Christ",
-					"nwffacim": [
-						{
-							"title": "Oct 24, 2009",
-							"url": "/nwff2009/102409/"
-						},
-						{
-							"title": "Oct 31, 2009",
-							"url": "/nwff2009/103109/"
-						},
-						{
-							"title": "Nov 14, 2009",
-							"url": "/nwff2009/103109/"
-						}
-					]
+					"title": "Tx.15.X. The Time of Christ"
 				},
 				{
 					"url": "chap1511/",
 					"audio": "/text/15/chap1511.mp3",
 					"timing": "/text/15/chap1511.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.15.XI. The End of Sacrifice",
-					"nwffacim": [
-						{
-							"title": "Nov 22, 2009",
-							"url": "/nwff2009/112209/"
-						},
-						{
-							"title": "Nov 28, 2009",
-							"url": "/nwff2009/112809/"
-						}
-					]
+					"title": "Tx.15.XI. The End of Sacrifice"
 				}
 			]
 		},
@@ -2154,183 +1028,49 @@
 					"audio": "/text/16/chap1602.mp3",
 					"timing": "/text/16/chap1602.json",
           "timer": "msullivan2k@gmail.com",
-					"title": "Tx.16.II. True Empathy",
-					"nwffacim": [
-						{
-							"title": "Dec 05, 2009",
-							"url": "/nwff2009/120509/"
-						},
-						{
-							"title": "Dec 19, 2009",
-							"url": "/nwff2009/121909/"
-						},
-						{
-							"title": "Jan 02, 2010",
-							"url": "/nwff2010/010210/"
-						}
-					]
+					"title": "Tx.16.II. True Empathy"
 				},
 				{
 					"url": "chap1603/",
 					"audio": "/text/16/chap1603.mp3",
 					"timing": "/text/16/chap1603.json",
           "timer": "msullivan2k@gmail.com",
-					"title": "Tx.16.III. The Magnitude of Holiness",
-					"nwffacim": [
-						{
-							"title": "Jan 16, 2010",
-							"url": "/nwff2010/011610/"
-						},
-						{
-							"title": "Jan 30, 2010",
-							"url": "/nwff2010/013010/"
-						},
-						{
-							"title": "Feb 06, 2010",
-							"url": "/nwff2010/020610/"
-						},
-						{
-							"title": "Feb 13, 2010",
-							"url": "/nwff2010/021310/"
-						}
-					]
+					"title": "Tx.16.III. The Magnitude of Holiness"
 				},
 				{
 					"url": "chap1604/",
 					"audio": "/text/16/chap1604.mp3",
 					"timing": "/text/16/chap1604.json",
           "timer": "msullivan2k@gmail.com",
-					"title": "Tx.16.IV. The Reward of Teaching",
-					"nwffacim": [
-						{
-							"title": "Mar 06, 2010",
-							"url": "/nwff2010/030610/"
-						},
-						{
-							"title": "Mar 20, 2010",
-							"url": "/nwff2010/032010/"
-						}
-					]
+					"title": "Tx.16.IV. The Reward of Teaching"
 				},
 				{
 					"url": "chap1605/",
 					"audio": "/text/16/chap1605.mp3",
 					"timing": "/text/16/chap1605.json",
           "timer": "msullivan2k@gmail.com",
-					"title": "Tx.16.V. Illusion and Reality of Love",
-					"nwffacim": [
-						{
-							"title": "Mar 27, 2010",
-							"url": "/nwff2010/032710/"
-						},
-						{
-							"title": "Apr 03, 2010",
-							"url": "/nwff2010/040310/"
-						},
-						{
-							"title": "Apr 10, 2010",
-							"url": "/nwff2010/041010/"
-						},
-						{
-							"title": "May 01, 2010",
-							"url": "/nwff2010/050110/"
-						},
-						{
-							"title": "May 15, 2010",
-							"url": "/nwff2010/051510/"
-						},
-						{
-							"title": "May 29, 2010",
-							"url": "/nwff2010/052910/"
-						}
-					]
+					"title": "Tx.16.V. Illusion and Reality of Love"
 				},
 				{
 					"url": "chap1606/",
 					"audio": "/text/16/chap1606.mp3",
 					"timing": "/text/16/chap1606.json",
           "timer": "msullivan2k@gmail.com",
-					"title": "Tx.16.VI. Specialness and Guilt",
-					"nwffacim": [
-						{
-							"title": "Jun 12, 2010",
-							"url": "/nwff2010/061210/"
-						},
-						{
-							"title": "Jun 19, 2010",
-							"url": "/nwff2010/061910/"
-						},
-						{
-							"title": "Oct 02, 2010",
-							"url": "/nwff2010/100210/"
-						},
-						{
-							"title": "Oct 16, 2010",
-							"url": "/nwff2010/101610/"
-						},
-						{
-							"title": "Oct 23, 2010",
-							"url": "/nwff2010/102310/"
-						},
-						{
-							"title": "Nov 06, 2010",
-							"url": "/nwff2010/110610/"
-						}
-					]
+					"title": "Tx.16.VI. Specialness and Guilt"
 				},
 				{
 					"url": "chap1607/",
 					"audio": "/text/16/chap1607.mp3",
 					"timing": "/text/16/chap1607.json",
           "timer": "msullivan2k@gmail.com",
-					"title": "Tx.16.VII. The Bridge to the Real World",
-					"nwffacim": [
-						{
-							"title": "Nov 13, 2010",
-							"url": "/nwff2010/111310/"
-						},
-						{
-							"title": "Nov 20, 2010",
-							"url": "/nwff2010/112010/"
-						},
-						{
-							"title": "Nov 27, 2010",
-							"url": "/nwff2010/112710/"
-						},
-						{
-							"title": "Dec 04, 2010",
-							"url": "/nwff2010/120410/"
-						},
-						{
-							"title": "Jan 01, 2011",
-							"url": "/nwff2011/010111/"
-						},
-						{
-							"title": "Jan 08, 2011",
-							"url": "/nwff2011/010811/"
-						}
-					]
+					"title": "Tx.16.VII. The Bridge to the Real World"
 				},
 				{
 					"url": "chap1608/",
 					"audio": "/text/16/chap1608.mp3",
 					"timing": "/text/16/chap1608.json",
           "timer": "msullivan2k@gmail.com",
-					"title": "Tx.16.VIII. The End of Illusions",
-					"nwffacim": [
-						{
-							"title": "Jan 22, 2011",
-							"url": "/nwff2011/012211/"
-						},
-						{
-							"title": "Feb 05, 2011",
-							"url": "/nwff2011/020511/"
-						},
-						{
-							"title": "Feb 16, 2011",
-							"url": "/nwff2011/021611/"
-						}
-					]
+					"title": "Tx.16.VIII. The End of Illusions"
 				}
 			]
 		},
@@ -2351,164 +1091,56 @@
 					"audio": "/text/17/chap1702.mp3",
 					"timing": "/text/17/chap1702.json",
           "timer": "mike.glenn@outlook.com",
-					"title": "Tx.17.II. Fantasy and Distorted Perception",
-					"nwffacim": [
-						{
-							"title": "Feb 19, 2011",
-							"url": "/nwff2011/021911/"
-						},
-						{
-							"title": "Apr 16, 2011",
-							"url": "/nwff2011/041611/"
-						}
-					]
+					"title": "Tx.17.II. Fantasy and Distorted Perception"
 				},
 				{
 					"url": "chap1703/",
 					"audio": "/text/17/chap1703.mp3",
 					"timing": "/text/17/chap1703.json",
           "timer": "mike.glenn@outlook.com",
-					"title": "Tx.17.III. The Forgiven World",
-					"nwffacim": [
-						{
-							"title": "Apr 23, 2011",
-							"url": "/nwff2011/042311/"
-						}
-					]
+					"title": "Tx.17.III. The Forgiven World"
 				},
 				{
 					"url": "chap1704/",
 					"audio": "/text/17/chap1704.mp3",
 					"timing": "/text/17/chap1704.json",
           "timer": "mike.glenn@outlook.com",
-					"title": "Tx.17.IV. Shadows of the Past",
-					"nwffacim": [
-						{
-							"title": "Apr 30, 2011",
-							"url": "/nwff2011/043011/"
-						},
-						{
-							"title": "May 07, 2011",
-							"url": "/nwff2011/050711/"
-						},
-						{
-							"title": "May 14, 2011",
-							"url": "/nwff2011/051411/"
-						}
-					]
+					"title": "Tx.17.IV. Shadows of the Past"
 				},
 				{
 					"url": "chap1705/",
 					"audio": "/text/17/chap1705.mp3",
 					"timing": "/text/17/chap1705.json",
           "timer": "mike.glenn@outlook.com",
-					"title": "Tx.17.V. Perception and the Two Worlds",
-					"nwffacim": [
-						{
-							"title": "May 22, 2011",
-							"url": "/nwff2011/052211/"
-						},
-						{
-							"title": "Jun 04, 2011",
-							"url": "/nwff2011/060411/"
-						},
-						{
-							"title": "Jun 12, 2011",
-							"url": "/nwff2011/061211/"
-						},
-						{
-							"title": "Jun 18, 2011",
-							"url": "/nwff2011/061811/"
-						},
-						{
-							"title": "Jun 26, 2011",
-							"url": "/nwff2011/062611/"
-						}
-					]
+					"title": "Tx.17.V. Perception and the Two Worlds"
 				},
 				{
 					"url": "chap1706/",
 					"audio": "/text/17/chap1706.mp3",
 					"timing": "/text/17/chap1706.json",
           "timer": "mike.glenn@outlook.com",
-					"title": "Tx.17.VI. The Healed Relationship",
-					"nwffacim": [
-						{
-							"title": "Jul 16, 2011",
-							"url": "/nwff2011/071611/"
-						},
-						{
-							"title": "Jul 30, 2011",
-							"url": "/nwff2011/073011/"
-						},
-						{
-							"title": "Aug 06, 2011",
-							"url": "/nwff2011/080611/"
-						}
-					]
+					"title": "Tx.17.VI. The Healed Relationship"
 				},
 				{
 					"url": "chap1707/",
 					"audio": "/text/17/chap1707.mp3",
 					"timing": "/text/17/chap1707.json",
           "timer": "mike.glenn@outlook.com",
-					"title": "Tx.17.VII. Practical Forgiveness",
-					"nwffacim": [
-						{
-							"title": "Aug 20, 2011",
-							"url": "/nwff2011/082011/"
-						},
-						{
-							"title": "Aug 27, 2011",
-							"url": "/nwff2011/082711/"
-						},
-						{
-							"title": "Sep 03, 2011",
-							"url": "/nwff2011/090311/"
-						}
-					]
+					"title": "Tx.17.VII. Practical Forgiveness"
 				},
 				{
 					"url": "chap1708/",
 					"audio": "/text/17/chap1708.mp3",
 					"timing": "/text/17/chap1708.json",
           "timer": "mike.glenn@outlook.com",
-					"title": "Tx.17.VIII. The Need for Faith",
-					"nwffacim": [
-						{
-							"title": "Sep 17, 2011",
-							"url": "/nwff2011/091711/"
-						},
-						{
-							"title": "Sep 24, 2011",
-							"url": "/nwff2011/092411/"
-						},
-						{
-							"title": "Oct 01, 2011",
-							"url": "/nwff2011/100111/"
-						},
-						{
-							"title": "Oct 15, 2011",
-							"url": "/nwff2011/101511/"
-						}
-					]
+					"title": "Tx.17.VIII. The Need for Faith"
 				},
 				{
 					"url": "chap1709/",
 					"audio": "/text/17/chap1709.mp3",
 					"timing": "/text/17/chap1709.json",
           "timer": "mike.glenn@outlook.com",
-					"title": "Tx.17.IX. Conditions of Forgiveness",
-					"nwffacim": [
-						{
-							"title": "Oct 23, 2011",
-							"url": "/nwff2011/102311/"
-						},
-						{
-							"title": "Jun 09, 2017",
-							"url": "/nwff2017/060917/"
-						}
-					]
+					"title": "Tx.17.IX. Conditions of Forgiveness"
 				}
 			]
 		},
@@ -2522,167 +1154,77 @@
           "audio": "/text/18/chap1801.mp3",
 					"timing": "/text/18/chap1801.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.18.I. Introduction",
-					"nwffacim": [
-						{
-							"title": "Nov 05, 2011",
-							"url": "/nwff2011/110511/"
-						},
-						{
-							"title": "Nov 13, 2011",
-							"url": "/nwff2011/111311/"
-						}
-					]
+					"title": "Tx.18.I. Introduction"
 				},
 				{
 					"url": "chap1802/",
 					"audio": "/text/18/chap1802.mp3",
 					"timing": "/text/18/chap1802.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.18.II. Substitution as a Defense",
-					"nwffacim": [
-						{
-							"title": "Nov 26, 2011",
-							"url": "/nwff2011/112611/"
-						},
-						{
-							"title": "Dec 04, 2011",
-							"url": "/nwff2011/120411/"
-						}
-					]
+					"title": "Tx.18.II. Substitution as a Defense"
 				},
 				{
 					"url": "chap1803/",
 					"audio": "/text/18/chap1803.mp3",
 					"timing": "/text/18/chap1803.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.18.III. The Basis of the Dream",
-					"nwffacim": [
-						{
-							"title": "Dec 20, 2011",
-							"url": "/nwff2011/122011/"
-						}
-					]
+					"title": "Tx.18.III. The Basis of the Dream"
 				},
 				{
 					"url": "chap1804/",
 					"audio": "/text/18/chap1804.mp3",
 					"timing": "/text/18/chap1804.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.18.IV. Light in the Dream",
-					"nwffacim": [
-						{
-							"title": "Jan 07, 2012",
-							"url": "/nwff2012/010712/"
-						},
-						{
-							"title": "Jan 22, 2012",
-							"url": "/nwff2012/012212/"
-						}
-					]
+					"title": "Tx.18.IV. Light in the Dream"
 				},
 				{
 					"url": "chap1805/",
 					"audio": "/text/18/chap1805.mp3",
 					"timing": "/text/18/chap1805.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.18.V. The Little Willingness",
-					"nwffacim": [
-						{
-							"title": "Feb 05, 2012",
-							"url": "/nwff2012/020512/"
-						}
-					]
+					"title": "Tx.18.V. The Little Willingness"
 				},
 				{
 					"url": "chap1806/",
 					"audio": "/text/18/chap1806.mp3",
 					"timing": "/text/18/chap1806.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.18.VI. The Happy Dream",
-					"nwffacim": [
-						{
-							"title": "Feb 12, 2012",
-							"url": "/nwff2012/021212/"
-						}
-					]
+					"title": "Tx.18.VI. The Happy Dream"
 				},
 				{
 					"url": "chap1807/",
 					"audio": "/text/18/chap1807.mp3",
 					"timing": "/text/18/chap1807.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.18.VII. Dreams and the Body",
-					"nwffacim": [
-						{
-							"title": "Feb 18, 2012",
-							"url": "/nwff2012/021812/"
-						},
-						{
-							"title": "Mar 24, 2012",
-							"url": "/nwff2012/032412/"
-						},
-						{
-							"title": "Mar 31, 2012",
-							"url": "/nwff2012/033112/"
-						}
-					]
+					"title": "Tx.18.VII. Dreams and the Body"
 				},
 				{
 					"url": "chap1808/",
 					"audio": "/text/18/chap1808.mp3",
 					"timing": "/text/18/chap1808.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.18.VIII. I Need Do Nothing",
-					"nwffacim": [
-						{
-							"title": "Apr 08, 2012",
-							"url": "/nwff2012/040812/"
-						}
-					]
+					"title": "Tx.18.VIII. I Need Do Nothing"
 				},
 				{
 					"url": "chap1809/",
 					"audio": "/text/18/chap1809.mp3",
 					"timing": "/text/18/chap1809.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.18.IX. The Purpose of the Body",
-					"nwffacim": [
-						{
-							"title": "Apr 15, 2012",
-							"url": "/nwff2012/041512/"
-						},
-						{
-							"title": "Apr 22, 2012",
-							"url": "/nwff2012/042212/"
-						}
-					]
+					"title": "Tx.18.IX. The Purpose of the Body"
 				},
 				{
 					"url": "chap1810/",
 					"audio": "/text/18/chap1810.mp3",
 					"timing": "/text/18/chap1810.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.18.X. The Delusional Thought System",
-					"nwffacim": [
-						{
-							"title": "Apr 29, 2012",
-							"url": "/nwff2012/042912/"
-						}
-					]
+					"title": "Tx.18.X. The Delusional Thought System"
 				},
 				{
 					"url": "chap1811/",
 					"audio": "/text/18/chap1811.mp3",
 					"timing": "/text/18/chap1811.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.18.XI. The Passing of the Dream",
-					"nwffacim": [
-						{
-							"title": "May 12, 2012",
-							"url": "/nwff2012/051212/"
-						}
-					]
+					"title": "Tx.18.XI. The Passing of the Dream"
 				}
 			]
 		},
@@ -2703,136 +1245,28 @@
 					"audio": "/text/19/chap1902.mp3",
 					"timing": "/text/19/chap1902.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.19.II. Healing and the Mind",
-					"nwffacim": [
-						{
-							"title": "May 20, 2012",
-							"url": "/nwff2012/052012/"
-						},
-						{
-							"title": "Jun 03, 2012",
-							"url": "/nwff2012/060312/"
-						},
-						{
-							"title": "Jul 22, 2012",
-							"url": "/nwff2012/072212/"
-						},
-						{
-							"title": "Jul 29, 2012",
-							"url": "/nwff2012/072912/"
-						}
-					]
+					"title": "Tx.19.II. Healing and the Mind"
 				},
 				{
 					"url": "chap1903/",
 					"audio": "/text/19/chap1903.mp3",
 					"timing": "/text/19/chap1903.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.19.III. Sin versus Error",
-					"nwffacim": [
-						{
-							"title": "Aug 04, 2012",
-							"url": "/nwff2012/080412/"
-						},
-						{
-							"title": "Aug 11, 2012",
-							"url": "/nwff2012/081112/"
-						}
-					]
+					"title": "Tx.19.III. Sin versus Error"
 				},
 				{
 					"url": "chap1904/",
 					"audio": "/text/19/chap1904.mp3",
 					"timing": "/text/19/chap1904.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.19.IV. The Unreality of Sin",
-					"nwffacim": [
-						{
-							"title": "Aug 18, 2012",
-							"url": "/nwff2012/081812/"
-						},
-						{
-							"title": "Sep 16, 2012",
-							"url": "/nwff2012/091612/"
-						},
-						{
-							"title": "Sep 23, 2012",
-							"url": "/nwff2012/092312/"
-						}
-					]
+					"title": "Tx.19.IV. The Unreality of Sin"
 				},
 				{
 					"url": "chap1905/",
 					"audio": "/text/19/chap1905.mp3",
 					"timing": "/text/19/chap1905.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.19.V. Obstacles to Peace",
-					"nwffacim": [
-						{
-							"title": "Sep 30, 2012",
-							"url": "/nwff2012/093012/"
-						},
-						{
-							"title": "Oct 08, 2012",
-							"url": "/nwff2012/100812/"
-						},
-						{
-							"title": "Oct 14, 2012",
-							"url": "/nwff2012/101412/"
-						},
-						{
-							"title": "Oct 21, 2012",
-							"url": "/nwff2012/102112/"
-						},
-						{
-							"title": "Nov 12, 2012",
-							"url": "/nwff2012/111212/"
-						},
-						{
-							"title": "May 11, 2013",
-							"url": "/nwff2013/051113/"
-						},
-						{
-							"title": "Apr 25, 2015",
-							"url": "/nwff2015/042515/"
-						},
-						{
-							"title": "May 20, 2013",
-							"url": "/nwff2013/052013/"
-						},
-						{
-							"title": "May 28, 2013",
-							"url": "/nwff2013/052813/"
-						},
-						{
-							"title": "May 03, 2015",
-							"url": "/nwff2015/050315/"
-						},
-						{
-							"title": "May 09, 2015",
-							"url": "/nwff2015/050915/"
-						},
-						{
-							"title": "May 17, 2015",
-							"url": "/nwff2015/051715/"
-						},
-						{
-							"title": "Jun 07, 2015",
-							"url": "/nwff2015/060715/"
-						},
-						{
-							"title": "Jun 14, 2015",
-							"url": "/nwff2015/061415/"
-						},
-						{
-							"title": "Jun 21, 2015",
-							"url": "/nwff2015/062115/"
-						},
-						{
-							"title": "Jun 28, 2015",
-							"url": "/nwff2015/062815/"
-						}
-					]
+					"title": "Tx.19.V. Obstacles to Peace"
 				}
 			]
 		},
@@ -2846,13 +1280,7 @@
 					"audio": "/text/20/chap2001.mp3",
 					"timing": "/text/20/chap2001.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.20.I. Introduction",
-					"nwffacim": [
-						{
-							"title": "Jul 05, 2015",
-							"url": "/nwff2015/070515/"
-						}
-					]
+					"title": "Tx.20.I. Introduction"
 				},
 				{
 					"url": "chap2002/",
@@ -2866,51 +1294,21 @@
 					"audio": "/text/20/chap2003.mp3",
 					"timing": "/text/20/chap2003.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.20.III. Thorns and Lilies",
-					"nwffacim": [
-						{
-							"title": "Jul 13, 2015",
-							"url": "/nwff2015/071315/"
-						},
-						{
-							"title": "Jul 21, 2015",
-							"url": "/nwff2015/072115/"
-						},
-						{
-							"title": "Aug 01, 2015",
-							"url": "/nwff2015/080115/"
-						}
-					]
+					"title": "Tx.20.III. Thorns and Lilies"
 				},
 				{
 					"url": "chap2004/",
 					"audio": "/text/20/chap2004.mp3",
 					"timing": "/text/20/chap2004.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.20.IV. Sin as an Adjustment",
-					"nwffacim": [
-						{
-							"title": "Aug 23, 2015",
-							"url": "/nwff2015/082315/"
-						},
-						{
-							"title": "Nov 01, 2015",
-							"url": "/nwff2015/110115/"
-						}
-					]
+					"title": "Tx.20.IV. Sin as an Adjustment"
 				},
 				{
 					"url": "chap2005/",
 					"audio": "/text/20/chap2005.mp3",
 					"timing": "/text/20/chap2005.json",
           "timer": "onemillionchrists@gmail.com",
-					"title": "Tx.20.V. Entering the Ark",
-					"nwffacim": [
-						{
-							"title": "Nov 01, 2015",
-							"url": "/nwff2015/110115/"
-						}
-					]
+					"title": "Tx.20.V. Entering the Ark"
 				},
 				{
 					"url": "chap2006/",
@@ -3311,7 +1709,7 @@
 				{
 					"url": "chap2608/",
 					"audio": "/text/26/chap2608.mp3",
-					"xtiming": "/text/26/chap2608.json",
+					"timing": "/text/26/chap2608.json",
           "timer": "msullivan2k@gmail.com",
 					"title": "Tx.26.VIII. Review of Principles"
 				},
@@ -3383,21 +1781,7 @@
 					"audio": "/text/27/chap2706.mp3",
 					"timing": "/text/27/chap2706.json",
           "timer": "ancientrussian@gmail.com",
-					"title": "Tx.27.VI. The Healing Example",
-					"nwffacim": [
-						{
-							"title": "Jul 14, 2013",
-							"url": "/nwff2013/071413/"
-						},
-						{
-							"title": "Jul 21, 2013",
-							"url": "/nwff2013/072113/"
-						},
-						{
-							"title": "Aug 04, 2013",
-							"url": "/nwff2013/080413/"
-						}
-					]
+					"title": "Tx.27.VI. The Healing Example"
 				},
 				{
 					"url": "chap2707/",
@@ -3579,26 +1963,14 @@
 					"audio": "/text/30/chap3002.mp3",
 					"timing": "/text/30/chap3002.json",
           "timer": "ancientrussian@gmail.com",
-					"title": "Tx.30.II. Rules for Decision",
-					"nwffacim": [
-						{
-							"title": "Sep 23, 2013",
-							"url": "/nwff2013/092313/"
-						}
-					]
+					"title": "Tx.30.II. Rules for Decision"
 				},
 				{
 					"url": "chap3003/",
 					"audio": "/text/30/chap3003.mp3",
 					"timing": "/text/30/chap3003.json",
           "timer": "ancientrussian@gmail.com",
-					"title": "Tx.30.III. Freedom of Will",
-					"nwffacim": [
-						{
-							"title": "Oct 06, 2013",
-							"url": "/nwff2013/100613/"
-						}
-					]
+					"title": "Tx.30.III. Freedom of Will"
 				},
 				{
 					"url": "chap3004/",
@@ -3682,13 +2054,7 @@
 					"audio": "/text/31/chap3105.mp3",
 					"timing": "/text/31/chap3105.json",
 					"timer": "onemillionchrists@gmail.com",
-					"title": "Tx.31.V. Self-Concept versus Self",
-					"nwffacim": [
-						{
-							"title": "Jul 10, 2010",
-							"url": "/nwff2010/071010/"
-						}
-					]
+					"title": "Tx.31.V. Self-Concept versus Self"
 				},
 				{
 					"url": "chap3106/",

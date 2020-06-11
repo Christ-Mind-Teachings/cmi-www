@@ -43,6 +43,7 @@ function resetUrl() {
 //called when query request is complete
 export function loadComplete() {
   $("#transcript-page-loading").removeClass("active");
+  resetUrl();
 }
 
 //show loading for long loading steps - like showing annotations
@@ -51,7 +52,6 @@ export function loadStart() {
 
   if (aInfo) {
     $("#transcript-page-loading").addClass("active");
-    resetUrl();
   }
 }
 
@@ -104,7 +104,6 @@ export function showAnnotation() {
   let aInfo = getQueryString("as");
 
   if (aInfo) {
-    resetUrl();
     return aInfo;
   }
   return null;
