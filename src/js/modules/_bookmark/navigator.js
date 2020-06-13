@@ -86,14 +86,14 @@ function generateAnnotation(annotation, topics = []) {
   }
 }
 
-function generateBookmark(actualPid, bkmk, topics) {
+function generateBookmark(actualPid, bkmk, topics, label) {
   return `
     <div class="ui list">
       <div class="item">
         <i class="bookmark icon"></i>
         <div class="content">
           <div class="header">
-            Paragraph: ${actualPid}
+            ${label}: ${actualPid}
           </div>
           <div class="list">
             ${bkmk.map((annotation) => `
@@ -169,7 +169,7 @@ function getNextPageUrl(pos, pageList, filterList, bookmarks) {
 
       //it's possible the url was not found so check for that
       if (url) {
-        console.log("next url: %s", url);
+        //console.log("next url: %s", url);
         resolve(url);
         return;
       }
@@ -181,7 +181,7 @@ function getNextPageUrl(pos, pageList, filterList, bookmarks) {
       //console.log("next url is null");
       resolve(null);
     }
-    console.log("next url: null");
+    //console.log("next url: null");
   });
 }
 
@@ -223,11 +223,11 @@ function getPrevPageUrl(pos, pageList, filterList, bookmarks) {
     if (found) {
       let pageKey = pageList[pagePos];
       let url = getBookmarkUrl(bookmarks, pageKey, pid);
-      console.log("prev url is %s", url);
+      //console.log("prev url is %s", url);
       resolve(url);
     }
     else {
-      console.log("prev url is null");
+      //console.log("prev url is null");
       resolve(null);
     }
   });
@@ -387,7 +387,10 @@ function getCurrentBookmark(pageKey, actualPid, allBookmarks, bmModal, whoCalled
     return false;
   }
 
-  let html = generateBookmark(actualPid, paragraphBookmarks, topics);
+  getString("label:para", true).then(label => {
+    let html = generateBookmark(actualPid, paragraphBookmarks, topics, label);
+    $("#bookmark-content").html(html);
+  });
 
   if (filterTopics) {
     $("#filter-topics-section").removeClass("hide");
@@ -398,7 +401,7 @@ function getCurrentBookmark(pageKey, actualPid, allBookmarks, bmModal, whoCalled
   }
 
   $(".bookmark-navigator-header-book").text($("#book-title").text());
-  $("#bookmark-content").html(html);
+  //$("#bookmark-content").html(html);
 
   //get links to next and previous bookmarks on the page
   let pageMarks = Object.keys(allBookmarks[pageKey]);
@@ -505,7 +508,7 @@ function bookmarkManager(actualPid) {
       });
   }
   else {
-    console.log(teaching.bm_list_store);
+    //console.log(teaching.bm_list_store);
   }
 }
 
@@ -542,14 +545,14 @@ function clearSelectedAnnotation() {
     // if .user exists then guard is user initiated and we don't clear it
     let guard = $("div.transcript.ui.disable-selection:not(.user)");
     if (guard.length > 0) {
-      console.log("removing selection guard");
+      //console.log("removing selection guard");
       guard.removeClass("disable-selection");
     }
   }
 }
 
 function scrollComplete(message, type) {
-  console.log(`${message}: ${type}`);
+  //console.log(`${message}: ${type}`);
 }
 
 function scrollIntoView(id, caller) {
