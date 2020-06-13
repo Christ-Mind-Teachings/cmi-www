@@ -88,7 +88,7 @@ function getBookmarks() {
                 }
                 //console.log("a: %o", a);
               }
-              bookmarks[key.pid] = b.bookmark;
+              bookmarks[key.paraKey] = b.bookmark;
             });
 
             //store bookmarks in local storage
@@ -224,7 +224,7 @@ function buildBookmarkListFromServer(response, keyInfo) {
     if (!bookmarks[keyParts.pageKey]) {
       bookmarks[keyParts.pageKey] = {};
     }
-    bookmarks[keyParts.pageKey][keyParts.pid] = b.bookmark;
+    bookmarks[keyParts.pageKey][keyParts.paraKey] = b.bookmark;
   });
   bookmarks.lastFetchDate = Date.now();
   bookmarks.lastBuildDate = Date.now();

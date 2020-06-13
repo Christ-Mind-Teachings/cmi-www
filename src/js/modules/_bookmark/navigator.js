@@ -120,7 +120,7 @@ function getBookmarkUrl(bookmarks, pageKey, pid) {
   }
   else {
     //we have a bookmark with no selected text, have to get the url in another way
-    url = `${teaching.url_prefix}${teaching.keyInfo.getUrl(pageKey)}?bkmk=${bookmark[0].rangeStart}`;
+    url = `${teaching.env === "integration"?teaching.url_prefix:""}${teaching.keyInfo.getUrl(pageKey)}?bkmk=${bookmark[0].rangeStart}`;
   }
 
   //console.log("url: %s", url);
@@ -169,7 +169,9 @@ function getNextPageUrl(pos, pageList, filterList, bookmarks) {
 
       //it's possible the url was not found so check for that
       if (url) {
+        console.log("next url: %s", url);
         resolve(url);
+        return;
       }
       else {
         resolve(null);
@@ -179,6 +181,7 @@ function getNextPageUrl(pos, pageList, filterList, bookmarks) {
       //console.log("next url is null");
       resolve(null);
     }
+    console.log("next url: null");
   });
 }
 
@@ -220,11 +223,11 @@ function getPrevPageUrl(pos, pageList, filterList, bookmarks) {
     if (found) {
       let pageKey = pageList[pagePos];
       let url = getBookmarkUrl(bookmarks, pageKey, pid);
-      //console.log("prev url is %s", url);
+      console.log("prev url is %s", url);
       resolve(url);
     }
     else {
-      //console.log("prev url is null");
+      console.log("prev url is null");
       resolve(null);
     }
   });
@@ -477,7 +480,9 @@ function bookmarkManager(actualPid) {
         //identify current bookmark in navigator
         //returns false if actualPid does not contain a bookmark
         if (!getCurrentBookmark(pageKey, actualPid, bmList, bmModal, "both")) {
-          notify.info(__lang`${"fragment:f1"} ${actualPid} ${"fragment:f2"}`);
+          getString("fragment:f1", true).then(value => {
+            notify.info(__lang`${value} ${actualPid} ${"fragment:f2"}`);
+          });
           return;
         }
 
