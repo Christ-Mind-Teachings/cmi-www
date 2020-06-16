@@ -254,7 +254,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-$(document).ready(() => {
+$(() => {
   Object(_modules_page_startup__WEBPACK_IMPORTED_MODULE_2__["initStickyMenu"])();
   Object(_modules_language_lang__WEBPACK_IMPORTED_MODULE_8__["setLanguage"])(_constants__WEBPACK_IMPORTED_MODULE_9__["default"]);
   Object(_modules_bookmark_start__WEBPACK_IMPORTED_MODULE_3__["bookmarkStart"])("page");

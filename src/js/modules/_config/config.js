@@ -2,7 +2,6 @@ import store from "store";
 import axios from "axios";
 import {status} from "./status";
 
-//import {decodeKey, parseKey, genKey} from "./key";
 const transcript = require("./key");
 
 //change these values to reflect transcript info

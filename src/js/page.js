@@ -15,7 +15,7 @@ import subscribe from "./modules/_forms/subscribe";
 import {setLanguage} from "./modules/_language/lang";
 import constants from "./constants";
 
-$(document).ready(() => {
+$(() => {
   initStickyMenu();
   setLanguage(constants);
 

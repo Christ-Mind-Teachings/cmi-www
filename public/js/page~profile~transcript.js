@@ -3328,7 +3328,12 @@ function getBookmarks() {
         if (response.data.response) {
           let bookmarks = {};
           response.data.response.forEach(b => {
-            let key = teaching.keyInfo.parseKey(b.id); //parson JSON to object
+            let key = teaching.keyInfo.parseKey(b.id); //parseKey return {pid, pageKey} or {paraKey, pageKey} so use paraKey.
+
+            if (!key.paraKey) {
+              key.paraKey = key.pid;
+            } //parson JSON to object
+
 
             for (let a of b.bookmark) {
               if (a.selectedText) {
@@ -3337,7 +3342,7 @@ function getBookmarks() {
 
             }
 
-            bookmarks[key.pid] = b.bookmark;
+            bookmarks[key.paraKey] = b.bookmark;
           }); //store bookmarks in local storage
 
           if (Object.keys(bookmarks).length > 0) {
@@ -3464,13 +3469,17 @@ function buildBookmarkListFromLocalStore(keyInfo) {
 function buildBookmarkListFromServer(response, keyInfo) {
   let bookmarks = {};
   response.data.response.forEach(b => {
-    let keyParts = teaching.keyInfo.parseKey(b.id);
+    let keyParts = teaching.keyInfo.parseKey(b.id); //parseKey return {pid, pageKey} or {paraKey, pageKey} so use paraKey.
+
+    if (!keyParts.paraKey) {
+      keyParts.paraKey = keyParts.pid;
+    }
 
     if (!bookmarks[keyParts.pageKey]) {
       bookmarks[keyParts.pageKey] = {};
     }
 
-    bookmarks[keyParts.pageKey][keyParts.pid] = b.bookmark;
+    bookmarks[keyParts.pageKey][keyParts.paraKey] = b.bookmark;
   });
   bookmarks.lastFetchDate = Date.now();
   bookmarks.lastBuildDate = Date.now();
@@ -4199,15 +4208,17 @@ function bookmarkFeatureHandler() {
     let el = $(".transcript");
 
     if (el.hasClass("disable-selection") && el.hasClass("user")) {
-      //console.log("removing selection guard - user initiated")
-      el.removeClass("disable-selection user");
-      $(".toggle-bookmark-selection").text(Object(_language_lang__WEBPACK_IMPORTED_MODULE_13__["getString"])("menu:m1"));
-      store__WEBPACK_IMPORTED_MODULE_1___default.a.set(teaching.bm_creation_state, "enabled");
+      Object(_language_lang__WEBPACK_IMPORTED_MODULE_13__["getString"])("menu:m1", true).then(value => {
+        el.removeClass("disable-selection user");
+        $(".toggle-bookmark-selection").text(value);
+        store__WEBPACK_IMPORTED_MODULE_1___default.a.set(teaching.bm_creation_state, "enabled");
+      });
     } else {
-      //console.log("adding selection guard - user initiated")
-      el.addClass("disable-selection user");
-      $(".toggle-bookmark-selection").text(Object(_language_lang__WEBPACK_IMPORTED_MODULE_13__["getString"])("menu:m2"));
-      store__WEBPACK_IMPORTED_MODULE_1___default.a.set(teaching.bm_creation_state, "disabled");
+      Object(_language_lang__WEBPACK_IMPORTED_MODULE_13__["getString"])("menu:m2", true).then(value => {
+        el.addClass("disable-selection user");
+        $(".toggle-bookmark-selection").text(value);
+        store__WEBPACK_IMPORTED_MODULE_1___default.a.set(teaching.bm_creation_state, "disabled");
+      });
     }
   });
 }
@@ -5128,14 +5139,14 @@ function generateAnnotation(annotation, topics = []) {
   }
 }
 
-function generateBookmark(actualPid, bkmk, topics) {
+function generateBookmark(actualPid, bkmk, topics, label) {
   return `
     <div class="ui list">
       <div class="item">
         <i class="bookmark icon"></i>
         <div class="content">
           <div class="header">
-            Paragraph: ${actualPid}
+            ${label}: ${actualPid}
           </div>
           <div class="list">
             ${bkmk.map(annotation => `
@@ -5162,7 +5173,7 @@ function getBookmarkUrl(bookmarks, pageKey, pid) {
     url = `${bookmark[0].selectedText.url}?bkmk=${bookmark[0].rangeStart}`;
   } else {
     //we have a bookmark with no selected text, have to get the url in another way
-    url = `${teaching.url_prefix}${teaching.keyInfo.getUrl(pageKey)}?bkmk=${bookmark[0].rangeStart}`;
+    url = `${teaching.env === "integration" ? teaching.url_prefix : ""}${teaching.keyInfo.getUrl(pageKey)}?bkmk=${bookmark[0].rangeStart}`;
   } //console.log("url: %s", url);
 
 
@@ -5212,14 +5223,17 @@ function getNextPageUrl(pos, pageList, filterList, bookmarks) {
       let url = getBookmarkUrl(bookmarks, pageKey, pid); //it's possible the url was not found so check for that
 
       if (url) {
+        //console.log("next url: %s", url);
         resolve(url);
+        return;
       } else {
         resolve(null);
       }
     } else {
       //console.log("next url is null");
       resolve(null);
-    }
+    } //console.log("next url: null");
+
   });
 }
 
@@ -5432,7 +5446,10 @@ function getCurrentBookmark(pageKey, actualPid, allBookmarks, bmModal, whoCalled
     return false;
   }
 
-  let html = generateBookmark(actualPid, paragraphBookmarks, topics);
+  Object(_language_lang__WEBPACK_IMPORTED_MODULE_9__["getString"])("label:para", true).then(label => {
+    let html = generateBookmark(actualPid, paragraphBookmarks, topics, label);
+    $("#bookmark-content").html(html);
+  });
 
   if (filterTopics) {
     $("#filter-topics-section").removeClass("hide");
@@ -5441,8 +5458,8 @@ function getCurrentBookmark(pageKey, actualPid, allBookmarks, bmModal, whoCalled
     $("#filter-topics-section").addClass("hide");
   }
 
-  $(".bookmark-navigator-header-book").text($("#book-title").text());
-  $("#bookmark-content").html(html); //get links to next and previous bookmarks on the page
+  $(".bookmark-navigator-header-book").text($("#book-title").text()); //$("#bookmark-content").html(html);
+  //get links to next and previous bookmarks on the page
 
   let pageMarks = Object.keys(allBookmarks[pageKey]);
   let pos = pageMarks.indexOf(pidKey); //if topic filtering is enabled
@@ -5516,7 +5533,9 @@ function bookmarkManager(actualPid) {
 
 
       if (!getCurrentBookmark(pageKey, actualPid, bmList, bmModal, "both")) {
-        toastr__WEBPACK_IMPORTED_MODULE_5___default.a.info(_language_lang__WEBPACK_IMPORTED_MODULE_9__["__lang"]`${"fragment:f1"} ${actualPid} ${"fragment:f2"}`);
+        Object(_language_lang__WEBPACK_IMPORTED_MODULE_9__["getString"])("fragment:f1", true).then(value => {
+          toastr__WEBPACK_IMPORTED_MODULE_5___default.a.info(_language_lang__WEBPACK_IMPORTED_MODULE_9__["__lang"]`${value} ${actualPid} ${"fragment:f2"}`);
+        });
         return;
       } //init navigator controls
 
@@ -5534,8 +5553,7 @@ function bookmarkManager(actualPid) {
         toastr__WEBPACK_IMPORTED_MODULE_5___default.a.info(_language_lang__WEBPACK_IMPORTED_MODULE_9__["__lang"]`${"fragment:f1"} ${actualPid} ${"fragment:f2"}`);
       }
     });
-  } else {
-    console.log(teaching.bm_list_store);
+  } else {//console.log(teaching.bm_list_store);
   }
 }
 /*
@@ -5573,14 +5591,13 @@ function clearSelectedAnnotation() {
     let guard = $("div.transcript.ui.disable-selection:not(.user)");
 
     if (guard.length > 0) {
-      console.log("removing selection guard");
+      //console.log("removing selection guard");
       guard.removeClass("disable-selection");
     }
   }
 }
 
-function scrollComplete(message, type) {
-  console.log(`${message}: ${type}`);
+function scrollComplete(message, type) {//console.log(`${message}: ${type}`);
 }
 
 function scrollIntoView(id, caller) {
@@ -6901,7 +6918,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _status__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./status */ "./src/js/modules/_config/status.js");
 
 
- //import {decodeKey, parseKey, genKey} from "./key";
+
 
 const transcript = __webpack_require__(/*! ./key */ "./src/js/modules/_config/key.js"); //change these values to reflect transcript info
 
@@ -7727,8 +7744,7 @@ function setLanguage(constants) {
   axios__WEBPACK_IMPORTED_MODULE_0___default.a.get(url).then(response => {
     //console.log("language %o", response.data);
     language = response.data;
-    status = LOADED;
-    console.log("%s loaded", lang);
+    status = LOADED; //console.log("%s loaded", lang);
   }).catch(error => {
     status = FAILED;
     toastr__WEBPACK_IMPORTED_MODULE_1___default.a.error(`Failed to load language: ${lang}`);
@@ -7755,14 +7771,14 @@ function waitForReady(s, k) {
           return;
         }
       } else {
-        console.log("Language loaded at wait count: %s", cnt);
+        //console.log("Language loaded at wait count: %s", cnt);
         resolve(keyValue(s, k));
         return;
       }
     }
 
     if (status == LOADING) {
-      console.log("wait started for language to load: '%s:%s'", s, k);
+      //console.log("wait started for language to load: '%s:%s'", s, k);
       wait(s, k, 250);
     } else {
       resolve(keyValue(s, k));
@@ -7784,12 +7800,24 @@ function waitForReady(s, k) {
 
 
 function keyValue(s, k) {
+  let value;
+
   if (status === NOTLOADED) {
-    return "not loaded";
+    value = `not loaded(${s}:${k})`;
+    console.error(value);
+    return value;
   }
 
   if (status !== LOADED) {
-    return `${status === LOADING ? `loading(${s}:${k})` : `failed(${s}:${k})`}`;
+    if (status === LOADING) {
+      value = `loading(${s}:${k})`;
+      console.error(value);
+    } else {
+      value = `failed(${s}:${k})`;
+      console.error(value);
+    }
+
+    return value;
   }
 
   if (!language[s]) {
