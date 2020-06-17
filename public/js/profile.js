@@ -532,6 +532,7 @@ __webpack_require__.r(__webpack_exports__);
 let sourceInfo = {
   title: {
     "10": "The Way of Mastery",
+    "16": "Polish Way of Mastery",
     "11": "The Impersonal Life",
     "12": "ACIM Sparkley Edition",
     "13": "The Raj Material",
@@ -669,6 +670,28 @@ let sourceInfo = {
     "name": "The Way of Transformation"
   }, {
     "value": "106",
+    "name": "The Way of Knowing"
+  }],
+  "16": [{
+    "value": "*",
+    "name": "All Books"
+  }, {
+    "value": "1601",
+    "name": "The Jeshua Letters"
+  }, {
+    "value": "1602",
+    "name": "The Way of the Servant"
+  }, {
+    "value": "1606",
+    "name": "The Early Years"
+  }, {
+    "value": "1603",
+    "name": "The Way of the Heart"
+  }, {
+    "value": "1604",
+    "name": "The Way of Transformation"
+  }, {
+    "value": "1605",
     "name": "The Way of Knowing"
   }]
 };

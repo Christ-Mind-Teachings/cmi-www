@@ -503,7 +503,9 @@ function bookmarkManager(actualPid) {
         console.error(err);
 
         if (err === "bookmark not found") {
-          notify.info(__lang`${"fragment:f1"} ${actualPid} ${"fragment:f2"}`);
+          getString("fragment:f1", true).then((v) => {
+            notify.info(`${v} ${actualPid} ${getString("fragment:f2")}`);
+          });
         }
       });
   }

@@ -172,3 +172,7 @@ i.toc-share.icon {
   font-size: 1.2rem;
 }
 
+#page-contents [data-tooltip] {
+  z-index: 2;
+}
+

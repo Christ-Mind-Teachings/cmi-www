@@ -20,6 +20,7 @@ Modify or delete topics and view related bookmarks.
           <div class="item" data-value="15">ACIM Original Edition</div>
           <div class="item" data-value="14">A Course Of Love</div>
           <div class="item" data-value="10">The Way of Mastery</div>
+          <div class="item" data-value="16">Polish Way of Mastery</div>
           <div class="item" data-value="13">The Raj Material</div>
           <div class="item" data-value="12">ACIM Sparkly Edition</div>
           <div class="item" data-value="11">The Impersonal Life</div>

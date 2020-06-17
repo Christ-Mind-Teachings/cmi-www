@@ -57,7 +57,7 @@ each page. Video documentation is also available.
       </a>
       <div class="content">
         <div class="description">
-          Here you can find information and documentation about the features and functions of the Library.
+          Information and Documentation
         </div>
       </div>
     </div>
@@ -69,18 +69,7 @@ each page. Video documentation is also available.
       </a>
       <div class="content">
         <div class="description">
-          <em>A Course in Miracles</em> Original Edition published by
-          the Course in Miracles Society.
-        </div>
-      </div>
-    </div>
-    <div class="card">
-      <a id="raj-christmind-info" href="/t/raj/" class="image" data-tooltip="Click to view the Raj Material." data-position="bottom center">
-        <img src="/public/img/cmi/raj-big.jpg">
-      </a>
-      <div class="content">
-        <div class="description">
-          In 1982 during a period of personal difficulty Paul Tuttle began a life changing inner dialog with Raj. Since that time Paul has penned two books about his relationship with Raj, who later identified himself as "the author of the Course" and hosted Raj in facilitating an enlightening ACIM study group.
+          <em>A Course in Miracles Original Edition</em>
         </div>
       </div>
     </div>
@@ -90,7 +79,7 @@ each page. Video documentation is also available.
       </a>
       <div class="content">
         <div class="description">
-          In 1987 Jon Marc Hammer (Jayem) was reunited with Jeshua while meditating in his living room. This began a relationship that resulted in a pathway of awakening called <em>The Way of Mastery</em> and many other inspired messages.
+          <em>The Way of Mastery</em>
         </div>
       </div>
     </div>
@@ -100,13 +89,37 @@ each page. Video documentation is also available.
       </a>
       <div class="content">
         <div class="description">
-          Forty years ago Jesus dictated ACIM to the scribe Helen
-          Schucman. More recently, over three years, he similarly
-          dictated A Course of Love to Mari Perron. Students of ACIM
-          will recognize the Voice. Jesus describes ACOL as a
-          "continuation" of A Course in Miracles. Students of truth,
-          whatever their background, will find that ACOL resonates with
-          the heart.
+          <em>A Course Of Love</em>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <a id="raj-christmind-info" href="/t/raj/" class="image" data-tooltip="Click to view the Raj Material." data-position="bottom center">
+        <img src="/public/img/cmi/raj-big.jpg">
+      </a>
+      <div class="content">
+        <div class="description">
+          <em>The Raj Material</em>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <a id="pwom-christmind-info" href="/t/pwom/" class="image" data-tooltip="Click to visit the Polish translation of the Way of Mastery." data-position="bottom center">
+        <img src="/public/img/cover/pwom1-big.jpg">
+      </a>
+      <div class="content">
+        <div class="description">
+          <em>The Way of Mastery</em> in Polish
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <a id="pwom-christmind-info" href="/t/pwom/" class="image" data-tooltip="Click to visit the Polish translation of the Way of Mastery." data-position="bottom center">
+        <img src="/public/img/cover/pwom2-big.jpg">
+      </a>
+      <div class="content">
+        <div class="description">
+          <em>The Way of Mastery</em> in Polish
         </div>
       </div>
     </div>
@@ -116,23 +129,17 @@ each page. Video documentation is also available.
       </a>
       <div class="content">
         <div class="description">
-          In 1914, Joseph S. Benner published <em>The Impersonal
-          Life</em> under the pseudonym <em>Anonymous</em> and believed
-          it words were recorded directly from God.
+          <em>The Impersonal Life</em>
         </div>
       </div>
     </div>
     <div class="card">
       <a id="acim-christmind-info" href="/t/acim/" class="image" data-tooltip="Click to view the ACIM Sparkly Edition." data-position="bottom center">
-        <img src="/public/img/cmi/acim-big.jpg">
+        <img src="/public/img/cover/acim-big.jpg">
       </a>
       <div class="content">
         <div class="description">
-          Received by Helen Schucman through inner dictation from Jesus
-          and first published in 1976 <em>The Course</em> contains a
-          curriculum for spiritual transformation consisting of three
-          sections entitled "Text", "Workbook for Students", and "Manual
-          for Teachers".
+          <em>A Course in Miracles Sparkly Edition</em>
         </div>
       </div>
     </div>

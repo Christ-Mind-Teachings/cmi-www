@@ -5,6 +5,7 @@ const {getUrl: acol_getUrl} = require("acol/modules/_config/key");
 const {getUrl: jsb_getUrl} = require("jsb/modules/_config/key");
 const {getUrl: raj_getUrl} = require("raj/modules/_config/key");
 const {getUrl: wom_getUrl} = require("wom/modules/_config/key");
+const {getUrl: pwom_getUrl} = require("pwom/modules/_config/key");
 
 function getUrl(source, key) {
   let url;
@@ -27,6 +28,9 @@ function getUrl(source, key) {
     case "wom":
       url = wom_getUrl(key, true);
       break;
+    case "pwom":
+      url = pwom_getUrl(key, true);
+      break;
     case "www":
       url = www_getUrl(key, true);
       break;
@@ -39,7 +43,7 @@ function getUrl(source, key) {
 
 export function getLinkHref(link) {
   let url = getUrl(link.desc.source, link.key);
-  
+
   if (location.pathname === url) {
     return `#${link.desc.pid}`;
   }
@@ -63,3 +67,4 @@ export function createLinkListener(getLink) {
     location.href = getLinkHref(link);
   });
 }
+

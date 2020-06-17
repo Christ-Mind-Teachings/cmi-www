@@ -118,6 +118,41 @@
           "name": "The Way of Knowing"
         }
       ]
+    },
+    {
+      "name": "Polish Way of Mastery",
+      "sourceId": 16,
+      "sid": "pwom",
+      "books": [
+        {
+          "value": "*",
+          "name": "All Books"
+        },
+        {
+          "value": "lj",
+          "name": "The Jeshua Letters"
+        },
+        {
+          "value": "wos",
+          "name": "The Way of the Servant"
+        },
+        {
+          "value": "early",
+          "name": "The Early Years"
+        },
+        {
+          "value": "woh",
+          "name": "The Way of the Heart"
+        },
+        {
+          "value": "wot",
+          "name": "The Way of Transformation"
+        },
+        {
+          "value": "wok",
+          "name": "The Way of Knowing"
+        }
+      ]
     }
   ]
 }

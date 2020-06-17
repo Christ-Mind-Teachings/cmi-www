@@ -19,6 +19,7 @@ module.exports = {
       "acol": path.resolve(__dirname, "../cmi-acol/src/js"),
       "jsb": path.resolve(__dirname, "../cmi-jsb/src/js"),
       "raj": path.resolve(__dirname, "../cmi-raj/src/js"),
+      "pwom": path.resolve(__dirname, "../cmi-pwom/src/js"),
       "wom": path.resolve(__dirname, "../cmi-wom/src/js")
     }
   },
