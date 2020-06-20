@@ -105,16 +105,6 @@ each page. Video documentation is also available.
     </div>
     <div class="card">
       <a id="pwom-christmind-info" href="/t/pwom/" class="image" data-tooltip="Click to visit the Polish translation of the Way of Mastery." data-position="bottom center">
-        <img src="/public/img/cover/pwom1-big.jpg">
-      </a>
-      <div class="content">
-        <div class="description">
-          <em>The Way of Mastery</em> in Polish
-        </div>
-      </div>
-    </div>
-    <div class="card">
-      <a id="pwom-christmind-info" href="/t/pwom/" class="image" data-tooltip="Click to visit the Polish translation of the Way of Mastery." data-position="bottom center">
         <img src="/public/img/cover/pwom2-big.jpg">
       </a>
       <div class="content">

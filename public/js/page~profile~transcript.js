@@ -1833,8 +1833,8 @@ module.exports = {
   sourceId: 16,
   sid: "pwom",
   prefix: "/t/pwom",
-  books: ["lj", "wos", "woh", "wot", "wok", "early"],
-  bookIds: ["xxx", "lj", "wos", "woh", "wot", "wok", "early"],
+  books: ["lj", "wos", "woh", "wot", "wok", "early", "acq"],
+  bookIds: ["xxx", "lj", "wos", "woh", "wot", "wok", "early", "acq"],
   contents: {
     lj: ["xxx", "acknow", "reader", "forwd", "intr", "chap01", "chap02", "chap03", "chap04", "chap05", "chap06", "chap07", "chap08", "chap09", "chap10", "chap11", "chap12", "eplg"],
     wos: ["xxx", "intr", "chap01", "chap02", "chap03", "chap04", "aftwrd", "eplg", "prayer"],
@@ -1845,7 +1845,8 @@ module.exports = {
     wok: ["xxx", "preface", "l01", "l02", "l03", "l04", "l05", "l06", "l07", "l08", "l09", "l10", "l11"],
     wok2: ["xxx", "/l02qa", "/l03qa", "/l04qa", "/l06qa", "/l10qa"],
     early: ["xxx", "intr", "chap01", "chap02", "chap03", "chap04", "chap05", "chap06", "chap07", "chap08", "chap09", "chap10"],
-    early2: ["xxx", "/chap02qa", "/chap03qa", "/chap08qa", "/chap09qa"]
+    early2: ["xxx", "/chap02qa", "/chap03qa", "/chap08qa", "/chap09qa"],
+    acq: ["xxx", "contact"]
   }
 };
 
@@ -7657,10 +7658,6 @@ function getPageInfo(pageKey, data = false) {
 */
 //import indexOf from "lodash/indexOf";
 const sprintf = __webpack_require__(/*! sprintf-js */ "./node_modules/sprintf-js/src/sprintf.js").sprintf; //source id: each source has a unique id
-//WOM = 10
-//JSB = 11
-//ACIM = 12
-//RAJ = 13
 //WWW = 99 This is the Library
 
 

@@ -22,10 +22,6 @@
 const sprintf = require("sprintf-js").sprintf;
 
 //source id: each source has a unique id
-//WOM = 10
-//JSB = 11
-//ACIM = 12
-//RAJ = 13
 //WWW = 99 This is the Library
 const sourceId = 99;
 const sid = "www";

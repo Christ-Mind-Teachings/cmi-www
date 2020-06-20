@@ -8,7 +8,7 @@ footer:
   donate: true
   id: "CMI-WWW"
   source: "WWW"
-  repohref: "https://github.com/rmercer33/cmi-www"
+  repohref: "https://github.com/Christ-Mind-Teachings/cmi-www"
 ---
 
 <!-- <div class="ui basic segment"> -->
