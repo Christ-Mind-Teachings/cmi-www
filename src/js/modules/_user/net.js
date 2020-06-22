@@ -2,15 +2,19 @@ import axios from "axios";
 import globals from "../../globals";
 
 const acimKey = require("acim/modules/_config/key");
+const oeKey = require("oe/modules/_config/key");
 const acolKey = require("acol/modules/_config/key");
 const rajKey = require("raj/modules/_config/key");
 const jsbKey = require("jsb/modules/_config/key");
 const womKey = require("wom/modules/_config/key");
+const pwomKey = require("pwom/modules/_config/key");
 
 const ACIMSOURCEID = "12";
+const OESOURCEID = "15";
 const ACOLSOURCEID = "14";
 const RAJSOURCEID = "13";
 const WOMSOURCEID = "10";
+const PWOMSOURCEID = "16";
 const JSBSOURCEID = "11";
 
 export function getConfig(key) {
@@ -69,6 +73,9 @@ function getNoteUrl(key) {
   if (akey.startsWith(ACIMSOURCEID)) {
     url = acimKey.getUrl(key, true);
   }
+  if (akey.startsWith(OESOURCEID)) {
+    url = oeKey.getUrl(key, true);
+  }
   else if (akey.startsWith(ACOLSOURCEID)) {
     url = acolKey.getUrl(key, true);
   }
@@ -80,6 +87,9 @@ function getNoteUrl(key) {
   }
   else if (akey.startsWith(WOMSOURCEID)) {
     url = womKey.getUrl(key, true);
+  }
+  else if (akey.startsWith(PWOMSOURCEID)) {
+    url = pwomKey.getUrl(key, true);
   }
 
   return url;

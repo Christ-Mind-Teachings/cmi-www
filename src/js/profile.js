@@ -10,7 +10,7 @@ import auth from "./modules/_user/netlify";
 import about from "./modules/_about/about";
 
 import {loadEmailListTable} from "./modules/_user/email";
-import {initializeTopicManager} from "./modules/_user/topicmgr";
+//import {initializeTopicManager} from "./modules/_user/topicmgr";
 
 import {setLanguage} from "./modules/_language/lang";
 import constants from "./constants";
@@ -33,7 +33,7 @@ $(document).ready(() => {
   //topic mgt page
   if ($(".manage-topic-list").length === 1) {
     console.log("loading topic list table");
-    initializeTopicManager();
+    //initializeTopicManager();
   }
 
 });
