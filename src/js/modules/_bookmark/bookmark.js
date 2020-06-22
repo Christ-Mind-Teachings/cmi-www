@@ -18,7 +18,8 @@ import {
   updateSelectionTopicList
 } from "./selection";
 import {getLink} from "./annotate";
-import { createLinkListener, getLinkHref } from "../_link/setup";
+import { createLinkListener, getLinkHref } from "../_link/setupNoLink";
+//import { createLinkListener, getLinkHref } from "../_link/setup";
 import {getString} from "../_language/lang";
 
 //teaching specific constants, assigned at initialization
