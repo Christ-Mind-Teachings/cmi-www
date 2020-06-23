@@ -58,6 +58,7 @@ defaults:
       bid: "acq"
       search: false
       audio: false
+      pnumToggle: false
   - scope:
       path: ""
       type: profile
@@ -68,6 +69,7 @@ defaults:
       image-width: 612
       image-height: 792
       bid: "profile"
+      pnumToggle: false
   - scope:
       path: ""
       type: email

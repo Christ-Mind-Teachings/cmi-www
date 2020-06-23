@@ -2588,10 +2588,6 @@ $(document).ready(() => {
 
     Object(_modules_util_url__WEBPACK_IMPORTED_MODULE_1__["showParagraph"])();
     Object(_modules_bookmark_start__WEBPACK_IMPORTED_MODULE_6__["bookmarkStart"])("transcript");
-
-    if ($(".disable-paragraph-marker").length > 0) {
-      $(".toggle-paragraph-markers").eq(0).trigger("click");
-    }
   }).catch(error => {
     //report error to the user - somehow
     console.error(error);

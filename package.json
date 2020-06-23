@@ -15,7 +15,7 @@
     "start": "npm run jekyll & npm run watch",
     "d:jekyll": "JEKYLL_ENV=development bundle exec jekyll build",
     "deploy:dev": "npm run d:webpack && npm run d:jekyll",
-    "p:webpack": "webpack --mode production --watch",
+    "p:webpack": "webpack --mode production",
     "d:webpack": "webpack --mode development --watch",
     "p:jekyll": "JEKYLL_ENV=production bundle exec jekyll build --config ./_config.prod.yml",
     "deploy:prod": "npm run p:webpack && npm run p:jekyll",

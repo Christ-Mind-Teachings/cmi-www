@@ -1,8 +1,14 @@
 import {TweenMax} from "gsap";
+import store from "store";
+
+let storeKey = "pnDisplayState:";
 
 export function initTranscriptPage() {
+  storeKey = `${storeKey}${$("body").attr("sourceId")}`;
+
   initStickyMenu();
   labelParagraphs();
+  setParagraphNumberDisplayState();
   createParagraphNumberToggleListener();
 }
 
@@ -62,11 +68,53 @@ function createParagraphNumberToggleListener() {
     let el = $(".transcript.ui.text.container");
     if (el.hasClass("hide-pnum")) {
       el.removeClass("hide-pnum");
+      store.set(storeKey, "on");
+      setParagraphNumberDisplayColor("on");
+    }
+    else {
+      el.addClass("hide-pnum");
+      store.set(storeKey, "off");
+      setParagraphNumberDisplayColor("off");
+    }
+  });
+}
+
+function setParagraphNumberDisplayColor(state) {
+  let color = state === "on"? "green": "red";
+  let oldColor = state === "on"? "red": "green";
+
+  $(".toggle-paragraph-markers > span > .paragraph.icon").removeClass(oldColor).addClass(color);
+}
+
+function setParagraphNumberDisplayState() {
+  let toggleAvailable = $(".toggle-paragraph-markers").length === 0 ? false: true;
+
+  let state = store.get(storeKey);
+  let el = $(".transcript.ui.text.container");
+  let current = el.hasClass("hide-pnum") ? "off": "on";
+
+  //if toggle menu option not available set page to hide paragraph numbers and return
+  if (!toggleAvailable) {
+    $(".transcript.ui.text.container").addClass("hide-pnum");
+    return;
+  }
+
+  //if not set use current value
+  if (!state) {
+    state = current;
+    store.set(storeKey, state);
+  }
+
+  if (state !== current) {
+    if (state === "on") {
+      el.removeClass("hide-pnum");
     }
     else {
       el.addClass("hide-pnum");
     }
-  });
+  }
+
+  setParagraphNumberDisplayColor(state);
 }
 
 /*
