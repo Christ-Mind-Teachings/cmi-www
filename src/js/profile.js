@@ -26,13 +26,11 @@ $(document).ready(() => {
 
   //email mgt page
   if ($(".manage-email-list").length === 1) {
-    console.log("loading email list table");
     loadEmailListTable();
   }
 
   //topic mgt page
   if ($(".manage-topic-list").length === 1) {
-    console.log("loading topic list table");
     initializeTopicManager();
   }
 

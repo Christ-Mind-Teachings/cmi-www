@@ -260,10 +260,10 @@ function createAnnotation(formValues) {
 */
 function formatNewTopics({newTopics}) {
 
-  //only allow alpha chars and comma's and spaces
-  let topics = newTopics.replace(/[^a-zA-Z0-9, ]/g, "");
+  //only allow digits, alpha chars (including Polish chars) and comma's and spaces
+  let topics = newTopics.replace(/[^a-zA-Z0-9ąćęłńóśźżĄĆĘŁŃÓŚŹŻ, ]/g, "");
 
-  if (!topics || topics === "" ) {
+  if (!topics || topics === "") {
     return [];
   }
 

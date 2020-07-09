@@ -244,15 +244,19 @@ function buildBookmarkListFromServer(response, keyInfo) {
 }
 
 /*
-  Persist annotation
-    - in local storage and to server if user is signed in
+  Persist annotation in dynamodb
 
-  args: annotation
+  args pageKey and addToLocalStorage are passed by topicmanager.js, otherwise
+  they are not used.
 */
-function postAnnotation(annotation) {
+function postAnnotation(annotation, pageKey, addToLocalStorage=true) {
   //console.log("annotation: ", annotation);
-  const pageKey = teaching.keyInfo.genPageKey();
+
   const userInfo = getUserInfo();
+
+  if (!pageKey) {
+    pageKey = teaching.keyInfo.genPageKey();
+  }
 
   //the annotation creation data; aka annotationId, aid
   let now = Date.now();
@@ -266,19 +270,36 @@ function postAnnotation(annotation) {
       delete serverAnnotation.selectedText.wrap;
     }
 
-    if (serverAnnotation.selectedText && !serverAnnotation.selectedText.aid) {
-      serverAnnotation.selectedText.aid = now.toString(10);
+    //modified is added by topicmgr.js
+    if (serverAnnotation.modified) {
+      delete serverAnnotation.modified;
     }
 
-    //convert selectedText to JSON
-    serverAnnotation.selectedText = JSON.stringify(serverAnnotation.selectedText);
+    //selectedText is already stringified when called by topicmgr.js
+    if (typeof serverAnnotation.selectedText !== "string") {
+      if (serverAnnotation.selectedText && !serverAnnotation.selectedText.aid) {
+        serverAnnotation.selectedText.aid = now.toString(10);
+      }
 
-    let postBody = {
-      userId: userInfo.userId,
-      bookmarkId: teaching.keyInfo.genParagraphKey(serverAnnotation.rangeStart, pageKey),
-      annotationId: serverAnnotation.creationDate ? serverAnnotation.creationDate : now,
-      annotation: serverAnnotation
-    };
+      //convert selectedText to JSON
+      serverAnnotation.selectedText = JSON.stringify(serverAnnotation.selectedText);
+    }
+
+    let postBody = {};
+
+    // if pageKey passed we're called from topicmgr.js
+    if (pageKey) {
+      postBody.userId = userInfo.userId;
+      postBody.bookmarkId = pageKey;
+      postBody.annotationId = serverAnnotation.creationDate;
+      postBody.annotation = serverAnnotation;
+    }
+    else {
+      postBody.userId = userInfo.userId;
+      postBody.bookmarkId = teaching.keyInfo.genParagraphKey(serverAnnotation.rangeStart, pageKey);
+      postBody.annotationId = serverAnnotation.creationDate ? serverAnnotation.creationDate : now;
+      postBody.annotation = serverAnnotation;
+    }
 
     //console.log("posting: %o", serverAnnotation);
     axios.post(`${globals.bookmarkApi}/bookmark/annotation`, postBody)
@@ -287,8 +308,8 @@ function postAnnotation(annotation) {
           console.error("not OK message: %s", data.data.message);
           notify.error(data.data.message);
         }
-        else {
-          //store locally
+        //store locally
+        else if (addToLocalStorage) {
           storeAnnotation(annotation, now);
         }
       })

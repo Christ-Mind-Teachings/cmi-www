@@ -67,7 +67,7 @@ function getNoteTranscript(id, url) {
   });
 }
 
-function getNoteUrl(key) {
+export function getNoteUrl(key) {
   let url;
   let akey = key + "";
   if (akey.startsWith(ACIMSOURCEID)) {

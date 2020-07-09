@@ -1,9 +1,12 @@
 import notify from "toastr";
-import {getBookmarkText, getTopics, getBookmarks} from "./net";
+import axios from "axios";
+import {getNoteUrl as getUrl, getBookmarkText, getTopics, getBookmarks} from "./net";
 import {getUserInfo} from "./netlify";
 import intersectionWith from "lodash/intersectionWith";
 import differenceWith from "lodash/differenceWith";
 import uniqWith from "lodash/uniqWith";
+import globals from "../../globals";
+import bmnet from "../_bookmark/bmnet";
 
 let sourceInfo = {
   title: {
@@ -231,6 +234,7 @@ let sourceInfo = {
 
 let bookmarks = {};
 let topics = {};
+let modified = {};
 
 function generateTopicList(topics) {
   return (`
@@ -275,7 +279,7 @@ function generateSection(bm) {
   return (`
     <div class="ui vertical segment">
       <div class="ui small header bookmark-header">
-        <a target="_blank" href="${bm.mgr.url}?v=${bm.mgr.pid}&key=${bm.id}">${bm.mgr.title?bm.mgr.title:bm.mgr.url}</a>
+        <a id="${bm.bookmark.creationDate}" target="_blank" href="${bm.mgr.url}?v=${bm.mgr.pid}&key=${bm.id}">${bm.mgr.title?bm.mgr.title:bm.mgr.url}</a>
         <br/>
         <div class="ui horizontal bulleted link list">
           ${generateHorizontalList(bm.bookmark.topicList)}
@@ -284,8 +288,8 @@ function generateSection(bm) {
         ${bm.mgr.comment?bm.mgr.comment:""}
       </div>
       ${generateContent(bm.mgr.content)}
-      <p>
-        ~ ${bm.id}
+      <p ${bm.mgr.type !== "note"?`class='cmi-manage-quote ${bm.bookmark.quote?"in-database":""} ${bm.bookmark.creationDate}'`:""}>
+        ~${bm.id}${bm.mgr.type === "note"?"":`:${bm.bookmark.creationDate}:${bm.bookmark.rangeStart}`}
       </p>
     </div>
   `);
@@ -370,7 +374,7 @@ function initForm() {
 
       //find bookmarks with deleted topics
       let bookmarksWithDeletedTopics = getBookmarksByTopic(topicManager.source, deleted);
-      console.log("matches: %o", bookmarksWithDeletedTopics);
+      //console.log("matches: %o", bookmarksWithDeletedTopics);
 
       //remove deleted topics from bookmarks
       if (bookmarksWithDeletedTopics.length > 0) {
@@ -505,6 +509,9 @@ function initForm() {
     $("#confirmDelete").modal("show");
   });
 
+  /*
+   * Not yet implemented
+   */
   $("#renameTopicButton").on("click", function() {
     let topicManager = getFormData();
 
@@ -595,6 +602,194 @@ function initForm() {
     topicManager.topicArray = topicArray;
     generateBookmarkText(matches, topicManager);
 
+  });
+
+  /*
+   * Write changes to database
+   */
+  $("#applyChangesButton").on("click", function() {
+    let modified = getModifiedBookmarks();
+    //console.log("modified: %o", modified);
+
+    //update database
+    modified.forEach(m => {
+      delete m.annotation.modified;
+      bmnet.postAnnotation(m.annotation, m.key, false);
+    });
+
+    clearModified();
+    notify.success("Modifications Saved");
+  });
+}
+
+function initManageQuoteEventHandler() {
+
+  /*
+   * Open quote editor, query database for quote and populate
+   * editor when found. Allow user to update, delete, or add
+   * quote to database
+   */
+  $("#activity-report").on("click", ".cmi-manage-quote", function(e) {
+    e.stopPropagation();
+    e.preventDefault();
+
+    let userInfo = getUserInfo();
+    if (!userInfo) {
+      return;
+    }
+
+    /*
+    if (!userInfo.roles.includes("quote-manager")) {
+      console.log("not quote-manager");
+      return;
+    }
+    */
+
+    if (isQuoteEditorOpen()) {
+      return;
+    }
+
+    setQuoteEditorOpen();
+
+    let quoteInfo = {};
+    let citation = $(this).text().trim();
+    let [parakey, annotationId, pid] = citation.substr(1).split(":");
+    let quote = $(this).prev("p").text().trim().replace(/\r?\n|\r/g, " ");
+
+    quoteInfo.parakey = parakey;
+    quoteInfo.annotationId = annotationId;
+    quoteInfo.pid = pid;
+    quoteInfo.quote = quote;
+    quoteInfo.userId = userInfo.userId;
+    quoteInfo.url = getUrl(parakey); 
+    quoteInfo.citation = $(`#${annotationId}`).text().trim();
+
+    //console.log("quoteInfo: %o", quoteInfo);
+
+    //open quote editor, query from database and populate form,
+    //allow user to edit, delete or cancel
+    $(this).append(getQuoteForm());
+    initQuoteForm(quoteInfo);
+  });
+
+  //submit button
+  $("#activity-report").on("click", "#quote-editor-form .quote-submit", function(e) {
+    e.stopPropagation();
+    e.preventDefault();
+
+    let info = $("#quote-editor-form").form("get values");
+    //console.log("info: %o", info)
+
+    let url = `${globals.quote}/quote`;
+    let postBody = {
+      userId: info.userId,
+      quoteId: `${info.parakey}:${info.annotationId}`,
+      pid: info.pid,
+      quote: info.quote,
+      url: info.url,
+      citation: info.citation
+    };
+
+    removeQuoteEditor();
+    clearQuoteEditorOpen();
+
+    axios.post(url, postBody).then((resp) => {
+      notify.info("Quote added or updated");
+      markAsInDB(info.parakey, info.annotationId);
+    });
+  });
+
+  //cancel button
+  $("#activity-report").on("click", "#quote-editor-form .quote-cancel", function(e) {
+    e.stopPropagation();
+    e.preventDefault();
+
+    removeQuoteEditor();
+    clearQuoteEditorOpen();
+  });
+
+  //cancel button
+  $("#activity-report").on("click", "#quote-editor-form .quote-delete", function(e) {
+    e.stopPropagation();
+    e.preventDefault();
+
+    let info = $("#quote-editor-form").form("get values");
+    let url = `${globals.quote}/quote/${info.userId}/${info.parakey}:${info.annotationId}`;
+
+    axios.delete(url).then((response) => {
+      notify.info("Quote deleted from database");
+      markAsNotInDB(info.parakey, info.annotationId);
+    })
+    .catch((error) => {
+      notify.error(`failed to delete quote: ${error.message}`); 
+    });
+
+    removeQuoteEditor();
+    clearQuoteEditorOpen();
+  });
+}
+
+function removeQuoteEditor() {
+  $("#quote-editor-form").remove();
+}
+
+function isQuoteEditorOpen() {
+  return $("#activity-report").hasClass("quote-editor-open");
+}
+
+function setQuoteEditorOpen() {
+  $("#activity-report").addClass("quote-editor-open");
+}
+
+function clearQuoteEditorOpen() {
+  $("#activity-report").removeClass("quote-editor-open");
+}
+
+/*
+ * Indicate bookmark is in quote db and
+ * mark bookmark as being modified and in quote db so it can be updated.
+ */
+function markAsInDB(key, aid, modified = true) {
+  let sourceId = key.substring(0,2);
+
+  if (modified) {
+    markModified(sourceId, key);
+    markQuotedState(key, aid, true);
+  }
+
+  $(`.${aid}`).addClass("in-database");
+}
+
+/*
+ * Indicate bookmark is not in the quote db and
+ * mark as modified
+ */
+function markAsNotInDB(key, aid) {
+  let sourceId = key.substring(0,2);
+
+  markModified(sourceId, key);
+  markQuotedState(key, aid, false);
+  $(`.${aid}`).removeClass("in-database");
+}
+
+function initQuoteForm(info) {
+  let form = $("#quote-editor-form");
+  let url = `${globals.quote}/quotedata/${info.userId}/${info.parakey}:${info.annotationId}`;
+
+  $("#quote-editor-form").addClass("loading");
+  axios.get(url).then((response) => {
+    //console.log("query resp: %o", response);
+    if (response.data.quote) {
+      info.database = response.data.quote.quote;
+
+      //quote is in db so allow user to delete it
+      $("#quote-editor-form .quote-delete").removeClass("disabled");
+      markAsInDB(info.parakey, info.annotationId, false);
+    }
+    $("#quote-editor-form").removeClass("loading");
+    form.form("set values", info);
+  }).catch((error) => {
+    $("#quote-editor-form").removeClass("loading");
   });
 }
 
@@ -730,22 +925,58 @@ function getBookmarksByTopic(source, topics) {
 }
 
 /*
+ * Find modified bookmarks
+ * - sources with modified bookmarks are in the global modified array,
+ * - paragraphs with modified bookmarks are marked modified: true
+ * - annotations in paragraphs are marked modified: true
+ */
+function getModifiedBookmarks() {
+  let matches = [];
+  let modifiedSources = Object.keys(modified);
+
+  modifiedSources.forEach(sid => {
+    //gather paragraphs with modified annotations
+    let modifiedParagraphs = bookmarks[sid].filter(para => {
+      return para.modified;
+    });
+
+    modifiedParagraphs.forEach(p => {
+      let modifiedAnnotations = p.bookmark.filter(a => {
+        return a.modified;
+      });
+
+      modifiedAnnotations.forEach(e => {
+        matches.push({sid: sid, key: p.id, annotation: e}); 
+      });
+    });
+
+  });
+
+  return matches;
+}
+
+/*
  * Delete topics in bookmarks if found in the argument array topics
  */
 function deleteBookmarkTopics(sourceId, bookmarks, topics) {
   bookmarks.forEach(item => {
     if (item.bookmark.topicList && item.bookmark.topicList.length > 0) {
+      let topicListCount = item.bookmark.topicList.length;
+      //mark topics deleted
       item.bookmark.topicList.forEach(t => {
         if (topics.includes(t.value)) {
           t.deleted = true;
         }
       });
+      //make a deletedTopicList on the annotation for topics marked deleted
+      // as history
       item.bookmark.deletedTopicList = item.bookmark.topicList.filter(t => {
         if (t.deleted) {
           return true;
         }
         return false;
       });
+      //filter topics marked deleted from topicList
       item.bookmark.topicList = item.bookmark.topicList.filter(t => {
         if (!t.deleted) {
           return true;
@@ -753,14 +984,67 @@ function deleteBookmarkTopics(sourceId, bookmarks, topics) {
         delete t.deleted;
         return false;
       });
+
+      //check if there has been a change
+      if (topicListCount !== item.bookmark.topicList.length) {
+        //mark annotation as modified
+        item.bookmark.modified = true;
+      }
     }
     markModified(sourceId, item.id);
   });
 }
 
+/*
+ * Mark bookmark paragraph as modified
+ */
 function markModified(sourceId, bookmarkId) {
+  let bkmrkId = bookmarkId;
+  if (typeof bookmarkId === "string") {
+    bkmrkId = parseFloat(bookmarkId);
+  }
+
   let b = bookmarks[sourceId].find(i => {
-    if (i.id === bookmarkId) {
+    if (i.id === bkmrkId) {
+      return true;
+    }
+    return false;
+  });
+
+  if (b) {
+    b.modified = true;
+    markSourceModified(sourceId);
+    $("#applyChangesButton").removeAttr("disabled");
+  }
+}
+
+function markSourceModified(sid) {
+  if (!modified[sid]) {
+    modified[sid] = {modified: true};
+  }
+}
+
+function clearModified() {
+  let modifiedSources = Object.keys(modified);
+
+  modifiedSources.forEach(sid => {
+    bookmarks[sid].forEach(para => {
+      delete para.modified;
+    });
+  });
+
+  //clear modified object
+  modified = {};
+
+  $("#applyChangesButton").attr("disabled", "");
+}
+
+function markQuotedState(parakey, annotationId, state) {
+  let sourceId = parakey.substring(0,2);
+  let numericKey = parseFloat(parakey);
+  let naid = parseInt(annotationId, 10);
+  let b = bookmarks[sourceId].find(i => {
+    if (i.id === numericKey) {
       return true;
     }
     return false;
@@ -769,9 +1053,63 @@ function markModified(sourceId, bookmarkId) {
   if (b) {
     b.modified = true;
   }
+  else {
+    notify.error("markQuotedState(): paragraph not found");
+    console.error("parakey: %s, annotationId: %s", parakey, annotationId);
+    return;
+  }
+  
+  let bookmark = b.bookmark.find((bmkark) => {
+    if (bmkark.creationDate === naid) {
+      return true;
+    }
+    return false;
+  });
+
+  //mark annotation as in quote databas and as modified
+  if (bookmark) {
+    bookmark.quote = state;
+    bookmark.modified = true;
+    //console.log("bookmark: %o", bookmark);
+  }
+  else {
+    notify.error("markQuotedState(): bookmark not found");
+    console.error("parakey: %s, annotationId: %s", parakey, annotationId);
+  }
+}
+
+function getQuoteForm() {
+  let form = `
+    <form name="quote-editor" id="quote-editor-form" class="ui form">
+      <input class="hidden-field" type="text" readonly name="annotationId">
+      <input class="hidden-field" type="text" name="parakey" readonly>
+      <input class="hidden-field" type="text" name="pid" readonly>
+      <input class="hidden-field" type="text" name="userId" readonly>
+      <input class="hidden-field" type="text" name="url" readonly>
+      <input class="hidden-field" type="text" name="citation" readonly>
+      <div class="field">
+        <label>Edit Content for Display as a Quote</label>
+        <textarea name="quote" rows="5"></textarea>
+      </div>
+      <div class="field">
+        <label>Quote in Database</label>
+        <textarea name="database" readonly placeholder="Not in database." rows="5"></textarea>
+      </div>
+      <div class="fields">
+        <button class="quote-submit ui green button" type="submit">Submit</button>
+        <button class="quote-cancel ui red basic button">Cancel</button>
+        <div class="twelve wide field">
+          <button class="quote-delete ui red disabled right floated button">Delete</button>
+        </div>
+      </div>
+    </form>
+  `;
+
+  return form;
 }
 
 export function initializeTopicManager() {
   initForm();
+  initManageQuoteEventHandler();
 }
 

@@ -130,6 +130,9 @@ export function initStickyMenu() {
   $(".main.menu  .ui.dropdown").dropdown({
     on: "hover"
   });
+
+  // enable tabs on source pages
+  $(".source-features > .menu .item").tab();
 }
 
 export function initAnimation(selector = "[data-book]") {

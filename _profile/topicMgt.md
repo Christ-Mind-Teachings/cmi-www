@@ -66,6 +66,10 @@ Modify or delete topics and view related bookmarks.
       <label>Display Bookmarks</label>
       <button id="displayBookmarksButton" disabled class="ui green button"> Display </button>
     </div>
+    <div class="field">
+      <label>Apply Changes</label>
+      <button id="applyChangesButton" disabled class="ui blue button"> Apply </button>
+    </div>
   </div>
 </div>
 

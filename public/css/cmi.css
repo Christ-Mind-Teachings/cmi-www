@@ -176,3 +176,23 @@ i.toc-share.icon {
   z-index: 2;
 }
 
+.ui.grid.source-acq-section {
+  margin-bottom: 1em;
+}
+
+.ui.grid.source-features {
+}
+
+#activity-report p.cmi-manage-quote {
+  cursor: pointer;
+  color: #1F70BF;
+}
+
+#activity-report p.cmi-manage-quote.in-database {
+  color: #e21631;
+}
+
+.ui.form > input.hidden-field {
+  display: none;
+}
+
