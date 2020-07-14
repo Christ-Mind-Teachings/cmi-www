@@ -2627,6 +2627,7 @@ __webpack_require__.r(__webpack_exports__);
 */
 /* harmony default export */ __webpack_exports__["default"] = ({
   acolManager: "rmercer33+acol@gmail.com",
+  cmiUserId: "05399539cca9ac38db6db36f5c770ff1",
   sources: "/public/config/sources.json",
   share: "https://rcd7l4adth.execute-api.us-east-1.amazonaws.com/latest/share",
   acol: "https://rcd7l4adth.execute-api.us-east-1.amazonaws.com/latest/acol/access",
@@ -3959,40 +3960,44 @@ function buildBookmarkListFromServer(response, keyInfo) {
 function postAnnotation(annotation, pageKey, addToLocalStorage = true) {
   //console.log("annotation: ", annotation);
   const userInfo = Object(_user_netlify__WEBPACK_IMPORTED_MODULE_6__["getUserInfo"])();
+  let calledByTopicMgr = true;
 
   if (!pageKey) {
     pageKey = teaching.keyInfo.genPageKey();
-  } //the annotation creation data; aka annotationId, aid
+    calledByTopicMgr = false;
+  } //the annotation creation data; aka creationDate, annotationId, aid
 
 
   let now = Date.now(); //post to server
 
   if (userInfo) {
     //this is critical, things get messed up if we don't do this
-    let serverAnnotation = lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_5___default()(annotation);
-
-    if (serverAnnotation.selectedText) {
-      delete serverAnnotation.selectedText.wrap;
-    } //modified is added by topicmgr.js
-
+    let serverAnnotation = lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_5___default()(annotation); //modified is added by topicmgr.js
 
     if (serverAnnotation.modified) {
       delete serverAnnotation.modified;
-    } //selectedText is already stringified when called by topicmgr.js
+    }
+
+    if (serverAnnotation.selectedText) {
+      delete serverAnnotation.selectedText.wrap; //selectedText is already stringified when called by topicmgr.js
+
+      if (typeof serverAnnotation.selectedText !== "string") {
+        if (!serverAnnotation.selectedText.aid) {
+          serverAnnotation.selectedText.aid = now.toString(10);
+        } //convert selectedText to JSON
 
 
-    if (typeof serverAnnotation.selectedText !== "string") {
-      if (serverAnnotation.selectedText && !serverAnnotation.selectedText.aid) {
-        serverAnnotation.selectedText.aid = now.toString(10);
-      } //convert selectedText to JSON
+        serverAnnotation.selectedText = JSON.stringify(serverAnnotation.selectedText);
+      }
+    }
 
-
-      serverAnnotation.selectedText = JSON.stringify(serverAnnotation.selectedText);
+    if (!serverAnnotation.creationDate) {
+      serverAnnotation.creationDate = now;
     }
 
     let postBody = {}; // if pageKey passed we're called from topicmgr.js
 
-    if (pageKey) {
+    if (calledByTopicMgr) {
       postBody.userId = userInfo.userId;
       postBody.bookmarkId = pageKey;
       postBody.annotationId = serverAnnotation.creationDate;
@@ -4000,7 +4005,7 @@ function postAnnotation(annotation, pageKey, addToLocalStorage = true) {
     } else {
       postBody.userId = userInfo.userId;
       postBody.bookmarkId = teaching.keyInfo.genParagraphKey(serverAnnotation.rangeStart, pageKey);
-      postBody.annotationId = serverAnnotation.creationDate ? serverAnnotation.creationDate : now;
+      postBody.annotationId = serverAnnotation.creationDate;
       postBody.annotation = serverAnnotation;
     } //console.log("posting: %o", serverAnnotation);
 
@@ -5547,10 +5552,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
- //const transcript = require("../_config/key");
-//const bm_modal_store = "bm.www.modal";
-//const bm_list_store = "bm.www.list";
-//teaching specific constants
+ //teaching specific constants
 
 let teaching = {};
 let shareEventListenerCreated = false;
@@ -6155,6 +6157,7 @@ function initShareDialog(source) {
       text = annotation.text().replace(/\n/, " ");
     }
 
+    console.log("share text: %s", text);
     let srcTitle = $("#src-title").text();
     let bookTitle = $("#book-title").text();
     let citation = `~ ${srcTitle}: ${bookTitle}`;
@@ -9371,6 +9374,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var scroll_into_view__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! scroll-into-view */ "./node_modules/scroll-into-view/scrollIntoView.js");
 /* harmony import */ var scroll_into_view__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(scroll_into_view__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var _language_lang__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../_language/lang */ "./src/js/modules/_language/lang.js");
+/* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! toastr */ "./node_modules/toastr/toastr.js");
+/* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(toastr__WEBPACK_IMPORTED_MODULE_6__);
 /*
   NOTE: When an annotation is shared and seen on a computer with bookmarks
         there could be a conflict between the users bookmarks and the shared
@@ -9385,6 +9390,7 @@ __webpack_require__.r(__webpack_exports__);
         When the close button is pressed then add the omitted bookmark
 
 */
+
 
 
 
@@ -9491,6 +9497,8 @@ function showAnnotation() {
     if (!response.Item) {
       // console.log("bookmark not found");
       Object(_bookmark_selection__WEBPACK_IMPORTED_MODULE_2__["highlightSkippedAnnotations"])();
+      Object(_util_url__WEBPACK_IMPORTED_MODULE_0__["loadComplete"])();
+      toastr__WEBPACK_IMPORTED_MODULE_6___default.a.warning("Requested Bookmark was not found");
       return;
     }
 

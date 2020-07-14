@@ -253,12 +253,14 @@ function postAnnotation(annotation, pageKey, addToLocalStorage=true) {
   //console.log("annotation: ", annotation);
 
   const userInfo = getUserInfo();
+  let calledByTopicMgr = true;
 
   if (!pageKey) {
     pageKey = teaching.keyInfo.genPageKey();
+    calledByTopicMgr = false;
   }
 
-  //the annotation creation data; aka annotationId, aid
+  //the annotation creation data; aka creationDate, annotationId, aid
   let now = Date.now();
 
   //post to server
@@ -266,29 +268,33 @@ function postAnnotation(annotation, pageKey, addToLocalStorage=true) {
     //this is critical, things get messed up if we don't do this
     let serverAnnotation = cloneDeep(annotation);
 
-    if (serverAnnotation.selectedText) {
-      delete serverAnnotation.selectedText.wrap;
-    }
-
     //modified is added by topicmgr.js
     if (serverAnnotation.modified) {
       delete serverAnnotation.modified;
     }
 
-    //selectedText is already stringified when called by topicmgr.js
-    if (typeof serverAnnotation.selectedText !== "string") {
-      if (serverAnnotation.selectedText && !serverAnnotation.selectedText.aid) {
-        serverAnnotation.selectedText.aid = now.toString(10);
-      }
+    if (serverAnnotation.selectedText) {
+      delete serverAnnotation.selectedText.wrap;
 
-      //convert selectedText to JSON
-      serverAnnotation.selectedText = JSON.stringify(serverAnnotation.selectedText);
+      //selectedText is already stringified when called by topicmgr.js
+      if (typeof serverAnnotation.selectedText !== "string") {
+        if (!serverAnnotation.selectedText.aid) {
+          serverAnnotation.selectedText.aid = now.toString(10);
+        }
+
+        //convert selectedText to JSON
+        serverAnnotation.selectedText = JSON.stringify(serverAnnotation.selectedText);
+      }
+    }
+
+    if (!serverAnnotation.creationDate) {
+      serverAnnotation.creationDate = now;
     }
 
     let postBody = {};
 
     // if pageKey passed we're called from topicmgr.js
-    if (pageKey) {
+    if (calledByTopicMgr) {
       postBody.userId = userInfo.userId;
       postBody.bookmarkId = pageKey;
       postBody.annotationId = serverAnnotation.creationDate;
@@ -297,7 +303,7 @@ function postAnnotation(annotation, pageKey, addToLocalStorage=true) {
     else {
       postBody.userId = userInfo.userId;
       postBody.bookmarkId = teaching.keyInfo.genParagraphKey(serverAnnotation.rangeStart, pageKey);
-      postBody.annotationId = serverAnnotation.creationDate ? serverAnnotation.creationDate : now;
+      postBody.annotationId = serverAnnotation.creationDate;
       postBody.annotation = serverAnnotation;
     }
 

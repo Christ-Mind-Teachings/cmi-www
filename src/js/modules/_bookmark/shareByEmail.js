@@ -126,3 +126,4 @@ export function shareByEmail(quote, citation, url) {
   //show input form
   $(".hide.email-share-dialog-wrapper").removeClass("hide");
 }
+

@@ -180,7 +180,8 @@ i.toc-share.icon {
   margin-bottom: 1em;
 }
 
-.ui.grid.source-features {
+.ui.grid.source-acq-section > .source-features .box {
+  font-size: 1.2em;
 }
 
 #activity-report p.cmi-manage-quote {
@@ -196,3 +197,81 @@ i.toc-share.icon {
   display: none;
 }
 
+#quote-modal {
+  font-size: 1.5em;
+}
+
+#quote-modal > .actions > i.hide {
+  display: none;
+}
+
+#quote-modal-header.center {
+  text-align: center;
+}
+
+#quote-modal-content > blockquote > footer {
+  font-style: italic;
+  text-align: right;
+}
+
+#quote-modal-content > blockquote {
+  quotes: "\201C""\201D""\2018""\2019";
+}
+
+#quote-modal-content > blockquote:before {
+  content: open-quote;
+  font-size: 4em;
+  line-height: 0.1em;
+  margin-right: 0.25em;
+  vertical-align: -0.4em;
+}
+
+#quote-modal-content.center {
+  text-align: center;
+}
+
+#quote-modal-content.watercolor {
+  background: url(../img/background/watercolor.png);
+}
+
+#quote-modal-content.double-bubble {
+  background: url(../img/background/double-bubble.png);
+}
+
+#quote-modal-share.hidden,
+#quote-modal-facebook.hidden,
+#quote-modal-message.hidden {
+  display:none;
+}
+
+#quote-modal-message {
+  border-top: 2px solid black;
+  padding: 3px;
+}
+
+#quote-modal-message.warning {
+  background-color: #FFF6F6;
+  color: #912D2B;
+}
+
+#quote-modal-message.positive {
+  background-color: #FCFFF5;
+  color: #1A531B;
+}
+
+/* share by email dialog, called by page.js */
+.email-share-dialog-wrapper {
+  position: fixed;
+  bottom: 55px;
+  left: 50%;
+  width: 60%;
+}
+
+.email-share-dialog {
+  position: relative;
+  left: -50%;
+}
+
+.hide.email-share-dialog-wrapper {
+  display: none;
+}

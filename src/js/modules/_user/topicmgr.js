@@ -678,7 +678,7 @@ function initManageQuoteEventHandler() {
     e.preventDefault();
 
     let info = $("#quote-editor-form").form("get values");
-    //console.log("info: %o", info)
+    let action = $(this).text().startsWith("Add") ? "Added" : "Updated";
 
     let url = `${globals.quote}/quote`;
     let postBody = {
@@ -694,7 +694,7 @@ function initManageQuoteEventHandler() {
     clearQuoteEditorOpen();
 
     axios.post(url, postBody).then((resp) => {
-      notify.info("Quote added or updated");
+      notify.info(`Quote ${action}`);
       markAsInDB(info.parakey, info.annotationId);
     });
   });
@@ -784,6 +784,7 @@ function initQuoteForm(info) {
 
       //quote is in db so allow user to delete it
       $("#quote-editor-form .quote-delete").removeClass("disabled");
+      $("#quote-editor-form button.quote-submit").text("Update Quote");
       markAsInDB(info.parakey, info.annotationId, false);
     }
     $("#quote-editor-form").removeClass("loading");
@@ -1096,7 +1097,7 @@ function getQuoteForm() {
         <textarea name="database" readonly placeholder="Not in database." rows="5"></textarea>
       </div>
       <div class="fields">
-        <button class="quote-submit ui green button" type="submit">Submit</button>
+        <button class="quote-submit ui green button" type="submit">Add Quote</button>
         <button class="quote-cancel ui red basic button">Cancel</button>
         <div class="twelve wide field">
           <button class="quote-delete ui red disabled right floated button">Delete</button>
@@ -1108,8 +1109,27 @@ function getQuoteForm() {
   return form;
 }
 
+function checkForUnsavedChanges() {
+  window.onbeforeunload = function (event) {
+    let unsavedChanges = $("#applyChangesButton").attr("disabled") !== "disabled";
+    var message;
+
+    if (unsavedChanges) {
+      message = "Please click 'Apply' to save your changes.";
+      if (typeof event == 'undefined') {
+        event = window.event;
+      }
+      if (event) {
+        event.returnValue = message;
+      }
+      return message;
+    }
+  };
+}
+
 export function initializeTopicManager() {
   initForm();
   initManageQuoteEventHandler();
+  checkForUnsavedChanges();
 }
 

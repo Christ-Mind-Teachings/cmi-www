@@ -18,6 +18,7 @@ import {highlightSkippedAnnotations, highlight} from "../_bookmark/selection";
 import range from "lodash/range";
 import scroll from "scroll-into-view";
 import {getString} from "../_language/lang";
+import notify from "toastr";
 
 //const key = require("../_config/key");
 
@@ -121,6 +122,8 @@ function showAnnotation() {
       if (!response.Item) {
         // console.log("bookmark not found");
         highlightSkippedAnnotations();
+        loadComplete();
+        notify.warning("Requested Bookmark was not found");
         return;
       }
 

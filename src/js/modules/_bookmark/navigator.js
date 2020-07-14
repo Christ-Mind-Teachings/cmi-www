@@ -11,10 +11,6 @@ import clipboard from "./clipboard";
 import {getUserInfo} from "../_user/netlify";
 import {getString, __lang} from "../_language/lang";
 
-//const transcript = require("../_config/key");
-//const bm_modal_store = "bm.www.modal";
-//const bm_list_store = "bm.www.list";
-
 //teaching specific constants
 let teaching = {};
 
@@ -627,6 +623,7 @@ export function initShareDialog(source) {
     else {
       text = annotation.text().replace(/\n/," ");
     }
+    console.log("share text: %s", text);
 
     let srcTitle = $("#src-title").text();
     let bookTitle = $("#book-title").text();

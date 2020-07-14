@@ -1123,8 +1123,8 @@ function initManageQuoteEventHandler() {
   $("#activity-report").on("click", "#quote-editor-form .quote-submit", function (e) {
     e.stopPropagation();
     e.preventDefault();
-    let info = $("#quote-editor-form").form("get values"); //console.log("info: %o", info)
-
+    let info = $("#quote-editor-form").form("get values");
+    let action = $(this).text().startsWith("Add") ? "Added" : "Updated";
     let url = `${_globals__WEBPACK_IMPORTED_MODULE_7__["default"].quote}/quote`;
     let postBody = {
       userId: info.userId,
@@ -1137,7 +1137,7 @@ function initManageQuoteEventHandler() {
     removeQuoteEditor();
     clearQuoteEditorOpen();
     axios__WEBPACK_IMPORTED_MODULE_1___default.a.post(url, postBody).then(resp => {
-      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info("Quote added or updated");
+      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info(`Quote ${action}`);
       markAsInDB(info.parakey, info.annotationId);
     });
   }); //cancel button
@@ -1219,6 +1219,7 @@ function initQuoteForm(info) {
       info.database = response.data.quote.quote; //quote is in db so allow user to delete it
 
       $("#quote-editor-form .quote-delete").removeClass("disabled");
+      $("#quote-editor-form button.quote-submit").text("Update Quote");
       markAsInDB(info.parakey, info.annotationId, false);
     }
 
@@ -1557,7 +1558,7 @@ function getQuoteForm() {
         <textarea name="database" readonly placeholder="Not in database." rows="5"></textarea>
       </div>
       <div class="fields">
-        <button class="quote-submit ui green button" type="submit">Submit</button>
+        <button class="quote-submit ui green button" type="submit">Add Quote</button>
         <button class="quote-cancel ui red basic button">Cancel</button>
         <div class="twelve wide field">
           <button class="quote-delete ui red disabled right floated button">Delete</button>
@@ -1568,9 +1569,31 @@ function getQuoteForm() {
   return form;
 }
 
+function checkForUnsavedChanges() {
+  window.onbeforeunload = function (event) {
+    let unsavedChanges = $("#applyChangesButton").attr("disabled") !== "disabled";
+    var message;
+
+    if (unsavedChanges) {
+      message = "Please click 'Apply' to save your changes.";
+
+      if (typeof event == 'undefined') {
+        event = window.event;
+      }
+
+      if (event) {
+        event.returnValue = message;
+      }
+
+      return message;
+    }
+  };
+}
+
 function initializeTopicManager() {
   initForm();
   initManageQuoteEventHandler();
+  checkForUnsavedChanges();
 }
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/src/jquery.js")))
 
