@@ -3991,22 +3991,16 @@ function postAnnotation(annotation, pageKey, addToLocalStorage = true) {
       }
     }
 
-    if (!serverAnnotation.creationDate) {
-      serverAnnotation.creationDate = now;
-    }
-
     let postBody = {}; // if pageKey passed we're called from topicmgr.js
 
     if (calledByTopicMgr) {
       postBody.userId = userInfo.userId;
       postBody.bookmarkId = pageKey;
-      postBody.annotationId = serverAnnotation.creationDate;
-      postBody.annotation = serverAnnotation;
+      postBody.annotationId = serverAnnotation.creationDate ? serverAnnotation.creationDate : now, postBody.annotation = serverAnnotation;
     } else {
       postBody.userId = userInfo.userId;
       postBody.bookmarkId = teaching.keyInfo.genParagraphKey(serverAnnotation.rangeStart, pageKey);
-      postBody.annotationId = serverAnnotation.creationDate;
-      postBody.annotation = serverAnnotation;
+      postBody.annotationId = serverAnnotation.creationDate ? serverAnnotation.creationDate : now, postBody.annotation = serverAnnotation;
     } //console.log("posting: %o", serverAnnotation);
 
 

@@ -1,15 +1,11 @@
 import {getUserInfo} from "../_user/netlify";
-import {getRandomQuote} from "./random";
+import {RandomQuotes, QuoteManager} from "./randomQuote";
 import {initShareByEmail, submitEmail} from "./share";
-import {displayWarning, displaySuccess} from "./message";
-
-//md5 hash of email address of quote owner
-let userId;
-let sourceId;
-let currentQuote;
-let userInfo;
+import {getQuoteIds} from "../_db/quote";
+import {getRandomStyle} from "./styles";
 
 const quoteMessageSelector = "#quote-modal-message";
+let currentQuote;
 
 function showLoading() {
   $("#quote-modal-more").addClass("loading");
@@ -19,9 +15,29 @@ function cancelLoading() {
   $("#quote-modal-more").removeClass("loading");
 }
 
+function generateOption(item) {
+  let userInfo = item.userInfo; 
+  return (`
+      <option value="${userInfo.userId}">${userInfo.userName}</option>
+  `);
+}
+
+function buildSelectList(quoteArray) {
+  return (`
+    <label>Quote Sources</label>
+    <select name="quote-source-list" id="user-quote-source-select" class="search ui dropdown">
+      ${quoteArray.map(item => `${generateOption(item)}`).join("")}
+    </select>
+  `);
+}
+
 function showQuote(q) {
   //persist for shareByEmail
   currentQuote = q;
+
+  if (!q.quote.includes("<p>")) {
+    q.quote = `<p>${q.quote}</p>`;
+  }
 
   let html = `
     <blockquote>
@@ -34,18 +50,59 @@ function showQuote(q) {
     </blockquote>
     `;
 
-  $("#quote-modal-content").html(html);
+  $("#quote-modal-content").html(html).attr("class", `content ${getRandomStyle()}`);
   cancelLoading();
 }
 
-export function quoteUserId(id) {
-  userId = id;
+function initSelect(qm) {
+  let select = buildSelectList(qm.getInternalQuoteArray());
+  $("#user-quote-select").html(select);
+  $("#user-quote-source-select").on("change", function(e) {
+    qm.use($(this).val());
+  });
+}
+
+function loadQuotes(qm, constants, userInfo) {
+  let systemQuoteIds = getQuoteIds(constants.quoteManagerId, constants.sourceId);
+
+  if (userInfo && userInfo.userId !== constants.quoteManagerId) {
+    let userQuoteIds = getQuoteIds(userInfo.userId, constants.sourceId);
+
+    Promise.all([systemQuoteIds, userQuoteIds]).then((responses) => {
+      let q0 = new RandomQuotes(constants.quoteManagerName, constants.quoteManagerId, constants.sourceId); 
+      q0.qIds = responses[0];
+      qm.addQuotes(q0);
+
+      if (responses[1].length > 0) {
+        let q1 = new RandomQuotes(userInfo.name, userInfo.userId, constants.sourceId); 
+        q1.qIds = responses[1];
+        qm.addQuotes(q1);
+
+        //use system quotes to start
+        qm.use(constants.quoteManagerId);
+        
+        //build quote select list
+        initSelect(qm);
+      }
+    });
+  }
+  else {
+    systemQuoteIds.then((ids) => {
+      let q = new RandomQuotes(constants.quoteManagerName, constants.quoteManagerId, constants.sourceId); 
+      q.qIds = ids;
+      qm.addQuotes(q);
+    });
+  }
+
+  return qm;
 }
 
 export function initQuoteDisplay(selector, constants) {
 
-  sourceId = constants.sourceId;
-  userId = constants.quoteManagerId;
+  let qm = new QuoteManager();
+
+  //must be signed in to share
+  let userInfo = getUserInfo();
 
   //quote modal settings
   $("#quote-modal")
@@ -68,9 +125,6 @@ export function initQuoteDisplay(selector, constants) {
         return true;
       }
     });
-
-  //must be signed in to share
-  userInfo = getUserInfo();
 
   //if we're not in development add share to facebook button
   if (location.origin.includes("christmind")) {
@@ -105,19 +159,16 @@ export function initQuoteDisplay(selector, constants) {
 
     //show email share button
     $("#quote-modal-share").removeClass("hidden");
-
-    //see if user has quotes defined
-    if (userInfo.userId !== constants.quoteManagerId) {
-    }
   }
+
+  qm = loadQuotes(qm, constants, userInfo);
 
   //get another quote
   $("#quote-modal-more").on("click", function(e) {
     showLoading();
-    getRandomQuote(userId, sourceId)
-      .then((resp) => {
-        showQuote(resp);
-      });
+    qm.getRandomQuote().then((quote) => {
+      showQuote(quote);
+    });
   });
 
   //share quote to FB
@@ -138,10 +189,9 @@ export function initQuoteDisplay(selector, constants) {
   //quote button click handler
   $(selector).on("click", function(e) {
 
-    getRandomQuote(userId, sourceId)
-      .then((resp) => {
-        showQuote(resp);
-      });
+    qm.getRandomQuote().then((quote) => {
+      showQuote(quote);
+    });
 
     $("#quote-modal").modal("show");
     showLoading();

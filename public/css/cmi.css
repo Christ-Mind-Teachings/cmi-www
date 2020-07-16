@@ -230,12 +230,65 @@ i.toc-share.icon {
   text-align: center;
 }
 
-#quote-modal-content.watercolor {
-  background: url(../img/background/watercolor.png);
+#quote-modal-content.silver-diagonal {
+  /* Permalink: https://colorzilla.com/gradient-editor/#f5f6f6+0,dbdce2+21,b8bac6+49,dddfe3+80,f5f6f6+100;Grey+Pipe */
+  background: linear-gradient(135deg,  rgba(245,246,246,1) 0%,rgba(219,220,226,1) 21%,rgba(184,186,198,1) 49%,rgba(221,223,227,1) 80%,rgba(245,246,246,1) 100%); 
+}
+
+#quote-modal-content.wax-diagonal {
+  /* Permalinkhttps://colorzilla.com/gradient-editor/#fcfff4+0,dfe5d7+40,b3bead+100;Wax+3D+%233 */
+  background: linear-gradient(135deg,  rgba(252,255,244,1) 0%,rgba(223,229,215,1) 40%,rgba(179,190,173,1) 100%);
+}
+
+#quote-modal-content.violet-diagonal {
+  /* Permalink: https://colorzilla.com/gradient-editor/#fcf1ff+0,e2d5e3+40,bdabba+100 */
+  background: linear-gradient(135deg,  rgba(252,241,255,1) 0%,rgba(226,213,227,1) 40%,rgba(189,171,186,1) 100%);
 }
 
 #quote-modal-content.double-bubble {
   background: url(../img/background/double-bubble.png);
+}
+
+#quote-modal-content.carbon-fibre {
+  background: url(../img/background/carbon-fibre.png);
+  color: #bbbbb9;
+}
+
+#quote-modal-content.dark-paths {
+  background: url(../img/background/dark-paths.png);
+  color: #e8e4e4;
+}
+
+#quote-modal-content.diamond {
+  background: url(../img/background/embossed-diamond.png);
+}
+
+#quote-modal-content.folk-pattern {
+  background: url(../img/background/folk-pattern.png);
+}
+
+#quote-modal-content.full-bloom {
+  background: url(../img/background/full-bloom.png);
+}
+
+#quote-modal-content.leaves {
+  background: url(../img/background/leaves-pattern.png);
+}
+
+#quote-modal-content.terrazzo {
+  background: url(../img/background/light-grey-terrazzo.png);
+}
+
+#quote-modal-content.pow-star {
+  background: url(../img/background/pow-star.png);
+}
+
+#quote-modal-content.repeated-square {
+  background: url(../img/background/repeated-square.png);
+}
+
+#quote-modal-content.triangle-mosaic {
+  background: url(../img/background/triangle-mosaic.png);
 }
 
 #quote-modal-share.hidden,

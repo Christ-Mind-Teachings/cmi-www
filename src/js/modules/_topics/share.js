@@ -2,7 +2,7 @@ import axios from "axios";
 import globals from "../../globals";
 import {getUserInfo} from "../_user/netlify";
 import {getString} from "../_language/lang";
-import {displayWarning, displaySuccess} from "./message";
+import {displayWarning} from "./message";
 
 const quoteMessageSelector = "#quote-modal-message";
 const shareMessageSelector = "#share-modal .message";
