@@ -9429,12 +9429,13 @@ function initCloseHandler() {
 function wrapRange(annotation) {
   let rangeArray = [annotation.rangeStart, annotation.rangeEnd];
   let numericRange = rangeArray.map(r => parseInt(r.substr(1), 10));
-  let annotationRange = lodash_range__WEBPACK_IMPORTED_MODULE_3___default()(numericRange[0], numericRange[1] + 1);
+  let annotationRange = lodash_range__WEBPACK_IMPORTED_MODULE_3___default()(numericRange[0], numericRange[1] + 1); //${annotation.Comment?annotation.Comment:getString("annotate:m7")}
+
   let header = `
     <h4 class="ui header">
       <i title="${Object(_language_lang__WEBPACK_IMPORTED_MODULE_5__["getString"])("action:close")}" class="share-annotation-close small window close icon"></i>
       <div class="content">
-        ${annotation.Comment ? annotation.Comment : Object(_language_lang__WEBPACK_IMPORTED_MODULE_5__["getString"])("annotate:m7")}
+        ${annotation.Comment ? annotation.Comment : ""}
       </div>
     </h4>
   `;

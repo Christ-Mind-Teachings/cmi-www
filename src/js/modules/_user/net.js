@@ -132,7 +132,12 @@ export function getBookmarkText(bookmarks) {
         bm.mgr.content = [];
 
         for (let p = rangeStart; p <= rangeEnd; p++) {
-          bm.mgr.content.push({pid: `p${p}`, text: paragraphs[p].textContent});
+          if (paragraphs[p]) {
+            bm.mgr.content.push({pid: `p${p}`, text: paragraphs[p].textContent});
+          }
+          else {
+            bm.mgr.content.push({pid: `p${p}`, text: "no data for paragraph"});
+          }
         }
 
         return Promise.resolve(bm);

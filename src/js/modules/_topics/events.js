@@ -34,14 +34,20 @@ function buildSelectList(quoteArray) {
 function showQuote(q) {
   //persist for shareByEmail
   currentQuote = q;
+  let quote = q.quote;
 
-  if (!q.quote.includes("<p>")) {
-    q.quote = `<p>${q.quote}</p>`;
+  if (!q.quote) {
+    cancelLoading();
+    return;
+  }
+
+  if (!quote.includes("<p>")) {
+    quote = `<p>${quote}</p>`;
   }
 
   let html = `
     <blockquote>
-      ${q.quote}
+      ${quote}
       <footer>
         <a href="${q.url}" title="Go to the source" target="_blank">
           ~ ${q.citation}

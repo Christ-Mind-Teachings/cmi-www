@@ -63,11 +63,12 @@ function wrapRange(annotation) {
   let rangeArray = [annotation.rangeStart, annotation.rangeEnd];
   let numericRange = rangeArray.map((r) => parseInt(r.substr(1),10));
   let annotationRange = range(numericRange[0], numericRange[1] + 1);
+  //${annotation.Comment?annotation.Comment:getString("annotate:m7")}
   let header = `
     <h4 class="ui header">
       <i title="${getString("action:close")}" class="share-annotation-close small window close icon"></i>
       <div class="content">
-        ${annotation.Comment?annotation.Comment:getString("annotate:m7")}
+        ${annotation.Comment?annotation.Comment:""}
       </div>
     </h4>
   `;
