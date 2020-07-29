@@ -1,6 +1,11 @@
+import {getAnnotations} from "../_db/annotation"; 
+import {putTopicList} from "../_db/topics";
+import {getUserInfo} from "../_user/netlify";
+import {storeGet, storeSet} from "../_util/store"
+import {BookmarkLocalStore} from "./localStore";
+
 import notify from "toastr";
-import store from "store";
-import net, {netInit, getBookmark}  from "./bmnet";
+import net, {netInit}  from "./bmnet";
 import differenceWith from "lodash/differenceWith";
 import cloneDeep from "lodash/cloneDeep";
 import startCase from "lodash/startCase";
@@ -23,6 +28,9 @@ import {getString} from "../_language/lang";
 
 //teaching specific constants, assigned at initialization
 let teaching = {};
+
+//manages bookmark store for bookmarks on page
+export let localStore;
 
 export function getTeachingInfo() {
   return teaching;
@@ -117,78 +125,22 @@ function initBmLinkHandler() {
     else if (type === "highlight") {
       aid = parseInt($(this).prev("mark").attr("data-aid"), 10);
     }
-    //console.log("bookmark type: %s, pid: %s, aid: %s", type, pid, aid);
-
+    
     //bookmark wont be found if it is still being created
-    let bookmarkData = getBookmark(pid);
-    if (!bookmarkData.bookmark) {
-      return;
-    }
-
-    let annotation = bookmarkData.bookmark.find(value => value.creationDate === aid);
+    let bkmrk = localStore.getItem(pid, aid);
 
     //sometimes the annotation won't be found because it is being created, so just return
-    if (!annotation) {
+    if (!bkmrk) {
       return;
     }
 
-    let linkList = generateLinkList(annotation.links);
+    let linkList = generateLinkList(bkmrk.annotation.links);
     $(".bm-link-list-popup").html(linkList);
     $(this)
       .popup({popup: ".bm-link-info.popup", hoverable: true, on: "click"})
       .popup("show");
 
   });
-}
-
-/*
-  Highlight all annotations with selected text
-  ** except for paragraph of a shared annotation 0 sharePid
-*/
-function getPageBookmarks(sharePid) {
-  //identify paragraphs with bookmarks
-  net.getBookmarks()
-    .then((response) => {
-      if (response) {
-        //mark each paragraph containing bookmarks
-        for (let id in response) {
-          let hasBookmark = false;
-          //let hasAnnotation = false;
-          let pid = id - 1;
-          let count = 0;
-
-          for (const bm of response[id]) {
-            if (bm.selectedText) {
-              markSelection(bm.selectedText, count, sharePid);
-              addTopicsAsClasses(bm);
-              setQuickLinks(bm, "highlight");
-              topics.add(bm);
-              count++;
-              hasBookmark = true;
-            }
-            else {
-              addNoteHighlight(pid, bm);
-              setQuickLinks(bm, "note");
-            }
-          }
-
-          if (hasBookmark) {
-            $(`#p${pid} > span.pnum`).addClass("has-bookmark");
-          }
-
-          /*
-          if (hasAnnotation) {
-            $(`#p${pid} > span.pnum`).addClass("has-annotation");
-          }
-          */
-        }
-        topics.bookmarksLoaded();
-      }
-    })
-    .catch((error) => {
-      console.error(error);
-      notify.error(getString("error:e2"));
-    });
 }
 
 /*
@@ -295,19 +247,45 @@ function formatNewTopics({newTopics}) {
 function addToTopicList(newTopics, formValues) {
   //Check for new topics already in topic list
   net.fetchTopics()
-    .then((response) => {
+    .then((topicList) => {
       //remove duplicate topics from and return the rest in difference[]
-      let newUniqueTopics = differenceWith(newTopics, response.topics, (n,t) => {
-        if (!t.value) {
-          return t === n.value;
-        }
+      let newUniqueTopics = differenceWith(newTopics, topicList.topics, (n,t) => {
         return t.value === n.value;
       });
 
       //these are the new topics
       if (newUniqueTopics.length > 0) {
         //add new topics to topic list
-        net.addToTopicList(newUniqueTopics);
+        let newTopicList = topicList.topics.concat(newUniqueTopics);
+
+        //sort topic list
+        newTopicList.sort((a, b) => {
+          let aValue, bValue;
+
+          //objects have value and topic keys, sort them by topic
+          aValue = a.topic.toLowerCase();
+          bValue = b.topic.toLowerCase();
+
+          if (aValue < bValue) {
+            return -1;
+          }
+
+          if (aValue > bValue) {
+            return 1;
+          }
+
+          return 0;
+        });
+
+        //update local storage
+        topicList.topics = newTopicList;
+        storeSet("bmTopics", topicList);
+
+        let userInfo = getUserInfo();
+        let sourceId = teaching.getKeyInfo().sourceId;
+
+        //write the new list to the db
+        putTopicList(userInfo.userId, sourceId, newTopicList);
 
         //add new topics to this annotations topicList
         formValues.topicList = formValues.topicList.concat(newUniqueTopics);
@@ -320,7 +298,6 @@ function addToTopicList(newTopics, formValues) {
       }
     })
     .catch((err) => {
-      //error
       throw new Error(`bookmark.js:addToTopicList() error: ${err}`);
     });
 }
@@ -356,14 +333,14 @@ function bookmarkFeatureHandler() {
       getString("menu:m1", true).then(value => {
         el.removeClass("disable-selection user");
         $(".toggle-bookmark-selection").text(value);
-        store.set(teaching.bm_creation_state, "enabled");
+        storeSet("bmCreation", "enabled");
       });
     }
     else {
       getString("menu:m2", true).then(value => {
         el.addClass("disable-selection user");
         $(".toggle-bookmark-selection").text(value);
-        store.set(teaching.bm_creation_state, "disabled");
+        storeSet("bmCreation", "disabled");
       });
     }
   });
@@ -374,11 +351,84 @@ function bookmarkFeatureHandler() {
  * it has been disabled by the user. If so, disable it on page load.
  */
 function initializeBookmarkFeatureState() {
-  let state = store.get(teaching.bm_creation_state);
+  let state = storeGet("bmCreation");
 
   if (state && state === "disabled") {
     //console.log("triggering selection guard disable");
     $("#bookmark-toggle-disable-selection").trigger("click");
+  }
+}
+
+/*
+ * Get Annotations for page for signed in users. SelectedText annotations
+ * are converted to objects by JSON.parse() and the set of annotations
+ * are sorted by pid (without the 'p')
+ *
+ * Args: fn: function to call for annotation s
+ *       arg: arg to pass to function as second argument ie fn(b, arg)
+ */
+async function getPageBookmarks(sharePid) {
+  let pageKey = teaching.keyInfo.genPageKey();
+  let userInfo = getUserInfo();
+
+  //call fn with empty object
+  if (!userInfo) {
+    return;
+  }
+
+  function processAnnotations(bmList, sharePid) {
+    let count = 0;
+    let hasBookmark = false;
+    let lastOne = bmList.length - 1;
+
+    //check for no results
+    if (bmList.length === 0) return;
+
+    let prevBm;
+    bmList.forEach((bm, idx) => {
+
+      //if there's a change in paragraph
+      if (prevBm && bm.pid !== prevBm.pid) {
+        if (hasBookmark) {
+          $(`#p${prevBm.pid} > span.pnum`).addClass("has-bookmark"); }
+        count = 0;
+        hasBookmark = false;
+      }
+
+      if (bm.annotation.selectedText) {
+        markSelection(bm.annotation.selectedText, count, sharePid);
+        addTopicsAsClasses(bm.annotation);
+        setQuickLinks(bm.annotation, "highlight");
+        topics.add(bm.annotation);
+        count++;
+        hasBookmark = true;
+      }
+      else {
+        addNoteHighlight(bm.pid, bm.annotation);
+        setQuickLinks(bm.annotation, "note");
+      }
+
+      if (idx === lastOne && hasBookmark) {
+        $(`#p${bm.pid} > span.pnum`).addClass("has-bookmark");
+      }
+      else {
+        prevBm = bm;
+      }
+    });
+
+    topics.bookmarksLoaded();
+  }
+
+  try {
+    let bmList = await getAnnotations(userInfo.userId, pageKey);
+
+    //set global variable
+    localStore = new BookmarkLocalStore(bmList);
+    processAnnotations(bmList, sharePid);
+  }
+  catch(err) {
+    console.error(err);
+    //Notify error 
   }
 }
 
@@ -454,17 +504,7 @@ export const annotation = {
 
       //this is a new annotation
       if (formData.creationDate === "") {
-        let bookmarks = getBookmark(formData.rangeStart);
-
-        let annotationCount = 0;
-        if (bookmarks.bookmark && bookmarks.bookmark.length > 0) {
-          annotationCount = bookmarks.bookmark.reduce((count, annotation) => {
-            if (annotation.aid && annotation.aid !== formData.aid) {
-              count = count + 1;
-            }
-            return count;
-          }, 0);
-        }
+        let annotationCount = localStore.itemCount(formData.rangeStart, formData.aid);
         updateHighlightColor(formData.aid, annotationCount);
       }
     }
@@ -479,7 +519,7 @@ export const annotation = {
   },
 
   //delete annotation
-  delete(formData) {
+  async delete(formData) {
     //if annotation has selected text unwrap and delete it
     if (formData.aid) {
       deleteSelection(formData.aid);
@@ -510,14 +550,19 @@ export const annotation = {
     }
 
     //mark as having no annotations if all have been deleted
-    let remainingAnnotations = net.deleteAnnotation(formData.rangeStart, formData.creationDate);
+    try {
+      let remainingAnnotations = await net.deleteAnnotation(formData.rangeStart, formData.creationDate);
 
-    if (remainingAnnotations === 0) {
-      $(`#${formData.rangeStart} > span.pnum`).removeClass("has-bookmark");
+      if (remainingAnnotations === 0) {
+        $(`#${formData.rangeStart} > span.pnum`).removeClass("has-bookmark");
+      }
+
+      //delete topics from the page topic list
+      topics.delete(formData);
     }
-
-    //delete topics from the page topic list
-    topics.delete(formData);
+    catch(err) {
+      throw new Error(err);
+    }
   }
 };
 

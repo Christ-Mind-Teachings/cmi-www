@@ -1,13 +1,13 @@
 /*
-  Keeps track of topics used by page annotations that have selectedText
-
-  The list of topics is added to the bookmark menu option on transcript pages
-  and allows the user to show only highlighted text of the selected topic.
-
-  When the user selects a topic, the class .topic-filter-active is added to .transcript
-  and the class .show is added to each highlight containing the selected topic. This works
-  because each highlight contains a class that corresponds to each topic the annotation 
-  contains.
+ * Keeps track of topics used by page annotations that have selectedText
+ *
+ * The list of topics is added to the bookmark menu option on transcript pages
+ * and allows the user to show only highlighted text of the selected topic.
+ *
+ * When the user selects a topic, the class .topic-filter-active is added to .transcript
+ * and the class .show is added to each highlight containing the selected topic. This works
+ * because each highlight contains a class that corresponds to each topic the annotation 
+ * contains.
 */
 import {getString} from "../_language/lang";
 

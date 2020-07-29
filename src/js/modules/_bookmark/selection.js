@@ -138,8 +138,14 @@ export function deleteNewSelection(id) {
     return;
   }
 
+
   //remove highlight
-  highlite.wrap.unwrap();
+  if (highlite.wrap) {
+    highlite.wrap.unwrap();
+  }
+  else {
+    console.log("deleteNewSelection: no wrap() in selection");
+  }
 
   //delete the annotation
   delete pageAnnotations[id];
@@ -160,7 +166,12 @@ export function deleteSelection(id) {
   }
 
   //remove highlight
-  highlite.wrap.unwrap();
+  if (highlite.wrap) {
+    highlite.wrap.unwrap();
+  }
+  else {
+    console.log("deleteSelection: no wrap() in selection");
+  }
 
   //delete the annotation
   delete pageAnnotations[id];

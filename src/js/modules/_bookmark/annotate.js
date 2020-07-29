@@ -1,7 +1,7 @@
 import net from "./bmnet";
 import notify from "toastr";
 import {getTeachingInfo, annotation} from "./bookmark";
-import {getBookmark} from "./bmnet";
+import {localStore} from "./bookmark";
 import range from "lodash/range";
 import {initShareDialog} from "./navigator";
 import clipboard from "./clipboard";
@@ -10,18 +10,6 @@ import {getString, __lang} from "../_language/lang";
 
 //teaching specific constants, assigned at initialization
 let teaching = {};
-
-var warningIssued = false;
-function warnNotSignedIn() {
-  let userInfo = getUserInfo();
-  if (!userInfo && !warningIssued) {
-    notify.options.timeOut = "10000";
-    notify.success(getString("annotate:m1"));
-    notify.warning(getString("annotate:m2"));
-
-    warningIssued = true;
-  }
-}
 
 function getAnnotationForm() {
   let form = __lang`
@@ -253,7 +241,6 @@ function noteToggle() {
   });
 }
 
-
 const wrapper = `
   <div class="annotate-wrapper ui raised segment"></div>`;
 
@@ -418,9 +405,6 @@ function editAnnotation(pid, aid, annotation) {
   else {
     $(`#${pid}`).addClass("annotation-edit");
   }
-  //console.log("editAnnotation");
-
-  warnNotSignedIn();
 
   //.disable-selection will prevent text selection during annotation creation/edit
   addSelectionGuard();
@@ -445,16 +429,12 @@ function noteHandler() {
       return;
     }
 
-    let bookmarkData = getBookmark(pid);
-
-    if (bookmarkData.bookmark) {
-      let annotation = bookmarkData.bookmark.find(value => typeof value.aid === "undefined");
-
-      //we found a note - so edit it
-      if (annotation) {
-        editAnnotation(pid, undefined, annotation);
-        return;
-      }
+    let bkmrk = localStore.getItem(pid);
+    
+    //we found a note - so edit it
+    if (bkmrk) {
+      editAnnotation(pid, undefined, bkmrk.annotation);
+      return;
     }
 
     //disable text selection while annotation form is open
@@ -482,17 +462,12 @@ function hoverNoteHandler() {
     let pid = $(this).parent("p").attr("id");
 
     //bookmark wont be found if it is still being created
-    let bookmarkData = getBookmark(pid);
-    if (!bookmarkData.bookmark) {
+    let bkmrk = localStore.getItem(pid, aid);
+    if (!bkmrk) {
       return;
     }
 
-    let annotation = bookmarkData.bookmark.find(value => value.creationDate === aid);
-
-    //sometimes the annotation won't be found because it is being created, so just return
-    if (!annotation) {
-      return;
-    }
+    let annotation = bkmrk.annotation;
 
     let topicList = generateHorizontalList(annotation.topicList);
     let comment = generateComment(annotation.Comment);
@@ -527,6 +502,12 @@ function hoverHandler() {
     let aid = $(this).attr("data-annotation-id");
     let pid = $(this).parent("p").attr("id");
     let realAid = $(this).data("aid");
+
+    //don't know why this happens
+    if (!pid) {
+      console.log("hoverHandler: pid not found");
+      return;
+    }
 
     //disable hover if highlights are hidden
     if ($(".transcript").hasClass("hide-bookmark-highlights")) {
@@ -565,17 +546,13 @@ function hoverHandler() {
     }
 
     //bookmark wont be found if it is still being created
-    let bookmarkData = getBookmark(pid);
-    if (!bookmarkData.bookmark) {
-      return;
-    }
-
-    let annotation = bookmarkData.bookmark.find(value => value.aid === aid);
+    let bkmrk = localStore.getItem(pid, aid);
 
     //sometimes the annotation won't be found because it is being created, so just return
-    if (!annotation) {
+    if (!bkmrk) {
       return;
     }
+    let annotation = bkmrk.annotation;
 
     let topicList = generateHorizontalList(annotation.topicList);
     let comment = generateComment(annotation.Comment);
@@ -666,10 +643,8 @@ function editHandler() {
     //show this highlight, all others are hidden
     $(this).addClass("show");
 
-    let bookmarkData = getBookmark(pid);
-    let annotation = bookmarkData.bookmark.find(value => value.aid === aid);
-
-    editAnnotation(pid, aid, annotation);
+    let bkmrk = localStore.getItem(pid, aid);
+    editAnnotation(pid, aid, bkmrk.annotation);
   });
 }
 
@@ -723,7 +698,8 @@ function submitHandler() {
     $(`[data-annotation-id="${formData.aid}"]`).removeClass("show");
 
     //this is a note annotation, no selected text, add page title to formData
-    if ($(".transcript .annotation-edit").hasClass("annotation-note")) {
+    //if ($(".transcript .annotation-edit").hasClass("annotation-note")) {
+    if ($(".transcript .annotation-edit").hasClass("note-style-bookmark")) {
       formData.bookTitle = $("#book-title").text();
     }
 
@@ -926,8 +902,6 @@ export function getUserInput(highlight) {
 
   //.disable-selection will prevent text selection during annotation creation/edit
   addSelectionGuard();
-
-  warnNotSignedIn();
 
   $(`#${highlight.pid}`).addClass("annotation-edit");
   $(".annotation-edit").wrapAll(wrapper);

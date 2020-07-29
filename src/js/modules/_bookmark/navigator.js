@@ -1,8 +1,8 @@
+import {storeGet} from "../_util/store";
 
 import intersection from "lodash/intersection";
 import intersectionWith from "lodash/intersectionWith";
 import range from "lodash/range";
-import store from "store";
 import scroll from "scroll-into-view";
 import notify from "toastr";
 
@@ -50,10 +50,7 @@ function generateAnnotation(annotation, topics = []) {
 
   //convert annotation topics list into string array
   let topicList = annotation.topicList.map((topic) => {
-    if (typeof topic === "object") {
-      return topic.value;
-    }
-    return topic;
+    return topic.value;
   });
 
   if (topics.length > 0) {
@@ -450,8 +447,8 @@ function getCurrentBookmark(pageKey, actualPid, allBookmarks, bmModal, whoCalled
 function bookmarkManager(actualPid) {
   let sourceId = teaching.keyInfo.getSourceId();
   let pageKey = teaching.keyInfo.genPageKey().toString(10);
-  let bmList = store.get(teaching.bm_list_store);
-  let bmModal = store.get(teaching.bm_modal_store);
+  let bmList = storeGet("bmList");
+  let bmModal = storeGet("bmModal");
 
   if (bmList) {
     //store globally
@@ -519,8 +516,8 @@ function bookmarkManager(actualPid) {
 */
 function updateNavigator(pid, update) {
   //console.log("updateNavigator, pid: %s, update: %s", pid, update);
-  let bmList = store.get(teaching.bm_list_store);
-  let bmModal = store.get(teaching.bm_modal_store);
+  let bmList = storeGet("bmList");
+  let bmModal = storeGet("bmModal");
   getCurrentBookmark(gPageKey, pid, bmList, bmModal, update);
 }
 

@@ -2635,7 +2635,8 @@ __webpack_require__.r(__webpack_exports__);
   quote: "https://4pu1259y54.execute-api.us-east-1.amazonaws.com/latest",
   audit: "https://93e93isn03.execute-api.us-east-1.amazonaws.com/latest",
   topicsEndPoint: "https://93e93isn03.execute-api.us-east-1.amazonaws.com/latest",
-  bookmarkApi: "https://rcd7l4adth.execute-api.us-east-1.amazonaws.com/latest"
+  bookmarkApi: "https://rcd7l4adth.execute-api.us-east-1.amazonaws.com/latest",
+  user2: "https://kkdlxunoe7.execute-api.us-east-1.amazonaws.com/latest"
 });
 
 /***/ }),
@@ -2746,18 +2747,6 @@ __webpack_require__.r(__webpack_exports__);
  //teaching specific constants, assigned at initialization
 
 let teaching = {};
-var warningIssued = false;
-
-function warnNotSignedIn() {
-  let userInfo = Object(_user_netlify__WEBPACK_IMPORTED_MODULE_6__["getUserInfo"])();
-
-  if (!userInfo && !warningIssued) {
-    toastr__WEBPACK_IMPORTED_MODULE_1___default.a.options.timeOut = "10000";
-    toastr__WEBPACK_IMPORTED_MODULE_1___default.a.success(Object(_language_lang__WEBPACK_IMPORTED_MODULE_7__["getString"])("annotate:m1"));
-    toastr__WEBPACK_IMPORTED_MODULE_1___default.a.warning(Object(_language_lang__WEBPACK_IMPORTED_MODULE_7__["getString"])("annotate:m2"));
-    warningIssued = true;
-  }
-}
 
 function getAnnotationForm() {
   let form = _language_lang__WEBPACK_IMPORTED_MODULE_7__["__lang"]`
@@ -3145,10 +3134,8 @@ function editAnnotation(pid, aid, annotation) {
     }
   } else {
     $(`#${pid}`).addClass("annotation-edit");
-  } //console.log("editAnnotation");
+  } //.disable-selection will prevent text selection during annotation creation/edit
 
-
-  warnNotSignedIn(); //.disable-selection will prevent text selection during annotation creation/edit
 
   addSelectionGuard();
   $(".annotation-edit").wrapAll(wrapper);
@@ -3171,15 +3158,11 @@ function noteHandler() {
       return;
     }
 
-    let bookmarkData = Object(_bmnet__WEBPACK_IMPORTED_MODULE_0__["getBookmark"])(pid);
+    let bkmrk = _bookmark__WEBPACK_IMPORTED_MODULE_2__["localStore"].getItem(pid); //we found a note - so edit it
 
-    if (bookmarkData.bookmark) {
-      let annotation = bookmarkData.bookmark.find(value => typeof value.aid === "undefined"); //we found a note - so edit it
-
-      if (annotation) {
-        editAnnotation(pid, undefined, annotation);
-        return;
-      }
+    if (bkmrk) {
+      editAnnotation(pid, undefined, bkmrk.annotation);
+      return;
     } //disable text selection while annotation form is open
 
 
@@ -3204,18 +3187,13 @@ function hoverNoteHandler() {
     let aid = $(this).data("aid");
     let pid = $(this).parent("p").attr("id"); //bookmark wont be found if it is still being created
 
-    let bookmarkData = Object(_bmnet__WEBPACK_IMPORTED_MODULE_0__["getBookmark"])(pid);
+    let bkmrk = _bookmark__WEBPACK_IMPORTED_MODULE_2__["localStore"].getItem(pid, aid);
 
-    if (!bookmarkData.bookmark) {
+    if (!bkmrk) {
       return;
     }
 
-    let annotation = bookmarkData.bookmark.find(value => value.creationDate === aid); //sometimes the annotation won't be found because it is being created, so just return
-
-    if (!annotation) {
-      return;
-    }
-
+    let annotation = bkmrk.annotation;
     let topicList = generateHorizontalList(annotation.topicList);
     let comment = generateComment(annotation.Comment);
     let extraHtml = generateExtraList(annotation);
@@ -3245,7 +3223,13 @@ function hoverHandler() {
     e.preventDefault();
     let aid = $(this).attr("data-annotation-id");
     let pid = $(this).parent("p").attr("id");
-    let realAid = $(this).data("aid"); //disable hover if highlights are hidden
+    let realAid = $(this).data("aid"); //don't know why this happens
+
+    if (!pid) {
+      console.log("hoverHandler: pid not found");
+      return;
+    } //disable hover if highlights are hidden
+
 
     if ($(".transcript").hasClass("hide-bookmark-highlights")) {
       $(this).popup("hide").popup("destroy");
@@ -3283,18 +3267,13 @@ function hoverHandler() {
     } //bookmark wont be found if it is still being created
 
 
-    let bookmarkData = Object(_bmnet__WEBPACK_IMPORTED_MODULE_0__["getBookmark"])(pid);
+    let bkmrk = _bookmark__WEBPACK_IMPORTED_MODULE_2__["localStore"].getItem(pid, aid); //sometimes the annotation won't be found because it is being created, so just return
 
-    if (!bookmarkData.bookmark) {
+    if (!bkmrk) {
       return;
     }
 
-    let annotation = bookmarkData.bookmark.find(value => value.aid === aid); //sometimes the annotation won't be found because it is being created, so just return
-
-    if (!annotation) {
-      return;
-    }
-
+    let annotation = bkmrk.annotation;
     let topicList = generateHorizontalList(annotation.topicList);
     let comment = generateComment(annotation.Comment);
     let extraHtml = generateExtraList(annotation);
@@ -3383,9 +3362,8 @@ function editHandler() {
     $(this).popup("hide"); //show this highlight, all others are hidden
 
     $(this).addClass("show");
-    let bookmarkData = Object(_bmnet__WEBPACK_IMPORTED_MODULE_0__["getBookmark"])(pid);
-    let annotation = bookmarkData.bookmark.find(value => value.aid === aid);
-    editAnnotation(pid, aid, annotation);
+    let bkmrk = _bookmark__WEBPACK_IMPORTED_MODULE_2__["localStore"].getItem(pid, aid);
+    editAnnotation(pid, aid, bkmrk.annotation);
   });
 }
 /*
@@ -3440,8 +3418,9 @@ function submitHandler() {
     unwrap(); //remove class "show" added when form was displayed
 
     $(`[data-annotation-id="${formData.aid}"]`).removeClass("show"); //this is a note annotation, no selected text, add page title to formData
+    //if ($(".transcript .annotation-edit").hasClass("annotation-note")) {
 
-    if ($(".transcript .annotation-edit").hasClass("annotation-note")) {
+    if ($(".transcript .annotation-edit").hasClass("note-style-bookmark")) {
       formData.bookTitle = $("#book-title").text();
     } //get links from annotation
 
@@ -3632,7 +3611,6 @@ function getUserInput(highlight) {
 
 
   addSelectionGuard();
-  warnNotSignedIn();
   $(`#${highlight.pid}`).addClass("annotation-edit");
   $(".annotation-edit").wrapAll(wrapper); //$(".annotate-wrapper").prepend(form);
 
@@ -3691,31 +3669,22 @@ function getTopicList(pid, aid, data) {
 /*!*******************************************!*\
   !*** ./src/js/modules/_bookmark/bmnet.js ***!
   \*******************************************/
-/*! exports provided: netInit, getBookmark, fetchBookmark, default */
+/*! exports provided: netInit, default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "netInit", function() { return netInit; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getBookmark", function() { return getBookmark; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fetchBookmark", function() { return fetchBookmark; });
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var store__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! store */ "./node_modules/store/dist/store.legacy.js");
-/* harmony import */ var store__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(store__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! toastr */ "./node_modules/toastr/toastr.js");
-/* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(toastr__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var lodash_isEqual__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lodash/isEqual */ "./node_modules/lodash/isEqual.js");
-/* harmony import */ var lodash_isEqual__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(lodash_isEqual__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var lodash_findIndex__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! lodash/findIndex */ "./node_modules/lodash/findIndex.js");
-/* harmony import */ var lodash_findIndex__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(lodash_findIndex__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _db_annotation__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../_db/annotation */ "./src/js/modules/_db/annotation.js");
+/* harmony import */ var _db_topics__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../_db/topics */ "./src/js/modules/_db/topics.js");
+/* harmony import */ var _util_store__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../_util/store */ "./src/js/modules/_util/store.js");
+/* harmony import */ var _bookmark__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./bookmark */ "./src/js/modules/_bookmark/bookmark.js");
+/* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! toastr */ "./node_modules/toastr/toastr.js");
+/* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(toastr__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! lodash/cloneDeep */ "./node_modules/lodash/cloneDeep.js");
 /* harmony import */ var lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_5__);
 /* harmony import */ var _user_netlify__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../_user/netlify */ "./src/js/modules/_user/netlify.js");
-/* harmony import */ var _selection__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./selection */ "./src/js/modules/_bookmark/selection.js");
-/* harmony import */ var _globals__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../globals */ "./src/js/globals.js");
-/* harmony import */ var _bookmark__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./bookmark */ "./src/js/modules/_bookmark/bookmark.js");
-/* harmony import */ var _language_lang__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../_language/lang */ "./src/js/modules/_language/lang.js");
+/* harmony import */ var _language_lang__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../_language/lang */ "./src/js/modules/_language/lang.js");
 /*
   Bookmark data implementation
 
@@ -3736,292 +3705,65 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-
-
- //const transcript = require("../_config/key");
-//const bm_list_store = "bm.www.list";
-//const bm_topic_list = "bm.www.topics";
-
 var teaching = {};
 function netInit(constants) {
   teaching = constants;
 }
 /*
-  Get bookmark for paragraph pid from local storage. All bookmarks for the page
-  are loaded by getBookmarks() and stored locally. We don't need to fetch them again.
-
-  args:
-    pid: paragraph id
-
-  Bookmarks are keyed by pageKey and paragraphId. Paragraph Id's start from zero
-  but are incremented by one to form the key.
-*/
-
-function getBookmark(pid) {
-  const pageKey = teaching.keyInfo.genPageKey();
-  const bookmarks = store__WEBPACK_IMPORTED_MODULE_1___default.a.get(pageKey);
-
-  if (bookmarks && pid) {
-    //generate id
-    let id = parseInt(pid.substr(1), 10) + 1;
-
-    if (bookmarks[id]) {
-      return {
-        bookmark: bookmarks[id]
-      };
-    }
-  } //no bookmark found
-
-
-  return {};
-}
-/*
-  if user not logged in get bookmarks from local storage
-  otherwise get them from the server and store them locally
-*/
-
-function getBookmarks() {
-  let pageKey = teaching.keyInfo.genPageKey();
-  const userInfo = Object(_user_netlify__WEBPACK_IMPORTED_MODULE_6__["getUserInfo"])();
-  return new Promise((resolve, reject) => {
-    //get bookmarks from server
-    if (userInfo) {
-      axios__WEBPACK_IMPORTED_MODULE_0___default.a.get(`${_globals__WEBPACK_IMPORTED_MODULE_8__["default"].bookmarkApi}/bookmark/query/${userInfo.userId}/${pageKey}`).then(response => {
-        //convert to local data structure and store locally
-        if (response.data.response) {
-          let bookmarks = {};
-          response.data.response.forEach(b => {
-            let key = teaching.keyInfo.parseKey(b.id); //parseKey return {pid, pageKey} or {paraKey, pageKey} so use paraKey.
-
-            if (!key.paraKey) {
-              key.paraKey = key.pid;
-            } //parson JSON to object
-
-
-            for (let a of b.bookmark) {
-              if (a.selectedText) {
-                a.selectedText = JSON.parse(a.selectedText);
-              } //console.log("a: %o", a);
-
-            }
-
-            bookmarks[key.paraKey] = b.bookmark;
-          }); //store bookmarks in local storage
-
-          if (Object.keys(bookmarks).length > 0) {
-            store__WEBPACK_IMPORTED_MODULE_1___default.a.set(pageKey, bookmarks);
-          }
-
-          resolve(bookmarks);
-        }
-      }).catch(err => {
-        reject(err);
-      });
-    } else {
-      //get from local storage
-      const bookmarks = store__WEBPACK_IMPORTED_MODULE_1___default.a.get(pageKey);
-      resolve(bookmarks);
-    }
-  });
-}
-/*
-  if user not logged in get bookmarks from local storage
-  otherwise get them from the server and store them locally
-*/
-
-
-function queryBookmarks(key) {
-  const retentionTime = 1000 * 60 * 60 * 8; //eight hours of milliseconds
-
-  const userInfo = Object(_user_netlify__WEBPACK_IMPORTED_MODULE_6__["getUserInfo"])();
-  const keyInfo = teaching.keyInfo.getKeyInfo();
-  return new Promise((resolve, reject) => {
-    //get bookmarks from server
-    if (userInfo) {
-      //set if bookmarks are already in local storage
-      let bookmarkList = getBookmarkList(keyInfo); //don't query database - just return from local storage
-
-      if (bookmarkList) {
-        let expireDate = bookmarkList.lastFetchDate + retentionTime; //if list has not expired or been invalidated resolve and return
-        //otherwise query the server
-
-        if (Date.now() < expireDate) {
-          if (bookmarkList.lastBuildDate > 0) {
-            resolve(bookmarkList);
-            return;
-          }
-        }
-      } //get from the server
-
-
-      axios__WEBPACK_IMPORTED_MODULE_0___default.a.get(`${_globals__WEBPACK_IMPORTED_MODULE_8__["default"].bookmarkApi}/bookmark/query/${userInfo.userId}/${key}`).then(response => {
-        //convert to local data structure and store locally
-        if (response.data.response) {
-          //console.log("bookmarks: %o", response.data.response);
-          //convert selectedText from JSON to object
-          for (let b of response.data.response) {
-            for (let a of b.bookmark) {
-              if (a.selectedText) {
-                a.selectedText = JSON.parse(a.selectedText);
-              } //console.log("a: %o", a);
-
-            }
-          }
-
-          let bookmarks = buildBookmarkListFromServer(response, keyInfo);
-          resolve(bookmarks);
-        }
-      }).catch(err => {
-        reject(err);
-        return;
-      });
-    } else {
-      let bookmarks = buildBookmarkListFromLocalStore(keyInfo);
-      resolve(bookmarks);
-    }
-  });
-}
-
-function storeBookmarkList(bookmarks, keyInfo) {
-  store__WEBPACK_IMPORTED_MODULE_1___default.a.set(teaching.bm_list_store, bookmarks);
-}
-
-function getBookmarkList(keyInfo) {
-  return store__WEBPACK_IMPORTED_MODULE_1___default.a.get(teaching.bm_list_store);
-}
-/*
-  This is for users not signed in
-  Build BookmarkList from locally stored bookmarks. Once built, we only
-  rebuild it if it has been invalidated by the modification or creation of
-  a bookmark
-*/
-
-
-function buildBookmarkListFromLocalStore(keyInfo) {
-  //check if the list needs to be rebuilt
-  const list = getBookmarkList(keyInfo);
-
-  if (list) {
-    if (list.lastBuildDate > 0) {
-      return list;
-    }
-  }
-
-  let sid = parseInt(keyInfo.sourceId, 10);
-  let bookmarks = {}; //build expected structure from local storage
-
-  store__WEBPACK_IMPORTED_MODULE_1___default.a.each((value, key) => {
-    if (key.startsWith(sid)) {
-      if (!bookmarks[key]) {
-        bookmarks[key] = {};
-      }
-
-      bookmarks[key] = value;
-    }
-  });
-  bookmarks.lastBuildDate = Date.now();
-  storeBookmarkList(bookmarks, keyInfo);
-  return bookmarks;
-}
-/*
-  Build Bookmark list from data returned from server
-  - this is for users signed in
-*/
-
-
-function buildBookmarkListFromServer(response, keyInfo) {
-  let bookmarks = {};
-  response.data.response.forEach(b => {
-    let keyParts = teaching.keyInfo.parseKey(b.id); //parseKey return {pid, pageKey} or {paraKey, pageKey} so use paraKey.
-
-    if (!keyParts.paraKey) {
-      keyParts.paraKey = keyParts.pid;
-    }
-
-    if (!bookmarks[keyParts.pageKey]) {
-      bookmarks[keyParts.pageKey] = {};
-    }
-
-    bookmarks[keyParts.pageKey][keyParts.paraKey] = b.bookmark;
-  });
-  bookmarks.lastFetchDate = Date.now();
-  bookmarks.lastBuildDate = Date.now();
-  storeBookmarkList(bookmarks, keyInfo);
-  return bookmarks;
-}
-/*
-  Persist annotation in dynamodb
-
-  args pageKey and addToLocalStorage are passed by topicmanager.js, otherwise
-  they are not used.
-*/
-
+ * Persist annotation to DynamoDb
+ *
+ * Args:
+ *  annotation: required
+ *  pageKey: passed by topicmanager.js only
+ *  addToLocalStorage: passed as false by topicmanager
+ *
+ * LocalStorage is updated when addToLocalStorage = true, otherwise
+ * not. It's not needed when called by topicmanager.
+ *
+ * New annotations are recognized when annotation.creationDdate is null
+ */
 
 function postAnnotation(annotation, pageKey, addToLocalStorage = true) {
-  //console.log("annotation: ", annotation);
   const userInfo = Object(_user_netlify__WEBPACK_IMPORTED_MODULE_6__["getUserInfo"])();
-  let calledByTopicMgr = true;
+  let calledByTopicMgr = true; //the annotation creation data; aka creationDate, annotationId, aid
+
+  let now = Date.now(); //this is critical, things get messed up if we don't do this
+
+  let serverAnnotation = lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_5___default()(annotation); //modified is added by topicmgr.js
+
+  if (serverAnnotation.modified) {
+    delete serverAnnotation.modified;
+  }
+
+  if (serverAnnotation.selectedText) {
+    delete serverAnnotation.selectedText.wrap; //selectedText is already stringified when called by topicmgr.js
+
+    if (typeof serverAnnotation.selectedText !== "string") {
+      if (!serverAnnotation.selectedText.aid) {
+        serverAnnotation.selectedText.aid = now.toString(10);
+      } //convert selectedText to JSON
+
+
+      serverAnnotation.selectedText = JSON.stringify(serverAnnotation.selectedText);
+    }
+  }
+
+  let creationDate = serverAnnotation.creationDate ? serverAnnotation.creationDate : now;
 
   if (!pageKey) {
-    pageKey = teaching.keyInfo.genPageKey();
-    calledByTopicMgr = false;
-  } //the annotation creation data; aka creationDate, annotationId, aid
-
-
-  let now = Date.now(); //post to server
-
-  if (userInfo) {
-    //this is critical, things get messed up if we don't do this
-    let serverAnnotation = lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_5___default()(annotation); //modified is added by topicmgr.js
-
-    if (serverAnnotation.modified) {
-      delete serverAnnotation.modified;
-    }
-
-    if (serverAnnotation.selectedText) {
-      delete serverAnnotation.selectedText.wrap; //selectedText is already stringified when called by topicmgr.js
-
-      if (typeof serverAnnotation.selectedText !== "string") {
-        if (!serverAnnotation.selectedText.aid) {
-          serverAnnotation.selectedText.aid = now.toString(10);
-        } //convert selectedText to JSON
-
-
-        serverAnnotation.selectedText = JSON.stringify(serverAnnotation.selectedText);
-      }
-    }
-
-    let postBody = {}; // if pageKey passed we're called from topicmgr.js
-
-    if (calledByTopicMgr) {
-      postBody.userId = userInfo.userId;
-      postBody.bookmarkId = pageKey;
-      postBody.annotationId = serverAnnotation.creationDate ? serverAnnotation.creationDate : now, postBody.annotation = serverAnnotation;
-    } else {
-      postBody.userId = userInfo.userId;
-      postBody.bookmarkId = teaching.keyInfo.genParagraphKey(serverAnnotation.rangeStart, pageKey);
-      postBody.annotationId = serverAnnotation.creationDate ? serverAnnotation.creationDate : now, postBody.annotation = serverAnnotation;
-    } //console.log("posting: %o", serverAnnotation);
-
-
-    axios__WEBPACK_IMPORTED_MODULE_0___default.a.post(`${_globals__WEBPACK_IMPORTED_MODULE_8__["default"].bookmarkApi}/bookmark/annotation`, postBody).then(data => {
-      if (data.data.message !== "OK") {
-        console.error("not OK message: %s", data.data.message);
-        toastr__WEBPACK_IMPORTED_MODULE_2___default.a.error(data.data.message);
-      } //store locally
-      else if (addToLocalStorage) {
-          storeAnnotation(annotation, now);
-        }
-    }).catch(err => {
-      console.error(`Error saving annotation: ${err}`);
-      toastr__WEBPACK_IMPORTED_MODULE_2___default.a.error(Object(_language_lang__WEBPACK_IMPORTED_MODULE_10__["getString"])("error:e1")); //if error and this is a new annotation we need to remove the highlight from the page
-
-      console.log("postBody", postBody);
-    });
-  } else {
-    //store locally
-    storeAnnotation(annotation, now);
+    pageKey = teaching.keyInfo.genParagraphKey(serverAnnotation.rangeStart);
   }
+
+  Object(_db_annotation__WEBPACK_IMPORTED_MODULE_0__["postAnnotation"])(userInfo.userId, pageKey, creationDate, serverAnnotation).then(resp => {
+    console.log("postAnnotation response: %o", resp);
+
+    if (addToLocalStorage) {
+      _bookmark__WEBPACK_IMPORTED_MODULE_3__["localStore"].addItem(userInfo.userId, pageKey, creationDate, serverAnnotation);
+    }
+  }).catch(err => {
+    console.error(`Error saving annotation: ${err}`);
+    toastr__WEBPACK_IMPORTED_MODULE_4___default.a.error(Object(_language_lang__WEBPACK_IMPORTED_MODULE_7__["getString"])("error:e1"));
+  });
 }
 /*
   Delete the annotation 'creationDate' for bookmark 'pid'
@@ -4029,70 +3771,18 @@ function postAnnotation(annotation, pageKey, addToLocalStorage = true) {
 
 
 function deleteAnnotation(pid, creationDate) {
-  const pageKey = teaching.keyInfo.genPageKey();
-  const userInfo = Object(_user_netlify__WEBPACK_IMPORTED_MODULE_6__["getUserInfo"])(); //delete annotation from server
+  const userInfo = Object(_user_netlify__WEBPACK_IMPORTED_MODULE_6__["getUserInfo"])();
+  return new Promise(async (resolve, reject) => {
+    const paraKey = teaching.keyInfo.genParagraphKey(pid);
 
-  if (userInfo) {
-    let bookmarkId = teaching.keyInfo.genParagraphKey(pid, pageKey);
-    axios__WEBPACK_IMPORTED_MODULE_0___default.a.delete(`${_globals__WEBPACK_IMPORTED_MODULE_8__["default"].bookmarkApi}/bookmark/annotation/${userInfo.userId}/${bookmarkId}/${creationDate}`).then(() => {
-      console.log("deleted annotation: %s/%s/%s", userInfo.userId, bookmarkId, creationDate);
-    }).catch(err => {
-      throw new Error(err);
-    });
-  }
-
-  return deleteLocalAnnotation(pid, creationDate);
-}
-/*
-  Fetch requested bookmark from server
-*/
-
-
-function fetchBookmark(bookmarkId, userId) {
-  return new Promise((resolve, reject) => {
-    axios__WEBPACK_IMPORTED_MODULE_0___default.a.get(`${_globals__WEBPACK_IMPORTED_MODULE_8__["default"].bookmarkApi}/bookmark/${userId}/${bookmarkId}`).then(response => {
-      if (response.data.response.Item) {
-        for (let a of response.data.response.Item.bookmark) {
-          if (a.selectedText) {
-            a.selectedText = JSON.parse(a.selectedText);
-          }
-        }
-      }
-
-      resolve(response.data.response);
-    }).catch(err => {
+    try {
+      let response = await Object(_db_annotation__WEBPACK_IMPORTED_MODULE_0__["deleteAnnotation"])(userInfo.userId, paraKey, creationDate);
+      let remaining = _bookmark__WEBPACK_IMPORTED_MODULE_3__["localStore"].deleteItem(userInfo.userId, paraKey, creationDate);
+      resolve(remaining);
+    } catch (err) {
       reject(err);
-    });
+    }
   });
-}
-/*
-  When user is signed in the bookmark has been returned from the server
-  and saved to local storage. We get the bookmark from there rather than
-  having to go back to the server.
-
-  We get the bookmark from local storage when the user is not signed in also.
-*/
-
-function getAnnotation(pid, aid) {
-  const pageKey = teaching.keyInfo.genPageKey();
-  let data;
-  let annotation; //remove the 'p' in pid
-
-  pid = parseInt(pid.substr(1), 10) + 1;
-  data = store__WEBPACK_IMPORTED_MODULE_1___default.a.get(pageKey);
-
-  if (!data) {
-    throw new Error("Expected bookmark data not found in local storage");
-  }
-
-  if (!data[pid]) {
-    throw new Error(`Expected annotations not found for pid ${pid}`);
-  } //filter requested annotation from array
-
-
-  annotation = data[pid].filter(a => a.creationDate === aid); //return requested annotation
-
-  return annotation[0];
 }
 /*
   Fetch Indexing topics
@@ -4105,218 +3795,35 @@ function getAnnotation(pid, aid) {
 
 function fetchTopics() {
   const userInfo = Object(_user_netlify__WEBPACK_IMPORTED_MODULE_6__["getUserInfo"])();
-  let topics = store__WEBPACK_IMPORTED_MODULE_1___default.a.get(teaching.bm_topic_list); //keep topics in cache for 2 hours
+  let topics = Object(_util_store__WEBPACK_IMPORTED_MODULE_2__["storeGet"])("bmTopics"); //keep topics in cache for 2 hours
 
   const retentionTime = 60 * 1000 * 60 * 2;
   return new Promise((resolve, reject) => {
-    //topics stored only in local store for users not signed in
-    if (!userInfo) {
-      //no topics created yet
-      if (!topics) {
-        topics = {
-          lastFetchDate: 0,
-          topics: []
-        };
-        store__WEBPACK_IMPORTED_MODULE_1___default.a.set(teaching.bm_topic_list, topics);
-      }
-
+    if (topics && topics.lastFetchDate + retentionTime > Date.now()) {
       resolve(topics);
       return;
-    } //user signed in
-    else if (topics && topics.lastFetchDate + retentionTime > Date.now()) {
-        //return topics from cache
-        resolve(topics);
-        return;
-      }
+    }
 
-    let sourceId = teaching.keyInfo.getKeyInfo().sourceId.toString(10); //user signed in, we need to get topics from server
+    let sourceId = teaching.sourceId.toString(10); //user signed in, we need to get topics from server
 
-    axios__WEBPACK_IMPORTED_MODULE_0___default.a.get(`${_globals__WEBPACK_IMPORTED_MODULE_8__["default"].topicsEndPoint}/user/${userInfo.userId}/topics/${sourceId}`).then(topicInfo => {
-      //console.log("topicInfo.data: ", topicInfo.data);
-      topicInfo.data.lastFetchDate = Date.now();
-      store__WEBPACK_IMPORTED_MODULE_1___default.a.set(teaching.bm_topic_list, topicInfo.data);
-      resolve(topicInfo.data);
+    Object(_db_topics__WEBPACK_IMPORTED_MODULE_1__["getTopicList"])(userInfo.userId, sourceId).then(topicList => {
+      let topicInfo = {
+        lastFetchDate: Date.now(),
+        topics: topicList
+      };
+      Object(_util_store__WEBPACK_IMPORTED_MODULE_2__["storeSet"])("bmTopics", topicInfo);
+      resolve(topicInfo);
     }).catch(error => {
       console.error("Error fetching topicList: ", error);
       reject(error);
     });
   });
 }
-/*
-  add new topics to topic-list in application store and sort
-  write topics to database if user signed in
-*/
-
-
-function addToTopicList(newTopics) {
-  let topics = store__WEBPACK_IMPORTED_MODULE_1___default.a.get(teaching.bm_topic_list);
-  let concatTopics = topics.topics.concat(newTopics); //improve sort
-
-  concatTopics.sort((a, b) => {
-    let aValue, bValue; //objects have value and topic keys, sort them by topic
-    // Note: all topics are now objects
-
-    aValue = a.topic.toLowerCase();
-    bValue = b.topic.toLowerCase();
-
-    if (aValue < bValue) {
-      return -1;
-    }
-
-    if (aValue > bValue) {
-      return 1;
-    }
-
-    return 0;
-  });
-  topics.topics = concatTopics;
-  store__WEBPACK_IMPORTED_MODULE_1___default.a.set(teaching.bm_topic_list, topics); //add topics to server if user signed in
-
-  let userInfo = Object(_user_netlify__WEBPACK_IMPORTED_MODULE_6__["getUserInfo"])();
-
-  if (userInfo) {
-    let postBody = {
-      userId: userInfo.userId,
-      sourceId: teaching.keyInfo.getKeyInfo().sourceId,
-      topicList: newTopics
-    }; //console.log("newTopics: %o", newTopics);
-
-    axios__WEBPACK_IMPORTED_MODULE_0___default.a.post(`${_globals__WEBPACK_IMPORTED_MODULE_8__["default"].topicsEndPoint}/user/topics`, postBody).then(response => {//console.log("addToTopicList: %o", response.data);
-    }).catch(err => {//console.error("addToTopicList error: %o", err);
-    });
-  }
-
-  return topics;
-}
-/*
-  Called when a bookmark has been created, modified or deleted. We check if the bookmark
-  list exists and if it was created before a bookmark was modified. If so, the list needs
-  to be rebuilt.
-*/
-
-
-function inValidateBookmarkList() {
-  const keyInfo = teaching.keyInfo.getKeyInfo();
-  let bmList = getBookmarkList(keyInfo);
-
-  if (bmList) {
-    //console.log("invalidating bmList");
-    bmList.lastBuildDate = 0;
-    storeBookmarkList(bmList, keyInfo);
-  }
-}
-/*
-  store annotation locally
-  - if bmList_<source> exists in local store set lastBuildDate = 0 to indicate
-    it needs to be recreated.
-*/
-
-
-function storeAnnotation(annotation, creationDate) {
-  const pageKey = teaching.keyInfo.genPageKey(); //make annotation key
-
-  let pid = parseInt(annotation.rangeStart.substr(1), 10) + 1; //get bookmark for page
-
-  let data = store__WEBPACK_IMPORTED_MODULE_1___default.a.get(pageKey); //modified/edited bookmark when it has a creationDate attribute
-
-  if (annotation.creationDate) {
-    //convert bookmark.creationDate to number
-    annotation.creationDate = parseInt(annotation.creationDate, 10);
-
-    if (!data[pid]) {
-      throw new Error(`Expected bookmark ${pid} not found.`);
-    } //find the index of the annotation in the bookmark
-
-
-    let index = lodash_findIndex__WEBPACK_IMPORTED_MODULE_4___default()(data[pid], a => a.creationDate === annotation.creationDate);
-
-    if (index === -1) {
-      throw new Error(`Did not find annotation ${annotation.creationDate} for pid ${pid}`);
-    } //annotation was not modified so return
-
-
-    if (lodash_isEqual__WEBPACK_IMPORTED_MODULE_3___default()(data[pid][index], annotation)) {
-      return;
-    } else {
-      data[pid][index] = annotation;
-    }
-  } //new annotation
-  else {
-      let type;
-      annotation.creationDate = creationDate; //add creation date to the selectedText attribute of new annotations
-
-      if (annotation.selectedText) {
-        type = "highlight";
-        annotation.selectedText.aid = creationDate.toString(10); //add data-aid to new highlite so that it can be edited with a click
-
-        Object(_selection__WEBPACK_IMPORTED_MODULE_7__["updateSelectedText"])(annotation.selectedText.id, annotation.selectedText.aid);
-      } else {
-        type = "note";
-      } //if annotation has links, add linkify icon so it can be clicked
-
-
-      if (annotation.links) {
-        Object(_bookmark__WEBPACK_IMPORTED_MODULE_9__["setQuickLinks"])(annotation, type);
-      }
-
-      if (!data) {
-        data = {
-          [pid]: [annotation]
-        };
-      } else {
-        if (data[pid]) {
-          data[pid].push(annotation);
-        } else {
-          data[pid] = [annotation];
-        }
-      }
-    }
-
-  store__WEBPACK_IMPORTED_MODULE_1___default.a.set(pageKey, data);
-  inValidateBookmarkList();
-}
-/*
-  delete local annotation
-
-  args:
-    pid: paragraph id
-    aid: annotation id
-*/
-
-
-function deleteLocalAnnotation(pid, aid) {
-  const pageKey = teaching.keyInfo.genPageKey(); //make annotation id
-
-  pid = parseInt(pid.substr(1), 10) + 1;
-  let data = store__WEBPACK_IMPORTED_MODULE_1___default.a.get(pageKey);
-
-  if (!data) {
-    throw new Error("Expected bookmark data not found in local storage");
-  }
-
-  let annotations = data[pid]; //user pressed delete on an annotation that was not created yet
-
-  if (!annotations) {
-    return;
-  } //filter deleted annotation from array
-
-
-  data[pid] = annotations.filter(a => a.creationDate !== parseInt(aid, 10));
-  store__WEBPACK_IMPORTED_MODULE_1___default.a.set(pageKey, data); //bookmark has been deleted invalidate bookmark list so it is rebuilt
-
-  inValidateBookmarkList(); //return number of annotations remaining for paragraph
-
-  return data[pid].length;
-}
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  addToTopicList: addToTopicList,
   fetchTopics: fetchTopics,
-  getAnnotation: getAnnotation,
   deleteAnnotation: deleteAnnotation,
-  postAnnotation: postAnnotation,
-  getBookmarks: getBookmarks,
-  queryBookmarks: queryBookmarks
+  postAnnotation: postAnnotation
 });
 
 /***/ }),
@@ -4325,33 +3832,41 @@ function deleteLocalAnnotation(pid, aid) {
 /*!**********************************************!*\
   !*** ./src/js/modules/_bookmark/bookmark.js ***!
   \**********************************************/
-/*! exports provided: getTeachingInfo, setQuickLinks, annotation, default */
+/*! exports provided: localStore, getTeachingInfo, setQuickLinks, annotation, default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* WEBPACK VAR INJECTION */(function($) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getTeachingInfo", function() { return getTeachingInfo; });
+/* WEBPACK VAR INJECTION */(function($) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "localStore", function() { return localStore; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getTeachingInfo", function() { return getTeachingInfo; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setQuickLinks", function() { return setQuickLinks; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "annotation", function() { return annotation; });
-/* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! toastr */ "./node_modules/toastr/toastr.js");
-/* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(toastr__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var store__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! store */ "./node_modules/store/dist/store.legacy.js");
-/* harmony import */ var store__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(store__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _bmnet__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./bmnet */ "./src/js/modules/_bookmark/bmnet.js");
-/* harmony import */ var lodash_differenceWith__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lodash/differenceWith */ "./node_modules/lodash/differenceWith.js");
-/* harmony import */ var lodash_differenceWith__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(lodash_differenceWith__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! lodash/cloneDeep */ "./node_modules/lodash/cloneDeep.js");
-/* harmony import */ var lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var lodash_startCase__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! lodash/startCase */ "./node_modules/lodash/startCase.js");
-/* harmony import */ var lodash_startCase__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(lodash_startCase__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _util_url__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../_util/url */ "./src/js/modules/_util/url.js");
-/* harmony import */ var _navigator__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./navigator */ "./src/js/modules/_bookmark/navigator.js");
-/* harmony import */ var _list__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./list */ "./src/js/modules/_bookmark/list.js");
-/* harmony import */ var _topics__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./topics */ "./src/js/modules/_bookmark/topics.js");
-/* harmony import */ var _selection__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./selection */ "./src/js/modules/_bookmark/selection.js");
-/* harmony import */ var _annotate__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./annotate */ "./src/js/modules/_bookmark/annotate.js");
-/* harmony import */ var _link_setup__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../_link/setup */ "./src/js/modules/_link/setup.js");
-/* harmony import */ var _language_lang__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../_language/lang */ "./src/js/modules/_language/lang.js");
+/* harmony import */ var _db_annotation__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../_db/annotation */ "./src/js/modules/_db/annotation.js");
+/* harmony import */ var _db_topics__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../_db/topics */ "./src/js/modules/_db/topics.js");
+/* harmony import */ var _user_netlify__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../_user/netlify */ "./src/js/modules/_user/netlify.js");
+/* harmony import */ var _util_store__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../_util/store */ "./src/js/modules/_util/store.js");
+/* harmony import */ var _localStore__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./localStore */ "./src/js/modules/_bookmark/localStore.js");
+/* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! toastr */ "./node_modules/toastr/toastr.js");
+/* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(toastr__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _bmnet__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./bmnet */ "./src/js/modules/_bookmark/bmnet.js");
+/* harmony import */ var lodash_differenceWith__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! lodash/differenceWith */ "./node_modules/lodash/differenceWith.js");
+/* harmony import */ var lodash_differenceWith__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(lodash_differenceWith__WEBPACK_IMPORTED_MODULE_7__);
+/* harmony import */ var lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! lodash/cloneDeep */ "./node_modules/lodash/cloneDeep.js");
+/* harmony import */ var lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_8__);
+/* harmony import */ var lodash_startCase__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! lodash/startCase */ "./node_modules/lodash/startCase.js");
+/* harmony import */ var lodash_startCase__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(lodash_startCase__WEBPACK_IMPORTED_MODULE_9__);
+/* harmony import */ var _util_url__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../_util/url */ "./src/js/modules/_util/url.js");
+/* harmony import */ var _navigator__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./navigator */ "./src/js/modules/_bookmark/navigator.js");
+/* harmony import */ var _list__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./list */ "./src/js/modules/_bookmark/list.js");
+/* harmony import */ var _topics__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./topics */ "./src/js/modules/_bookmark/topics.js");
+/* harmony import */ var _selection__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./selection */ "./src/js/modules/_bookmark/selection.js");
+/* harmony import */ var _annotate__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./annotate */ "./src/js/modules/_bookmark/annotate.js");
+/* harmony import */ var _link_setup__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ../_link/setup */ "./src/js/modules/_link/setup.js");
+/* harmony import */ var _language_lang__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ../_language/lang */ "./src/js/modules/_language/lang.js");
+
+
+
+
 
 
 
@@ -4367,14 +3882,16 @@ __webpack_require__.r(__webpack_exports__);
 
  //teaching specific constants, assigned at initialization
 
-let teaching = {};
+let teaching = {}; //manages bookmark store for bookmarks on page
+
+let localStore;
 function getTeachingInfo() {
   return teaching;
 }
 
 function formatLink(link) {
   let raw = JSON.parse(link.link);
-  let href = Object(_link_setup__WEBPACK_IMPORTED_MODULE_12__["getLinkHref"])(raw);
+  let href = Object(_link_setup__WEBPACK_IMPORTED_MODULE_16__["getLinkHref"])(raw);
   let display = `${raw.desc.source}:${raw.desc.book}:${raw.desc.unit}`; //WOM has questions
 
   if (raw.desc.question) {
@@ -4457,23 +3974,16 @@ function initBmLinkHandler() {
       aid = parseInt($(this).prev("span").attr("data-aid"), 10);
     } else if (type === "highlight") {
       aid = parseInt($(this).prev("mark").attr("data-aid"), 10);
-    } //console.log("bookmark type: %s, pid: %s, aid: %s", type, pid, aid);
-    //bookmark wont be found if it is still being created
+    } //bookmark wont be found if it is still being created
 
 
-    let bookmarkData = Object(_bmnet__WEBPACK_IMPORTED_MODULE_2__["getBookmark"])(pid);
+    let bkmrk = localStore.getItem(pid, aid); //sometimes the annotation won't be found because it is being created, so just return
 
-    if (!bookmarkData.bookmark) {
+    if (!bkmrk) {
       return;
     }
 
-    let annotation = bookmarkData.bookmark.find(value => value.creationDate === aid); //sometimes the annotation won't be found because it is being created, so just return
-
-    if (!annotation) {
-      return;
-    }
-
-    let linkList = generateLinkList(annotation.links);
+    let linkList = generateLinkList(bkmrk.annotation.links);
     $(".bm-link-list-popup").html(linkList);
     $(this).popup({
       popup: ".bm-link-info.popup",
@@ -4483,62 +3993,13 @@ function initBmLinkHandler() {
   });
 }
 /*
-  Highlight all annotations with selected text
-  ** except for paragraph of a shared annotation 0 sharePid
-*/
-
-
-function getPageBookmarks(sharePid) {
-  //identify paragraphs with bookmarks
-  _bmnet__WEBPACK_IMPORTED_MODULE_2__["default"].getBookmarks().then(response => {
-    if (response) {
-      //mark each paragraph containing bookmarks
-      for (let id in response) {
-        let hasBookmark = false; //let hasAnnotation = false;
-
-        let pid = id - 1;
-        let count = 0;
-
-        for (const bm of response[id]) {
-          if (bm.selectedText) {
-            Object(_selection__WEBPACK_IMPORTED_MODULE_10__["markSelection"])(bm.selectedText, count, sharePid);
-            addTopicsAsClasses(bm);
-            setQuickLinks(bm, "highlight");
-            _topics__WEBPACK_IMPORTED_MODULE_9__["default"].add(bm);
-            count++;
-            hasBookmark = true;
-          } else {
-            addNoteHighlight(pid, bm);
-            setQuickLinks(bm, "note");
-          }
-        }
-
-        if (hasBookmark) {
-          $(`#p${pid} > span.pnum`).addClass("has-bookmark");
-        }
-        /*
-        if (hasAnnotation) {
-          $(`#p${pid} > span.pnum`).addClass("has-annotation");
-        }
-        */
-
-      }
-
-      _topics__WEBPACK_IMPORTED_MODULE_9__["default"].bookmarksLoaded();
-    }
-  }).catch(error => {
-    console.error(error);
-    toastr__WEBPACK_IMPORTED_MODULE_0___default.a.error(Object(_language_lang__WEBPACK_IMPORTED_MODULE_13__["getString"])("error:e2"));
-  });
-}
-/*
   Clean up form values and prepare to send to API
 */
 
 
 function createAnnotation(formValues) {
   //console.log("createAnnotation");
-  let annotation = lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_4___default()(formValues);
+  let annotation = lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_8___default()(formValues);
   annotation.rangeStart = annotation.rangeStart.trim();
   annotation.rangeEnd = annotation.rangeEnd.trim();
 
@@ -4562,7 +4023,7 @@ function createAnnotation(formValues) {
   if (annotation.aid === "") {
     delete annotation.aid;
   } else {
-    annotation.selectedText = Object(_selection__WEBPACK_IMPORTED_MODULE_10__["getSelection"])(annotation.aid);
+    annotation.selectedText = Object(_selection__WEBPACK_IMPORTED_MODULE_14__["getSelection"])(annotation.aid);
 
     if (annotation.creationDate) {
       annotation.selectedText.aid = annotation.creationDate.toString(10);
@@ -4576,11 +4037,11 @@ function createAnnotation(formValues) {
   } //keep track of topics added or deleted
 
 
-  Object(_selection__WEBPACK_IMPORTED_MODULE_10__["updateSelectionTopicList"])(annotation);
+  Object(_selection__WEBPACK_IMPORTED_MODULE_14__["updateSelectionTopicList"])(annotation);
   delete annotation.newTopics;
   delete annotation.hasAnnotation; //persist the bookmark
 
-  _bmnet__WEBPACK_IMPORTED_MODULE_2__["default"].postAnnotation(annotation);
+  _bmnet__WEBPACK_IMPORTED_MODULE_6__["default"].postAnnotation(annotation);
 }
 /*
   new topics entered on the annotation form are formatted
@@ -4612,7 +4073,7 @@ function formatNewTopics({
   topics = topics.replace(/,*$/, "");
   let newTopicArray = topics.split(",");
   newTopicArray = newTopicArray.map(t => t.trim());
-  newTopicArray = newTopicArray.map(t => lodash_startCase__WEBPACK_IMPORTED_MODULE_5___default()(t));
+  newTopicArray = newTopicArray.map(t => lodash_startCase__WEBPACK_IMPORTED_MODULE_9___default()(t));
   newTopicArray = newTopicArray.map(t => {
     if (/ /.test(t)) {
       return {
@@ -4637,19 +4098,39 @@ function formatNewTopics({
 
 function addToTopicList(newTopics, formValues) {
   //Check for new topics already in topic list
-  _bmnet__WEBPACK_IMPORTED_MODULE_2__["default"].fetchTopics().then(response => {
+  _bmnet__WEBPACK_IMPORTED_MODULE_6__["default"].fetchTopics().then(topicList => {
     //remove duplicate topics from and return the rest in difference[]
-    let newUniqueTopics = lodash_differenceWith__WEBPACK_IMPORTED_MODULE_3___default()(newTopics, response.topics, (n, t) => {
-      if (!t.value) {
-        return t === n.value;
-      }
-
+    let newUniqueTopics = lodash_differenceWith__WEBPACK_IMPORTED_MODULE_7___default()(newTopics, topicList.topics, (n, t) => {
       return t.value === n.value;
     }); //these are the new topics
 
     if (newUniqueTopics.length > 0) {
       //add new topics to topic list
-      _bmnet__WEBPACK_IMPORTED_MODULE_2__["default"].addToTopicList(newUniqueTopics); //add new topics to this annotations topicList
+      let newTopicList = topicList.topics.concat(newUniqueTopics); //sort topic list
+
+      newTopicList.sort((a, b) => {
+        let aValue, bValue; //objects have value and topic keys, sort them by topic
+
+        aValue = a.topic.toLowerCase();
+        bValue = b.topic.toLowerCase();
+
+        if (aValue < bValue) {
+          return -1;
+        }
+
+        if (aValue > bValue) {
+          return 1;
+        }
+
+        return 0;
+      }); //update local storage
+
+      topicList.topics = newTopicList;
+      Object(_util_store__WEBPACK_IMPORTED_MODULE_3__["storeSet"])("bmTopics", topicList);
+      let userInfo = Object(_user_netlify__WEBPACK_IMPORTED_MODULE_2__["getUserInfo"])();
+      let sourceId = teaching.getKeyInfo().sourceId; //write the new list to the db
+
+      Object(_db_topics__WEBPACK_IMPORTED_MODULE_1__["putTopicList"])(userInfo.userId, sourceId, newTopicList); //add new topics to this annotations topicList
 
       formValues.topicList = formValues.topicList.concat(newUniqueTopics); //add newTopics to formValues for posting to server
 
@@ -4658,7 +4139,6 @@ function addToTopicList(newTopics, formValues) {
       createAnnotation(formValues);
     }
   }).catch(err => {
-    //error
     throw new Error(`bookmark.js:addToTopicList() error: ${err}`);
   });
 } //toggle selected text highlights
@@ -4690,16 +4170,16 @@ function bookmarkFeatureHandler() {
     let el = $(".transcript");
 
     if (el.hasClass("disable-selection") && el.hasClass("user")) {
-      Object(_language_lang__WEBPACK_IMPORTED_MODULE_13__["getString"])("menu:m1", true).then(value => {
+      Object(_language_lang__WEBPACK_IMPORTED_MODULE_17__["getString"])("menu:m1", true).then(value => {
         el.removeClass("disable-selection user");
         $(".toggle-bookmark-selection").text(value);
-        store__WEBPACK_IMPORTED_MODULE_1___default.a.set(teaching.bm_creation_state, "enabled");
+        Object(_util_store__WEBPACK_IMPORTED_MODULE_3__["storeSet"])("bmCreation", "enabled");
       });
     } else {
-      Object(_language_lang__WEBPACK_IMPORTED_MODULE_13__["getString"])("menu:m2", true).then(value => {
+      Object(_language_lang__WEBPACK_IMPORTED_MODULE_17__["getString"])("menu:m2", true).then(value => {
         el.addClass("disable-selection user");
         $(".toggle-bookmark-selection").text(value);
-        store__WEBPACK_IMPORTED_MODULE_1___default.a.set(teaching.bm_creation_state, "disabled");
+        Object(_util_store__WEBPACK_IMPORTED_MODULE_3__["storeSet"])("bmCreation", "disabled");
       });
     }
   });
@@ -4711,11 +4191,77 @@ function bookmarkFeatureHandler() {
 
 
 function initializeBookmarkFeatureState() {
-  let state = store__WEBPACK_IMPORTED_MODULE_1___default.a.get(teaching.bm_creation_state);
+  let state = Object(_util_store__WEBPACK_IMPORTED_MODULE_3__["storeGet"])("bmCreation");
 
   if (state && state === "disabled") {
     //console.log("triggering selection guard disable");
     $("#bookmark-toggle-disable-selection").trigger("click");
+  }
+}
+/*
+ * Get Annotations for page for signed in users. SelectedText annotations
+ * are converted to objects by JSON.parse() and the set of annotations
+ * are sorted by pid (without the 'p')
+ *
+ * Args: fn: function to call for annotation s
+ *       arg: arg to pass to function as second argument ie fn(b, arg)
+ */
+
+
+async function getPageBookmarks(sharePid) {
+  let pageKey = teaching.keyInfo.genPageKey();
+  let userInfo = Object(_user_netlify__WEBPACK_IMPORTED_MODULE_2__["getUserInfo"])(); //call fn with empty object
+
+  if (!userInfo) {
+    return;
+  }
+
+  function processAnnotations(bmList, sharePid) {
+    let count = 0;
+    let hasBookmark = false;
+    let lastOne = bmList.length - 1; //check for no results
+
+    if (bmList.length === 0) return;
+    let prevBm;
+    bmList.forEach((bm, idx) => {
+      //if there's a change in paragraph
+      if (prevBm && bm.pid !== prevBm.pid) {
+        if (hasBookmark) {
+          $(`#p${prevBm.pid} > span.pnum`).addClass("has-bookmark");
+        }
+
+        count = 0;
+        hasBookmark = false;
+      }
+
+      if (bm.annotation.selectedText) {
+        Object(_selection__WEBPACK_IMPORTED_MODULE_14__["markSelection"])(bm.annotation.selectedText, count, sharePid);
+        addTopicsAsClasses(bm.annotation);
+        setQuickLinks(bm.annotation, "highlight");
+        _topics__WEBPACK_IMPORTED_MODULE_13__["default"].add(bm.annotation);
+        count++;
+        hasBookmark = true;
+      } else {
+        addNoteHighlight(bm.pid, bm.annotation);
+        setQuickLinks(bm.annotation, "note");
+      }
+
+      if (idx === lastOne && hasBookmark) {
+        $(`#p${bm.pid} > span.pnum`).addClass("has-bookmark");
+      } else {
+        prevBm = bm;
+      }
+    });
+    _topics__WEBPACK_IMPORTED_MODULE_13__["default"].bookmarksLoaded();
+  }
+
+  try {
+    let bmList = await Object(_db_annotation__WEBPACK_IMPORTED_MODULE_0__["getAnnotations"])(userInfo.userId, pageKey); //set global variable
+
+    localStore = new _localStore__WEBPACK_IMPORTED_MODULE_4__["BookmarkLocalStore"](bmList);
+    processAnnotations(bmList, sharePid);
+  } catch (err) {
+    console.error(err); //Notify error 
   }
 }
 /*
@@ -4727,20 +4273,20 @@ function initTranscriptPage(sharePid, constants) {
   //get existing bookmarks for page
   getPageBookmarks(sharePid); //add support for text selection
 
-  Object(_selection__WEBPACK_IMPORTED_MODULE_10__["initialize"])(constants); //show/hide bookmark highlights
+  Object(_selection__WEBPACK_IMPORTED_MODULE_14__["initialize"])(constants); //show/hide bookmark highlights
 
   highlightHandler(); //disable/enable bookmark creation feature
 
   bookmarkFeatureHandler();
   initializeBookmarkFeatureState(); //setup bookmark link listener
 
-  Object(_link_setup__WEBPACK_IMPORTED_MODULE_12__["createLinkListener"])(_annotate__WEBPACK_IMPORTED_MODULE_11__["getLink"]);
+  Object(_link_setup__WEBPACK_IMPORTED_MODULE_16__["createLinkListener"])(_annotate__WEBPACK_IMPORTED_MODULE_15__["getLink"]);
   initBmLinkHandler(); //setup bookmark navigator if requested
 
-  let pid = Object(_util_url__WEBPACK_IMPORTED_MODULE_6__["showBookmark"])();
+  let pid = Object(_util_url__WEBPACK_IMPORTED_MODULE_10__["showBookmark"])();
 
   if (pid) {
-    Object(_navigator__WEBPACK_IMPORTED_MODULE_7__["initNavigator"])(pid, teaching);
+    Object(_navigator__WEBPACK_IMPORTED_MODULE_11__["initNavigator"])(pid, teaching);
   }
 }
 
@@ -4786,20 +4332,8 @@ const annotation = {
       $(`#${formData.rangeStart} > span.pnum`).addClass("has-bookmark"); //this is a new annotation
 
       if (formData.creationDate === "") {
-        let bookmarks = Object(_bmnet__WEBPACK_IMPORTED_MODULE_2__["getBookmark"])(formData.rangeStart);
-        let annotationCount = 0;
-
-        if (bookmarks.bookmark && bookmarks.bookmark.length > 0) {
-          annotationCount = bookmarks.bookmark.reduce((count, annotation) => {
-            if (annotation.aid && annotation.aid !== formData.aid) {
-              count = count + 1;
-            }
-
-            return count;
-          }, 0);
-        }
-
-        Object(_selection__WEBPACK_IMPORTED_MODULE_10__["updateHighlightColor"])(formData.aid, annotationCount);
+        let annotationCount = localStore.itemCount(formData.rangeStart, formData.aid);
+        Object(_selection__WEBPACK_IMPORTED_MODULE_14__["updateHighlightColor"])(formData.aid, annotationCount);
       }
     }
   },
@@ -4808,15 +4342,15 @@ const annotation = {
   cancel(formData) {
     //no creationDate means a new annotation that hasn't been stored
     if (!formData.creationDate && formData.aid) {
-      Object(_selection__WEBPACK_IMPORTED_MODULE_10__["deleteNewSelection"])(formData.aid);
+      Object(_selection__WEBPACK_IMPORTED_MODULE_14__["deleteNewSelection"])(formData.aid);
     }
   },
 
   //delete annotation
-  delete(formData) {
+  async delete(formData) {
     //if annotation has selected text unwrap and delete it
     if (formData.aid) {
-      Object(_selection__WEBPACK_IMPORTED_MODULE_10__["deleteSelection"])(formData.aid);
+      Object(_selection__WEBPACK_IMPORTED_MODULE_14__["deleteSelection"])(formData.aid);
     } else {
       //remove mark from paragraph
       $(`#${formData.rangeStart} > span.pnum`).removeClass("has-annotation"); //remove all paragraphs in bookmark with class .note-style-bookmark
@@ -4846,14 +4380,18 @@ const annotation = {
     } //mark as having no annotations if all have been deleted
 
 
-    let remainingAnnotations = _bmnet__WEBPACK_IMPORTED_MODULE_2__["default"].deleteAnnotation(formData.rangeStart, formData.creationDate);
+    try {
+      let remainingAnnotations = await _bmnet__WEBPACK_IMPORTED_MODULE_6__["default"].deleteAnnotation(formData.rangeStart, formData.creationDate);
 
-    if (remainingAnnotations === 0) {
-      $(`#${formData.rangeStart} > span.pnum`).removeClass("has-bookmark");
-    } //delete topics from the page topic list
+      if (remainingAnnotations === 0) {
+        $(`#${formData.rangeStart} > span.pnum`).removeClass("has-bookmark");
+      } //delete topics from the page topic list
 
 
-    _topics__WEBPACK_IMPORTED_MODULE_9__["default"].delete(formData);
+      _topics__WEBPACK_IMPORTED_MODULE_13__["default"].delete(formData);
+    } catch (err) {
+      throw new Error(err);
+    }
   }
 
 };
@@ -4861,7 +4399,7 @@ const annotation = {
   initialize: function (pid, constants) {
     teaching = constants; //provide teaching constants to bmnet
 
-    Object(_bmnet__WEBPACK_IMPORTED_MODULE_2__["netInit"])(teaching);
+    Object(_bmnet__WEBPACK_IMPORTED_MODULE_6__["netInit"])(teaching);
 
     if ($(".transcript").length) {
       //this is a transcript page
@@ -4869,7 +4407,7 @@ const annotation = {
     } //initialize bookmark list modal - available on all pages
 
 
-    _list__WEBPACK_IMPORTED_MODULE_8__["default"].initialize(constants);
+    _list__WEBPACK_IMPORTED_MODULE_12__["default"].initialize(constants);
   }
 });
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/src/jquery.js")))
@@ -4955,61 +4493,47 @@ function createInstance(selector) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var _bmnet__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./bmnet */ "./src/js/modules/_bookmark/bmnet.js");
-/* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! toastr */ "./node_modules/toastr/toastr.js");
-/* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(toastr__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var lodash_flatten__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lodash/flatten */ "./node_modules/lodash/flatten.js");
-/* harmony import */ var lodash_flatten__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(lodash_flatten__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var lodash_uniqWith__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lodash/uniqWith */ "./node_modules/lodash/uniqWith.js");
-/* harmony import */ var lodash_uniqWith__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(lodash_uniqWith__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var store__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! store */ "./node_modules/store/dist/store.legacy.js");
-/* harmony import */ var store__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(store__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _language_lang__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../_language/lang */ "./src/js/modules/_language/lang.js");
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var _db_annotation__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../_db/annotation */ "./src/js/modules/_db/annotation.js");
+/* harmony import */ var _user_netlify__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../_user/netlify */ "./src/js/modules/_user/netlify.js");
+/* harmony import */ var _util_store__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../_util/store */ "./src/js/modules/_util/store.js");
+/* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! toastr */ "./node_modules/toastr/toastr.js");
+/* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(toastr__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var lodash_flatten__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! lodash/flatten */ "./node_modules/lodash/flatten.js");
+/* harmony import */ var lodash_flatten__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(lodash_flatten__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var lodash_uniqWith__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! lodash/uniqWith */ "./node_modules/lodash/uniqWith.js");
+/* harmony import */ var lodash_uniqWith__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(lodash_uniqWith__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _language_lang__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../_language/lang */ "./src/js/modules/_language/lang.js");
 /*
-  Display list of bookmarks for user/source and allow for filtering by topic
-*/
+ * _bookmark/list.js
+ *
+ * Manaage bookmark display modal dialog.
+ *
+ * Query bookmarks by sourceId and format data for display in
+ * sorted order by book, chapter, and paragraph.
+ *
+ * Bookmarks are stored in local storage to avoid having to query
+ * each time list is displayed unless bookmarks have been added,
+ * deleted, or updated.
+ *
+ * Stored bookmarks are used by _bookmark/navigator.js to navigate
+ * through the list of bookmarks.
+ *
+ * Requires that _includes/componetns/bookmark-modal.html is included
+ * on page. Modal open on click of .bookmark.ui.modal.
+ *
+ */
 
 
 
 
 
- //import {getSourceId, getKeyInfo} from "../_config/key";
-//const transcript = require("../_config/key");
-//import {getPageInfo} from "../_config/config";
+
 
 const uiBookmarkModal = ".bookmark.ui.modal";
 const uiOpenBookmarkModal = ".bookmark-modal-open";
 const uiModalOpacity = 0.5; //teaching specific constants
 
-let teaching = {};
-
-function bookmarkModalState(option, modalInfo) {
-  const name = teaching.bm_modal_key;
-  let info;
-
-  switch (option) {
-    case "get":
-      info = store__WEBPACK_IMPORTED_MODULE_4___default.a.get(name);
-
-      if (!info) {
-        info = {
-          modal: {
-            filter: false
-          }
-        };
-      }
-
-      return info;
-
-    case "set":
-      store__WEBPACK_IMPORTED_MODULE_4___default.a.set(name, modalInfo);
-      break;
-
-    default:
-      throw new Error("Invalid value for 'option' argument: use 'set' or 'get'");
-  }
-} //generate the option element of a select statement
-
+let teaching = {}; //generate the option element of a select statement
 
 function generateOption(topic) {
   if (typeof topic === "object") {
@@ -5024,7 +4548,7 @@ function makeTopicSelect(topics) {
   return `
     <label>Filter Topic(s)</label>
     <select name="topicList" id="bookmark-topic-list" multiple="" class="search ui dropdown">
-      <option value="">${Object(_language_lang__WEBPACK_IMPORTED_MODULE_5__["getString"])("label:selecttopic")}</option>
+      <option value="">${Object(_language_lang__WEBPACK_IMPORTED_MODULE_6__["getString"])("label:selecttopic")}</option>
       ${topics.map(topic => `${generateOption(topic)}`).join("")}
     </select>
   `;
@@ -5032,7 +4556,7 @@ function makeTopicSelect(topics) {
 
 function generateHorizontalList(listArray) {
   if (!listArray || listArray.length === 0) {
-    return Object(_language_lang__WEBPACK_IMPORTED_MODULE_5__["getString"])("annotate:m13");
+    return Object(_language_lang__WEBPACK_IMPORTED_MODULE_6__["getString"])("annotate:m13");
   }
 
   return `
@@ -5053,7 +4577,7 @@ function generateParagraphList(pid, bkmk, url, pTopicList) {
         <i class="bookmark icon"></i>
         <div class="content">
           <div class="header">
-            <a href="${url}?bkmk=${pid}">${Object(_language_lang__WEBPACK_IMPORTED_MODULE_5__["getString"])("label:para")}: ${pid}</a>
+            <a href="${url}?bkmk=${pid}">${Object(_language_lang__WEBPACK_IMPORTED_MODULE_6__["getString"])("label:para")}: ${pid}</a>
           </div>
         </div>
       </div> <!-- item: ${pid} -->
@@ -5072,7 +4596,7 @@ function generateParagraphList(pid, bkmk, url, pTopicList) {
       <i class="bookmark icon"></i>
       <div class="content">
         <div class="header">
-          <a href="${url}?bkmk=${pid}">${Object(_language_lang__WEBPACK_IMPORTED_MODULE_5__["getString"])("label:para")}: ${pid}</a>
+          <a href="${url}?bkmk=${pid}">${Object(_language_lang__WEBPACK_IMPORTED_MODULE_6__["getString"])("label:para")}: ${pid}</a>
         </div>
         <div class="list">
           ${bkmk.map(annotation => `
@@ -5083,7 +4607,7 @@ function generateParagraphList(pid, bkmk, url, pTopicList) {
                   ${generateHorizontalList(annotation.topicList)}
                 </div>
                 <div class="description">
-                  ${annotation.Comment ? annotation.Comment : Object(_language_lang__WEBPACK_IMPORTED_MODULE_5__["getString"])("annotate:m7")}
+                  ${annotation.Comment ? annotation.Comment : Object(_language_lang__WEBPACK_IMPORTED_MODULE_6__["getString"])("annotate:m7")}
                 </div>
               </div>
             </div> <!-- item: ${annotation.rangeStart}/${annotation.rangeEnd} -->
@@ -5138,7 +4662,7 @@ function generateBookmarksForBookPages(pages) {
 
 function generateBookmarkList(books) {
   if (books.length === 0) {
-    return _language_lang__WEBPACK_IMPORTED_MODULE_5__["__lang"]`
+    return _language_lang__WEBPACK_IMPORTED_MODULE_6__["__lang"]`
       <h2 class="ui center aligned icon header">
         <i class="circular bookmark icon"></i>
         ${"bmlist:header"}
@@ -5234,7 +4758,7 @@ function combinePages(pages) {
             }
           }); //collect all topics used for modal dropdown select control
 
-          let uniqueArray = lodash_uniqWith__WEBPACK_IMPORTED_MODULE_3___default()(lodash_flatten__WEBPACK_IMPORTED_MODULE_2___default()(tpl), (a, b) => {
+          let uniqueArray = lodash_uniqWith__WEBPACK_IMPORTED_MODULE_5___default()(lodash_flatten__WEBPACK_IMPORTED_MODULE_4___default()(tpl), (a, b) => {
             if (a.value === b.value) {
               return true;
             }
@@ -5247,7 +4771,7 @@ function combinePages(pages) {
       }
     });
   });
-  let flatTopics = lodash_flatten__WEBPACK_IMPORTED_MODULE_2___default()(allTopics);
+  let flatTopics = lodash_flatten__WEBPACK_IMPORTED_MODULE_4___default()(allTopics);
   let sortedFlatTopics = flatTopics.sort((a, b) => {
     if (a.value < b.value) {
       return -1;
@@ -5257,7 +4781,7 @@ function combinePages(pages) {
 
     return 0;
   });
-  let allUniqueTopics = lodash_uniqWith__WEBPACK_IMPORTED_MODULE_3___default()(sortedFlatTopics, (a, b) => {
+  let allUniqueTopics = lodash_uniqWith__WEBPACK_IMPORTED_MODULE_5___default()(sortedFlatTopics, (a, b) => {
     if (a.value === b.value) {
       return true;
     }
@@ -5277,7 +4801,12 @@ function combinePages(pages) {
 function restoreModalState() {
   let {
     modal
-  } = bookmarkModalState("get");
+  } = Object(_util_store__WEBPACK_IMPORTED_MODULE_2__["storeGet"])("bmModal", {
+    modal: {
+      filter: false
+    }
+  }); //bookmarkModalState("get");
+
   let form = $("#bookmark-filter-form");
   console.log("modal: ", modal);
 
@@ -5300,7 +4829,12 @@ function filterResetHandler() {
       $(this).removeClass("hide-bookmark-item");
     }); //keep track of the state of the bookmark Modal
 
-    let bookmarkModalInfo = bookmarkModalState("get"); //update book title to reflect number of bookmarks
+    let bookmarkModalInfo = Object(_util_store__WEBPACK_IMPORTED_MODULE_2__["storeGet"])("bmModal", {
+      modal: {
+        filter: false
+      }
+    }); //bookmarkModalState("get");
+    //update book title to reflect number of bookmarks
 
     $("[data-bid]").each(function () {
       let bid = $(this).data("bid");
@@ -5308,7 +4842,7 @@ function filterResetHandler() {
     });
     bookmarkModalInfo["modal"].filter = false;
     delete bookmarkModalInfo["modal"].topics;
-    bookmarkModalState("set", bookmarkModalInfo);
+    Object(_util_store__WEBPACK_IMPORTED_MODULE_2__["storeSet"])("bmModal", bookmarkModalInfo); //bookmarkModalState("set", bookmarkModalInfo);
   });
 }
 
@@ -5337,7 +4871,12 @@ function filterSubmitHandler() {
       }
     }); //keep track of the state of the bookmark Modal
 
-    let bookmarkModalInfo = bookmarkModalState("get");
+    let bookmarkModalInfo = Object(_util_store__WEBPACK_IMPORTED_MODULE_2__["storeGet"])("bmModal", {
+      modal: {
+        filter: false
+      }
+    }); //bookmarkModalState("get");
+
     let fullTopic = topics.map(t => {
       return {
         value: t,
@@ -5349,7 +4888,7 @@ function filterSubmitHandler() {
       bookmarkModalInfo["modal"].filter = true;
       bookmarkModalInfo["modal"].topics = topics;
       bookmarkModalInfo["modal"].fullTopic = fullTopic;
-      bookmarkModalState("set", bookmarkModalInfo);
+      Object(_util_store__WEBPACK_IMPORTED_MODULE_2__["storeSet"])("bmModal", bookmarkModalInfo); //bookmarkModalState("set", bookmarkModalInfo);
     }
 
     $("[data-bid]").each(function () {
@@ -5433,7 +4972,12 @@ function populateModal(bookmarks) {
     $("#bookmark-modal-topic-select").html(select);
     $("#bookmark-topic-list").dropdown();
     $("#bookmark-modal-loading").removeClass("active").addClass("disabled");
-    let bookmarkModalInfo = bookmarkModalState("get"); //get number of bookmarks for each book
+    let bookmarkModalInfo = Object(_util_store__WEBPACK_IMPORTED_MODULE_2__["storeGet"])("bmModal", {
+      modal: {
+        filter: false
+      }
+    }); //bookmarkModalState("get");
+    //get number of bookmarks for each book
 
     $("[data-bid]").each(function () {
       let info = {};
@@ -5446,7 +4990,8 @@ function populateModal(bookmarks) {
     }); //only do this the first time 
 
     if (initialCall) {
-      bookmarkModalState("set", bookmarkModalInfo);
+      Object(_util_store__WEBPACK_IMPORTED_MODULE_2__["storeSet"])("bmModal", bookmarkModalInfo); //bookmarkModalState("set", bookmarkModalInfo);
+
       openCloseHandler();
       filterSubmitHandler();
       filterResetHandler(); //restore past state if needed
@@ -5458,6 +5003,73 @@ function populateModal(bookmarks) {
   });
 }
 /*
+ * Build bookmark list:
+ *  { pageKey: {pid: [], pid2:[] }
+ *
+ *  Store result in local storage
+ */
+
+
+function buildBookmarkListFromServer(response) {
+  let bookmarks = {};
+  response.forEach(b => {
+    let [pageKey, pKey] = b.paraKey.split(".");
+    pKey = parseInt(pKey, 10) + "";
+
+    if (!bookmarks[pageKey]) {
+      bookmarks[pageKey] = {};
+    }
+
+    if (!bookmarks[pageKey][pKey]) {
+      bookmarks[pageKey][pKey] = [];
+    }
+
+    bookmarks[pageKey][pKey].push(b.annotation);
+  });
+  bookmarks.lastFetchDate = Date.now();
+  bookmarks.lastBuildDate = Date.now();
+  Object(_util_store__WEBPACK_IMPORTED_MODULE_2__["storeSet"])("bmList", bookmarks);
+  return bookmarks;
+}
+/*
+ * Query db for bookmarks by sourceId. Check for valid list of bookmarks in
+ * local storage first. If not found go to database.
+ */
+
+
+async function queryBookmarks(key) {
+  const retentionTime = 1000 * 60 * 60 * 8; //eight hours of milliseconds
+
+  const userInfo = Object(_user_netlify__WEBPACK_IMPORTED_MODULE_1__["getUserInfo"])(); //check for bookmarks stored in local storage
+
+  let bookmarkList = Object(_util_store__WEBPACK_IMPORTED_MODULE_2__["storeGet"])("bmList", {
+    modal: {
+      filter: false
+    }
+  }); //getBookmarkList();
+
+  if (bookmarkList) {
+    let expireDate = bookmarkList.lastFetchDate + retentionTime; //if list has not expired or been invalidated resolve and return
+    //otherwise query the server
+
+    if (Date.now() < expireDate) {
+      if (bookmarkList.lastBuildDate > 0) {
+        populateModal(bookmarkList);
+        return;
+      }
+    }
+  }
+
+  try {
+    let bmList = await Object(_db_annotation__WEBPACK_IMPORTED_MODULE_0__["getAnnotations"])(userInfo.userId, key);
+    let bookmarks = buildBookmarkListFromServer(bmList);
+    populateModal(bookmarks);
+  } catch (err) {
+    console.error(err);
+    toastr__WEBPACK_IMPORTED_MODULE_3___default.a.error(Object(_language_lang__WEBPACK_IMPORTED_MODULE_6__["getString"])("error:e4"));
+  }
+}
+/*
   We query bookmarks just once per day and whenever bookmarks have changed
 */
 
@@ -5466,13 +5078,7 @@ function initList() {
   const {
     sourceId
   } = teaching.keyInfo.getKeyInfo();
-  _bmnet__WEBPACK_IMPORTED_MODULE_0__["default"].queryBookmarks(sourceId).then(response => {
-    console.log("calling populateModal()");
-    populateModal(response);
-  }).catch(err => {
-    toastr__WEBPACK_IMPORTED_MODULE_1___default.a.error(Object(_language_lang__WEBPACK_IMPORTED_MODULE_5__["getString"])("error:e4"));
-    console.error("Error getting bookmarks for: %s from server", sourceId, err);
-  });
+  queryBookmarks(sourceId);
 }
 
 function initBookmarkModal() {
@@ -5510,6 +5116,187 @@ function initBookmarkModal() {
 
 /***/ }),
 
+/***/ "./src/js/modules/_bookmark/localStore.js":
+/*!************************************************!*\
+  !*** ./src/js/modules/_bookmark/localStore.js ***!
+  \************************************************/
+/*! exports provided: BookmarkLocalStore */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "BookmarkLocalStore", function() { return BookmarkLocalStore; });
+/* harmony import */ var _util_store__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../_util/store */ "./src/js/modules/_util/store.js");
+/*
+ * Local storage for bookmarks on page. 
+ *
+ * All bookmarks on current page are added when the page is loaded and this
+ * cache is kept up to date with bookmark updates, deletions and creations.
+ *
+ * The local store is referenced for display of popup when cursor is hovered over
+ * bookmarks on the page, when a bookmark is edited or shared.
+ *
+ * We don't use the browsers local store because we don't need to persist bookmarks
+ * accross pages.
+ */
+
+class BookmarkLocalStore {
+  /*
+   * @param {array} bmList - array of bookmarks on page
+   */
+  constructor(bmList) {
+    this.list = bmList;
+  }
+  /*
+   * A list of bookmarks, formated for display in the bookmark modal,
+   * is stored in the browsers local storage. When bookmarks are added,
+   * updated or deleted this list must be recreated.
+   *
+   * This invalidates the list because it knows about all bookmark changes.
+   */
+
+
+  _invalidateBmList() {
+    let bmList = Object(_util_store__WEBPACK_IMPORTED_MODULE_0__["storeGet"])("bmList"); //this is not expected
+
+    if (!bmList) return; //invalidate list
+
+    bmList.lastBuildDate = 0;
+    Object(_util_store__WEBPACK_IMPORTED_MODULE_0__["storeSet"])("bmList", bmList);
+    return;
+  }
+  /*
+   * Get bookmark for pid with aid.
+   *
+   * Only annotations with selectedText have aid. Note style
+   * annotation don't but they do have creationDate so check
+   * aid agains creationDate if annotation.aid is not present.
+   *
+   * @param {string} pid - paragraph Id starting with "p"
+   * @param {string} aid - uuid, only present with selectedText
+   * @return {object} - or undefined 
+   */
+
+
+  getItem(pid, aid) {
+    let id = parseInt(pid.substr(1), 10);
+    let bms = this.list.filter(b => {
+      return b.pid === id;
+    });
+    let bm = bms.find(b => {
+      if (aid) {
+        if (b.annotation.aid) {
+          return b.annotation.aid === aid;
+        }
+
+        return b.annotation.creationDate == aid;
+      }
+
+      return typeof b.annotation.aid === "undefined";
+    });
+    return bm;
+  }
+  /*
+   * Add bookmark to list
+   *
+   * @param {string} - userId
+   * @param {string} - paraKey
+   * @param {string} - creationDate
+   * @param {object} - annotation (the bookmark)
+   */
+
+
+  addItem(userId, paraKey, creationDate, annotation) {
+    let pid = annotation.rangeStart;
+    let id = parseInt(pid.substr(1), 10);
+    let bkmrk = {
+      userId: userId,
+      paraKey: `${paraKey}`,
+      creationDate: `${creationDate}`,
+      pid: id,
+      annotation: annotation
+    };
+    this.list.push(bkmrk); //item has been added so invalidate bmList
+
+    this._invalidateBmList();
+  }
+  /*
+   * Delete bookmark from list
+   *
+   * @param {string} userId
+   * @param {string} paraKey
+   * @param {string} creationDate
+   * @return {number} - count of remaining bookmarks for paraKey or null if bookmark not found
+   *
+   */
+
+
+  deleteItem(userId, paraKey, creationDate) {
+    if (typeof paraKey !== "string") {
+      paraKey = `${paraKey}`;
+    }
+
+    if (typeof creationDate !== "string") {
+      creationDate = `${creationDate}`;
+    }
+
+    let index = this.list.findIndex(i => {
+      if (i.userId === userId && i.paraKey === paraKey && i.creationDate === creationDate) {
+        return true;
+      }
+
+      return false;
+    }); //if item found, delete it from local store and get count remaining
+    //bookmarks on paragraph
+
+    if (index > -1) {
+      let pid = this.list[index].pid; //delete item
+
+      this.list.splice(index, 1); //item has been deleted so invalidate bmList
+
+      this._invalidateBmList();
+
+      let bms = this.list.filter(b => {
+        return b.pid === pid;
+      });
+      return bms.length;
+    }
+
+    return null;
+  }
+  /*
+   * Return the number of bookmarks for pid and exclude
+   * bookmark with aid from the count.
+   *
+   * @param {string} pid - paragraph Id
+   * @param {string} aid - annotation to exclude from count
+   * @return {number}
+   */
+
+
+  itemCount(pid, aid) {
+    if (!aid) {
+      return 0;
+    }
+
+    let id = parseInt(pid.substr(1), 10);
+    let bms = this.list.filter(b => {
+      return b.pid === id;
+    });
+    let count = bms.reduce((count, b) => {
+      if (b.annotation.aid && b.annotation.aid !== aid) {
+        count = count + 1;
+      }
+
+      return count;
+    }, 0);
+    return count;
+  }
+
+}
+
+/***/ }),
+
 /***/ "./src/js/modules/_bookmark/navigator.js":
 /*!***********************************************!*\
   !*** ./src/js/modules/_bookmark/navigator.js ***!
@@ -5521,14 +5308,13 @@ function initBookmarkModal() {
 __webpack_require__.r(__webpack_exports__);
 /* WEBPACK VAR INJECTION */(function($) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "initShareDialog", function() { return initShareDialog; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "initNavigator", function() { return initNavigator; });
-/* harmony import */ var lodash_intersection__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lodash/intersection */ "./node_modules/lodash/intersection.js");
-/* harmony import */ var lodash_intersection__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(lodash_intersection__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var lodash_intersectionWith__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! lodash/intersectionWith */ "./node_modules/lodash/intersectionWith.js");
-/* harmony import */ var lodash_intersectionWith__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(lodash_intersectionWith__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var lodash_range__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lodash/range */ "./node_modules/lodash/range.js");
-/* harmony import */ var lodash_range__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(lodash_range__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var store__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! store */ "./node_modules/store/dist/store.legacy.js");
-/* harmony import */ var store__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(store__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _util_store__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../_util/store */ "./src/js/modules/_util/store.js");
+/* harmony import */ var lodash_intersection__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! lodash/intersection */ "./node_modules/lodash/intersection.js");
+/* harmony import */ var lodash_intersection__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(lodash_intersection__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var lodash_intersectionWith__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lodash/intersectionWith */ "./node_modules/lodash/intersectionWith.js");
+/* harmony import */ var lodash_intersectionWith__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(lodash_intersectionWith__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var lodash_range__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lodash/range */ "./node_modules/lodash/range.js");
+/* harmony import */ var lodash_range__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(lodash_range__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var scroll_into_view__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! scroll-into-view */ "./node_modules/scroll-into-view/scrollIntoView.js");
 /* harmony import */ var scroll_into_view__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(scroll_into_view__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! toastr */ "./node_modules/toastr/toastr.js");
@@ -5586,15 +5372,11 @@ function generateAnnotation(annotation, topics = []) {
 
 
   let topicList = annotation.topicList.map(topic => {
-    if (typeof topic === "object") {
-      return topic.value;
-    }
-
-    return topic;
+    return topic.value;
   });
 
   if (topics.length > 0) {
-    match = lodash_intersection__WEBPACK_IMPORTED_MODULE_0___default()(topicList, topics);
+    match = lodash_intersection__WEBPACK_IMPORTED_MODULE_1___default()(topicList, topics);
   }
 
   if (topics.length === 0 || match.length > 0) {
@@ -5679,7 +5461,7 @@ function getNextPageUrl(pos, pageList, filterList, bookmarks) {
           break outer;
         } else {
           //compare the filter topic (a) with bookmark topics ({value, topic})
-          let match = lodash_intersectionWith__WEBPACK_IMPORTED_MODULE_1___default()(filterList, pageMarks[pid][a].topicList || [], (a, b) => {
+          let match = lodash_intersectionWith__WEBPACK_IMPORTED_MODULE_2___default()(filterList, pageMarks[pid][a].topicList || [], (a, b) => {
             if (a === b.value) {
               return true;
             }
@@ -5735,7 +5517,7 @@ function getPrevPageUrl(pos, pageList, filterList, bookmarks) {
           found = true;
           break outer;
         } else {
-          let match = lodash_intersectionWith__WEBPACK_IMPORTED_MODULE_1___default()(filterList, pageMarks[pid][a].topicList || [], (a, b) => {
+          let match = lodash_intersectionWith__WEBPACK_IMPORTED_MODULE_2___default()(filterList, pageMarks[pid][a].topicList || [], (a, b) => {
             if (a === b.value) {
               return true;
             }
@@ -5820,7 +5602,7 @@ function getPreviousPid(currentPos, pageMarks, pageBookmarks, topics) {
 
       for (let i = 0; i < bookmark.length; i++) {
         if (bookmark[i].topicList && bookmark[i].topicList.length > 0) {
-          let inter = lodash_intersectionWith__WEBPACK_IMPORTED_MODULE_1___default()(bookmark[i].topicList, topics, (a, b) => {
+          let inter = lodash_intersectionWith__WEBPACK_IMPORTED_MODULE_2___default()(bookmark[i].topicList, topics, (a, b) => {
             if (a.value === b) {
               return true;
             }
@@ -5872,7 +5654,7 @@ function getNextPid(currentPos, pageMarks, pageBookmarks, topics) {
 
       for (let i = 0; i < bookmark.length; i++) {
         if (bookmark[i].topicList && bookmark[i].topicList.length > 0) {
-          let inter = lodash_intersectionWith__WEBPACK_IMPORTED_MODULE_1___default()(bookmark[i].topicList, topics, (a, b) => {
+          let inter = lodash_intersectionWith__WEBPACK_IMPORTED_MODULE_2___default()(bookmark[i].topicList, topics, (a, b) => {
             if (a.value === b) {
               return true;
             }
@@ -5983,8 +5765,8 @@ function getCurrentBookmark(pageKey, actualPid, allBookmarks, bmModal, whoCalled
 function bookmarkManager(actualPid) {
   let sourceId = teaching.keyInfo.getSourceId();
   let pageKey = teaching.keyInfo.genPageKey().toString(10);
-  let bmList = store__WEBPACK_IMPORTED_MODULE_3___default.a.get(teaching.bm_list_store);
-  let bmModal = store__WEBPACK_IMPORTED_MODULE_3___default.a.get(teaching.bm_modal_store);
+  let bmList = Object(_util_store__WEBPACK_IMPORTED_MODULE_0__["storeGet"])("bmList");
+  let bmModal = Object(_util_store__WEBPACK_IMPORTED_MODULE_0__["storeGet"])("bmModal");
 
   if (bmList) {
     //store globally
@@ -6048,8 +5830,8 @@ function bookmarkManager(actualPid) {
 
 function updateNavigator(pid, update) {
   //console.log("updateNavigator, pid: %s, update: %s", pid, update);
-  let bmList = store__WEBPACK_IMPORTED_MODULE_3___default.a.get(teaching.bm_list_store);
-  let bmModal = store__WEBPACK_IMPORTED_MODULE_3___default.a.get(teaching.bm_modal_store);
+  let bmList = Object(_util_store__WEBPACK_IMPORTED_MODULE_0__["storeGet"])("bmList");
+  let bmModal = Object(_util_store__WEBPACK_IMPORTED_MODULE_0__["storeGet"])("bmModal");
   getCurrentBookmark(gPageKey, pid, bmList, bmModal, update);
 }
 /*
@@ -6257,7 +6039,7 @@ function initClickListeners() {
 
     let url = `https://${location.hostname}${location.pathname}?as=${pid}:${aid}:${userInfo.userId}`;
     let numericRange = rangeArray.map(r => parseInt(r.substr(1), 10));
-    let annotationRange = lodash_range__WEBPACK_IMPORTED_MODULE_2___default()(numericRange[0], numericRange[1] + 1);
+    let annotationRange = lodash_range__WEBPACK_IMPORTED_MODULE_3___default()(numericRange[0], numericRange[1] + 1);
     let header;
 
     if (userInfo.userId === "xxx") {
@@ -6472,7 +6254,12 @@ function deleteNewSelection(id) {
   } //remove highlight
 
 
-  highlite.wrap.unwrap(); //delete the annotation
+  if (highlite.wrap) {
+    highlite.wrap.unwrap();
+  } else {
+    console.log("deleteNewSelection: no wrap() in selection");
+  } //delete the annotation
+
 
   delete pageAnnotations[id];
 }
@@ -6492,7 +6279,12 @@ function deleteSelection(id) {
   } //remove highlight
 
 
-  highlite.wrap.unwrap(); //delete the annotation
+  if (highlite.wrap) {
+    highlite.wrap.unwrap();
+  } else {
+    console.log("deleteSelection: no wrap() in selection");
+  } //delete the annotation
+
 
   delete pageAnnotations[id];
 }
@@ -6910,15 +6702,15 @@ function bookmarkStart(page) {
 __webpack_require__.r(__webpack_exports__);
 /* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var _language_lang__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../_language/lang */ "./src/js/modules/_language/lang.js");
 /*
-  Keeps track of topics used by page annotations that have selectedText
-
-  The list of topics is added to the bookmark menu option on transcript pages
-  and allows the user to show only highlighted text of the selected topic.
-
-  When the user selects a topic, the class .topic-filter-active is added to .transcript
-  and the class .show is added to each highlight containing the selected topic. This works
-  because each highlight contains a class that corresponds to each topic the annotation 
-  contains.
+ * Keeps track of topics used by page annotations that have selectedText
+ *
+ * The list of topics is added to the bookmark menu option on transcript pages
+ * and allows the user to show only highlighted text of the selected topic.
+ *
+ * When the user selects a topic, the class .topic-filter-active is added to .transcript
+ * and the class .show is added to each highlight containing the selected topic. This works
+ * because each highlight contains a class that corresponds to each topic the annotation 
+ * contains.
 */
 
 let topics = new Map();
@@ -8161,6 +7953,227 @@ function getBookId() {
 
 /***/ }),
 
+/***/ "./src/js/modules/_db/annotation.js":
+/*!******************************************!*\
+  !*** ./src/js/modules/_db/annotation.js ***!
+  \******************************************/
+/*! exports provided: getAnnotations, postAnnotation, getAnnotation, deleteAnnotation */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getAnnotations", function() { return getAnnotations; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "postAnnotation", function() { return postAnnotation; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getAnnotation", function() { return getAnnotation; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deleteAnnotation", function() { return deleteAnnotation; });
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _globals__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../globals */ "./src/js/globals.js");
+
+
+/*
+ * Format paraKey so it contains 3 decimal positions
+ */
+
+function formatKey(key) {
+  if (typeof key !== "string") {
+    key = key.toString(10);
+  }
+
+  let decimalPos = key.indexOf("."); //invalid key, but return it anyway.
+
+  if (decimalPos === -1) {
+    return `${key}.001`;
+  }
+
+  let intPart = key.substr(0, decimalPos);
+  let decimalPart = key.substr(decimalPos + 1);
+  let padding = decimalPart.length === 2 ? "0" : decimalPart.length === 1 ? "00" : "";
+  return `${intPart}.${decimalPart}${padding}`;
+}
+/*
+ * Get array of annotations from server, add a numeric pid to each item, and
+ * parse stringified selectedText.
+ *
+ * Return array of annotations.
+ * {
+ *   annotation: {
+ *     Comment: <string>,
+ *     rangeStart: <string>,
+ *     rangeEnd: <string>,
+ *     [selectedText]: <object>,
+ *     [aid]: <string>
+ *     topicList: [{value, topic},...],
+ *     userId: <string>,
+ *     creationDate: <string>
+ *   }, 
+ *   userId: <string>,
+ *   paraKey: <string>,
+ *   creationDate: <string>,
+ *   pid: <number>
+ * }
+ */
+
+
+function getAnnotations(userId, key) {
+  return new Promise((resolve, reject) => {
+    axios__WEBPACK_IMPORTED_MODULE_0___default.a.get(`${_globals__WEBPACK_IMPORTED_MODULE_1__["default"].user2}/queryAnnotation/${userId}/${key}`).then(response => {
+      let bmList = response.data.response;
+      bmList.forEach(b => {
+        //numeric pid, not representative of key
+        // - used to find annotations for a given paragraph
+        b.pid = parseInt(b.annotation.rangeStart.substring(1), 10); //add userId and creationDate to annotation, this is used by the
+        //bookmark navigator
+
+        b.annotation.userId = b.userId;
+        b.annotation.creationDate = b.creationDate; //parse selectedText JSON object
+
+        if (b.annotation.selectedText) {
+          b.annotation.selectedText = JSON.parse(b.annotation.selectedText);
+        }
+      }); //sort bookmarks by numeric pid
+
+      bmList.sort((a, b) => {
+        return a.paraKey - b.paraKey;
+      });
+      resolve(bmList);
+    }).catch(err => {
+      reject(err);
+    });
+  });
+}
+/*
+ * Save annotation to DynamoDb
+ */
+
+function postAnnotation(userId, paraKey, creationDate, annotation) {
+  if (typeof creationDate !== "string") {
+    creationDate = creationDate.toString(10);
+  }
+
+  if (typeof paraKey !== "string") {
+    paraKey = paraKey.toString(10);
+  }
+
+  let body = {
+    userId: userId,
+    paraKey: paraKey,
+    creationDate: creationDate,
+    annotation: annotation
+  };
+  return new Promise((resolve, reject) => {
+    axios__WEBPACK_IMPORTED_MODULE_0___default.a.post(`${_globals__WEBPACK_IMPORTED_MODULE_1__["default"].user2}/annotation`, body).then(response => {
+      resolve(response.data.response);
+    }).catch(err => {
+      reject(err);
+    });
+  });
+}
+/*
+ * Get annotation from server, add userId and creationDate to the annotation,
+ * parse stringified selectedText.
+ *
+ * Return annotation only.
+ */
+
+function getAnnotation(userId, paraKey, creationDate) {
+  return new Promise((resolve, reject) => {
+    axios__WEBPACK_IMPORTED_MODULE_0___default.a.get(`${_globals__WEBPACK_IMPORTED_MODULE_1__["default"].user2}/annotation/${userId}/${formatKey(paraKey)}/${creationDate}`).then(response => {
+      console.log("getAnnotation: %o", response);
+      let r = response.data.response; //annotation not found
+
+      if (!r.userId) {
+        resolve({});
+        return;
+      }
+
+      r.annotation.userId = r.userId;
+      r.annotation.creationDate = r.creationDate;
+
+      if (r.annotation.selectedText) {
+        r.annotation.selectedText = JSON.parse(r.annotation.selectedText);
+      }
+
+      resolve(r.annotation);
+    }).catch(err => {
+      reject(err);
+    });
+  });
+}
+/*
+ * Delete annotation
+ */
+
+function deleteAnnotation(userId, paraKey, creationDate) {
+  if (typeof creationDate !== "string") {
+    creationDate.toString(10);
+  }
+
+  return new Promise((resolve, reject) => {
+    axios__WEBPACK_IMPORTED_MODULE_0___default.a.delete(`${_globals__WEBPACK_IMPORTED_MODULE_1__["default"].user2}/annotation/${userId}/${formatKey(paraKey)}/${creationDate}`).then(response => {
+      resolve(response.data.response);
+    }).catch(err => {
+      reject(err);
+    });
+  });
+}
+
+/***/ }),
+
+/***/ "./src/js/modules/_db/topics.js":
+/*!**************************************!*\
+  !*** ./src/js/modules/_db/topics.js ***!
+  \**************************************/
+/*! exports provided: getTopicList, putTopicList */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getTopicList", function() { return getTopicList; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "putTopicList", function() { return putTopicList; });
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _globals__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../globals */ "./src/js/globals.js");
+
+
+/**
+ * @param {string} userId - md5 hash of userId
+ * @param {string} sourceId - two digit source identifier
+ * @return {array} topics - topicList
+ *
+ */
+
+function getTopicList(userId, sourceId) {
+  return new Promise((resolve, reject) => {
+    axios__WEBPACK_IMPORTED_MODULE_0___default.a.get(`${_globals__WEBPACK_IMPORTED_MODULE_1__["default"].user2}/topicList/${userId}/${sourceId}`).then(response => {
+      let topics = response.data.topics;
+      resolve(topics);
+    }).catch(err => {
+      reject(err);
+    });
+  });
+}
+/*
+ * Save topicList to DynamoDb
+ */
+
+function putTopicList(userId, sourceId, topicList) {
+  let body = {
+    userId: userId,
+    sourceId: paraKey,
+    topicList: topicList
+  };
+  return new Promise((resolve, reject) => {
+    axios__WEBPACK_IMPORTED_MODULE_0___default.a.post(`${_globals__WEBPACK_IMPORTED_MODULE_1__["default"].user2}/topicList`, body).then(response => {
+      resolve(response.data.response);
+    }).catch(err => {
+      reject(err);
+    });
+  });
+}
+
+/***/ }),
+
 /***/ "./src/js/modules/_language/lang.js":
 /*!******************************************!*\
   !*** ./src/js/modules/_language/lang.js ***!
@@ -9361,7 +9374,7 @@ function showSavedQuery() {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var _util_url__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../_util/url */ "./src/js/modules/_util/url.js");
-/* harmony import */ var _bookmark_bmnet__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../_bookmark/bmnet */ "./src/js/modules/_bookmark/bmnet.js");
+/* harmony import */ var _db_annotation__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../_db/annotation */ "./src/js/modules/_db/annotation.js");
 /* harmony import */ var _bookmark_selection__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../_bookmark/selection */ "./src/js/modules/_bookmark/selection.js");
 /* harmony import */ var lodash_range__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lodash/range */ "./node_modules/lodash/range.js");
 /* harmony import */ var lodash_range__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(lodash_range__WEBPACK_IMPORTED_MODULE_3__);
@@ -9454,12 +9467,13 @@ function wrapRange(annotation) {
   });
 }
 /*
-  Display annotation requested by query parameter "as"
-  ?as=pid:annotationId:userId
+  Display shared annotation requested by query parameter "as" ?as=pid:annotationId:userId. This
+  is called when the user click 'To The Source' on a shared quote or FB post. The annotation
+  could have been created by anyone.
 */
 
 
-function showAnnotation() {
+async function showAnnotation() {
   let info = Object(_util_url__WEBPACK_IMPORTED_MODULE_0__["showAnnotation"])();
 
   if (!info) {
@@ -9473,11 +9487,10 @@ function showAnnotation() {
   }
 
   if ($(`#${pid}`).length === 0) {
-    // console.log("invalid pid: %s", pid);
     return false;
   }
 
-  let bookmarkId = teaching.keyInfo.genParagraphKey(pid); //show loading indicator
+  let paraKey = teaching.keyInfo.genParagraphKey(pid); //show loading indicator
 
   Object(_util_url__WEBPACK_IMPORTED_MODULE_0__["loadStart"])();
   /*
@@ -9487,26 +9500,15 @@ function showAnnotation() {
       annotations for the paragraph before returning
   */
 
-  Object(_bookmark_bmnet__WEBPACK_IMPORTED_MODULE_1__["fetchBookmark"])(bookmarkId, uid).then(response => {
-    //bookmark not found
-    if (!response.Item) {
-      // console.log("bookmark not found");
+  try {
+    const annotation = await Object(_db_annotation__WEBPACK_IMPORTED_MODULE_1__["getAnnotation"])(uid, paraKey, aid);
+
+    if (!annotation.userId) {
       Object(_bookmark_selection__WEBPACK_IMPORTED_MODULE_2__["highlightSkippedAnnotations"])();
       Object(_util_url__WEBPACK_IMPORTED_MODULE_0__["loadComplete"])();
       toastr__WEBPACK_IMPORTED_MODULE_6___default.a.warning("Requested Bookmark was not found");
       return;
     }
-
-    let bookmark = response.Item.bookmark; // console.log("bookmark from fetch: %o", bookmark);
-
-    let annotation = bookmark.find(a => a.creationDate.toString(10) === aid);
-
-    if (!annotation) {
-      // console.log("annotation not found");
-      Object(_bookmark_selection__WEBPACK_IMPORTED_MODULE_2__["highlightSkippedAnnotations"])();
-      return;
-    } // console.log("annotation: %o", annotation);
-
 
     let node = document.getElementById(annotation.rangeStart);
 
@@ -9517,15 +9519,13 @@ function showAnnotation() {
     $(`[data-aid="${aid}"]`).addClass("shared");
     wrapRange(annotation);
     sharedAnnotation = annotation;
-    initCloseHandler(); //console.log("sharing pid: %s", pid);
-    //stop page loading indicator
-
+    initCloseHandler();
     Object(_util_url__WEBPACK_IMPORTED_MODULE_0__["loadComplete"])();
-  }).catch(err => {
-    //stop page loading indicator
+  } catch (err) {
     Object(_util_url__WEBPACK_IMPORTED_MODULE_0__["loadComplete"])();
     console.error(err);
-  });
+  }
+
   return pid;
 }
 
@@ -10053,6 +10053,70 @@ function transcriptDriver() {
   driver.start();
 }
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/src/jquery.js")))
+
+/***/ }),
+
+/***/ "./src/js/modules/_util/store.js":
+/*!***************************************!*\
+  !*** ./src/js/modules/_util/store.js ***!
+  \***************************************/
+/*! exports provided: storeSet, storeGet, storeInit */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "storeSet", function() { return storeSet; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "storeGet", function() { return storeGet; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "storeInit", function() { return storeInit; });
+/* harmony import */ var store__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! store */ "./node_modules/store/dist/store.legacy.js");
+/* harmony import */ var store__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(store__WEBPACK_IMPORTED_MODULE_0__);
+/*
+ * Store data in local storage. Keys are limited to those found
+ * in source constants file.
+ */
+
+let keys = new Map();
+/*
+ * Get key from keys and throw if not found
+ */
+
+function getKey(key) {
+  const storeKey = keys.get(key);
+
+  if (!storeKey) {
+    throw new Error(`store: invalid key: ${key}`);
+  }
+
+  return storeKey;
+}
+/*
+ * Set value for key in local storage
+ */
+
+
+function storeSet(key, value) {
+  store__WEBPACK_IMPORTED_MODULE_0___default.a.set(getKey(key), value);
+}
+/*
+ * Get value for key from local storage
+ */
+
+function storeGet(key, defaultValue) {
+  let value = store__WEBPACK_IMPORTED_MODULE_0___default.a.get(getKey(key));
+  return value || defaultValue;
+}
+/*
+ * Load 'keys' with acceptable keys for local storage
+ * based on the 'store' object in the argument 'config'
+ */
+
+function storeInit(config) {
+  let sid = config.sid;
+
+  for (const key in config.store) {
+    keys.set(key, `${sid}.${config.store[key]}`);
+  }
+}
 
 /***/ }),
 

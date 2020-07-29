@@ -1699,6 +1699,96 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/* global window, exports, define */
 }(); // eslint-disable-line
 
 
+/***/ }),
+
+/***/ "./node_modules/lodash/differenceWith.js":
+/*!***********************************************!*\
+  !*** ./node_modules/lodash/differenceWith.js ***!
+  \***********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var baseDifference = __webpack_require__(/*! ./_baseDifference */ "./node_modules/lodash/_baseDifference.js"),
+    baseFlatten = __webpack_require__(/*! ./_baseFlatten */ "./node_modules/lodash/_baseFlatten.js"),
+    baseRest = __webpack_require__(/*! ./_baseRest */ "./node_modules/lodash/_baseRest.js"),
+    isArrayLikeObject = __webpack_require__(/*! ./isArrayLikeObject */ "./node_modules/lodash/isArrayLikeObject.js"),
+    last = __webpack_require__(/*! ./last */ "./node_modules/lodash/last.js");
+
+/**
+ * This method is like `_.difference` except that it accepts `comparator`
+ * which is invoked to compare elements of `array` to `values`. The order and
+ * references of result values are determined by the first array. The comparator
+ * is invoked with two arguments: (arrVal, othVal).
+ *
+ * **Note:** Unlike `_.pullAllWith`, this method returns a new array.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Array
+ * @param {Array} array The array to inspect.
+ * @param {...Array} [values] The values to exclude.
+ * @param {Function} [comparator] The comparator invoked per element.
+ * @returns {Array} Returns the new array of filtered values.
+ * @example
+ *
+ * var objects = [{ 'x': 1, 'y': 2 }, { 'x': 2, 'y': 1 }];
+ *
+ * _.differenceWith(objects, [{ 'x': 1, 'y': 2 }], _.isEqual);
+ * // => [{ 'x': 2, 'y': 1 }]
+ */
+var differenceWith = baseRest(function(array, values) {
+  var comparator = last(values);
+  if (isArrayLikeObject(comparator)) {
+    comparator = undefined;
+  }
+  return isArrayLikeObject(array)
+    ? baseDifference(array, baseFlatten(values, 1, isArrayLikeObject, true), undefined, comparator)
+    : [];
+});
+
+module.exports = differenceWith;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/uniqWith.js":
+/*!*****************************************!*\
+  !*** ./node_modules/lodash/uniqWith.js ***!
+  \*****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var baseUniq = __webpack_require__(/*! ./_baseUniq */ "./node_modules/lodash/_baseUniq.js");
+
+/**
+ * This method is like `_.uniq` except that it accepts `comparator` which
+ * is invoked to compare elements of `array`. The order of result values is
+ * determined by the order they occur in the array.The comparator is invoked
+ * with two arguments: (arrVal, othVal).
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Array
+ * @param {Array} array The array to inspect.
+ * @param {Function} [comparator] The comparator invoked per element.
+ * @returns {Array} Returns the new duplicate free array.
+ * @example
+ *
+ * var objects = [{ 'x': 1, 'y': 2 }, { 'x': 2, 'y': 1 }, { 'x': 1, 'y': 2 }];
+ *
+ * _.uniqWith(objects, _.isEqual);
+ * // => [{ 'x': 1, 'y': 2 }, { 'x': 2, 'y': 1 }]
+ */
+function uniqWith(array, comparator) {
+  comparator = typeof comparator == 'function' ? comparator : undefined;
+  return (array && array.length) ? baseUniq(array, undefined, comparator) : [];
+}
+
+module.exports = uniqWith;
+
+
 /***/ })
 
 }]);

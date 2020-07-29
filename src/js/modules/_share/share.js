@@ -13,7 +13,7 @@
 
 */
 import {showAnnotation as showAnnotationRequest, loadStart, loadComplete} from "../_util/url";
-import {fetchBookmark} from "../_bookmark/bmnet";
+import {getAnnotation} from "../_db/annotation";
 import {highlightSkippedAnnotations, highlight} from "../_bookmark/selection";
 import range from "lodash/range";
 import scroll from "scroll-into-view";
@@ -85,10 +85,11 @@ function wrapRange(annotation) {
 }
 
 /*
-  Display annotation requested by query parameter "as"
-  ?as=pid:annotationId:userId
+  Display shared annotation requested by query parameter "as" ?as=pid:annotationId:userId. This
+  is called when the user click 'To The Source' on a shared quote or FB post. The annotation
+  could have been created by anyone.
 */
-function showAnnotation() {
+async function showAnnotation() {
   let info = showAnnotationRequest();
   if (!info) {
     return false;
@@ -102,11 +103,10 @@ function showAnnotation() {
   }
 
   if ($(`#${pid}`).length === 0) {
-    // console.log("invalid pid: %s", pid);
     return false;
   }
 
-  let bookmarkId = teaching.keyInfo.genParagraphKey(pid);
+  let paraKey = teaching.keyInfo.genParagraphKey(pid);
 
   //show loading indicator
   loadStart();
@@ -117,52 +117,33 @@ function showAnnotation() {
       if we fail to get the bookmark or can't find the shared annotation we need to highlight the users
       annotations for the paragraph before returning
   */
-  fetchBookmark(bookmarkId, uid)
-    .then((response) => {
-      //bookmark not found
-      if (!response.Item) {
-        // console.log("bookmark not found");
-        highlightSkippedAnnotations();
-        loadComplete();
-        notify.warning("Requested Bookmark was not found");
-        return;
-      }
+  try {
+    const annotation = await getAnnotation(uid, paraKey, aid);
 
-      let bookmark = response.Item.bookmark;
-      // console.log("bookmark from fetch: %o", bookmark);
-
-      let annotation = bookmark.find((a) => a.creationDate.toString(10) === aid);
-
-      if (!annotation) {
-        // console.log("annotation not found");
-        highlightSkippedAnnotations();
-        return;
-      }
-      // console.log("annotation: %o", annotation);
-
-      let node = document.getElementById(annotation.rangeStart);
-
-      if (annotation.selectedText) {
-        highlight(annotation.selectedText, node);
-      }
-
-      $(`[data-aid="${aid}"]`).addClass("shared");
-
-      wrapRange(annotation);
-      sharedAnnotation = annotation;
-
-      initCloseHandler();
-      //console.log("sharing pid: %s", pid);
-
-      //stop page loading indicator
+    if (!annotation.userId) {
+      highlightSkippedAnnotations();
       loadComplete();
-    })
-    .catch((err) => {
-      //stop page loading indicator
-      loadComplete();
+      notify.warning("Requested Bookmark was not found");
+      return;
+    }
 
-      console.error(err);
-    });
+    let node = document.getElementById(annotation.rangeStart);
+
+    if (annotation.selectedText) {
+      highlight(annotation.selectedText, node);
+    }
+
+    $(`[data-aid="${aid}"]`).addClass("shared");
+
+    wrapRange(annotation);
+    sharedAnnotation = annotation;
+    initCloseHandler();
+    loadComplete();
+  }
+  catch(err) {
+    loadComplete();
+    console.error(err);
+  }
 
   return pid;
 }
