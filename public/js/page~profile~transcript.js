@@ -2751,6 +2751,7 @@ let teaching = {};
 function getAnnotationForm() {
   let form = _language_lang__WEBPACK_IMPORTED_MODULE_7__["__lang"]`
     <form name="annotation" id="annotation-form" class="ui form">
+      <input class="hidden-field" type="text" readonly="" name="status">
       <input class="hidden-field" type="text" readonly="" name="creationDate">
       <input class="hidden-field" type="text" name="aid" readonly>
       <input class="hidden-field" type="text" readonly="" name="rangeStart">
@@ -3061,6 +3062,7 @@ function initializeForm(pid, aid, annotation) {
 
   if (!annotation) {
     form.form("set values", {
+      status: "new",
       rangeStart: pid,
       rangeEnd: pid,
       aid: aid
@@ -3079,6 +3081,7 @@ function initializeForm(pid, aid, annotation) {
     }
 
     form.form("set values", {
+      status: "update",
       rangeStart: annotation.rangeStart,
       rangeEnd: annotation.rangeEnd,
       aid: annotation.aid,
@@ -3214,7 +3217,8 @@ function hoverNoteHandler() {
   });
 }
 /*
- * Highlighted text hover; show popup
+ * Show popup containing info about the bookmark when mouse hovers over
+ * selectedText.
  */
 
 
@@ -3264,7 +3268,7 @@ function hoverHandler() {
     if ($(this).hasClass("shared")) {
       $(this).popup("hide").popup("destroy");
       return;
-    } //bookmark wont be found if it is still being created
+    } //get bookmark from local store
 
 
     let bkmrk = _bookmark__WEBPACK_IMPORTED_MODULE_2__["localStore"].getItem(pid, aid); //sometimes the annotation won't be found because it is being created, so just return
@@ -3471,8 +3475,8 @@ function shareHandler() {
     let formData = getFormData();
     unwrap(); //remove class "show" added when form was displayed
 
-    $(`[data-annotation-id="${formData.aid}"]`).removeClass("show");
-    _bookmark__WEBPACK_IMPORTED_MODULE_2__["annotation"].cancel(formData);
+    $(`[data-annotation-id="${formData.aid}"]`).removeClass("show"); //annotation.cancel(formData);
+
     $(".transcript .annotation-edit").removeClass("annotation-edit");
     let userInfo = Object(_user_netlify__WEBPACK_IMPORTED_MODULE_6__["getUserInfo"])();
 
@@ -3491,7 +3495,13 @@ function shareHandler() {
 
     if (annotation_id.length > 0) {
       aid = $(`[data-annotation-id="${annotation_id}"]`).attr("data-aid");
-      $(`[data-annotation-id="${annotation_id}"]`).addClass("show");
+      $(`[data-annotation-id="${annotation_id}"]`).addClass("show"); //aid is undefined when new annotations are shared, the real aid is the annotation
+      //creationDate. If aid is undefined try to get the creationDate from local store
+
+      if (!aid) {
+        aid = _bookmark__WEBPACK_IMPORTED_MODULE_2__["localStore"].getCreationDate(annotation_id);
+        $(`[data-annotation-id="${annotation_id}"]`).attr("data-aid", aid);
+      }
     } else {
       aid = $(`#${pid} > span.pnum`).attr("data-aid");
     }
@@ -3755,8 +3765,6 @@ function postAnnotation(annotation, pageKey, addToLocalStorage = true) {
   }
 
   Object(_db_annotation__WEBPACK_IMPORTED_MODULE_0__["postAnnotation"])(userInfo.userId, pageKey, creationDate, serverAnnotation).then(resp => {
-    console.log("postAnnotation response: %o", resp);
-
     if (addToLocalStorage) {
       _bookmark__WEBPACK_IMPORTED_MODULE_3__["localStore"].addItem(userInfo.userId, pageKey, creationDate, serverAnnotation);
     }
@@ -3764,6 +3772,7 @@ function postAnnotation(annotation, pageKey, addToLocalStorage = true) {
     console.error(`Error saving annotation: ${err}`);
     toastr__WEBPACK_IMPORTED_MODULE_4___default.a.error(Object(_language_lang__WEBPACK_IMPORTED_MODULE_7__["getString"])("error:e1"));
   });
+  return creationDate;
 }
 /*
   Delete the annotation 'creationDate' for bookmark 'pid'
@@ -3777,8 +3786,12 @@ function deleteAnnotation(pid, creationDate) {
 
     try {
       let response = await Object(_db_annotation__WEBPACK_IMPORTED_MODULE_0__["deleteAnnotation"])(userInfo.userId, paraKey, creationDate);
-      let remaining = _bookmark__WEBPACK_IMPORTED_MODULE_3__["localStore"].deleteItem(userInfo.userId, paraKey, creationDate);
-      resolve(remaining);
+      let result = _bookmark__WEBPACK_IMPORTED_MODULE_3__["localStore"].deleteItem(userInfo.userId, paraKey, creationDate);
+
+      if (result.modified) {//TODO update page topic list
+      }
+
+      resolve(result.remaining);
     } catch (err) {
       reject(err);
     }
@@ -3910,18 +3923,18 @@ function generateLinkList(links) {
       ${formatLink(item)}
     `).join("")}
   `;
-} //add bookmark topics to bookmark selected text to support
-//selective display of highlight based on topic
+}
+/**
+ * Add classes to selectedText bookmarks for each topic
+ *
+ * @param <object> - the annotation
+ */
 
 
 function addTopicsAsClasses(bookmark) {
   if (bookmark.topicList && bookmark.topicList.length > 0) {
     let topicList = bookmark.topicList.reduce((result, topic) => {
-      if (typeof topic === "object") {
-        return `${result} ${topic.value}`;
-      }
-
-      return `${result} ${topic}`;
+      return `${result} ${topic.value}`;
     }, "");
     $(`[data-annotation-id="${bookmark.aid}"]`).addClass(topicList);
   }
@@ -3998,7 +4011,6 @@ function initBmLinkHandler() {
 
 
 function createAnnotation(formValues) {
-  //console.log("createAnnotation");
   let annotation = lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_8___default()(formValues);
   annotation.rangeStart = annotation.rangeStart.trim();
   annotation.rangeEnd = annotation.rangeEnd.trim();
@@ -4041,7 +4053,17 @@ function createAnnotation(formValues) {
   delete annotation.newTopics;
   delete annotation.hasAnnotation; //persist the bookmark
 
-  _bmnet__WEBPACK_IMPORTED_MODULE_6__["default"].postAnnotation(annotation);
+  let assignedCreationDate = _bmnet__WEBPACK_IMPORTED_MODULE_6__["default"].postAnnotation(annotation);
+  let info = {
+    //this is undefined for new annotations
+    existingCreationDate: annotation.creationDate,
+    annotationType: annotation.selectedText ? "selectedText" : "Note",
+    uuid: annotation.aid,
+    pid: annotation.rangeStart,
+    assignedCreationDate: assignedCreationDate
+  }; //add [data-id] attribute to new bookmark html
+
+  updateNewAnnotation(info);
 }
 /*
   new topics entered on the annotation form are formatted
@@ -4198,19 +4220,16 @@ function initializeBookmarkFeatureState() {
     $("#bookmark-toggle-disable-selection").trigger("click");
   }
 }
-/*
- * Get Annotations for page for signed in users. SelectedText annotations
- * are converted to objects by JSON.parse() and the set of annotations
- * are sorted by pid (without the 'p')
+/**
+ * Get and activate annotations for the current page.
  *
- * Args: fn: function to call for annotation s
- *       arg: arg to pass to function as second argument ie fn(b, arg)
+ * @params {string} sharePid - is not null when bookmark is shared on page.
  */
 
 
 async function getPageBookmarks(sharePid) {
   let pageKey = teaching.keyInfo.genPageKey();
-  let userInfo = Object(_user_netlify__WEBPACK_IMPORTED_MODULE_2__["getUserInfo"])(); //call fn with empty object
+  let userInfo = Object(_user_netlify__WEBPACK_IMPORTED_MODULE_2__["getUserInfo"])();
 
   if (!userInfo) {
     return;
@@ -4238,7 +4257,6 @@ async function getPageBookmarks(sharePid) {
         Object(_selection__WEBPACK_IMPORTED_MODULE_14__["markSelection"])(bm.annotation.selectedText, count, sharePid);
         addTopicsAsClasses(bm.annotation);
         setQuickLinks(bm.annotation, "highlight");
-        _topics__WEBPACK_IMPORTED_MODULE_13__["default"].add(bm.annotation);
         count++;
         hasBookmark = true;
       } else {
@@ -4252,13 +4270,15 @@ async function getPageBookmarks(sharePid) {
         prevBm = bm;
       }
     });
-    _topics__WEBPACK_IMPORTED_MODULE_13__["default"].bookmarksLoaded();
+    Object(_topics__WEBPACK_IMPORTED_MODULE_13__["bookmarksLoaded"])();
   }
 
   try {
-    let bmList = await Object(_db_annotation__WEBPACK_IMPORTED_MODULE_0__["getAnnotations"])(userInfo.userId, pageKey); //set global variable
+    //query annotations from database
+    let bmList = await Object(_db_annotation__WEBPACK_IMPORTED_MODULE_0__["getAnnotations"])(userInfo.userId, pageKey); //store annotations locally
 
-    localStore = new _localStore__WEBPACK_IMPORTED_MODULE_4__["BookmarkLocalStore"](bmList);
+    localStore = new _localStore__WEBPACK_IMPORTED_MODULE_4__["BookmarkLocalStore"](bmList); //apply annotations to the page
+
     processAnnotations(bmList, sharePid);
   } catch (err) {
     console.error(err); //Notify error 
@@ -4270,7 +4290,11 @@ async function getPageBookmarks(sharePid) {
 
 
 function initTranscriptPage(sharePid, constants) {
-  //get existing bookmarks for page
+  if (sharePid) {
+    console.log("bookmark/bookmark: initTranscriptPage() sharePid: %s", sharePid);
+  } //get existing bookmarks for page
+
+
   getPageBookmarks(sharePid); //add support for text selection
 
   Object(_selection__WEBPACK_IMPORTED_MODULE_14__["initialize"])(constants); //show/hide bookmark highlights
@@ -4385,16 +4409,35 @@ const annotation = {
 
       if (remainingAnnotations === 0) {
         $(`#${formData.rangeStart} > span.pnum`).removeClass("has-bookmark");
-      } //delete topics from the page topic list
-
-
-      _topics__WEBPACK_IMPORTED_MODULE_13__["default"].delete(formData);
+      }
     } catch (err) {
       throw new Error(err);
     }
   }
 
 };
+/**
+ * Update new bookmark markup to add the creationDate as [data-aid] so
+ * sharing doesn't require a page refresh.
+ *
+ * There are two kinds of bookmarks, selectedText and Note, updates are
+ * different for each.
+ *
+ */
+
+function updateNewAnnotation(info) {
+  //this isn't a new annotation
+  if (info.existingCreationDate === info.assignedCreationDate) {
+    return;
+  }
+
+  if (info.annotationType === "selectedText") {
+    $(`[data-annotation-id="${info.uuid}"]`).attr("data-aid", info.assignedCreationDate);
+  } else {
+    $(`#${info.pid} > span.pnum`).attr("data-aid", info.assignedCreationDate);
+  }
+}
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   initialize: function (pid, constants) {
     teaching = constants; //provide teaching constants to bmnet
@@ -5127,6 +5170,8 @@ function initBookmarkModal() {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "BookmarkLocalStore", function() { return BookmarkLocalStore; });
 /* harmony import */ var _util_store__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../_util/store */ "./src/js/modules/_util/store.js");
+/* harmony import */ var lodash_difference__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! lodash/difference */ "./node_modules/lodash/difference.js");
+/* harmony import */ var lodash_difference__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(lodash_difference__WEBPACK_IMPORTED_MODULE_1__);
 /*
  * Local storage for bookmarks on page. 
  *
@@ -5140,12 +5185,91 @@ __webpack_require__.r(__webpack_exports__);
  * accross pages.
  */
 
+
 class BookmarkLocalStore {
-  /*
+  /**
+   * Add list of bookmarks on page to this.list and add the topics for each
+   * bookmark to the topics Map. Increment count to record the number of references
+   * to each topic.
+   *
+   * @constructor
    * @param {array} bmList - array of bookmarks on page
    */
   constructor(bmList) {
     this.list = bmList;
+    this.topics = new Map();
+    this.topicsModified = false; //load topics from bmList in to topic Map
+
+    this._initTopics();
+  }
+  /**
+   * Add topic to Map if not present, set count to 1. If present
+   * increment count by 1. If a new topic is added return true.
+   *
+   * @params <object> newTopic - {value: "topicNospaces", topic: "might have spaces"}
+   * @returns <boolean> Indication if topic Map has changed, new or deleted topics
+   */
+
+
+  _incrementTopic(newTopic) {
+    let key = newTopic.value; //if newTopic is not in topics, add it and set count to 1
+
+    if (!this.topics.has(key)) {
+      newTopic.count = 1;
+      this.topics.set(key, newTopic);
+      this.topicsModified = true;
+    } else {
+      let savedTopic = this.topics.get(key);
+      savedTopic.count += 1;
+      this.topics.set(key, savedTopic);
+    }
+  }
+  /**
+   * Decrement or remove topic from topic Map
+   * @param {object} - topic
+   * @returns {boolean} {remainingCount: <number>, modified: <boolean>}
+   */
+
+
+  _decrementTopic(topic) {
+    let key = topic.value;
+    let modified = false; //unexpected
+
+    if (!this.topics.has(key)) {
+      return;
+    }
+
+    let trackedTopicValue = this.topics.get(key); //no more bookmarks on page with this topic
+
+    if (trackedTopicValue.count === 1) {
+      this.topics.delete(key);
+      this.topicsModified = true;
+    } else {
+      //decrement count and store value
+      trackedTopicValue.count -= 1;
+      this.topics.set(key, trackedTopicValue);
+    }
+  }
+  /*
+   * Load bookmark topics into Map. This is used to selectively
+   * display bookmarks on page by given topic. Load topics only
+   * for selectedText annotations.
+   */
+
+
+  _initTopics() {
+    this.list.forEach(b => {
+      if (!b.annotation.selectedText) {
+        return;
+      }
+
+      if (b.annotation.topicList && b.annotation.topicList.length > 0) {
+        b.annotation.topicList.forEach(topic => {
+          this._incrementTopic(topic);
+        });
+      }
+    });
+    this.topicsModified = true;
   }
   /*
    * A list of bookmarks, formated for display in the bookmark modal,
@@ -5164,6 +5288,53 @@ class BookmarkLocalStore {
     bmList.lastBuildDate = 0;
     Object(_util_store__WEBPACK_IMPORTED_MODULE_0__["storeSet"])("bmList", bmList);
     return;
+  }
+  /*
+   * Returns unique topics used by page annotations
+   */
+
+
+  getTopics() {
+    return this.topics;
+  }
+  /**
+   * Get state of topic array
+   *
+   * @returns {boolean} true if topics have be added or removed
+   */
+
+
+  get topicRefreshNeeded() {
+    return this.topicsModified;
+  }
+  /*
+   * Set state of topic refresh needed flag
+   */
+
+
+  set topicRefreshNeeded(value) {
+    this.topicsModified = value;
+  }
+  /*
+   * Find the bookmark with aid and return its creationDate
+   */
+
+
+  getCreationDate(aid) {
+    let bkmrk = this.list.find(b => {
+      if (b.annotation.aid && b.annotation.aid === aid) {
+        return true;
+      }
+
+      return false;
+    });
+
+    if (bkmrk) {
+      return bkmrk.creationDate;
+    } //return undefined
+
+
+    return bkmrk;
   }
   /*
    * Get bookmark for pid with aid.
@@ -5196,8 +5367,9 @@ class BookmarkLocalStore {
     });
     return bm;
   }
-  /*
-   * Add bookmark to list
+  /**
+   * Add or update annotation to the list. Update topic Map
+   * accordingly.
    *
    * @param {string} - userId
    * @param {string} - paraKey
@@ -5209,24 +5381,87 @@ class BookmarkLocalStore {
   addItem(userId, paraKey, creationDate, annotation) {
     let pid = annotation.rangeStart;
     let id = parseInt(pid.substr(1), 10);
-    let bkmrk = {
-      userId: userId,
-      paraKey: `${paraKey}`,
-      creationDate: `${creationDate}`,
-      pid: id,
-      annotation: annotation
-    };
-    this.list.push(bkmrk); //item has been added so invalidate bmList
 
-    this._invalidateBmList();
+    if (annotation.status === "new") {
+      let bkmrk = {
+        userId: userId,
+        paraKey: `${paraKey}`,
+        creationDate: `${creationDate}`,
+        pid: id,
+        annotation: annotation
+      };
+      this.list.push(bkmrk); //add topics to topic Map for selectedText bookmarks
+
+      if (bkmrk.annotation.selectedText && bkmrk.annotation.topicList) {
+        bkmrk.annotation.topicList.forEach(i => {
+          this._incrementTopic(i);
+        });
+      } //item has been added so invalidate bmList
+
+
+      this._invalidateBmList();
+    } else {
+      //this is an update
+      let pKey = `${paraKey}`;
+      let cDate = `${creationDate}`;
+      let index = this.list.findIndex(i => {
+        return i.paraKey === pKey && i.creationDate === cDate;
+      });
+      if (index === -1) throw new Error("bookmark to update not found in list"); //update topic Map if needed
+
+      if (annotation.selectedText) {
+        let newTopicList = [];
+        let oldTopicList = [];
+
+        if (annotation.topicList) {
+          let newTL = annotation.topicList.reduce((result, topic) => {
+            return `${result} ${topic.value}`;
+          }, "");
+          newTL = newTL.trim();
+          newTopicList = newTL.split(" ");
+        }
+
+        if (this.list[index].annotation.topicList) {
+          let oldTL = this.list[index].annotation.topicList.reduce((result, topic) => {
+            return `${result} ${topic.value}`;
+          }, "");
+          oldTL = oldTL.trim();
+          oldTopicList = oldTL.split(" ");
+        }
+
+        let addedTopics = lodash_difference__WEBPACK_IMPORTED_MODULE_1___default()(newTopicList, oldTopicList);
+        let deletedTopics = lodash_difference__WEBPACK_IMPORTED_MODULE_1___default()(oldTopicList, newTopicList); //add topics is any have been added
+
+        addedTopics.forEach(i => {
+          //find topic in new annotation
+          let topic = annotation.topicList.find(t => {
+            return t.value === i;
+          });
+
+          this._incrementTopic(topic);
+        }); //delete topics if any have been deleted
+
+        deletedTopics.forEach(i => {
+          //find topic in old annotation
+          let topic = this.list[index].annotation.topicList.find(t => {
+            return t.value === i;
+          });
+
+          this._decrementTopic(topic);
+        });
+      } //update annotation in local store
+
+
+      this.list[index].annotation = annotation;
+    }
   }
-  /*
+  /**
    * Delete bookmark from list
    *
    * @param {string} userId
    * @param {string} paraKey
    * @param {string} creationDate
-   * @return {number} - count of remaining bookmarks for paraKey or null if bookmark not found
+   * @return {object} {remainingCount: null || number left, modified: boolean}
    *
    */
 
@@ -5249,8 +5484,17 @@ class BookmarkLocalStore {
     }); //if item found, delete it from local store and get count remaining
     //bookmarks on paragraph
 
+    let topicsModified = false;
+
     if (index > -1) {
-      let pid = this.list[index].pid; //delete item
+      let pid = this.list[index].pid; //delete topics from topic Map
+
+      if (this.list[index].annotation.topicList) {
+        this.list[index].annotation.topicList.forEach(i => {
+          topicsModified = this._decrementTopic(i) || topicsModified;
+        });
+      } //delete item
+
 
       this.list.splice(index, 1); //item has been deleted so invalidate bmList
 
@@ -5259,10 +5503,16 @@ class BookmarkLocalStore {
       let bms = this.list.filter(b => {
         return b.pid === pid;
       });
-      return bms.length;
+      return {
+        remainingCount: bms.length,
+        modified: topicsModified
+      };
     }
 
-    return null;
+    return {
+      remainingCount: null,
+      modified: topicsModified
+    };
   }
   /*
    * Return the number of bookmarks for pid and exclude
@@ -5872,6 +6122,43 @@ function scrollIntoView(id, caller) {
     scrollComplete(`scroll from bookmark navigator ${caller}(${id})`, type);
   });
 }
+/**
+ * Format bookmark text to share by email or Facebook.
+ *
+ * @param {string} channel - either 'email' or 'facebook'
+ * @param {string} text - the text to format
+ * @returns {string} the formatted text
+ */
+
+
+function formatToShare(channel, text) {
+  let separator = channel === "email" ? "@@" : "\n\n"; //remove unwanted characters
+
+  text = text.replace(/[^\x20-\x7E]/g, " "); //replace multiple spaces with one
+
+  text = text.replace(/ {2,}/g, " "); //insert separator characters in front of paragraph numbers
+
+  text = text.replace(/\(p\d*\)/g, m => {
+    return `${separator}${m}`;
+  }); //split into array to remove a empty first element
+
+  let pArray = text.split(separator);
+
+  if (pArray[0].length === 0) {
+    pArray.shift();
+  } //wrap paragraphs with <p></p> and join
+
+
+  if (channel === "email") {
+    text = pArray.reduce((current, p) => {
+      return `${current}\n<p>${p}</p>`;
+    }, "");
+  } else {
+    text = pArray.join("\n");
+  }
+
+  return text;
+}
 /*
   Click handler for FB and email share dialog. This can be called from this
   module when the bookmark navigator is active or from annotate.js when
@@ -5882,8 +6169,7 @@ function scrollIntoView(id, caller) {
 function initShareDialog(source) {
   if (shareEventListenerCreated) {
     return;
-  } //console.log("initShareDialog(%s)", source);
-  //share icon click handler
+  } //share icon click handler
 
 
   $(".transcript").on("click", ".selected-annotation-wrapper .share-annotation", function (e) {
@@ -5925,15 +6211,17 @@ function initShareDialog(source) {
       return;
     }
 
-    pid = $(".selected-annotation-wrapper p").attr("id"); //no highlighted text so grab the whole paragraph
+    pid = $(".selected-annotation-wrapper p").attr("id"); //this is a Note style annotation because it has no selectedText
+    // - get the text of all <p> siblings to .selected-annotation-wrapper
 
     if (annotation.length === 0) {
-      text = $(`#${pid}`).text().replace(/\n/, " ");
+      text = $(".selected-annotation-wrapper > p").text();
+      text = formatToShare(channel, text);
     } else {
       text = annotation.text().replace(/\n/, " ");
-    }
+    } //console.log("share text: %s", text);
 
-    console.log("share text: %s", text);
+
     let srcTitle = $("#src-title").text();
     let bookTitle = $("#book-title").text();
     let citation = `~ ${srcTitle}: ${bookTitle}`;
@@ -6120,8 +6408,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var lodash_isFinite__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(lodash_isFinite__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var lodash_difference__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! lodash/difference */ "./node_modules/lodash/difference.js");
 /* harmony import */ var lodash_difference__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(lodash_difference__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _topics__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./topics */ "./src/js/modules/_bookmark/topics.js");
-/* harmony import */ var _language_lang__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../_language/lang */ "./src/js/modules/_language/lang.js");
+/* harmony import */ var _language_lang__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../_language/lang */ "./src/js/modules/_language/lang.js");
 
 
 const textPosition = __webpack_require__(/*! dom-anchor-text-position */ "./node_modules/dom-anchor-text-position/index.js");
@@ -6129,7 +6416,6 @@ const textPosition = __webpack_require__(/*! dom-anchor-text-position */ "./node
 const textQuote = __webpack_require__(/*! dom-anchor-text-quote */ "./node_modules/dom-anchor-text-quote/index.js");
 
 const wrapRange = __webpack_require__(/*! wrap-range-text */ "./node_modules/wrap-range-text/index.js"); //const uuid = require("uuid/v4");
-
 
 
 
@@ -6164,77 +6450,56 @@ function highlightSkippedAnnotations() {
   }
 }
 /*
-  add or update selected text class list with topics
-*/
+ * Add or remove topic classes to html for highlighted annotation
+ * topics.
+ */
 
 function updateSelectionTopicList(annotation) {
   let topicList; //annotation has no selected text
 
   if (!annotation.aid) {
     return;
-  } //if annotation.topicList exists convert it to a string
+  } //if no topics and annotation has been updated, check if topic
+  //classes exist, delete if so
 
 
-  if (annotation.topicList && annotation.topicList.length > 0) {
-    topicList = annotation.topicList.reduce((result, topic) => {
-      return `${result} ${topic.value}`;
-    }, "");
-  } else {
+  if (!annotation.topicList || annotation.topicList.length === 0) {
+    //don't need to do anything for new annotations
+    if (annotation.status === "new") {
+      return;
+    } //check for topic classes
+
+
+    let existingClasses = $(`[data-annotation-id="${annotation.aid}"]`).attr("class");
+    let classArray = existingClasses.split(" ");
+    $(`[data-annotation-id="${annotation.aid}"]`).attr("class", `${classArray[0]} ${classArray[1]}`);
     return;
-  }
+  } //convert annotation topics to a space delimited string
 
-  let topicListArray = [];
 
-  if (topicList) {
-    topicList = topicList.trim();
-    topicListArray = topicList.split(" ");
-  } //get existing classes and convert to an array
+  topicList = annotation.topicList.reduce((result, topic) => {
+    return `${result} ${topic.value}`;
+  }, ""); //split topic string into an array
 
+  topicList = topicList.trim();
+  let topicListArray = topicList.split(" "); //get class attr for annotation and convert to an array
 
   let existingClasses = $(`[data-annotation-id="${annotation.aid}"]`).attr("class");
-  let classArray = existingClasses.split(" "); //remove bookmmark-selected-text
+  let classArray = existingClasses.split(" "); //add first two classes of classArray to topicListArray, these are non topic classes
 
-  let bstIndex = classArray.findIndex(item => item === "bookmark-selected-text");
-
-  if (bstIndex > -1) {
-    classArray.splice(bstIndex, 1);
-  } //remove colorClass
-
-
-  let ccIndex = classArray.findIndex(item => item.startsWith("colorClass"));
-
-  if (ccIndex > -1) {
-    classArray.splice(ccIndex, 1);
-  } //classes have been added or deleted
+  if (classArray.length === 1) {
+    topicListArray.unshift(classArray[0]);
+  } else {
+    topicListArray.unshift(classArray[1]);
+    topicListArray.unshift(classArray[0]);
+  } //create class list from topicListArray
 
 
-  let deletedTopics = lodash_difference__WEBPACK_IMPORTED_MODULE_4___default()(classArray, topicListArray);
-  let addedTopics = lodash_difference__WEBPACK_IMPORTED_MODULE_4___default()(topicListArray, classArray); //console.log("deletedTopics: %o", deletedTopics);
-  //console.log("addedTopics: %o", addedTopics);
-  //remove deleted topics
+  topicList = topicListArray.reduce((result, topic) => {
+    return `${result} ${topic}`;
+  }, ""); //update class list
 
-  if (deletedTopics.length > 0) {
-    let dt = deletedTopics.join(" ");
-    $(`[data-annotation-id="${annotation.aid}"]`).removeClass(dt); //track page topics
-
-    _topics__WEBPACK_IMPORTED_MODULE_5__["default"].deleteTopics(deletedTopics);
-  } //add added topics
-
-
-  if (addedTopics.length > 0) {
-    let at = addedTopics.join(" ");
-    $(`[data-annotation-id="${annotation.aid}"]`).addClass(at); //track page topics
-    //get object topics from annotation
-
-    let addedObjectTopics = annotation.topicList.filter(topic => {
-      let found = addedTopics.find(item => {
-        return item === topic.value;
-      });
-      return found !== undefined;
-    });
-    _topics__WEBPACK_IMPORTED_MODULE_5__["default"].addTopics(addedObjectTopics);
-  } //topics.report();
-
+  $(`[data-annotation-id="${annotation.aid}"]`).attr("class", topicList);
 }
 /*
   if the annotation is new then remove the highlight and
@@ -6399,7 +6664,6 @@ function initialize(constants) {
     //being created
 
     if ($(this).hasClass("disable-selection")) {
-      //console.log("selection prevented by selection guard");
       return;
     }
 
@@ -6407,17 +6671,14 @@ function initialize(constants) {
       return;
     }
 
-    let selObj = document.getSelection(); //console.log("selection: %o", selObj);
-    //Safari calls this function twice for each selection, the second time
+    let selObj = document.getSelection(); //Safari calls this function twice for each selection, the second time
     //rangeCount === 0 and type == "None"
 
     if (selObj.rangeCount === 0) {
-      //console.log("selObj.rangeCount === 0)");
       return;
     }
 
     if (selObj.getRangeAt(0).collapsed) {
-      //console.log("range collapsed");
       return;
     }
 
@@ -6438,13 +6699,13 @@ function processSelection(range) {
   let endParent = range.endContainer.parentElement.localName;
 
   if (startParent === "span") {
-    toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info(Object(_language_lang__WEBPACK_IMPORTED_MODULE_6__["getString"])("error:e6"));
+    toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info(Object(_language_lang__WEBPACK_IMPORTED_MODULE_5__["getString"])("error:e6"));
     console.log("selection includes <p>");
     return;
   }
 
   if (startParent === "mark" || endParent === "mark") {
-    toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info(Object(_language_lang__WEBPACK_IMPORTED_MODULE_6__["getString"])("error:e7"));
+    toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info(Object(_language_lang__WEBPACK_IMPORTED_MODULE_5__["getString"])("error:e7"));
     console.log("overlapping selections");
 
     if (location.hostname === "localhost") {
@@ -6478,7 +6739,7 @@ function processSelection(range) {
 
 
   if (rangeStart !== rangeEnd) {
-    toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info(Object(_language_lang__WEBPACK_IMPORTED_MODULE_6__["getString"])("error:e8"));
+    toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info(Object(_language_lang__WEBPACK_IMPORTED_MODULE_5__["getString"])("error:e8"));
     console.log("multi paragraph selection: start: %s, end: %s", rangeStart, rangeEnd);
     return;
   }
@@ -6509,14 +6770,11 @@ function processSelection(range) {
 __webpack_require__.r(__webpack_exports__);
 /* WEBPACK VAR INJECTION */(function($) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "initShareByEmail", function() { return initShareByEmail; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "shareByEmail", function() { return shareByEmail; });
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! toastr */ "./node_modules/toastr/toastr.js");
-/* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(toastr__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _globals__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../globals */ "./src/js/globals.js");
-/* harmony import */ var _user_netlify__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../_user/netlify */ "./src/js/modules/_user/netlify.js");
-/* harmony import */ var _language_lang__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../_language/lang */ "./src/js/modules/_language/lang.js");
-
+/* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! toastr */ "./node_modules/toastr/toastr.js");
+/* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(toastr__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _user_netlify__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../_user/netlify */ "./src/js/modules/_user/netlify.js");
+/* harmony import */ var _language_lang__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../_language/lang */ "./src/js/modules/_language/lang.js");
+/* harmony import */ var _db_share__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../_db/share */ "./src/js/modules/_db/share.js");
 
 
 
@@ -6529,12 +6787,12 @@ function initShareByEmail(constants) {
   teaching = constants;
   loadEmailList(); //submit
 
-  $("form[name='emailshare']").on("submit", function (e) {
+  $("form[name='emailshare']").on("submit", async function (e) {
     e.preventDefault();
-    const userInfo = Object(_user_netlify__WEBPACK_IMPORTED_MODULE_3__["getUserInfo"])();
+    const userInfo = Object(_user_netlify__WEBPACK_IMPORTED_MODULE_1__["getUserInfo"])();
 
     if (!userInfo) {
-      toastr__WEBPACK_IMPORTED_MODULE_1___default.a.warning(Object(_language_lang__WEBPACK_IMPORTED_MODULE_4__["getString"])("annotate:m14"));
+      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.warning(Object(_language_lang__WEBPACK_IMPORTED_MODULE_2__["getString"])("annotate:m14"));
       $(".email-share-dialog-wrapper").addClass("hide");
       return;
     }
@@ -6542,7 +6800,7 @@ function initShareByEmail(constants) {
     let formData = $("#email-share-form").form("get values");
 
     if (formData.mailList.length === 0 && formData.emailAddresses.length === 0) {
-      toastr__WEBPACK_IMPORTED_MODULE_1___default.a.info(Object(_language_lang__WEBPACK_IMPORTED_MODULE_4__["getString"])("error:e9"));
+      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info(Object(_language_lang__WEBPACK_IMPORTED_MODULE_2__["getString"])("error:e9"));
       return;
     }
 
@@ -6562,19 +6820,21 @@ function initShareByEmail(constants) {
 
     shareInfo.senderName = userInfo.name;
     shareInfo.senderEmail = userInfo.email;
-    shareInfo.sid = teaching.sid; //console.log("shareInfo: %o", shareInfo);
-    //hide form not sure if this will work
+    shareInfo.sid = teaching.sid; //hide form not sure if this will work
 
     $(".email-share-dialog-wrapper").addClass("hide");
-    axios__WEBPACK_IMPORTED_MODULE_0___default.a.post(_globals__WEBPACK_IMPORTED_MODULE_2__["default"].share, shareInfo).then(response => {
-      if (response.status === 200) {
-        toastr__WEBPACK_IMPORTED_MODULE_1___default.a.info(Object(_language_lang__WEBPACK_IMPORTED_MODULE_4__["getString"])("action:emailsent"));
+
+    try {
+      let result = await Object(_db_share__WEBPACK_IMPORTED_MODULE_3__["sendMail"])(shareInfo);
+
+      if (result === "success") {
+        toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info(Object(_language_lang__WEBPACK_IMPORTED_MODULE_2__["getString"])("action:emailsent"));
       } else {
-        toastr__WEBPACK_IMPORTED_MODULE_1___default.a.info(response.data.message);
+        toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info(response.data.message);
       }
-    }).catch(error => {
-      console.error("share error: %s", error);
-    });
+    } catch (err) {
+      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.error(err);
+    }
   }); //cancel
 
   $("form[name='emailshare'] .email-share-cancel").on("click", function (e) {
@@ -6590,9 +6850,9 @@ function generateOption(item) {
 
 function makeMaillistSelect(maillist) {
   return `
-    <label>${Object(_language_lang__WEBPACK_IMPORTED_MODULE_4__["getString"])("label:listnames")}</label>
+    <label>${Object(_language_lang__WEBPACK_IMPORTED_MODULE_2__["getString"])("label:listnames")}</label>
     <select name="mailList" id="maillist-address-list" multiple="" class="search ui dropdown">
-      <option value="">${Object(_language_lang__WEBPACK_IMPORTED_MODULE_4__["getString"])("label:selectaddress")}</option>
+      <option value="">${Object(_language_lang__WEBPACK_IMPORTED_MODULE_2__["getString"])("label:selectaddress")}</option>
       ${maillist.map(item => `${generateOption(item)}`).join("")}
     </select>
   `;
@@ -6603,23 +6863,17 @@ function makeMaillistSelect(maillist) {
 */
 
 
-function loadEmailList() {
-  const userInfo = Object(_user_netlify__WEBPACK_IMPORTED_MODULE_3__["getUserInfo"])();
+async function loadEmailList() {
+  const userInfo = Object(_user_netlify__WEBPACK_IMPORTED_MODULE_1__["getUserInfo"])();
 
-  if (!userInfo) {
-    return;
-  }
-
-  let maillist = [];
-  let api = `${userInfo.userId}/maillist`;
-  axios__WEBPACK_IMPORTED_MODULE_0___default()(`${_globals__WEBPACK_IMPORTED_MODULE_2__["default"].user}/${api}`).then(response => {
-    maillist = response.data.maillist;
-    let selectHtml = makeMaillistSelect(maillist);
+  try {
+    let mailList = await Object(_db_share__WEBPACK_IMPORTED_MODULE_3__["getMailList"])(userInfo.userId);
+    let selectHtml = makeMaillistSelect(mailList);
     $("#maillist-select").html(selectHtml);
     $("#maillist-address-list.dropdown").dropdown();
-  }).catch(err => {
-    toastr__WEBPACK_IMPORTED_MODULE_1___default.a.error(`${Object(_language_lang__WEBPACK_IMPORTED_MODULE_4__["getString"])("error:e10")}: ${err}`);
-  });
+  } catch (err) {
+    toastr__WEBPACK_IMPORTED_MODULE_0___default.a.error(`${Object(_language_lang__WEBPACK_IMPORTED_MODULE_2__["getString"])("error:e10")}: ${err}`);
+  }
 }
 /*
 */
@@ -6668,7 +6922,9 @@ function bookmarkStart(page) {
   let pid;
 
   if (page === "transcript") {
-    pid = _share_share__WEBPACK_IMPORTED_MODULE_2__["default"].initialize(_constants__WEBPACK_IMPORTED_MODULE_3__["default"]); //get page info and set as heading under '?' menu option
+    _share_share__WEBPACK_IMPORTED_MODULE_2__["default"].initialize(_constants__WEBPACK_IMPORTED_MODULE_3__["default"]).then(pid => {
+      _bookmark__WEBPACK_IMPORTED_MODULE_0__["default"].initialize(pid, _constants__WEBPACK_IMPORTED_MODULE_3__["default"]);
+    }); //get page info and set as heading under '?' menu option
 
     let key = _constants__WEBPACK_IMPORTED_MODULE_3__["default"].keyInfo.genPageKey();
     Object(_config_config__WEBPACK_IMPORTED_MODULE_4__["getPageInfo"])(key).then(info => {
@@ -6684,7 +6940,6 @@ function bookmarkStart(page) {
     });
   }
 
-  _bookmark__WEBPACK_IMPORTED_MODULE_0__["default"].initialize(pid, _constants__WEBPACK_IMPORTED_MODULE_3__["default"]);
   Object(_shareByEmail__WEBPACK_IMPORTED_MODULE_1__["initShareByEmail"])(_constants__WEBPACK_IMPORTED_MODULE_3__["default"]);
 }
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/src/jquery.js")))
@@ -6695,12 +6950,14 @@ function bookmarkStart(page) {
 /*!********************************************!*\
   !*** ./src/js/modules/_bookmark/topics.js ***!
   \********************************************/
-/*! exports provided: default */
+/*! exports provided: bookmarksLoaded */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var _language_lang__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../_language/lang */ "./src/js/modules/_language/lang.js");
+/* WEBPACK VAR INJECTION */(function($) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "bookmarksLoaded", function() { return bookmarksLoaded; });
+/* harmony import */ var _language_lang__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../_language/lang */ "./src/js/modules/_language/lang.js");
+/* harmony import */ var _bookmark__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./bookmark */ "./src/js/modules/_bookmark/bookmark.js");
 /*
  * Keeps track of topics used by page annotations that have selectedText
  *
@@ -6713,19 +6970,13 @@ __webpack_require__.r(__webpack_exports__);
  * contains.
 */
 
-let topics = new Map();
-let listRefreshNeeded = true;
-let deletedKeys = [];
+
 const uiPageTopicsModal = "#page-topics-modal";
 const uiOpenPageTopicsModal = "#page-topics-modal-open";
 const uiModalOpacity = 0.5; //generate the option element of a select statement
 
 function generateOption(topic) {
-  if (typeof topic === "object") {
-    return `<option value="${topic.value}">${topic.topic}</option>`;
-  }
-
-  return `<option value="${topic}">${topic}</option>`;
+  return `<option value="${topic.value}">${topic.topic}</option>`;
 } //generate select html for Topics
 
 
@@ -6746,7 +6997,7 @@ function formatTopic(topic) {
 }
 
 function makeTopicSelectElement() {
-  let topicMap = getTopics();
+  let topicMap = _bookmark__WEBPACK_IMPORTED_MODULE_1__["localStore"].getTopics();
   let topicKeys = Array.from(topicMap.keys());
   let topics = topicKeys.map(key => {
     return topicMap.get(key);
@@ -6773,13 +7024,14 @@ function getTopics() {
 */
 
 
-function makeTopicList(topicMap) {
+function makeTopicList() {
+  let topicMap = _bookmark__WEBPACK_IMPORTED_MODULE_1__["localStore"].getTopics();
   let topicKeys = Array.from(topicMap.keys());
   let topics = topicKeys.map(key => {
     let t = topicMap.get(key);
     return t.topic;
   });
-  listRefreshNeeded = false;
+  _bookmark__WEBPACK_IMPORTED_MODULE_1__["localStore"].topicRefreshNeeded = false;
 
   if (topics.length === 0) {
     return `<div class='ntf item'>${Object(_language_lang__WEBPACK_IMPORTED_MODULE_0__["getString"])("annotate:m15")}</div>`;
@@ -6860,181 +7112,21 @@ function topicSelectHandler() {
     $("#topic-menu-item").prev(".header").attr("data-filter", topic);
   });
 }
-/*
-  If topics have been added or deleted from the topic list then
-  the dropdown menu option needs to be updated
-*/
 
-
-function updateTopicList() {
-  /*
-  if (listRefreshNeeded) {
-    let html = makeTopicList(topics);
-    $("#topic-menu-select").html(html);
-  }
-  */
-  //check if there is a topic filter on a deleted key, if so, clear
-  //the filter
-  if (deletedKeys.length > 0) {
-    let activeFilter = $("#topic-menu-item").prev(".header").attr("data-filter"); //no active filter
-
-    if (activeFilter === "none") {
-      return;
-    }
-
-    let found = deletedKeys.reduce((fnd, item) => {
-      if (item.topic === activeFilter) {
-        return fnd + 1;
-      }
-
-      return fnd;
-    }, 0); //reset the filter
-
-    if (found > 0) {
-      //console.log("active filter topic has been deleted: %o", deletedKeys);
-      //remove filter indication from .transcript
-      $(".transcript").removeClass("topic-filter-active"); //reset header text to indicate filter has cleared
-
-      $("#topic-menu-item").prev(".header").text(`${Object(_language_lang__WEBPACK_IMPORTED_MODULE_0__["getString"])("label:topicfilter")}: None`);
-      $("#topic-menu-item").prev(".header").attr("data-filter", "none");
-    }
-  }
+function bookmarksLoaded() {
+  initPageTopicsModal();
 }
-/*
-  Keep track of topics on the page. If we have a untracted topic add it
-  to 'topic' and set count to 1. If the topic is already tracked just 
-  increment the count
-
-  All topics look like this: {value: "nospaces", topic: "might have spaces"}
-*/
-
-
-function increment(newTopic) {
-  let key = newTopic.value; //if newTopic is not in topics, add it and set count to 1
-
-  if (!topics.has(key)) {
-    newTopic.count = 1;
-    topics.set(key, newTopic);
-    listRefreshNeeded = true;
-  } else {
-    //otherwise increment the count
-    let savedTopic = topics.get(key);
-    savedTopic.count += 1;
-    topics.set(key, savedTopic);
-  }
-}
-/*
-  Decrement count for tracked topic
-*/
-
-
-function decrement(trackedTopic) {
-  let key = trackedTopic;
-
-  if (typeof key === "object") {
-    key = key.value;
-  }
-
-  if (!topics.has(key)) {
-    throw new Error(`Unexpected error: topic ${key} not found in topic Map`);
-  } else {
-    let trackedTopicValue = topics.get(key); //no more bookmarks on page with this topic
-
-    if (trackedTopicValue.count === 1) {
-      topics.delete(key);
-      listRefreshNeeded = true;
-      deletedKeys.push(trackedTopicValue);
-    } else {
-      //decrement count and store value
-      trackedTopicValue.count -= 1;
-      topics.set(key, trackedTopicValue);
-    }
-  }
-}
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-  //add topics from an annotation - this happens when bookmarks are loaded
-  //and before the topicList is rendered
-  add(annotation) {
-    if (!annotation.selectedText) {
-      return;
-    }
-
-    if (annotation.topicList && annotation.topicList.length > 0) {
-      annotation.topicList.forEach(topic => {
-        increment(topic);
-      });
-    }
-  },
-
-  delete(formData) {
-    if (!formData.topicList) {
-      return;
-    }
-
-    if (formData.topicList && formData.topicList.length > 0) {
-      formData.topicList.forEach(topic => {
-        decrement(topic);
-      });
-      updateTopicList();
-    }
-  },
-
-  addTopics(topicArray) {
-    //console.log("addTopics()");
-    topicArray.forEach(topic => {
-      increment(topic);
-    });
-    updateTopicList();
-  },
-
-  deleteTopics(topicArray) {
-    topicArray.forEach(topic => {
-      decrement(topic);
-    });
-    updateTopicList();
-  },
-
-  //generate topic select list and setup listeners
-  bookmarksLoaded() {
-    initPageTopicsModal();
-    /*
-    let html = makeTopicList(topics);
-    $("#topic-menu-select").html(html);
-     //init click handler
-    topicSelectHandler();
-    */
-  },
-
-  //given a topic value return the topic.topic
-  getTopic(value) {
-    let t = topics.get(value);
-
-    if (t) {
-      return t.topic;
-    }
-
-    return null;
-  },
-
-  report() {
-    for (var [key, value] of topics) {
-      console.log("%s: %s", key, value);
-    }
-  }
-
-});
 /*
   Get topic select element for page-topic-modal
 */
 
 function getTopicList() {
-  if (!listRefreshNeeded) return;
+  if (!_bookmark__WEBPACK_IMPORTED_MODULE_1__["localStore"].topicRefreshNeeded) return;
   let selectHtml = makeTopicSelectElement();
   $("#page-topics-modal-topic-select").html(selectHtml);
   $("#page-topics-topic-list").dropdown();
   $("#page-topics-modal-loading").removeClass("active").addClass("disabled");
-  listRefreshNeeded = false;
+  _bookmark__WEBPACK_IMPORTED_MODULE_1__["localStore"].topicRefreshNeeded = false;
 }
 
 function initPageTopicsModal() {
@@ -7068,7 +7160,6 @@ function initPageTopicsModal() {
 
 
 function filterSubmitHandler() {
-  //apply topic filter
   $("#page-topics-filter-submit").on("click", function (e) {
     e.preventDefault();
     let form = $("#page-topics-filter-form");
@@ -7078,35 +7169,6 @@ function filterSubmitHandler() {
       value: filterTopic,
       topic: topicTopic
     });
-    /*
-    let bookmarkItems = $(".cmi-bookmark-list .bookmark-item");
-    bookmarkItems.each(function() {
-      let classList = $(this).attr("class");
-      if (classList.match(topicRegExp)) {
-        //the bookmark could be hidden from a previous filter, so just remove the class
-        //in case it's there
-        $(this).removeClass("hide-bookmark-item");
-      }
-      else {
-        $(this).addClass("hide-bookmark-item");
-      }
-    });
-     //keep track of the state of the bookmark Modal
-    let bookmarkModalInfo = bookmarkModalState("get");
-     //if we have data we're initializing and so we don't need to save state
-    if (!data) {
-      bookmarkModalInfo["modal"].filter = true;
-      bookmarkModalInfo["modal"].topics = topics;
-      bookmarkModalState("set", bookmarkModalInfo);
-    }
-     $("[data-bid]").each(function() {
-      let bid = $(this).data("bid");
-      let filtered = $(`[data-bid="${bid}"] .bookmark-item.hide-bookmark-item`).length;
-      let remaining = bookmarkModalInfo[bid].count - filtered;
-       //update title to reflect number of bookmarks shown after filter applied
-      $(`.${bid}-header`).html(`${bookmarkModalInfo[bid].header} (<span class="bookmark-filter-color">${remaining}</span>/${bookmarkModalInfo[bid].count})`);
-    });
-    */
   });
 }
 /*
@@ -8114,6 +8176,48 @@ function deleteAnnotation(userId, paraKey, creationDate) {
       resolve(response.data.response);
     }).catch(err => {
       reject(err);
+    });
+  });
+}
+
+/***/ }),
+
+/***/ "./src/js/modules/_db/share.js":
+/*!*************************************!*\
+  !*** ./src/js/modules/_db/share.js ***!
+  \*************************************/
+/*! exports provided: getMailList, sendMail */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getMailList", function() { return getMailList; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sendMail", function() { return sendMail; });
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _globals__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../globals */ "./src/js/globals.js");
+
+
+function getMailList(userId) {
+  return new Promise((resolve, reject) => {
+    axios__WEBPACK_IMPORTED_MODULE_0___default.a.get(`${_globals__WEBPACK_IMPORTED_MODULE_1__["default"].user2}/mailList/${userId}`).then(response => {
+      let mailList = response.data.mailList;
+      resolve(mailList);
+    }).catch(err => {
+      reject(err);
+    });
+  });
+}
+function sendMail(mailInfo) {
+  return new Promise((resolve, reject) => {
+    axios__WEBPACK_IMPORTED_MODULE_0___default.a.post(_globals__WEBPACK_IMPORTED_MODULE_1__["default"].share, mailInfo).then(response => {
+      if (response.status === 200) {
+        resolve("success");
+      } else {
+        resolve(response.data.message);
+      }
+    }).catch(error => {
+      reject(error);
     });
   });
 }
@@ -9416,8 +9520,7 @@ let sharedAnnotation;
 */
 
 function clearSharedAnnotation() {
-  console.log("clearSharedAnnotation"); //unwrap shared annotation
-
+  //unwrap shared annotation
   if (sharedAnnotation.selectedText) {
     sharedAnnotation.selectedText.wrap.unwrap();
   } //remove wrapper
@@ -9466,67 +9569,77 @@ function wrapRange(annotation) {
     }
   });
 }
-/*
+/**
   Display shared annotation requested by query parameter "as" ?as=pid:annotationId:userId. This
   is called when the user click 'To The Source' on a shared quote or FB post. The annotation
   could have been created by anyone.
+
+  @returns {promise} pid - resolves to pid number when sharing requested, false otherwise
 */
 
 
-async function showAnnotation() {
-  let info = Object(_util_url__WEBPACK_IMPORTED_MODULE_0__["showAnnotation"])();
+function showAnnotation() {
+  return new Promise(async (resolve, reject) => {
+    let info = Object(_util_url__WEBPACK_IMPORTED_MODULE_0__["showAnnotation"])();
 
-  if (!info) {
-    return false;
-  }
-
-  let [pid, aid, uid] = decodeURIComponent(info).split(":"); //make sure pid exists
-
-  if (!pid) {
-    return false;
-  }
-
-  if ($(`#${pid}`).length === 0) {
-    return false;
-  }
-
-  let paraKey = teaching.keyInfo.genParagraphKey(pid); //show loading indicator
-
-  Object(_util_url__WEBPACK_IMPORTED_MODULE_0__["loadStart"])();
-  /*
-    fetch shared bookmark and wrap it in a raised segment
-    - if user has a bookmark in the same paragraph as the shared annotation, it will not be highlighted so
-      if we fail to get the bookmark or can't find the shared annotation we need to highlight the users
-      annotations for the paragraph before returning
-  */
-
-  try {
-    const annotation = await Object(_db_annotation__WEBPACK_IMPORTED_MODULE_1__["getAnnotation"])(uid, paraKey, aid);
-
-    if (!annotation.userId) {
-      Object(_bookmark_selection__WEBPACK_IMPORTED_MODULE_2__["highlightSkippedAnnotations"])();
-      Object(_util_url__WEBPACK_IMPORTED_MODULE_0__["loadComplete"])();
-      toastr__WEBPACK_IMPORTED_MODULE_6___default.a.warning("Requested Bookmark was not found");
+    if (!info) {
+      resolve(false);
       return;
     }
 
-    let node = document.getElementById(annotation.rangeStart);
+    let [pid, aid, uid] = decodeURIComponent(info).split(":"); //make sure pid exists
 
-    if (annotation.selectedText) {
-      Object(_bookmark_selection__WEBPACK_IMPORTED_MODULE_2__["highlight"])(annotation.selectedText, node);
+    if (!pid) {
+      resolve(false);
+      return;
     }
 
-    $(`[data-aid="${aid}"]`).addClass("shared");
-    wrapRange(annotation);
-    sharedAnnotation = annotation;
-    initCloseHandler();
-    Object(_util_url__WEBPACK_IMPORTED_MODULE_0__["loadComplete"])();
-  } catch (err) {
-    Object(_util_url__WEBPACK_IMPORTED_MODULE_0__["loadComplete"])();
-    console.error(err);
-  }
+    if ($(`#${pid}`).length === 0) {
+      resolve(false);
+      return;
+    }
 
-  return pid;
+    let paraKey = teaching.keyInfo.genParagraphKey(pid); //show loading indicator
+
+    Object(_util_url__WEBPACK_IMPORTED_MODULE_0__["loadStart"])();
+    /*
+      fetch shared bookmark and wrap it in a raised segment
+      - if user has a bookmark in the same paragraph as the shared annotation, it will not be highlighted so
+        if we fail to get the bookmark or can't find the shared annotation we need to highlight the users
+        annotations for the paragraph before returning
+    */
+
+    try {
+      const annotation = await Object(_db_annotation__WEBPACK_IMPORTED_MODULE_1__["getAnnotation"])(uid, paraKey, aid);
+
+      if (!annotation.userId) {
+        Object(_bookmark_selection__WEBPACK_IMPORTED_MODULE_2__["highlightSkippedAnnotations"])();
+        Object(_util_url__WEBPACK_IMPORTED_MODULE_0__["loadComplete"])();
+        toastr__WEBPACK_IMPORTED_MODULE_6___default.a.warning("Requested Bookmark was not found");
+        resolve(false);
+        return;
+      }
+
+      let node = document.getElementById(annotation.rangeStart);
+
+      if (annotation.selectedText) {
+        Object(_bookmark_selection__WEBPACK_IMPORTED_MODULE_2__["highlight"])(annotation.selectedText, node);
+      }
+
+      $(`[data-aid="${aid}"]`).addClass("shared");
+      wrapRange(annotation);
+      sharedAnnotation = annotation;
+      initCloseHandler();
+      Object(_util_url__WEBPACK_IMPORTED_MODULE_0__["loadComplete"])();
+    } catch (err) {
+      Object(_util_url__WEBPACK_IMPORTED_MODULE_0__["loadComplete"])();
+      console.error(err);
+      resolve(false);
+      return;
+    }
+
+    resolve(pid);
+  });
 }
 
 /* harmony default export */ __webpack_exports__["default"] = ({

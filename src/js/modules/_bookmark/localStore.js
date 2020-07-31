@@ -12,13 +12,95 @@
  */
 
 import {storeGet, storeSet} from "../_util/store";
+import difference from "lodash/difference";
 
 export class BookmarkLocalStore {
-  /*
+  /**
+   * Add list of bookmarks on page to this.list and add the topics for each
+   * bookmark to the topics Map. Increment count to record the number of references
+   * to each topic.
+   *
+   * @constructor
    * @param {array} bmList - array of bookmarks on page
    */
   constructor(bmList) {
     this.list = bmList;
+    this.topics = new Map();
+    this.topicsModified = false;
+
+    //load topics from bmList in to topic Map
+    this._initTopics();
+  }
+
+  /**
+   * Add topic to Map if not present, set count to 1. If present
+   * increment count by 1. If a new topic is added return true.
+   *
+   * @params <object> newTopic - {value: "topicNospaces", topic: "might have spaces"}
+   * @returns <boolean> Indication if topic Map has changed, new or deleted topics
+   */
+  _incrementTopic(newTopic) {
+    let key = newTopic.value;
+
+    //if newTopic is not in topics, add it and set count to 1
+    if (!this.topics.has(key)) {
+      newTopic.count = 1;
+      this.topics.set(key, newTopic);
+      this.topicsModified = true;
+    }
+    else {
+      let savedTopic = this.topics.get(key);
+      savedTopic.count += 1;
+      this.topics.set(key, savedTopic);
+    }
+  }
+
+  /**
+   * Decrement or remove topic from topic Map
+   * @param {object} - topic
+   * @returns {boolean} {remainingCount: <number>, modified: <boolean>}
+   */
+  _decrementTopic(topic) {
+    let key = topic.value;
+    let modified = false;
+
+    //unexpected
+    if (!this.topics.has(key)) {
+      return;
+    }
+
+    let trackedTopicValue = this.topics.get(key);
+
+    //no more bookmarks on page with this topic
+    if (trackedTopicValue.count === 1) {
+      this.topics.delete(key);
+      this.topicsModified = true;
+    }
+    else {
+      //decrement count and store value
+      trackedTopicValue.count -= 1;
+      this.topics.set(key, trackedTopicValue);
+    }
+  }
+
+  /*
+   * Load bookmark topics into Map. This is used to selectively
+   * display bookmarks on page by given topic. Load topics only
+   * for selectedText annotations.
+   */
+  _initTopics() {
+    this.list.forEach((b) => {
+      if (!b.annotation.selectedText) {
+        return;
+      }
+      if (b.annotation.topicList && b.annotation.topicList.length > 0) {
+        b.annotation.topicList.forEach((topic) => {
+          this._incrementTopic(topic);
+        });
+      }
+    });
+
+    this.topicsModified = true;
   }
 
   /*
@@ -39,6 +121,48 @@ export class BookmarkLocalStore {
     storeSet("bmList", bmList);
 
     return;
+  }
+
+  /*
+   * Returns unique topics used by page annotations
+   */
+  getTopics() {
+    return this.topics;
+  }
+
+  /**
+   * Get state of topic array
+   *
+   * @returns {boolean} true if topics have be added or removed
+   */
+  get topicRefreshNeeded() {
+    return this.topicsModified;
+  }
+
+  /*
+   * Set state of topic refresh needed flag
+   */
+  set topicRefreshNeeded(value) {
+    this.topicsModified = value;
+  }
+
+  /*
+   * Find the bookmark with aid and return its creationDate
+   */
+  getCreationDate(aid) {
+    let bkmrk = this.list.find((b) => {
+      if (b.annotation.aid && b.annotation.aid === aid) {
+        return true;
+      }
+      return false;
+    });
+
+    if (bkmrk) {
+      return bkmrk.creationDate;
+    }
+
+    //return undefined
+    return bkmrk;
   }
 
   /*
@@ -72,8 +196,9 @@ export class BookmarkLocalStore {
     return bm;
   }
 
-  /*
-   * Add bookmark to list
+  /**
+   * Add or update annotation to the list. Update topic Map
+   * accordingly.
    *
    * @param {string} - userId
    * @param {string} - paraKey
@@ -83,26 +208,91 @@ export class BookmarkLocalStore {
   addItem(userId, paraKey, creationDate, annotation) {
     let pid = annotation.rangeStart;
     let id = parseInt(pid.substr(1), 10);
-    let bkmrk = {
-      userId: userId,
-      paraKey: `${paraKey}`,
-      creationDate: `${creationDate}`,
-      pid: id,
-      annotation: annotation
-    };
-    this.list.push(bkmrk);
 
-    //item has been added so invalidate bmList
-    this._invalidateBmList();
+    if (annotation.status === "new") {
+      let bkmrk = {
+        userId: userId,
+        paraKey: `${paraKey}`,
+        creationDate: `${creationDate}`,
+        pid: id,
+        annotation: annotation
+      };
+      this.list.push(bkmrk);
+
+      //add topics to topic Map for selectedText bookmarks
+      if (bkmrk.annotation.selectedText && bkmrk.annotation.topicList) {
+        bkmrk.annotation.topicList.forEach((i) => {
+          this._incrementTopic(i);
+        });
+      }
+
+      //item has been added so invalidate bmList
+      this._invalidateBmList();
+    }
+    else { //this is an update
+      let pKey = `${paraKey}`;
+      let cDate = `${creationDate}`;
+      let index = this.list.findIndex((i) => {
+        return (i.paraKey === pKey && i.creationDate === cDate);
+      });
+
+      if (index === -1) throw new Error("bookmark to update not found in list");
+
+      //update topic Map if needed
+      if (annotation.selectedText) {
+        let newTopicList = [];
+        let oldTopicList = [];
+        if (annotation.topicList) {
+          let newTL = annotation.topicList.reduce((result, topic) => {
+            return `${result} ${topic.value}`;
+          }, "");
+
+          newTL = newTL.trim();
+          newTopicList = newTL.split(" ");
+        }
+        if (this.list[index].annotation.topicList) {
+          let oldTL = this.list[index].annotation.topicList.reduce((result, topic) => {
+            return `${result} ${topic.value}`;
+          }, "");
+
+          oldTL = oldTL.trim();
+          oldTopicList = oldTL.split(" ");
+        }
+
+        let addedTopics = difference(newTopicList, oldTopicList);
+        let deletedTopics = difference(oldTopicList, newTopicList);
+
+        //add topics is any have been added
+        addedTopics.forEach((i) => {
+          //find topic in new annotation
+          let topic = annotation.topicList.find((t) => {
+            return t.value === i;
+          });
+          this._incrementTopic(topic);
+        });
+
+        //delete topics if any have been deleted
+        deletedTopics.forEach((i) => {
+          //find topic in old annotation
+          let topic = this.list[index].annotation.topicList.find((t) => {
+            return t.value === i;
+          });
+          this._decrementTopic(topic);    
+        });
+      }
+
+      //update annotation in local store
+      this.list[index].annotation = annotation;
+    }
   }
 
-  /*
+  /**
    * Delete bookmark from list
    *
    * @param {string} userId
    * @param {string} paraKey
    * @param {string} creationDate
-   * @return {number} - count of remaining bookmarks for paraKey or null if bookmark not found
+   * @return {object} {remainingCount: null || number left, modified: boolean}
    *
    */
   deleteItem(userId, paraKey, creationDate) {
@@ -123,8 +313,16 @@ export class BookmarkLocalStore {
 
     //if item found, delete it from local store and get count remaining
     //bookmarks on paragraph
+    let topicsModified = false;
     if (index > -1) {
       let pid = this.list[index].pid;
+
+      //delete topics from topic Map
+      if (this.list[index].annotation.topicList) {
+        this.list[index].annotation.topicList.forEach((i) => {
+          topicsModified = this._decrementTopic(i) || topicsModified;    
+        });
+      }
 
       //delete item
       this.list.splice(index, 1);
@@ -136,10 +334,10 @@ export class BookmarkLocalStore {
         return b.pid === pid;
       });
 
-      return bms.length;
+      return {remainingCount: bms.length, modified: topicsModified};
     }
 
-    return null;
+    return {remainingCount: null, modified: topicsModified};
   }
 
   /*

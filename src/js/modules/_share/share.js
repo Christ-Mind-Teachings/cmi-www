@@ -34,7 +34,6 @@ let sharedAnnotation;
   the requested bookmark and when the user closes the share raised segment
 */
 function clearSharedAnnotation() {
-  console.log("clearSharedAnnotation");
 
   //unwrap shared annotation
   if (sharedAnnotation.selectedText) {
@@ -84,68 +83,78 @@ function wrapRange(annotation) {
   scroll(document.getElementById("shared-annotation-wrapper"), {align: {top: 0.2}});
 }
 
-/*
+/**
   Display shared annotation requested by query parameter "as" ?as=pid:annotationId:userId. This
   is called when the user click 'To The Source' on a shared quote or FB post. The annotation
   could have been created by anyone.
+
+  @returns {promise} pid - resolves to pid number when sharing requested, false otherwise
 */
-async function showAnnotation() {
-  let info = showAnnotationRequest();
-  if (!info) {
-    return false;
-  }
-
-  let [pid, aid, uid] = decodeURIComponent(info).split(":");
-
-  //make sure pid exists
-  if (!pid) {
-    return false;
-  }
-
-  if ($(`#${pid}`).length === 0) {
-    return false;
-  }
-
-  let paraKey = teaching.keyInfo.genParagraphKey(pid);
-
-  //show loading indicator
-  loadStart();
-
-  /*
-    fetch shared bookmark and wrap it in a raised segment
-    - if user has a bookmark in the same paragraph as the shared annotation, it will not be highlighted so
-      if we fail to get the bookmark or can't find the shared annotation we need to highlight the users
-      annotations for the paragraph before returning
-  */
-  try {
-    const annotation = await getAnnotation(uid, paraKey, aid);
-
-    if (!annotation.userId) {
-      highlightSkippedAnnotations();
-      loadComplete();
-      notify.warning("Requested Bookmark was not found");
+function showAnnotation() {
+  return new Promise(async (resolve, reject) => {
+    let info = showAnnotationRequest();
+    if (!info) {
+      resolve(false);
       return;
     }
 
-    let node = document.getElementById(annotation.rangeStart);
+    let [pid, aid, uid] = decodeURIComponent(info).split(":");
 
-    if (annotation.selectedText) {
-      highlight(annotation.selectedText, node);
+    //make sure pid exists
+    if (!pid) {
+      resolve(false);
+      return;
     }
 
-    $(`[data-aid="${aid}"]`).addClass("shared");
+    if ($(`#${pid}`).length === 0) {
+      resolve(false);
+      return;
+    }
 
-    wrapRange(annotation);
-    sharedAnnotation = annotation;
-    initCloseHandler();
-    loadComplete();
-  }
-  catch(err) {
-    loadComplete();
-    console.error(err);
-  }
+    let paraKey = teaching.keyInfo.genParagraphKey(pid);
 
-  return pid;
+    //show loading indicator
+    loadStart();
+
+    /*
+      fetch shared bookmark and wrap it in a raised segment
+      - if user has a bookmark in the same paragraph as the shared annotation, it will not be highlighted so
+        if we fail to get the bookmark or can't find the shared annotation we need to highlight the users
+        annotations for the paragraph before returning
+    */
+    try {
+      const annotation = await getAnnotation(uid, paraKey, aid);
+
+      if (!annotation.userId) {
+        highlightSkippedAnnotations();
+        loadComplete();
+        notify.warning("Requested Bookmark was not found");
+        resolve(false);
+        return;
+      }
+
+      let node = document.getElementById(annotation.rangeStart);
+
+      if (annotation.selectedText) {
+        highlight(annotation.selectedText, node);
+      }
+
+      $(`[data-aid="${aid}"]`).addClass("shared");
+
+      wrapRange(annotation);
+      sharedAnnotation = annotation;
+      initCloseHandler();
+      loadComplete();
+    }
+    catch(err) {
+      loadComplete();
+      console.error(err);
+      resolve(false);
+      return;
+    }
+
+    resolve(pid);
+  });
 }
 
 export default {

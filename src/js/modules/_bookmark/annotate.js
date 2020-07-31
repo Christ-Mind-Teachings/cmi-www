@@ -14,6 +14,7 @@ let teaching = {};
 function getAnnotationForm() {
   let form = __lang`
     <form name="annotation" id="annotation-form" class="ui form">
+      <input class="hidden-field" type="text" readonly="" name="status">
       <input class="hidden-field" type="text" readonly="" name="creationDate">
       <input class="hidden-field" type="text" name="aid" readonly>
       <input class="hidden-field" type="text" readonly="" name="rangeStart">
@@ -330,6 +331,7 @@ function initializeForm(pid, aid, annotation) {
   //a new annotation
   if (!annotation) {
     form.form("set values", {
+      status: "new",
       rangeStart: pid,
       rangeEnd: pid,
       aid: aid
@@ -350,6 +352,7 @@ function initializeForm(pid, aid, annotation) {
     }
 
     form.form("set values", {
+      status: "update",
       rangeStart: annotation.rangeStart,
       rangeEnd: annotation.rangeEnd,
       aid: annotation.aid,
@@ -493,7 +496,8 @@ function hoverNoteHandler() {
 
 
 /*
- * Highlighted text hover; show popup
+ * Show popup containing info about the bookmark when mouse hovers over
+ * selectedText.
  */
 function hoverHandler() {
   $(".transcript").on("mouseenter", "[data-annotation-id]", function(e) {
@@ -545,7 +549,7 @@ function hoverHandler() {
       return;
     }
 
-    //bookmark wont be found if it is still being created
+    //get bookmark from local store
     let bkmrk = localStore.getItem(pid, aid);
 
     //sometimes the annotation won't be found because it is being created, so just return
@@ -757,7 +761,7 @@ function shareHandler() {
     //remove class "show" added when form was displayed
     $(`[data-annotation-id="${formData.aid}"]`).removeClass("show");
 
-    annotation.cancel(formData);
+    //annotation.cancel(formData);
     $(".transcript .annotation-edit").removeClass("annotation-edit");
 
     let userInfo = getUserInfo();
@@ -778,10 +782,18 @@ function shareHandler() {
     if (annotation_id.length > 0) {
       aid = $(`[data-annotation-id="${annotation_id}"]`).attr("data-aid");
       $(`[data-annotation-id="${annotation_id}"]`).addClass("show");
+
+      //aid is undefined when new annotations are shared, the real aid is the annotation
+      //creationDate. If aid is undefined try to get the creationDate from local store
+      if (!aid) {
+        aid = localStore.getCreationDate(annotation_id);
+        $(`[data-annotation-id="${annotation_id}"]`).attr("data-aid", aid);
+      }
     }
     else {
       aid = $(`#${pid} > span.pnum`).attr("data-aid");
     }
+
 
     let url = `https://${location.hostname}${location.pathname}?as=${pid}:${aid}:${userInfo.userId}`;
 

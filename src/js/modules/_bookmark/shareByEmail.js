@@ -1,8 +1,7 @@
-import axios from "axios";
 import notify from "toastr";
-import globals from "../../globals";
 import {getUserInfo} from "../_user/netlify";
 import {getString} from "../_language/lang";
+import {sendMail, getMailList} from "../_db/share";
 
 //teaching specific constants
 let teaching = {};
@@ -14,7 +13,7 @@ export function initShareByEmail(constants) {
   loadEmailList();
 
   //submit
-  $("form[name='emailshare']").on("submit", function(e) {
+  $("form[name='emailshare']").on("submit", async function(e) {
     e.preventDefault();
 
     const userInfo = getUserInfo();
@@ -48,23 +47,22 @@ export function initShareByEmail(constants) {
     shareInfo.senderName = userInfo.name;
     shareInfo.senderEmail = userInfo.email;
     shareInfo.sid = teaching.sid;
-    //console.log("shareInfo: %o", shareInfo);
 
     //hide form not sure if this will work
     $(".email-share-dialog-wrapper").addClass("hide");
 
-    axios.post(globals.share, shareInfo)
-      .then((response) => {
-        if (response.status === 200) {
-          notify.info(getString("action:emailsent"));
-        }
-        else {
-          notify.info(response.data.message);
-        }
-      })
-      .catch((error) => {
-        console.error("share error: %s", error);
-      });
+    try {
+      let result = await sendMail(shareInfo);
+      if (result === "success") {
+        notify.info(getString("action:emailsent"));
+      }
+      else {
+        notify.info(response.data.message);
+      }
+    }
+    catch(err) {
+      notify.error(err);
+    }
   });
 
   //cancel
@@ -95,27 +93,19 @@ function makeMaillistSelect(maillist) {
   Called by initShareByEmail()
   - load only when user signed in, fail silently, it's not an error
 */
-function loadEmailList() {
+async function loadEmailList() {
   const userInfo = getUserInfo();
 
-  if (!userInfo) {
-    return;
+  try {
+    let mailList = await getMailList(userInfo.userId);
+    let selectHtml = makeMaillistSelect(mailList);
+
+    $("#maillist-select").html(selectHtml);
+    $("#maillist-address-list.dropdown").dropdown();
   }
-
-  let maillist = [];
-  let api = `${userInfo.userId}/maillist`;
-
-  axios(`${globals.user}/${api}`)
-    .then(response => {
-      maillist = response.data.maillist;
-      let selectHtml = makeMaillistSelect(maillist);
-
-      $("#maillist-select").html(selectHtml);
-      $("#maillist-address-list.dropdown").dropdown();
-    })
-    .catch(err => {
-      notify.error(`${getString("error:e10")}: ${err}`);
-    });
+  catch(err) {
+    notify.error(`${getString("error:e10")}: ${err}`);
+  }
 }
 
 /*

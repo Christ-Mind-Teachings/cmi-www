@@ -12,7 +12,7 @@ import startCase from "lodash/startCase";
 import { showBookmark } from "../_util/url";
 import {initNavigator} from "./navigator";
 import list from "./list";
-import topics from "./topics";
+import {bookmarksLoaded} from "./topics";
 import {
   markSelection,
   getSelection,
@@ -61,15 +61,15 @@ function generateLinkList(links) {
   `;
 }
 
-//add bookmark topics to bookmark selected text to support
-//selective display of highlight based on topic
+/**
+ * Add classes to selectedText bookmarks for each topic
+ *
+ * @param <object> - the annotation
+ */
 function addTopicsAsClasses(bookmark) {
   if (bookmark.topicList && bookmark.topicList.length > 0) {
     let topicList = bookmark.topicList.reduce((result, topic) => {
-      if (typeof topic === "object") {
-        return `${result} ${topic.value}`;
-      }
-      return `${result} ${topic}`;
+      return `${result} ${topic.value}`;
     }, "");
 
     $(`[data-annotation-id="${bookmark.aid}"]`).addClass(topicList);
@@ -147,8 +147,6 @@ function initBmLinkHandler() {
   Clean up form values and prepare to send to API
 */
 function createAnnotation(formValues) {
-  //console.log("createAnnotation");
-
   let annotation = cloneDeep(formValues);
 
   annotation.rangeStart = annotation.rangeStart.trim();
@@ -194,7 +192,19 @@ function createAnnotation(formValues) {
   delete annotation.hasAnnotation;
 
   //persist the bookmark
-  net.postAnnotation(annotation);
+  let assignedCreationDate = net.postAnnotation(annotation);
+
+  let info = {
+    //this is undefined for new annotations
+    existingCreationDate: annotation.creationDate,
+    annotationType: annotation.selectedText ? "selectedText" : "Note",
+    uuid: annotation.aid,
+    pid: annotation.rangeStart,
+    assignedCreationDate: assignedCreationDate
+  };
+
+  //add [data-id] attribute to new bookmark html
+  updateNewAnnotation(info);
 }
 
 /*
@@ -359,19 +369,15 @@ function initializeBookmarkFeatureState() {
   }
 }
 
-/*
- * Get Annotations for page for signed in users. SelectedText annotations
- * are converted to objects by JSON.parse() and the set of annotations
- * are sorted by pid (without the 'p')
+/**
+ * Get and activate annotations for the current page.
  *
- * Args: fn: function to call for annotation s
- *       arg: arg to pass to function as second argument ie fn(b, arg)
+ * @params {string} sharePid - is not null when bookmark is shared on page.
  */
 async function getPageBookmarks(sharePid) {
   let pageKey = teaching.keyInfo.genPageKey();
   let userInfo = getUserInfo();
 
-  //call fn with empty object
   if (!userInfo) {
     return;
   }
@@ -399,7 +405,6 @@ async function getPageBookmarks(sharePid) {
         markSelection(bm.annotation.selectedText, count, sharePid);
         addTopicsAsClasses(bm.annotation);
         setQuickLinks(bm.annotation, "highlight");
-        topics.add(bm.annotation);
         count++;
         hasBookmark = true;
       }
@@ -416,14 +421,17 @@ async function getPageBookmarks(sharePid) {
       }
     });
 
-    topics.bookmarksLoaded();
+    bookmarksLoaded();
   }
 
   try {
+    //query annotations from database
     let bmList = await getAnnotations(userInfo.userId, pageKey);
 
-    //set global variable
+    //store annotations locally
     localStore = new BookmarkLocalStore(bmList);
+
+    //apply annotations to the page
     processAnnotations(bmList, sharePid);
   }
   catch(err) {
@@ -436,6 +444,9 @@ async function getPageBookmarks(sharePid) {
   initialize transcript page
 */
 function initTranscriptPage(sharePid, constants) {
+  if (sharePid) {
+    console.log("bookmark/bookmark: initTranscriptPage() sharePid: %s", sharePid);
+  }
 
   //get existing bookmarks for page
   getPageBookmarks(sharePid);
@@ -556,15 +567,34 @@ export const annotation = {
       if (remainingAnnotations === 0) {
         $(`#${formData.rangeStart} > span.pnum`).removeClass("has-bookmark");
       }
-
-      //delete topics from the page topic list
-      topics.delete(formData);
     }
     catch(err) {
       throw new Error(err);
     }
   }
-};
+}
+
+/**
+ * Update new bookmark markup to add the creationDate as [data-aid] so
+ * sharing doesn't require a page refresh.
+ *
+ * There are two kinds of bookmarks, selectedText and Note, updates are
+ * different for each.
+ *
+ */
+function updateNewAnnotation(info) {
+  //this isn't a new annotation
+  if (info.existingCreationDate === info.assignedCreationDate) {
+    return;
+  }
+
+  if (info.annotationType === "selectedText") {
+    $(`[data-annotation-id="${info.uuid}"]`).attr("data-aid", info.assignedCreationDate);
+  }
+  else {
+    $(`#${info.pid} > span.pnum`).attr("data-aid", info.assignedCreationDate);
+  }
+}
 
 export default {
   initialize: function(pid, constants) {

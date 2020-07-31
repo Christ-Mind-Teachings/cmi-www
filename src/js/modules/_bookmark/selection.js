@@ -10,8 +10,6 @@ import { v4 as uuid } from 'uuid';
 import {getUserInput, initialize as initAnnotation} from "./annotate";
 import isFinite from "lodash/isFinite";
 import difference from "lodash/difference";
-
-import topics from "./topics";
 import {getString} from "../_language/lang";
 
 //all annotations on the page
@@ -45,8 +43,9 @@ export function highlightSkippedAnnotations() {
 }
 
 /*
-  add or update selected text class list with topics
-*/
+ * Add or remove topic classes to html for highlighted annotation
+ * topics.
+ */
 export function updateSelectionTopicList(annotation) {
   let topicList;
 
@@ -55,70 +54,52 @@ export function updateSelectionTopicList(annotation) {
     return;
   }
 
-  //if annotation.topicList exists convert it to a string
-  if (annotation.topicList && annotation.topicList.length > 0) {
-    topicList = annotation.topicList.reduce((result, topic) => {
-      return `${result} ${topic.value}`;
-    }, "");
-  }
-  else {
+  //if no topics and annotation has been updated, check if topic
+  //classes exist, delete if so
+  if (!annotation.topicList || annotation.topicList.length === 0) {
+    //don't need to do anything for new annotations
+    if (annotation.status === "new") {
+      return;
+    }
+
+    //check for topic classes
+    let existingClasses = $(`[data-annotation-id="${annotation.aid}"]`).attr("class");
+    let classArray = existingClasses.split(" ");
+
+    $(`[data-annotation-id="${annotation.aid}"]`).attr("class", `${classArray[0]} ${classArray[1]}`);
+
     return;
   }
 
-  let topicListArray = [];
-  if (topicList) {
-    topicList = topicList.trim();
-    topicListArray = topicList.split(" ");
-  }
+  //convert annotation topics to a space delimited string
+  topicList = annotation.topicList.reduce((result, topic) => {
+    return `${result} ${topic.value}`;
+  }, "");
 
-  //get existing classes and convert to an array
+  //split topic string into an array
+  topicList = topicList.trim();
+  let topicListArray = topicList.split(" ");
+
+  //get class attr for annotation and convert to an array
   let existingClasses = $(`[data-annotation-id="${annotation.aid}"]`).attr("class");
   let classArray = existingClasses.split(" ");
 
-  //remove bookmmark-selected-text
-  let bstIndex = classArray.findIndex((item) => item === "bookmark-selected-text");
-  if (bstIndex > -1) {
-    classArray.splice(bstIndex, 1);
+  //add first two classes of classArray to topicListArray, these are non topic classes
+  if (classArray.length === 1) {
+    topicListArray.unshift(classArray[0]);
+  }
+  else {
+    topicListArray.unshift(classArray[1]);
+    topicListArray.unshift(classArray[0]);
   }
 
-  //remove colorClass
-  let ccIndex = classArray.findIndex((item) => item.startsWith("colorClass"));
-  if (ccIndex > -1) {
-    classArray.splice(ccIndex, 1);
-  }
+  //create class list from topicListArray
+  topicList = topicListArray.reduce((result, topic) => {
+    return `${result} ${topic}`;
+  }, "");
 
-  //classes have been added or deleted
-  let deletedTopics = difference(classArray, topicListArray);
-  let addedTopics = difference(topicListArray, classArray);
-  //console.log("deletedTopics: %o", deletedTopics);
-  //console.log("addedTopics: %o", addedTopics);
-
-  //remove deleted topics
-  if (deletedTopics.length > 0) {
-    let dt = deletedTopics.join(" ");
-    $(`[data-annotation-id="${annotation.aid}"]`).removeClass(dt);
-
-    //track page topics
-    topics.deleteTopics(deletedTopics);
-  }
-
-  //add added topics
-  if (addedTopics.length > 0) {
-    let at = addedTopics.join(" ");
-    $(`[data-annotation-id="${annotation.aid}"]`).addClass(at);
-
-    //track page topics
-    //get object topics from annotation
-    let addedObjectTopics = annotation.topicList.filter(topic => {
-      let found = addedTopics.find(item => {
-        return item === topic.value;
-      });
-      return found !== undefined;
-    });
-    topics.addTopics(addedObjectTopics);
-  }
-
-  //topics.report();
+  //update class list
+  $(`[data-annotation-id="${annotation.aid}"]`).attr("class", topicList);
 }
 
 /*
@@ -299,7 +280,6 @@ export function initialize(constants) {
     //ignore text selection when disabled by user or when annotation is 
     //being created
     if ($(this).hasClass("disable-selection")) {
-      //console.log("selection prevented by selection guard");
       return;
     }
 
@@ -308,17 +288,14 @@ export function initialize(constants) {
     }
 
     let selObj = document.getSelection(); 
-    //console.log("selection: %o", selObj);
 
     //Safari calls this function twice for each selection, the second time
     //rangeCount === 0 and type == "None"
     if (selObj.rangeCount === 0) {
-      //console.log("selObj.rangeCount === 0)");
       return;
     }
 
     if (selObj.getRangeAt(0).collapsed) {
-      //console.log("range collapsed");
       return;
     }
 

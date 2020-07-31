@@ -84,7 +84,6 @@ function postAnnotation(annotation, pageKey, addToLocalStorage=true) {
   }
 
   putAnnotation(userInfo.userId, pageKey, creationDate, serverAnnotation).then((resp) => {
-    console.log("postAnnotation response: %o", resp);
     if (addToLocalStorage) {
       localStore.addItem(userInfo.userId, pageKey, creationDate, serverAnnotation);
     }
@@ -92,6 +91,8 @@ function postAnnotation(annotation, pageKey, addToLocalStorage=true) {
     console.error(`Error saving annotation: ${err}`);
     notify.error(getString("error:e1"));
   });
+
+  return creationDate;
 }
 
 /*
@@ -104,8 +105,11 @@ function deleteAnnotation(pid, creationDate) {
 
     try {
       let response = await delAnnotation(userInfo.userId, paraKey, creationDate);
-      let remaining = localStore.deleteItem(userInfo.userId, paraKey, creationDate);
-      resolve(remaining);
+      let result = localStore.deleteItem(userInfo.userId, paraKey, creationDate);
+      if (result.modified) {
+        //TODO update page topic list
+      }
+      resolve(result.remaining);
     }
     catch(err) {
       reject(err);
