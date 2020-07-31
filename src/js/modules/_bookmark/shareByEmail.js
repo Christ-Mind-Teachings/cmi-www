@@ -7,6 +7,22 @@ import {sendMail, getMailList} from "../_db/share";
 let teaching = {};
 let shareInfo = {};
 
+/*
+ * format message to wrap pargraphs in <p> tags
+ */
+function formatMessage(message) {
+  message = message.replace(/\n/g, "@@");
+  message = message.replace(/@@*/g, "@@");
+
+  let mArray = message.split("@@");
+
+  message = mArray.reduce((current, p) => {
+    return `${current}<p>${p}</p>`;
+  }, "");
+
+  return message;
+}
+
 //load email list and setup submit and cancel listeners
 export function initShareByEmail(constants) {
   teaching = constants;
@@ -47,6 +63,10 @@ export function initShareByEmail(constants) {
     shareInfo.senderName = userInfo.name;
     shareInfo.senderEmail = userInfo.email;
     shareInfo.sid = teaching.sid;
+
+    if (formData.emailMessage) {
+      shareInfo.message = formatMessage(formData.emailMessage);
+    }
 
     //hide form not sure if this will work
     $(".email-share-dialog-wrapper").addClass("hide");

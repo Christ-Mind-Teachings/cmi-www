@@ -1,5 +1,6 @@
-import axios from "axios";
-import globals from "../../globals";
+//import axios from "axios";
+//import globals from "../../globals";
+import {getMailList, sendMail} from "../_db/share";
 import {getUserInfo} from "../_user/netlify";
 import {getString} from "../_language/lang";
 import {displayWarning} from "./message";
@@ -40,6 +41,22 @@ function setSendFailure() {
   }, 2 * 1000);
 }
 
+/*
+ * format message to wrap pargraphs in <p> tags
+ */
+function formatMessage(message) {
+  message = message.replace(/\n/g, "@@");
+  message = message.replace(/@@*/g, "@@");
+
+  let mArray = message.split("@@");
+
+  message = mArray.reduce((current, p) => {
+    return `${current}<p>${p}</p>`;
+  }, "");
+
+  return message;
+}
+
 export function submitEmail(q) {
   const userInfo = getUserInfo();
   let formData = $("#email-modal-share-form").form("get values");
@@ -68,22 +85,25 @@ export function submitEmail(q) {
   shareInfo.senderName = userInfo.name;
   shareInfo.senderEmail = userInfo.email;
   shareInfo.sid = sid;
-  shareInfo.citation = q.citation;
+  shareInfo.citation = `~ ${q.citation}`;
   shareInfo.quote = q.quote;
   shareInfo.url = `${location.origin}${q.url}`;
-  //console.log("shareInfo: %o", shareInfo);
+
+  if (formData.emailMessage) {
+    shareInfo.message = formatMessage(formData.emailMessage);
+  }
 
   // start loading indicator
   resetSendIndicator();
 
-  axios.post(globals.share, shareInfo)
+  sendMail(shareInfo)
     .then((response) => {
-      if (response.status === 200) {
+      if (response === "success") {
         setSendSuccess();
       }
       else {
         setSendFailure();
-        console.log("post message; %s", response.data.message);
+        console.log("post message; %s", response);
       }
     })
     .catch((error) => {
@@ -123,15 +143,14 @@ function loadEmailList() {
   let maillist = [];
   let api = `${userInfo.userId}/maillist`;
 
-  axios(`${globals.user}/${api}`)
-    .then(response => {
-      maillist = response.data.maillist;
+  getMailList(userInfo.userId)
+    .then(( maillist ) => {
       let selectHtml = makeMaillistSelect(maillist);
 
       $("#maillist-modal-select").html(selectHtml);
       $("#maillist-modal-address-list.dropdown").dropdown();
     })
-    .catch(err => {
+    .catch(( err ) => {
       notify.error(`${getString("error:e10")}: ${err}`);
     });
 }
