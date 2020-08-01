@@ -254,7 +254,8 @@ function getSelectedText(range, fromNode = document.body) {
     type: "Annotation",
     title: $("#book-title").text(),
     url: location.pathname,
-    pid: range.startContainer.parentNode.id,
+    pid: fromNode.id,
+    //pid: range.startContainer.parentNode.id,
     id: uuid(),
     target: {
       type: "SpecificResource",
@@ -299,8 +300,7 @@ export function initialize(constants) {
       return;
     }
 
-    let range = selObj.getRangeAt(0);
-    processSelection(range);
+    processSelection(selObj);
   });
 
   //init annotation input, edit, and delete
@@ -310,65 +310,46 @@ export function initialize(constants) {
 /*
   create annotation from selected text
 */
-function processSelection(range) {
-  //console.log("range: %o", range);
+function processSelection(selection) {
+  let range = selection.getRangeAt(0);
 
-  //check for overlap with other highlighted text
-  let startParent = range.startContainer.parentElement.localName;
-  let endParent = range.endContainer.parentElement.localName;
-
-  if (startParent === "span") {
-    notify.info(getString("error:e6"));
-    console.log("selection includes <p>");
-    return;
-  }
-
-  if (startParent === "mark" || endParent === "mark") {
-    notify.info(getString("error:e7"));
-    console.log("overlapping selections");
-
-    if (location.hostname === "localhost") {
-      debugger;
-    }
-
-    return;
-  }
-
-  let rangeStart = range.startContainer.parentElement.id;
-  //let rangeStart = range.commonAncestorContainer.id;
-  let rangeEnd = range.endContainer.parentElement.id;
-
-  //the range must start with a transcript paragraph, one whose id = "p<number>" or an <em> found
-  //within a paragraph
-  if (!rangeStart) {
-    console.log("selection parent element: %s", range.startContainer.parentElement.nodeName);
-    return;
-  }
-
-  if (!rangeStart.startsWith("p")) {
-    console.log("range does not start with <p>");
-    return;
-  }
-
-  let pid = parseInt(rangeStart.substr(1), 10);
-  if (!isFinite(pid)) {
-    console.log("Pid: %s !isFinite()");
-    return;
-  }
-
-  //not sure how to handl text selected across paragraphs, so disallow it.
-  if (rangeStart !== rangeEnd) {
+  //new from user2
+  if (range.commonAncestorContainer.nodeName === "DIV") {
     notify.info(getString("error:e8"));
     console.log("multi paragraph selection: start: %s, end: %s", rangeStart, rangeEnd);
     return;
   }
 
-  let node = document.getElementById(rangeStart);
+  if (range.startContainer.parentElement.localName === "span") {
+    notify.info(getString("error:e6"));
+    console.log("selection includes <p>");
+    return;
+  }
+
+  //get the paragraph node for the range
+  let pNode = range.startContainer;
+  while (pNode.nodeName !== "P") {
+    pNode = pNode.parentElement;
+  }
+
+  //let node = document.getElementById(rangeStart);
+  //let node = document.getElementById(pNode.id);
 
   //create annotation
-  let selectedText = getSelectedText(range, node);
+  let selectedText = getSelectedText(range, pNode);
   if (selectedText) {
-    highlight(selectedText, node);
+
+    //check if selection contains any part of another selection
+    let highlightedText = pNode.getElementsByTagName("mark");
+    for (let ht of highlightedText) {
+      if (selection.containsNode(ht, true)) {
+        notify.info(getString("error:e7"));
+        console.log("overlapping selections");
+        return;
+      }
+    }
+
+    highlight(selectedText, pNode);
 
     //persist annotation
     pageAnnotations[selectedText.id] = selectedText;

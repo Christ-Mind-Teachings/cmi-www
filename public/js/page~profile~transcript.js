@@ -6643,7 +6643,8 @@ function getSelectedText(range, fromNode = document.body) {
     type: "Annotation",
     title: $("#book-title").text(),
     url: location.pathname,
-    pid: range.startContainer.parentNode.id,
+    pid: fromNode.id,
+    //pid: range.startContainer.parentNode.id,
     id: Object(uuid__WEBPACK_IMPORTED_MODULE_1__["v4"])(),
     target: {
       type: "SpecificResource",
@@ -6682,8 +6683,7 @@ function initialize(constants) {
       return;
     }
 
-    let range = selObj.getRangeAt(0);
-    processSelection(range);
+    processSelection(selObj);
   }); //init annotation input, edit, and delete
 
   Object(_annotate__WEBPACK_IMPORTED_MODULE_2__["initialize"])(constants);
@@ -6692,64 +6692,46 @@ function initialize(constants) {
   create annotation from selected text
 */
 
-function processSelection(range) {
-  //console.log("range: %o", range);
-  //check for overlap with other highlighted text
-  let startParent = range.startContainer.parentElement.localName;
-  let endParent = range.endContainer.parentElement.localName;
+function processSelection(selection) {
+  let range = selection.getRangeAt(0); //new from user2
 
-  if (startParent === "span") {
-    toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info(Object(_language_lang__WEBPACK_IMPORTED_MODULE_5__["getString"])("error:e6"));
-    console.log("selection includes <p>");
-    return;
-  }
-
-  if (startParent === "mark" || endParent === "mark") {
-    toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info(Object(_language_lang__WEBPACK_IMPORTED_MODULE_5__["getString"])("error:e7"));
-    console.log("overlapping selections");
-
-    if (location.hostname === "localhost") {
-      debugger;
-    }
-
-    return;
-  }
-
-  let rangeStart = range.startContainer.parentElement.id; //let rangeStart = range.commonAncestorContainer.id;
-
-  let rangeEnd = range.endContainer.parentElement.id; //the range must start with a transcript paragraph, one whose id = "p<number>" or an <em> found
-  //within a paragraph
-
-  if (!rangeStart) {
-    console.log("selection parent element: %s", range.startContainer.parentElement.nodeName);
-    return;
-  }
-
-  if (!rangeStart.startsWith("p")) {
-    console.log("range does not start with <p>");
-    return;
-  }
-
-  let pid = parseInt(rangeStart.substr(1), 10);
-
-  if (!lodash_isFinite__WEBPACK_IMPORTED_MODULE_3___default()(pid)) {
-    console.log("Pid: %s !isFinite()");
-    return;
-  } //not sure how to handl text selected across paragraphs, so disallow it.
-
-
-  if (rangeStart !== rangeEnd) {
+  if (range.commonAncestorContainer.nodeName === "DIV") {
     toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info(Object(_language_lang__WEBPACK_IMPORTED_MODULE_5__["getString"])("error:e8"));
     console.log("multi paragraph selection: start: %s, end: %s", rangeStart, rangeEnd);
     return;
   }
 
-  let node = document.getElementById(rangeStart); //create annotation
+  if (range.startContainer.parentElement.localName === "span") {
+    toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info(Object(_language_lang__WEBPACK_IMPORTED_MODULE_5__["getString"])("error:e6"));
+    console.log("selection includes <p>");
+    return;
+  } //get the paragraph node for the range
 
-  let selectedText = getSelectedText(range, node);
+
+  let pNode = range.startContainer;
+
+  while (pNode.nodeName !== "P") {
+    pNode = pNode.parentElement;
+  } //let node = document.getElementById(rangeStart);
+  //let node = document.getElementById(pNode.id);
+  //create annotation
+
+
+  let selectedText = getSelectedText(range, pNode);
 
   if (selectedText) {
-    highlight(selectedText, node); //persist annotation
+    //check if selection contains any part of another selection
+    let highlightedText = pNode.getElementsByTagName("mark");
+
+    for (let ht of highlightedText) {
+      if (selection.containsNode(ht, true)) {
+        toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info(Object(_language_lang__WEBPACK_IMPORTED_MODULE_5__["getString"])("error:e7"));
+        console.log("overlapping selections");
+        return;
+      }
+    }
+
+    highlight(selectedText, pNode); //persist annotation
 
     pageAnnotations[selectedText.id] = selectedText;
     Object(_annotate__WEBPACK_IMPORTED_MODULE_2__["getUserInput"])(selectedText);
