@@ -334,8 +334,12 @@ function highlightHandler() {
  * and copy text from transcript
  */
 function bookmarkFeatureHandler() {
-  $("#bookmark-toggle-disable-selection").on("click", function(e) {
+  $("#bookmark-toggle-disable-selection").on("click", function(e, show) {
     e.preventDefault();
+    let showMessage = true;
+    if (show !== "undefined") {
+      showMessage = show === "false" ? false : true;
+    }
 
     let el = $(".transcript");
 
@@ -343,6 +347,9 @@ function bookmarkFeatureHandler() {
       getString("menu:m1", true).then(value => {
         el.removeClass("disable-selection user");
         $(".toggle-bookmark-selection").text(value);
+        if (showMessage) {
+          notify.success("Bookmark Creation Enabled");
+        }
         storeSet("bmCreation", "enabled");
       });
     }
@@ -350,6 +357,9 @@ function bookmarkFeatureHandler() {
       getString("menu:m2", true).then(value => {
         el.addClass("disable-selection user");
         $(".toggle-bookmark-selection").text(value);
+        if (showMessage) {
+          notify.success("Bookmark Creation Disabled");
+        }
         storeSet("bmCreation", "disabled");
       });
     }
@@ -359,13 +369,20 @@ function bookmarkFeatureHandler() {
 /*
  * The bookmark feature is initially enabled. Check local storage to see if
  * it has been disabled by the user. If so, disable it on page load.
+ *
+ * If the user has not set bookmark creation default it to disabled. I think
+ * many users may want to copy text but can't because the bookmark dialog displays
+ * on text selection. They don't try to figure out why and stop using the site.
  */
 function initializeBookmarkFeatureState() {
   let state = storeGet("bmCreation");
 
   if (state && state === "disabled") {
     //console.log("triggering selection guard disable");
-    $("#bookmark-toggle-disable-selection").trigger("click");
+    $("#bookmark-toggle-disable-selection").trigger("click", "false");
+  }
+  else {
+    $(".transcript").addClass("disable-selection user");
   }
 }
 
@@ -444,9 +461,8 @@ async function getPageBookmarks(sharePid) {
   initialize transcript page
 */
 function initTranscriptPage(sharePid, constants) {
-  if (sharePid) {
-    console.log("bookmark/bookmark: initTranscriptPage() sharePid: %s", sharePid);
-  }
+  //bookmarks are supported only for signed in users
+  if (!getUserInfo()) return;
 
   //get existing bookmarks for page
   getPageBookmarks(sharePid);

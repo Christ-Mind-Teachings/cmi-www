@@ -1,4 +1,5 @@
 import notify from "toastr";
+import {getUserInfo} from "../_user/netlify";
 
 const textPosition = require("dom-anchor-text-position");
 const textQuote = require("dom-anchor-text-quote");
@@ -277,6 +278,11 @@ export function initialize(constants) {
 
   $("div.transcript.ui").on("mouseup", function(e) {
     e.preventDefault();
+
+    //bookmarks enabled only for signed in users
+    if (!getUserInfo()) {
+      return;
+    }
 
     //ignore text selection when disabled by user or when annotation is 
     //being created

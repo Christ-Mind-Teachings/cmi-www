@@ -115,6 +115,7 @@ function makeMaillistSelect(maillist) {
 */
 async function loadEmailList() {
   const userInfo = getUserInfo();
+  if (!userInfo) return;
 
   try {
     let mailList = await getMailList(userInfo.userId);

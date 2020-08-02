@@ -328,3 +328,8 @@ i.toc-share.icon {
 .hide.email-share-dialog-wrapper {
   display: none;
 }
+
+a.requires-signin.hide.ui.item {
+  display: none;
+}
+

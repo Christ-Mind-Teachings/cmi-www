@@ -1,7 +1,7 @@
 <!-- _includes/common/transcript-menu.html -->
 <div class="ui borderless main menu">
   <div id="transcript-menu" class="ui text container">
-    <a id="bookmark-dropdown-menu" href="#" class="ui dropdown item">
+    <a id="bookmark-dropdown-menu" href="#" class="requires-signin hide ui dropdown item">
       <span data-xposition="left center" data-xtooltip="Show/Set Bookmarks">
         <i class="red bookmark icon"></i>
       </span>
@@ -12,14 +12,6 @@
         <div class="divider"></div>
         <div id="current-topic-filter" data-filter="none" class="header">Topic Filter: None</div>
         <div id="page-topics-modal-open" class="page-topics-modal-open item">Filter Bookmarks</div>
-        <!--
-        <div id="topic-menu-item" class="item">
-          <i class="dropdown icon"></i>
-          Page Topic List
-          <div id="topic-menu-select" class="menu transition hidden">
-          </div>
-        </div>
-        -->
       </div>
     </a>
     {% unless page.search == false %}

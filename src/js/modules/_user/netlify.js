@@ -9,47 +9,6 @@ import {getString} from "../_language/lang";
 let login_state_key = "login.state";
 let userInfo;
 
-let testUsers = {
-  "rick": {
-    email: "rmercer33@gmail.com",
-    userId: md5("rmercer33@gmail.com"),
-    name: "Rick Mercer",
-    roles: ["acol", "timer", "editor"]
-  },
-  "julie": {
-    email: "julief8@me.com",
-    userId: md5("julief8@me.com"),
-    name: "Julie Franklin",
-    roles: ["timer", "editor"]
-  },
-  "yodi": {
-    email: "yodi@yodith.com",
-    userId: md5("yodi@yodith.com"),
-    name: "Yodi Debebe",
-    roles: ["timer"]
-  },
-  "hettie": {
-    email: "hcmercer@gmail.com",
-    userId: md5("hcmercer@gmail.com"),
-    name: "Hettie Mercer",
-    roles: []
-  }
-};
-
-function devUserInfo() {
-  let user = getUser();
-
-  if (user && testUsers[user]) {
-    return testUsers[user];
-  }
-  else {
-    //use rick
-    return testUsers["rick"];
-  }
-
-  return null;
-}
-
 function prodUserInfo() {
   if (userInfo) {
     return {
@@ -92,6 +51,10 @@ function setAsSignedIn() {
 
   //reveal profile-management menu option
   $(".hide.profile-management.item").removeClass("hide");
+
+  //show menu options for account holders
+  $(".requires-signin").removeClass("hide");
+  console.log("requires-signin set to show");
 }
 
 /*
@@ -116,10 +79,14 @@ function setAsSignedOut() {
 
   //hide profile-management menu option
   $(".profile-management.item").addClass("hide");
+
+  //hide account users menu options
+  $(".requires-signin").addClass("hide");
+  console.log("requires-signin set to hide");
 }
 
 /*
-  ACOL restricts access to some contents based on the "acol" user role. When the user
+  ACOL restricts access to some content based on the "acol" user role. When the user
   logs in, redirect them to the acol home page if they are currently viewing an acol
   transcript page. This will ensure that the TOC will give them access to all content.
 
@@ -139,6 +106,9 @@ function manageState(state) {
       break;
     case "login":
       if (currentState === "dialog") {
+        //refresh the page after login
+        location.href = location.href;
+        /*
         //if user has "acol" role, refresh page to enable access to all content
         if (userInfo.app_metadata.roles && userInfo.app_metadata.roles.find(r => r === "acol")) {
           //if user is on an acol transcript page
@@ -147,6 +117,7 @@ function manageState(state) {
             location.href = acolHome;
           }
         }
+        */
       }
       store.set(login_state_key, state);
       break;

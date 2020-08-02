@@ -4187,20 +4187,36 @@ function highlightHandler() {
 
 
 function bookmarkFeatureHandler() {
-  $("#bookmark-toggle-disable-selection").on("click", function (e) {
+  $("#bookmark-toggle-disable-selection").on("click", function (e, show) {
     e.preventDefault();
+    let showMessage = true;
+
+    if (show !== "undefined") {
+      showMessage = show === "false" ? false : true;
+    }
+
     let el = $(".transcript");
 
     if (el.hasClass("disable-selection") && el.hasClass("user")) {
       Object(_language_lang__WEBPACK_IMPORTED_MODULE_17__["getString"])("menu:m1", true).then(value => {
         el.removeClass("disable-selection user");
         $(".toggle-bookmark-selection").text(value);
+
+        if (showMessage) {
+          toastr__WEBPACK_IMPORTED_MODULE_5___default.a.success("Bookmark Creation Enabled");
+        }
+
         Object(_util_store__WEBPACK_IMPORTED_MODULE_3__["storeSet"])("bmCreation", "enabled");
       });
     } else {
       Object(_language_lang__WEBPACK_IMPORTED_MODULE_17__["getString"])("menu:m2", true).then(value => {
         el.addClass("disable-selection user");
         $(".toggle-bookmark-selection").text(value);
+
+        if (showMessage) {
+          toastr__WEBPACK_IMPORTED_MODULE_5___default.a.success("Bookmark Creation Disabled");
+        }
+
         Object(_util_store__WEBPACK_IMPORTED_MODULE_3__["storeSet"])("bmCreation", "disabled");
       });
     }
@@ -4209,6 +4225,10 @@ function bookmarkFeatureHandler() {
 /*
  * The bookmark feature is initially enabled. Check local storage to see if
  * it has been disabled by the user. If so, disable it on page load.
+ *
+ * If the user has not set bookmark creation default it to disabled. I think
+ * many users may want to copy text but can't because the bookmark dialog displays
+ * on text selection. They don't try to figure out why and stop using the site.
  */
 
 
@@ -4217,7 +4237,9 @@ function initializeBookmarkFeatureState() {
 
   if (state && state === "disabled") {
     //console.log("triggering selection guard disable");
-    $("#bookmark-toggle-disable-selection").trigger("click");
+    $("#bookmark-toggle-disable-selection").trigger("click", "false");
+  } else {
+    $(".transcript").addClass("disable-selection user");
   }
 }
 /**
@@ -4290,10 +4312,8 @@ async function getPageBookmarks(sharePid) {
 
 
 function initTranscriptPage(sharePid, constants) {
-  if (sharePid) {
-    console.log("bookmark/bookmark: initTranscriptPage() sharePid: %s", sharePid);
-  } //get existing bookmarks for page
-
+  //bookmarks are supported only for signed in users
+  if (!Object(_user_netlify__WEBPACK_IMPORTED_MODULE_2__["getUserInfo"])()) return; //get existing bookmarks for page
 
   getPageBookmarks(sharePid); //add support for text selection
 
@@ -6402,13 +6422,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "initialize", function() { return initialize; });
 /* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! toastr */ "./node_modules/toastr/toastr.js");
 /* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(toastr__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var uuid__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! uuid */ "./node_modules/uuid/dist/esm-browser/index.js");
-/* harmony import */ var _annotate__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./annotate */ "./src/js/modules/_bookmark/annotate.js");
-/* harmony import */ var lodash_isFinite__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lodash/isFinite */ "./node_modules/lodash/isFinite.js");
-/* harmony import */ var lodash_isFinite__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(lodash_isFinite__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var lodash_difference__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! lodash/difference */ "./node_modules/lodash/difference.js");
-/* harmony import */ var lodash_difference__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(lodash_difference__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _language_lang__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../_language/lang */ "./src/js/modules/_language/lang.js");
+/* harmony import */ var _user_netlify__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../_user/netlify */ "./src/js/modules/_user/netlify.js");
+/* harmony import */ var uuid__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! uuid */ "./node_modules/uuid/dist/esm-browser/index.js");
+/* harmony import */ var _annotate__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./annotate */ "./src/js/modules/_bookmark/annotate.js");
+/* harmony import */ var lodash_isFinite__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! lodash/isFinite */ "./node_modules/lodash/isFinite.js");
+/* harmony import */ var lodash_isFinite__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(lodash_isFinite__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var lodash_difference__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! lodash/difference */ "./node_modules/lodash/difference.js");
+/* harmony import */ var lodash_difference__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(lodash_difference__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _language_lang__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../_language/lang */ "./src/js/modules/_language/lang.js");
+
 
 
 const textPosition = __webpack_require__(/*! dom-anchor-text-position */ "./node_modules/dom-anchor-text-position/index.js");
@@ -6645,7 +6667,7 @@ function getSelectedText(range, fromNode = document.body) {
     url: location.pathname,
     pid: fromNode.id,
     //pid: range.startContainer.parentNode.id,
-    id: Object(uuid__WEBPACK_IMPORTED_MODULE_1__["v4"])(),
+    id: Object(uuid__WEBPACK_IMPORTED_MODULE_2__["v4"])(),
     target: {
       type: "SpecificResource",
       source: location.href,
@@ -6661,8 +6683,13 @@ function getSelectedText(range, fromNode = document.body) {
 
 function initialize(constants) {
   $("div.transcript.ui").on("mouseup", function (e) {
-    e.preventDefault(); //ignore text selection when disabled by user or when annotation is 
+    e.preventDefault(); //bookmarks enabled only for signed in users
+
+    if (!Object(_user_netlify__WEBPACK_IMPORTED_MODULE_1__["getUserInfo"])()) {
+      return;
+    } //ignore text selection when disabled by user or when annotation is 
     //being created
+
 
     if ($(this).hasClass("disable-selection")) {
       return;
@@ -6686,7 +6713,7 @@ function initialize(constants) {
     processSelection(selObj);
   }); //init annotation input, edit, and delete
 
-  Object(_annotate__WEBPACK_IMPORTED_MODULE_2__["initialize"])(constants);
+  Object(_annotate__WEBPACK_IMPORTED_MODULE_3__["initialize"])(constants);
 }
 /*
   create annotation from selected text
@@ -6696,13 +6723,13 @@ function processSelection(selection) {
   let range = selection.getRangeAt(0); //new from user2
 
   if (range.commonAncestorContainer.nodeName === "DIV") {
-    toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info(Object(_language_lang__WEBPACK_IMPORTED_MODULE_5__["getString"])("error:e8"));
+    toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info(Object(_language_lang__WEBPACK_IMPORTED_MODULE_6__["getString"])("error:e8"));
     console.log("multi paragraph selection: start: %s, end: %s", rangeStart, rangeEnd);
     return;
   }
 
   if (range.startContainer.parentElement.localName === "span") {
-    toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info(Object(_language_lang__WEBPACK_IMPORTED_MODULE_5__["getString"])("error:e6"));
+    toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info(Object(_language_lang__WEBPACK_IMPORTED_MODULE_6__["getString"])("error:e6"));
     console.log("selection includes <p>");
     return;
   } //get the paragraph node for the range
@@ -6725,7 +6752,7 @@ function processSelection(selection) {
 
     for (let ht of highlightedText) {
       if (selection.containsNode(ht, true)) {
-        toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info(Object(_language_lang__WEBPACK_IMPORTED_MODULE_5__["getString"])("error:e7"));
+        toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info(Object(_language_lang__WEBPACK_IMPORTED_MODULE_6__["getString"])("error:e7"));
         console.log("overlapping selections");
         return;
       }
@@ -6734,7 +6761,7 @@ function processSelection(selection) {
     highlight(selectedText, pNode); //persist annotation
 
     pageAnnotations[selectedText.id] = selectedText;
-    Object(_annotate__WEBPACK_IMPORTED_MODULE_2__["getUserInput"])(selectedText);
+    Object(_annotate__WEBPACK_IMPORTED_MODULE_3__["getUserInput"])(selectedText);
   }
 }
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/src/jquery.js")))
@@ -6866,6 +6893,7 @@ function makeMaillistSelect(maillist) {
 
 async function loadEmailList() {
   const userInfo = Object(_user_netlify__WEBPACK_IMPORTED_MODULE_1__["getUserInfo"])();
+  if (!userInfo) return;
 
   try {
     let mailList = await Object(_db_share__WEBPACK_IMPORTED_MODULE_3__["getMailList"])(userInfo.userId);
@@ -9679,45 +9707,6 @@ __webpack_require__.r(__webpack_exports__);
 
 let login_state_key = "login.state";
 let userInfo;
-let testUsers = {
-  "rick": {
-    email: "rmercer33@gmail.com",
-    userId: md5__WEBPACK_IMPORTED_MODULE_1___default()("rmercer33@gmail.com"),
-    name: "Rick Mercer",
-    roles: ["acol", "timer", "editor"]
-  },
-  "julie": {
-    email: "julief8@me.com",
-    userId: md5__WEBPACK_IMPORTED_MODULE_1___default()("julief8@me.com"),
-    name: "Julie Franklin",
-    roles: ["timer", "editor"]
-  },
-  "yodi": {
-    email: "yodi@yodith.com",
-    userId: md5__WEBPACK_IMPORTED_MODULE_1___default()("yodi@yodith.com"),
-    name: "Yodi Debebe",
-    roles: ["timer"]
-  },
-  "hettie": {
-    email: "hcmercer@gmail.com",
-    userId: md5__WEBPACK_IMPORTED_MODULE_1___default()("hcmercer@gmail.com"),
-    name: "Hettie Mercer",
-    roles: []
-  }
-};
-
-function devUserInfo() {
-  let user = Object(_util_url__WEBPACK_IMPORTED_MODULE_3__["getUser"])();
-
-  if (user && testUsers[user]) {
-    return testUsers[user];
-  } else {
-    //use rick
-    return testUsers["rick"];
-  }
-
-  return null;
-}
 
 function prodUserInfo() {
   if (userInfo) {
@@ -9752,7 +9741,10 @@ function setAsSignedIn() {
 
   $(".main.menu .ui.text.container").addClass("signed-in"); //reveal profile-management menu option
 
-  $(".hide.profile-management.item").removeClass("hide");
+  $(".hide.profile-management.item").removeClass("hide"); //show menu options for account holders
+
+  $(".requires-signin").removeClass("hide");
+  console.log("requires-signin set to show");
 }
 /*
   Modify menubar icons "bookmark" and "sign in" to
@@ -9770,10 +9762,13 @@ function setAsSignedOut() {
 
   $(".main.menu .ui.text.container").removeClass("signed-in"); //hide profile-management menu option
 
-  $(".profile-management.item").addClass("hide");
+  $(".profile-management.item").addClass("hide"); //hide account users menu options
+
+  $(".requires-signin").addClass("hide");
+  console.log("requires-signin set to hide");
 }
 /*
-  ACOL restricts access to some contents based on the "acol" user role. When the user
+  ACOL restricts access to some content based on the "acol" user role. When the user
   logs in, redirect them to the acol home page if they are currently viewing an acol
   transcript page. This will ensure that the TOC will give them access to all content.
 
@@ -9797,6 +9792,9 @@ function manageState(state) {
 
     case "login":
       if (currentState === "dialog") {
+        //refresh the page after login
+        location.href = location.href;
+        /*
         //if user has "acol" role, refresh page to enable access to all content
         if (userInfo.app_metadata.roles && userInfo.app_metadata.roles.find(r => r === "acol")) {
           //if user is on an acol transcript page
@@ -9805,6 +9803,7 @@ function manageState(state) {
             location.href = acolHome;
           }
         }
+        */
       }
 
       store__WEBPACK_IMPORTED_MODULE_2___default.a.set(login_state_key, state);
