@@ -1,5 +1,6 @@
 /* eslint no-console: off */
 
+import {storeInit} from "./modules/_util/store";
 import "../vendor/semantic/semantic.min.js";
 
 //common modules
@@ -22,7 +23,7 @@ import {setLanguage} from "./modules/_language/lang";
 import constants from "./constants";
 
 $(document).ready(() => {
-
+  storeInit(constants);
   setLanguage(constants);
   initTranscriptPage();
   auth.initialize();

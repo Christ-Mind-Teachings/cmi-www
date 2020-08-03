@@ -2607,8 +2607,14 @@ const keyInfo = __webpack_require__(/*! ./modules/_config/key */ "./src/js/modul
   //bmnet
   bm_modal_store: "bm.www.modal",
   //navigator
-  url_prefix: "" //navigator
-
+  url_prefix: "",
+  //navigator
+  store: {
+    bmList: "bm.list",
+    bmCreation: "bm.creation",
+    bmTopics: "bm.topics",
+    bmModal: "bm.modal"
+  }
 });
 
 /***/ }),
@@ -2686,7 +2692,8 @@ function createClickHandlers() {
     if ($(this).hasClass("contact-me")) {
       location.href = "/acq/contact/";
     }
-
+  });
+  $(".login-menu-option-account").on("click", "div.item", function (e) {
     if ($(this).hasClass("profile-management")) {
       location.href = "/profile/email/";
     }
@@ -6967,6 +6974,9 @@ function bookmarkStart(page) {
       title = `${title}<br/>${info.title}`;
       $("#transcript-page-info").html(title);
     });
+  } else {
+    //init bookmark for non-transcript pages.
+    _bookmark__WEBPACK_IMPORTED_MODULE_0__["default"].initialize(pid, _constants__WEBPACK_IMPORTED_MODULE_3__["default"]);
   }
 
   Object(_shareByEmail__WEBPACK_IMPORTED_MODULE_1__["initShareByEmail"])(_constants__WEBPACK_IMPORTED_MODULE_3__["default"]);
@@ -9734,7 +9744,14 @@ function setAsSignedIn() {
   let userInfo = getUserInfo(); //change sign-in icon to sign-out and change color from red to green
 
   Object(_language_lang__WEBPACK_IMPORTED_MODULE_4__["getString"])("action:signout", true).then(resp => {
-    $(".login-menu-option > span").html("<i class='green sign out icon'></i>").attr("data-tooltip", `${resp}: ${userInfo.name}`);
+    /*
+    $(".login-menu-option > span")
+      .html("<i class='green sign out icon'></i>")
+      .attr("data-tooltip", `${resp}: ${userInfo.name}`);
+    */
+    $(".login-menu-option-guest").addClass("hide");
+    $(".login-menu-option-account").removeClass("hide");
+    $(".account-signout-option").text(`Sign out: ${userInfo.name}`);
   }); //change bookmark menu icon to green from red
 
   $(".main.menu a > span > i.bookmark.icon").addClass("green").removeClass("red"); //add color to menu background to further indicate signed in status
@@ -9755,7 +9772,13 @@ function setAsSignedIn() {
 function setAsSignedOut() {
   //change sign-in icon to sign-out and change color from red to green
   Object(_language_lang__WEBPACK_IMPORTED_MODULE_4__["getString"])("action:signin", true).then(resp => {
-    $(".login-menu-option > span").html("<i class='red sign in icon'></i>").attr("data-tooltip", resp);
+    /*
+    $(".login-menu-option > span")
+      .html("<i class='red sign in icon'></i>")
+      .attr("data-tooltip", resp);
+    */
+    $(".login-menu-option-guest").removeClass("hide");
+    $(".login-menu-option-account").addClass("hide");
   }); //change bookmark menu icon to green from red
 
   $(".main.menu a > span > i.bookmark.icon").addClass("red").removeClass("green"); //removed signed-in class
@@ -9793,8 +9816,7 @@ function manageState(state) {
     case "login":
       if (currentState === "dialog") {
         //refresh the page after login
-        location.href = location.href;
-        /*
+        //location.href = location.href;
         //if user has "acol" role, refresh page to enable access to all content
         if (userInfo.app_metadata.roles && userInfo.app_metadata.roles.find(r => r === "acol")) {
           //if user is on an acol transcript page
@@ -9803,7 +9825,6 @@ function manageState(state) {
             location.href = acolHome;
           }
         }
-        */
       }
 
       store__WEBPACK_IMPORTED_MODULE_2___default.a.set(login_state_key, state);
@@ -9835,15 +9856,20 @@ function manageState(state) {
     netlify_identity_widget__WEBPACK_IMPORTED_MODULE_0___default.a.on("error", err => {
       console.error("user.on('error'): ", err);
     });
-    $(".login-menu-option").on("click", e => {
-      e.preventDefault();
+    $(".login-menu-option-account > .menu > .account-signout-option").on("click", e => {
+      e.preventDefault(); //console.log("user signout");
 
-      if (userInfo) {
-        netlify_identity_widget__WEBPACK_IMPORTED_MODULE_0___default.a.logout();
-      } else {
-        manageState("dialog");
-        netlify_identity_widget__WEBPACK_IMPORTED_MODULE_0___default.a.open();
-      }
+      netlify_identity_widget__WEBPACK_IMPORTED_MODULE_0___default.a.logout();
+    });
+    /*
+     * User Sign In
+     */
+
+    $(".login-menu-option-guest").on("click", e => {
+      //console.log("user sign in");
+      e.preventDefault();
+      manageState("dialog");
+      netlify_identity_widget__WEBPACK_IMPORTED_MODULE_0___default.a.open();
     }); //init authentication
 
     netlify_identity_widget__WEBPACK_IMPORTED_MODULE_0___default.a.init({//container: "#netlify-modal"

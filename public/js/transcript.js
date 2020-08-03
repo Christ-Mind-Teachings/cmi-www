@@ -2532,23 +2532,25 @@ function initialize() {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var _vendor_semantic_semantic_min_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../vendor/semantic/semantic.min.js */ "./src/vendor/semantic/semantic.min.js");
-/* harmony import */ var _vendor_semantic_semantic_min_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_vendor_semantic_semantic_min_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _modules_util_url__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modules/_util/url */ "./src/js/modules/_util/url.js");
-/* harmony import */ var _modules_user_netlify__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modules/_user/netlify */ "./src/js/modules/_user/netlify.js");
-/* harmony import */ var _modules_util_facebook__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/_util/facebook */ "./src/js/modules/_util/facebook.js");
-/* harmony import */ var _modules_page_startup__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./modules/_page/startup */ "./src/js/modules/_page/startup.js");
-/* harmony import */ var _modules_config_config__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./modules/_config/config */ "./src/js/modules/_config/config.js");
-/* harmony import */ var _modules_bookmark_start__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./modules/_bookmark/start */ "./src/js/modules/_bookmark/start.js");
-/* harmony import */ var _modules_search_search__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./modules/_search/search */ "./src/js/modules/_search/search.js");
-/* harmony import */ var _modules_contents_toc__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./modules/_contents/toc */ "./src/js/modules/_contents/toc.js");
-/* harmony import */ var _modules_audio_audio__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./modules/_audio/audio */ "./src/js/modules/_audio/audio.js");
-/* harmony import */ var _modules_about_about__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./modules/_about/about */ "./src/js/modules/_about/about.js");
-/* harmony import */ var _modules_forms_contact__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./modules/_forms/contact */ "./src/js/modules/_forms/contact.js");
-/* harmony import */ var _modules_video_acq__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./modules/_video/acq */ "./src/js/modules/_video/acq.js");
-/* harmony import */ var _modules_language_lang__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./modules/_language/lang */ "./src/js/modules/_language/lang.js");
-/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./constants */ "./src/js/constants.js");
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var _modules_util_store__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./modules/_util/store */ "./src/js/modules/_util/store.js");
+/* harmony import */ var _vendor_semantic_semantic_min_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../vendor/semantic/semantic.min.js */ "./src/vendor/semantic/semantic.min.js");
+/* harmony import */ var _vendor_semantic_semantic_min_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_vendor_semantic_semantic_min_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _modules_util_url__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modules/_util/url */ "./src/js/modules/_util/url.js");
+/* harmony import */ var _modules_user_netlify__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/_user/netlify */ "./src/js/modules/_user/netlify.js");
+/* harmony import */ var _modules_util_facebook__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./modules/_util/facebook */ "./src/js/modules/_util/facebook.js");
+/* harmony import */ var _modules_page_startup__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./modules/_page/startup */ "./src/js/modules/_page/startup.js");
+/* harmony import */ var _modules_config_config__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./modules/_config/config */ "./src/js/modules/_config/config.js");
+/* harmony import */ var _modules_bookmark_start__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./modules/_bookmark/start */ "./src/js/modules/_bookmark/start.js");
+/* harmony import */ var _modules_search_search__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./modules/_search/search */ "./src/js/modules/_search/search.js");
+/* harmony import */ var _modules_contents_toc__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./modules/_contents/toc */ "./src/js/modules/_contents/toc.js");
+/* harmony import */ var _modules_audio_audio__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./modules/_audio/audio */ "./src/js/modules/_audio/audio.js");
+/* harmony import */ var _modules_about_about__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./modules/_about/about */ "./src/js/modules/_about/about.js");
+/* harmony import */ var _modules_forms_contact__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./modules/_forms/contact */ "./src/js/modules/_forms/contact.js");
+/* harmony import */ var _modules_video_acq__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./modules/_video/acq */ "./src/js/modules/_video/acq.js");
+/* harmony import */ var _modules_language_lang__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./modules/_language/lang */ "./src/js/modules/_language/lang.js");
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./constants */ "./src/js/constants.js");
 /* eslint no-console: off */
+
  //common modules
 
 
@@ -2566,28 +2568,29 @@ __webpack_require__.r(__webpack_exports__);
 
 
 $(document).ready(() => {
-  Object(_modules_language_lang__WEBPACK_IMPORTED_MODULE_13__["setLanguage"])(_constants__WEBPACK_IMPORTED_MODULE_14__["default"]);
-  Object(_modules_page_startup__WEBPACK_IMPORTED_MODULE_4__["initTranscriptPage"])();
-  _modules_user_netlify__WEBPACK_IMPORTED_MODULE_2__["default"].initialize();
-  _modules_util_facebook__WEBPACK_IMPORTED_MODULE_3__["default"].initialize();
-  _modules_about_about__WEBPACK_IMPORTED_MODULE_10__["default"].initialize();
-  _modules_forms_contact__WEBPACK_IMPORTED_MODULE_11__["default"].initialize("acq-contact-form");
-  Object(_modules_video_acq__WEBPACK_IMPORTED_MODULE_12__["initialize"])(); //load config file and do initializations that depend on a loaded config file
+  Object(_modules_util_store__WEBPACK_IMPORTED_MODULE_0__["storeInit"])(_constants__WEBPACK_IMPORTED_MODULE_15__["default"]);
+  Object(_modules_language_lang__WEBPACK_IMPORTED_MODULE_14__["setLanguage"])(_constants__WEBPACK_IMPORTED_MODULE_15__["default"]);
+  Object(_modules_page_startup__WEBPACK_IMPORTED_MODULE_5__["initTranscriptPage"])();
+  _modules_user_netlify__WEBPACK_IMPORTED_MODULE_3__["default"].initialize();
+  _modules_util_facebook__WEBPACK_IMPORTED_MODULE_4__["default"].initialize();
+  _modules_about_about__WEBPACK_IMPORTED_MODULE_11__["default"].initialize();
+  _modules_forms_contact__WEBPACK_IMPORTED_MODULE_12__["default"].initialize("acq-contact-form");
+  Object(_modules_video_acq__WEBPACK_IMPORTED_MODULE_13__["initialize"])(); //load config file and do initializations that depend on a loaded config file
 
-  Object(_modules_config_config__WEBPACK_IMPORTED_MODULE_5__["loadConfig"])(Object(_modules_contents_toc__WEBPACK_IMPORTED_MODULE_8__["getBookId"])()).then(result => {
-    _modules_search_search__WEBPACK_IMPORTED_MODULE_7__["default"].initialize();
+  Object(_modules_config_config__WEBPACK_IMPORTED_MODULE_6__["loadConfig"])(Object(_modules_contents_toc__WEBPACK_IMPORTED_MODULE_9__["getBookId"])()).then(result => {
+    _modules_search_search__WEBPACK_IMPORTED_MODULE_8__["default"].initialize();
     /*
       result of 0 indicates no contents config found
       - toc, and audio depend on config file
     */
 
     if (result !== 0) {
-      _modules_contents_toc__WEBPACK_IMPORTED_MODULE_8__["default"].initialize("transcript");
-      _modules_audio_audio__WEBPACK_IMPORTED_MODULE_9__["default"].initialize();
+      _modules_contents_toc__WEBPACK_IMPORTED_MODULE_9__["default"].initialize("transcript");
+      _modules_audio_audio__WEBPACK_IMPORTED_MODULE_10__["default"].initialize();
     }
 
-    Object(_modules_util_url__WEBPACK_IMPORTED_MODULE_1__["showParagraph"])();
-    Object(_modules_bookmark_start__WEBPACK_IMPORTED_MODULE_6__["bookmarkStart"])("transcript");
+    Object(_modules_util_url__WEBPACK_IMPORTED_MODULE_2__["showParagraph"])();
+    Object(_modules_bookmark_start__WEBPACK_IMPORTED_MODULE_7__["bookmarkStart"])("transcript");
   }).catch(error => {
     //report error to the user - somehow
     console.error(error);

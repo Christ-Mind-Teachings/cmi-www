@@ -431,12 +431,6 @@ function initForm() {
       return;
     }
 
-    let userInfo = getUserInfo();
-    if (!userInfo) {
-      notify.error("You must be signed in to use this page");
-      return;
-    }
-
     //disable button until source is changed
     $("#getBookmarksButton").attr("disabled","");
 
@@ -1128,6 +1122,16 @@ function checkForUnsavedChanges() {
 }
 
 export function initializeTopicManager() {
+  let userInfo = getUserInfo();
+
+  if (!userInfo) {
+    notify.warning("You must be signed in to edit your email list");
+    setTimeout(() => {
+      location.href = "/";
+    }, 3 * 1000);
+    return;
+  }
+
   initForm();
   initManageQuoteEventHandler();
   checkForUnsavedChanges();

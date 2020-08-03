@@ -140,6 +140,9 @@ export function loadEmailListTable() {
 
   if (!userInfo) {
     notify.warning("You must be signed in to edit your email list");
+    setTimeout(() => {
+      location.href = "/";
+    }, 3 * 1000);
     return;
   }
   let api = `${userInfo.userId}/maillist`;

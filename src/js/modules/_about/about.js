@@ -34,6 +34,9 @@ function createClickHandlers() {
       location.href = "/acq/contact/";
     }
 
+  });
+
+  $(".login-menu-option-account").on("click", "div.item", function(e) {
     if ($(this).hasClass("profile-management")) {
       location.href = "/profile/email/";
     }

@@ -42,15 +42,20 @@
         <div class="transcript-tour item">Tour the Page</div>
         <div class="read-documentation item">Read Documentation</div>
         <div class="view-documentation item">Watch Video Instruction</div>
-        <div class="divider"></div>
-        <div class="hide profile-management item">Manage Email List</div>
-        <div class="hide topic-management item">Manage Topics</div>
       </div>
     </a>
-    <a href="#" class="login-menu-option ui right floated item">
-      <span data-position="bottom center" data-tooltip="Sign In">
-        <i class="red sign in icon"></i>
-      </span>
+    {% comment %}
+    This page is only for signed in users, we don't need to show or hide it
+    based on sign in status
+    {% endcomment %}
+    <a href="#" class="login-menu-option-account dropdown ui right floated item">
+      <span> <i class="green sign out icon"></i> </span>
+      <div class="menu">
+        <div class="account-signout-option item">Sign Out</div>
+        <div class="divider"></div>
+        <div class="profile-management item">Manage Email List</div>
+        <div class="topic-management item">Manage Topics</div>
+      </div>
     </a>
   </div>
 </div>

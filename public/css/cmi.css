@@ -329,6 +329,8 @@ i.toc-share.icon {
   display: none;
 }
 
+a.login-menu-option-account.hide.dropdown.ui.floated.item,
+a.login-menu-option-guest.item.hide.ui.floated,
 a.requires-signin.hide.ui.item {
   display: none;
 }

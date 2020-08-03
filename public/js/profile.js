@@ -303,6 +303,9 @@ function loadEmailListTable() {
 
   if (!userInfo) {
     toastr__WEBPACK_IMPORTED_MODULE_2___default.a.warning("You must be signed in to edit your email list");
+    setTimeout(() => {
+      location.href = "/";
+    }, 3 * 1000);
     return;
   }
 
@@ -900,13 +903,6 @@ function initForm() {
 
     if (topicManager.source === "0") {
       toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info("To start, first select a source");
-      return;
-    }
-
-    let userInfo = Object(_netlify__WEBPACK_IMPORTED_MODULE_3__["getUserInfo"])();
-
-    if (!userInfo) {
-      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.error("You must be signed in to use this page");
       return;
     } //disable button until source is changed
 
@@ -1598,6 +1594,16 @@ function checkForUnsavedChanges() {
 }
 
 function initializeTopicManager() {
+  let userInfo = Object(_netlify__WEBPACK_IMPORTED_MODULE_3__["getUserInfo"])();
+
+  if (!userInfo) {
+    toastr__WEBPACK_IMPORTED_MODULE_0___default.a.warning("You must be signed in to edit your email list");
+    setTimeout(() => {
+      location.href = "/";
+    }, 3 * 1000);
+    return;
+  }
+
   initForm();
   initManageQuoteEventHandler();
   checkForUnsavedChanges();

@@ -231,18 +231,20 @@ function createSubmitHandler($form) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var _vendor_semantic_semantic_min_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../vendor/semantic/semantic.min.js */ "./src/vendor/semantic/semantic.min.js");
-/* harmony import */ var _vendor_semantic_semantic_min_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_vendor_semantic_semantic_min_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _modules_user_netlify__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modules/_user/netlify */ "./src/js/modules/_user/netlify.js");
-/* harmony import */ var _modules_page_startup__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modules/_page/startup */ "./src/js/modules/_page/startup.js");
-/* harmony import */ var _modules_bookmark_start__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/_bookmark/start */ "./src/js/modules/_bookmark/start.js");
-/* harmony import */ var _modules_search_search__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./modules/_search/search */ "./src/js/modules/_search/search.js");
-/* harmony import */ var _modules_contents_toc__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./modules/_contents/toc */ "./src/js/modules/_contents/toc.js");
-/* harmony import */ var _modules_about_about__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./modules/_about/about */ "./src/js/modules/_about/about.js");
-/* harmony import */ var _modules_forms_subscribe__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./modules/_forms/subscribe */ "./src/js/modules/_forms/subscribe.js");
-/* harmony import */ var _modules_language_lang__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./modules/_language/lang */ "./src/js/modules/_language/lang.js");
-/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./constants */ "./src/js/constants.js");
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var _modules_util_store__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./modules/_util/store */ "./src/js/modules/_util/store.js");
+/* harmony import */ var _vendor_semantic_semantic_min_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../vendor/semantic/semantic.min.js */ "./src/vendor/semantic/semantic.min.js");
+/* harmony import */ var _vendor_semantic_semantic_min_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_vendor_semantic_semantic_min_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _modules_user_netlify__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modules/_user/netlify */ "./src/js/modules/_user/netlify.js");
+/* harmony import */ var _modules_page_startup__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/_page/startup */ "./src/js/modules/_page/startup.js");
+/* harmony import */ var _modules_bookmark_start__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./modules/_bookmark/start */ "./src/js/modules/_bookmark/start.js");
+/* harmony import */ var _modules_search_search__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./modules/_search/search */ "./src/js/modules/_search/search.js");
+/* harmony import */ var _modules_contents_toc__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./modules/_contents/toc */ "./src/js/modules/_contents/toc.js");
+/* harmony import */ var _modules_about_about__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./modules/_about/about */ "./src/js/modules/_about/about.js");
+/* harmony import */ var _modules_forms_subscribe__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./modules/_forms/subscribe */ "./src/js/modules/_forms/subscribe.js");
+/* harmony import */ var _modules_language_lang__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./modules/_language/lang */ "./src/js/modules/_language/lang.js");
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./constants */ "./src/js/constants.js");
 /* eslint no-console: off */
+
  //common modules
 
 
@@ -255,16 +257,17 @@ __webpack_require__.r(__webpack_exports__);
 
 
 $(() => {
-  Object(_modules_page_startup__WEBPACK_IMPORTED_MODULE_2__["initStickyMenu"])();
-  Object(_modules_language_lang__WEBPACK_IMPORTED_MODULE_8__["setLanguage"])(_constants__WEBPACK_IMPORTED_MODULE_9__["default"]);
-  Object(_modules_bookmark_start__WEBPACK_IMPORTED_MODULE_3__["bookmarkStart"])("page");
-  _modules_search_search__WEBPACK_IMPORTED_MODULE_4__["default"].initialize();
-  _modules_user_netlify__WEBPACK_IMPORTED_MODULE_1__["default"].initialize();
-  _modules_contents_toc__WEBPACK_IMPORTED_MODULE_5__["default"].initialize("page");
-  _modules_about_about__WEBPACK_IMPORTED_MODULE_6__["default"].initialize(); //init subscribe form in footer
+  Object(_modules_util_store__WEBPACK_IMPORTED_MODULE_0__["storeInit"])(_constants__WEBPACK_IMPORTED_MODULE_10__["default"]);
+  Object(_modules_page_startup__WEBPACK_IMPORTED_MODULE_3__["initStickyMenu"])();
+  Object(_modules_language_lang__WEBPACK_IMPORTED_MODULE_9__["setLanguage"])(_constants__WEBPACK_IMPORTED_MODULE_10__["default"]);
+  Object(_modules_bookmark_start__WEBPACK_IMPORTED_MODULE_4__["bookmarkStart"])("page");
+  _modules_search_search__WEBPACK_IMPORTED_MODULE_5__["default"].initialize();
+  _modules_user_netlify__WEBPACK_IMPORTED_MODULE_2__["default"].initialize();
+  _modules_contents_toc__WEBPACK_IMPORTED_MODULE_6__["default"].initialize("page");
+  _modules_about_about__WEBPACK_IMPORTED_MODULE_7__["default"].initialize(); //init subscribe form in footer
 
-  _modules_forms_subscribe__WEBPACK_IMPORTED_MODULE_7__["default"].initialize();
-  Object(_modules_page_startup__WEBPACK_IMPORTED_MODULE_2__["initAnimation"])(".card > a");
+  _modules_forms_subscribe__WEBPACK_IMPORTED_MODULE_8__["default"].initialize();
+  Object(_modules_page_startup__WEBPACK_IMPORTED_MODULE_3__["initAnimation"])(".card > a");
 });
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/src/jquery.js")))
 

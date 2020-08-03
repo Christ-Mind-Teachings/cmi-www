@@ -2,7 +2,7 @@ const webpack = require("webpack");
 //const etp = require("extract-text-webpack-plugin");
 const path = require("path");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+//const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = {
   devtool: "source-map",
@@ -60,7 +60,7 @@ module.exports = {
   },
   plugins: [
     new MiniCssExtractPlugin({filename: 'me-styles.css'}),
-    new BundleAnalyzerPlugin({analyzerPort: 8899}),
+    //new BundleAnalyzerPlugin({analyzerPort: 8899}),
     new webpack.ProvidePlugin({
       $: "jquery",
       jQuery: "jquery"

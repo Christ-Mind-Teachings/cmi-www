@@ -16,5 +16,11 @@ export default {
   bm_list_store: "bm.www.list",         //bmnet
   bm_topic_list: "bm.www.topics",       //bmnet
   bm_modal_store: "bm.www.modal",       //navigator
-  url_prefix: ""                  //navigator
+  url_prefix: "",                  //navigator
+  store: {
+    bmList: "bm.list",
+    bmCreation: "bm.creation",
+    bmTopics: "bm.topics",
+    bmModal: "bm.modal"
+  }
 };
