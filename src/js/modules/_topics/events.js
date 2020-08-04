@@ -3,6 +3,7 @@ import {RandomQuotes, QuoteManager} from "./randomQuote";
 import {initShareByEmail, submitEmail} from "./share";
 import {getQuoteIds} from "../_db/quote";
 import {getRandomStyle} from "./styles";
+import {getString} from "../_language/lang";
 
 const quoteMessageSelector = "#quote-modal-message";
 let currentQuote;
@@ -49,7 +50,7 @@ function showQuote(q) {
     <blockquote>
       ${quote}
       <footer>
-        <a href="${q.url}" title="Go to the source" target="_blank">
+        <a href="${q.url}" title="${getString("quote:g2s")}" target="_blank">
           ~ ${q.citation}
         </a>
       </footer>
