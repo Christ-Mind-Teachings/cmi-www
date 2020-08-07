@@ -1,240 +1,114 @@
 import notify from "toastr";
-import axios from "axios";
-import {getNoteUrl as getUrl, getBookmarkText, getTopics, getBookmarks} from "./net";
+import {getNoteUrl as getUrl, getBookmarkText} from "./net";
 import {getUserInfo} from "./netlify";
 import intersectionWith from "lodash/intersectionWith";
 import differenceWith from "lodash/differenceWith";
 import uniqWith from "lodash/uniqWith";
-import globals from "../../globals";
 import bmnet from "../_bookmark/bmnet";
+import {getTopicList} from "../_db/topics";
+import {getAnnotations} from "../_db/annotation";
+import {deleteQuote, putQuote, getQuoteData} from "../_db/quotes";
+import startCase from "lodash/startCase";
 
-let sourceInfo = {
-  title: {
-    "10": "The Way of Mastery",
-    "16": "Polish Way of Mastery",
-    "11": "The Impersonal Life",
-    "12": "ACIM Sparkley Edition",
-    "13": "The Raj Material",
-    "14": "A Course Of Love",
-    "15": "ACIM Original Edition"
-  },
-  "0": [
-    {
-      "value": "*",
-      "name": "-- Select Source --"
-    }
-  ],
-  "12": [
-    {
-      "value": "*",
-      "name": "All Books"
-    },
-    {
-      "value": "122",
-      "name": "Text"
-    },
-    {
-      "value": "123",
-      "name": "Workbook for Students"
-    },
-    {
-      "value": "124",
-      "name": "Manual for Teachers"
-    },
-    {
-      "value": "121",
-      "name": "Preface"
-    }
-  ],
-  "15": [
-    {
-      "value": "*",
-      "name": "All Books"
-    },
-    {
-      "value": "151",
-      "name": "Text"
-    },
-    {
-      "value": "152",
-      "name": "Workbook for Students"
-    },
-    {
-      "value": "153",
-      "name": "Manual for Teachers"
-    }
-  ],
-  "14": [
-    {
-      "value": "*",
-      "name": "All Books"
-    },
-    {
-      "value": "1404",
-      "name": "The Course"
-    },
-    {
-      "value": "1402",
-      "name": "The Treatises"
-    },
-    {
-      "value": "1403",
-      "name": "The Dialogues"
-    }
-  ],
-  "11": [
-    {
-      "value": "*",
-      "name": "All Books"
-    }
-  ],
-  "13": [
-    {
-      "value": "*",
-      "name": "All Books"
-    },
-    {
-      "value": "1301",
-      "name": "You Are the Answer"
-    },
-    {
-      "value": "1302",
-      "name": "Graduation"
-    },
-    {
-      "value": "1303",
-      "name": "ACIM Study Group 2002"
-    },
-    {
-      "value": "1304",
-      "name": "ACIM Study Group 2003"
-    },
-    {
-      "value": "1305",
-      "name": "ACIM Study Group 2004"
-    },
-    {
-      "value": "1306",
-      "name": "ACIM Study Group 2005"
-    },
-    {
-      "value": "1307",
-      "name": "ACIM Study Group 2006"
-    },
-    {
-      "value": "1308",
-      "name": "ACIM Study Group 2007"
-    },
-    {
-      "value": "1309",
-      "name": "ACIM Study Group 2008"
-    },
-    {
-      "value": "1310",
-      "name": "ACIM Study Group 2009"
-    },
-    {
-      "value": "1311",
-      "name": "ACIM Study Group 2010"
-    },
-    {
-      "value": "1312",
-      "name": "ACIM Study Group 2011"
-    },
-    {
-      "value": "1313",
-      "name": "ACIM Study Group 2012"
-    },
-    {
-      "value": "1314",
-      "name": "ACIM Study Group 2013"
-    },
-    {
-      "value": "1315",
-      "name": "ACIM Study Group 2014"
-    },
-    {
-      "value": "1316",
-      "name": "ACIM Study Group 2015"
-    },
-    {
-      "value": "1317",
-      "name": "ACIM Study Group 2016"
-    },
-    {
-      "value": "1318",
-      "name": "ACIM Study Group 2017"
-    },
-    {
-      "value": "1319",
-      "name": "ACIM Study Group 2018"
-    }
-  ],
-  "10": [
-    {
-      "value": "*",
-      "name": "All Books"
-    },
-    {
-      "value": "101",
-      "name": "The Jeshua Letters"
-    },
-    {
-      "value": "102",
-      "name": "The Way of the Servant"
-    },
-    {
-      "value": "103",
-      "name": "The Early Years"
-    },
-    {
-      "value": "104",
-      "name": "The Way of the Heart"
-    },
-    {
-      "value": "105",
-      "name": "The Way of Transformation"
-    },
-    {
-      "value": "106",
-      "name": "The Way of Knowing"
-    }
-  ],
-  "16": [
-    {
-      "value": "*",
-      "name": "All Books"
-    },
-    {
-      "value": "1601",
-      "name": "The Jeshua Letters"
-    },
-    {
-      "value": "1602",
-      "name": "The Way of the Servant"
-    },
-    {
-      "value": "1606",
-      "name": "The Early Years"
-    },
-    {
-      "value": "1603",
-      "name": "The Way of the Heart"
-    },
-    {
-      "value": "1604",
-      "name": "The Way of Transformation"
-    },
-    {
-      "value": "1605",
-      "name": "The Way of Knowing"
-    }
-  ]
-};
+//Data for each source, sourceId, books, etc
+import sourceInfo from "./source";
 
 let bookmarks = {};
 let topics = {};
 let modified = {};
+
+$("button.source-select").on("click", function(e) {
+  e.preventDefault();
+  let sid = $(this).attr("data-sid");
+  let classString = $(this).attr("class");
+
+  if (classString.includes("collapse")) {
+    $(this).removeClass("collapse");
+    $(this).addClass("show-all");
+    $(this).text("Show All");
+
+    collapseRequest(sid);
+  }
+
+  if (classString.includes("show-all")) {
+    $(this).addClass("collapse");
+    $(this).removeClass("show-all");
+    $(this).text("Focus");
+
+    showAll(sid);
+  }
+  if (classString.includes("bookmarks")) {
+    loadBookmarksRequest(sid, this);
+  }
+});
+
+function showAll(sid) {
+  $("#sourceTable > tbody > tr").each(function() {
+    $(this).removeClass("hide");
+  });
+
+  removeActions(sid);
+}
+
+/*
+ * When a row is focused, the data can be operated on. We
+ * display buttons at the bottom of the table for that.
+ */
+function collapseRequest(sid) {
+  $("#sourceTable > tbody > tr").each(function() {
+    let id = $(this).attr("id");
+    if (id !== sid) {
+      $(this).addClass("hide");
+    }
+  });
+  showActions(sid);
+}
+
+function setData(sid) {
+  let topicList = topics[sid];
+  $("#topicSelectNew").dropdown("clear");
+
+  if (!topicList) {
+    $("#topic-list-new").html("");
+    return;
+  }
+
+  let html = makeTopicSelect(topicList);
+  $("#topic-list-new").html(html);
+
+  $("#manageTopicsButton").removeAttr("disabled").attr("data-sid", sid);
+  $("#displayBookmarksButtonNew").removeAttr("disabled").attr("data-sid", sid);
+}
+
+function showActions(sid) {
+  setData(sid);
+  $("#action-manager").removeClass("hide");
+}
+
+function removeActions(sid) {
+  $("#action-manager").addClass("hide");
+  $("#manageTopicsButton").attr("disabled", "");
+  $("#displayBookmarksButtonNew").attr("disabled", "");
+  $("#topicTable").addClass("hide");
+}
+
+function loadBookmarksRequest(sid, el) {
+  console.log("Load annotations clicked");
+  $(el).addClass("loading");
+
+  loadData(sid).then((info) => {
+    //console.log("loadData: %o", info);
+    $(`#load-button-${sid}`).html(`Topics: ${info.topics}<br>Annotations: ${info.bookmarks}`);
+    $(el).removeClass("loading");
+
+    if (!$("#action-manager").hasClass("hide")) {
+      setData(sid);
+    }
+
+  }).catch((err) => {
+    $(el).removeClass("loading");
+  });
+}
 
 function generateTopicList(topics) {
   return (`
@@ -335,7 +209,158 @@ function getFormData() {
   return $("#topic-manager").form("get values");
 }
 
+/*
+ * Load topics and bookmarks for arg: sid
+ */
+function loadData(sid) {
+  let userInfo = getUserInfo();
+
+  return new Promise((resolve, reject) => {
+
+    let tList = getTopicList(userInfo.userId, sid).then((topicList) => {
+      topics[sid] = topicList;
+      notify.success(`${topics[sid].length} topics loaded`);
+    }).catch((err) => {
+      console.error("error fetching topicList: %s", err);
+      notify.error(err);
+      reject(err);
+      return;
+    });
+
+    let bList = getAnnotations(userInfo.userId, sid).then((bmList) => {
+      bookmarks[sid] = bmList;
+      bookmarks[sid].forEach(i => {
+        i.modified = false;
+      });
+      notify.success(`${bookmarks[sid].length} bookmarks loaded`);
+    }).catch((err) => {
+      console.error("error fetching bookmarks: %s", err);
+      notify.error(err);
+      reject(err);
+      return;
+    });
+
+    Promise.all([tList, bList]).then(responses => {
+      let info = {
+        topics: topics[sid].length,
+        bookmarks: bookmarks[sid].length
+      }
+      resolve(info);
+    });
+  });
+}
+
+function generateTopicTableData(sid) {
+  return (`
+    ${topics[sid].map((t,index) => `
+      <tr data-sid="${sid}" data-index="${index}"> 
+        <td class="edit-topic-item"><i class="pencil alternate icon"></i></td>
+        <td class="delete-topic-item"><i class="trash alternate icon"></i></td>
+        <td class="topic">${t.topic}</td>
+      </tr>
+    `).join("")}
+  `);
+}
+
+/**
+ * Create a topic from string. Topics are objects: {value: "", topic: ""}. The topic
+ * attribute can contain spaces but the value cannot.
+ *
+ * @param {string} - newTopic
+ * @returns {object} new topic
+ */
+function formatNewTopic(newTopic) {
+  let topic = {};
+
+  //only allow digits, alpha chars (including Polish chars) and comma's and spaces
+  let topicStr = newTopic.replace(/[^a-zA-Z0-9ąćęłńóśźżĄĆĘŁŃÓŚŹŻ, ]/g, "");
+
+  if (!topicStr || topicStr === "") {
+    return topic
+  }
+
+  topicStr = topicStr.trim();
+  topicStr = startCase(topicStr);
+
+  if (/ /.test(topicStr)) {
+    topic = {value: topicStr.replace(/ /g, ""), topic: topicStr};
+  }
+  else {
+    topic = { value: topicStr, topic: topicStr};
+  }
+
+  return topic;
+}
+
 function initForm() {
+//----------------------- new ----------------------------
+  $("#topicSelectNew").dropdown();
+
+  $("#manageTopicsButton").on("click", function(e) {
+    let sid = $(this).attr("data-sid");
+    if ($("#topicTable").hasClass("hide")) {
+      let html = generateTopicTableData(sid);
+      $("#topicTable > tbody").html(html);
+
+      $("#topicTable").removeClass("hide");
+    }
+    else {
+      $("#topicTable").addClass("hide");
+    }
+  });
+
+  //edit topic
+  $("#topicTable").on("click", "td.edit-topic-item", function(e) {
+    let index = parseInt($(this).parent().attr("data-index"), 10);
+    let sid = $(this).parent().attr("data-sid");
+
+    $("#edit-topic-form").form("set values", {
+      sid: sid,
+      index: index,
+      topic: topics[sid][index].topic,
+      oldtopic: topics[sid][index].topic
+    });
+    $(".edit-topic-dialog-wrapper.hide").removeClass("hide");
+  });
+
+  //submit topic edit
+  $("#update-topic-submit").on("click", function(e) {
+    e.preventDefault();
+    let form = $("#edit-topic-form").form("get values");
+    let index = parseInt(form.index,10);
+
+    if (form.topic === form.oldtopic) {
+      $(".edit-topic-dialog-wrapper").addClass("hide");
+      return;
+    }
+
+    //calculate new topic value, store changes, and apply topic to all related bookmarks
+    let newTopic = formatNewTopic(form.topic);
+    console.log("old Topic: %o, new Topic: %o", topics[form.sid][index], newTopic);
+
+    //check if topic already exists
+    let found = topics[form.sid].find((t)  => t.value === newTopic.value);
+    if (found) {
+      notify.info("That topic already exists.");
+      return;
+    }
+
+    //close the edit topic form
+    $(".edit-topic-dialog-wrapper").addClass("hide");
+      
+    //update topic array with new topic
+    topics[form.sid][index] = newTopic;
+
+    //update table with new topic
+    $(`[data-sid='${form.sid}'][data-index='${form.index}'] > .topic`).text(newTopic.topic);
+
+    //update bookmarks with new topic
+
+
+  });
+
+//----------------------- new end ----------------------------
+
   $("#source-list").dropdown();
   $("#book-list1.dropdown").dropdown();
   $("#topicSelect").dropdown();
@@ -423,7 +448,9 @@ function initForm() {
     }
   });
 
-  $("#getBookmarksButton").on("click", function(e) {
+  $("#getBookmarksButton").on("click", async function(e) {
+    return;
+    let userInfo = getUserInfo();
     let topicManager = getFormData();
 
     if (topicManager.source === "0") {
@@ -438,22 +465,24 @@ function initForm() {
 
     //get topics for source
     if (!topics[topicManager.source]) {
-      getTopics(userInfo.userId, topicManager.source).then(response => {
-        topics[topicManager.source] = response.data.topics;
+      try {
+        let topicList = await getTopicList(userInfo.userId, topicManager.source);
+        topics[topicManager.source] = topicList;
 
-        //add "All Topics" topic
-        topics[topicManager.source].unshift({value: "<>", topic: "< All Topics >"});
-
-        let html = makeTopicSelect(response.data.topics);
+        let html = makeTopicSelect(topicList);
         $("#topic-list").html(html);
-        $("#topicsLabel").text(`Topics (${response.data.topics.length})`);
+        $("#topicsLabel").text(`Topics (${topicList.length})`);
         notify.success(`${topics[topicManager.source].length} topics loaded`);
 
         $("#deleteTopicsButton").removeAttr("disabled");
         $("#renameTopicButton").removeAttr("disabled");
         $("#findFriendsButton").removeAttr("disabled");
         $("#displayBookmarksButton").removeAttr("disabled");
-      });
+      }
+      catch(err) {
+        console.error("error fetching topicList: %s", err);
+        notify.error(err);
+      }
     }
     else {
       let html = makeTopicSelect(topics[topicManager.source]);
@@ -469,8 +498,10 @@ function initForm() {
 
     //get bookmarks for source
     if (!bookmarks[topicManager.source]) {
-      getBookmarks(userInfo.userId, topicManager.source).then(response => {
-        bookmarks[topicManager.source] = response.data.response;
+      try {
+        let bmList = await getAnnotations(userInfo.userId, topicManager.source);
+        bookmarks[topicManager.source] = bmList;
+
         $("#bookmarksLabel").text(`Bookmarks (${bookmarks[topicManager.source].length})`);
         notify.success(`${bookmarks[topicManager.source].length} bookmarks loaded`);
 
@@ -480,7 +511,11 @@ function initForm() {
         bookmarks[topicManager.source].forEach(i => {
           i.modified = false;
         });
-      });
+      }
+      catch(err) {
+        console.error("error fetching bookmarks: %s", err);
+        notify.error(err);
+      }
     }
     else {
       $("#topic-manager").removeClass("loading");
@@ -667,30 +702,38 @@ function initManageQuoteEventHandler() {
   });
 
   //submit button
-  $("#activity-report").on("click", "#quote-editor-form .quote-submit", function(e) {
+  $("#activity-report").on("click", "#quote-editor-form .quote-submit", async function(e) {
     e.stopPropagation();
     e.preventDefault();
 
     let info = $("#quote-editor-form").form("get values");
     let action = $(this).text().startsWith("Add") ? "Added" : "Updated";
 
-    let url = `${globals.quote}/quote`;
+    //let url = `${globals.quote}/quote`;
     let postBody = {
       userId: info.userId,
-      quoteId: `${info.parakey}:${info.annotationId}`,
-      pid: info.pid,
-      quote: info.quote,
-      url: info.url,
-      citation: info.citation
+      paraKey: info.parakey,
+      creationDate: info.annotationId,
+      quote: {
+        pid: info.pid,
+        quote: info.quote,
+        url: info.url,
+        citation: info.citation
+      }
     };
 
     removeQuoteEditor();
     clearQuoteEditorOpen();
 
-    axios.post(url, postBody).then((resp) => {
+    try {
+      let response = await putQuote(postBody);
       notify.info(`Quote ${action}`);
       markAsInDB(info.parakey, info.annotationId);
-    });
+    }
+    catch(err) {
+      console.error("error posting quote to db: %o", err);
+      notify.error(err);
+    }
   });
 
   //cancel button
@@ -703,20 +746,20 @@ function initManageQuoteEventHandler() {
   });
 
   //cancel button
-  $("#activity-report").on("click", "#quote-editor-form .quote-delete", function(e) {
+  $("#activity-report").on("click", "#quote-editor-form .quote-delete", async function(e) {
     e.stopPropagation();
     e.preventDefault();
 
     let info = $("#quote-editor-form").form("get values");
-    let url = `${globals.quote}/quote/${info.userId}/${info.parakey}:${info.annotationId}`;
 
-    axios.delete(url).then((response) => {
+    try {
+      let response = await deleteQuote(info.userId, info.parakey, info.annotationId);
       notify.info("Quote deleted from database");
       markAsNotInDB(info.parakey, info.annotationId);
-    })
-    .catch((error) => {
-      notify.error(`failed to delete quote: ${error.message}`); 
-    });
+    }
+    catch(err) {
+      notify.error(`failed to delete quote: ${err.message}`); 
+    }
 
     removeQuoteEditor();
     clearQuoteEditorOpen();
@@ -766,26 +809,26 @@ function markAsNotInDB(key, aid) {
   $(`.${aid}`).removeClass("in-database");
 }
 
-function initQuoteForm(info) {
+async function initQuoteForm(info) {
   let form = $("#quote-editor-form");
-  let url = `${globals.quote}/quotedata/${info.userId}/${info.parakey}:${info.annotationId}`;
+  //let url = `${globals.quote}/quotedata/${info.userId}/${info.parakey}:${info.annotationId}`;
 
   $("#quote-editor-form").addClass("loading");
-  axios.get(url).then((response) => {
-    //console.log("query resp: %o", response);
-    if (response.data.quote) {
-      info.database = response.data.quote.quote;
-
-      //quote is in db so allow user to delete it
+  try {
+    let response = await getQuoteData(info.userId, info.parakey, info.annotationId);
+    if (response.q) {
+      info.database = response.q.quote;
       $("#quote-editor-form .quote-delete").removeClass("disabled");
       $("#quote-editor-form button.quote-submit").text("Update Quote");
       markAsInDB(info.parakey, info.annotationId, false);
     }
     $("#quote-editor-form").removeClass("loading");
     form.form("set values", info);
-  }).catch((error) => {
-    $("#quote-editor-form").removeClass("loading");
-  });
+  }
+  catch(err) {
+    notify.error(err);
+    console.log("Error getting quote from database: %w", err);
+  }
 }
 
 function clearActivityReport() {
@@ -852,42 +895,29 @@ function markTopicsDeleted(source, deletedTopics) {
  */
 function getBookmarksWithAllTopic(source, topics) {
   let matches = [];
-  let wildcard = false;
   if (topics.length === 0) {
     return matches;
   }
 
-  //return all bookmarks
-  if (topics.includes("<>")) {
-    wildcard = true;
-  }
-
-  bookmarks[source].forEach((item) => {
-    item.bookmark.forEach((bmark) => {
-      if (wildcard) {
-        matches.push({id: item.id, bookmark: bmark});
-      }
-      else {
-        if (bmark.topicList && bmark.topicList.length > 0) {
-          let index;
-          let findCount = 0;
-          topics.forEach(t => {
-            index = bmark.topicList.findIndex(bt => {
-              if (bt.value === t) {
-                return true;
-              }
-              return false;
-            });
-            if (index > -1) {
-              findCount++;
-            }
-          });
-          if (findCount === topics.length) {
-            matches.push({id: item.id, bookmark: bmark});
+  bookmarks[source].forEach((bmark) => {
+    if (bmark.annotation.topicList && bmark.annotation.topicList.length > 0) {
+      let index;
+      let findCount = 0;
+      topics.forEach(t => {
+        index = bmark.annotation.topicList.findIndex(bt => {
+          if (bt.value === t) {
+            return true;
           }
+          return false;
+        });
+        if (index > -1) {
+          findCount++;
         }
+      });
+      if (findCount === topics.length) {
+        matches.push({id: bmark.paraKey, bookmark: bmark.annotation});
       }
-    });
+    }
   });
   return matches;
 }
@@ -1036,10 +1066,8 @@ function clearModified() {
 
 function markQuotedState(parakey, annotationId, state) {
   let sourceId = parakey.substring(0,2);
-  let numericKey = parseFloat(parakey);
-  let naid = parseInt(annotationId, 10);
   let b = bookmarks[sourceId].find(i => {
-    if (i.id === numericKey) {
+    if (i.paraKey === parakey && i.creationDate === annotationId) {
       return true;
     }
     return false;
@@ -1047,6 +1075,7 @@ function markQuotedState(parakey, annotationId, state) {
 
   if (b) {
     b.modified = true;
+    b.quote = state;
   }
   else {
     notify.error("markQuotedState(): paragraph not found");
@@ -1054,8 +1083,9 @@ function markQuotedState(parakey, annotationId, state) {
     return;
   }
   
+  /*
   let bookmark = b.bookmark.find((bmkark) => {
-    if (bmkark.creationDate === naid) {
+    if (bmkark.creationDate === annotationId) {
       return true;
     }
     return false;
@@ -1071,6 +1101,7 @@ function markQuotedState(parakey, annotationId, state) {
     notify.error("markQuotedState(): bookmark not found");
     console.error("parakey: %s, annotationId: %s", parakey, annotationId);
   }
+  */
 }
 
 function getQuoteForm() {

@@ -1,0 +1,21 @@
+<!-- include components/addto-maillist-dialog.html -->
+<div class="hide edit-topic-dialog-wrapper">
+  <div class="edit-topic-dialog ui raised padded green segment">
+    <form name="editTopicForm" id="edit-topic-form" class="ui form">
+      <input class="hidden-field" type="text" name="sid">
+      <input class="hidden-field" type="text" name="index">
+      <div class="fields">
+        <div class="field">
+          <label>New Topic Value</label>
+          <input type="text" name="topic" required placeholder="New Topic">
+        </div>
+        <div class="disabled field">
+          <label>Current Topic Value</label>
+          <input type="text" name="oldtopic" >
+        </div>
+        <button id="update-topic-submit" class="ui button" type="submit">Update</button>
+        <button class="update-topic-cancel ui button">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>

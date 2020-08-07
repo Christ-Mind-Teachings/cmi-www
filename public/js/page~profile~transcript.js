@@ -8225,12 +8225,13 @@ function deleteAnnotation(userId, paraKey, creationDate) {
 /*!*************************************!*\
   !*** ./src/js/modules/_db/share.js ***!
   \*************************************/
-/*! exports provided: getMailList, sendMail */
+/*! exports provided: getMailList, putMailList, sendMail */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getMailList", function() { return getMailList; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "putMailList", function() { return putMailList; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sendMail", function() { return sendMail; });
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
@@ -8240,8 +8241,16 @@ __webpack_require__.r(__webpack_exports__);
 function getMailList(userId) {
   return new Promise((resolve, reject) => {
     axios__WEBPACK_IMPORTED_MODULE_0___default.a.get(`${_globals__WEBPACK_IMPORTED_MODULE_1__["default"].user2}/mailList/${userId}`).then(response => {
-      let mailList = response.data.mailList;
-      resolve(mailList);
+      resolve(response.data.mailList);
+    }).catch(err => {
+      reject(err);
+    });
+  });
+}
+function putMailList(userId, list) {
+  return new Promise((resolve, reject) => {
+    axios__WEBPACK_IMPORTED_MODULE_0___default.a.post(`${_globals__WEBPACK_IMPORTED_MODULE_1__["default"].user2}/mailList`, list).then(response => {
+      resolve(response.data.response);
     }).catch(err => {
       reject(err);
     });

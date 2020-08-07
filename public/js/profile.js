@@ -155,6 +155,101 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "./src/js/modules/_db/quotes.js":
+/*!**************************************!*\
+  !*** ./src/js/modules/_db/quotes.js ***!
+  \**************************************/
+/*! exports provided: getQuoteIds, getQuote, getQuoteData, putQuote, deleteQuote */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getQuoteIds", function() { return getQuoteIds; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getQuote", function() { return getQuote; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getQuoteData", function() { return getQuoteData; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "putQuote", function() { return putQuote; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deleteQuote", function() { return deleteQuote; });
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _globals__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../globals */ "./src/js/globals.js");
+
+
+/*
+ * Get all quoteId's for userId and key
+ *  where key is the first two or more positions of the page key
+ *  ie, 10: WOM, etc
+ *
+ *  OLD CODE
+ */
+
+function getQuoteIds(userId, key) {
+  let url = `${_globals__WEBPACK_IMPORTED_MODULE_1__["default"].quote}/getKeys/${userId}/${key}`;
+  return new Promise((resolve, reject) => {
+    axios__WEBPACK_IMPORTED_MODULE_0___default.a.get(url).then(resp => {
+      resolve(resp.data.response);
+      return;
+    }).catch(err => {
+      console.error(err);
+      reject(err);
+      return;
+    });
+  });
+}
+/*
+ * Get Quote by userId and quoteId
+ *
+ * OLD CODE
+ */
+
+function getQuote(userId, quoteId) {
+  let url = `${_globals__WEBPACK_IMPORTED_MODULE_1__["default"].quote}/quote/${userId}/${quoteId}`;
+  return new Promise((resolve, reject) => {
+    axios__WEBPACK_IMPORTED_MODULE_0___default.a.get(url).then(resp => {
+      resolve(resp.data.quote);
+    }).catch(err => {
+      notify.error("Network error: failed to get quote");
+      reject(err);
+    });
+  });
+}
+/*
+ * Get quote data from database. What returns doesn not contain a formatted
+ * url of the source.
+ */
+
+function getQuoteData(userId, paraKey, creationDate) {
+  let url = `${_globals__WEBPACK_IMPORTED_MODULE_1__["default"].user2}/quoteData/${userId}/${paraKey}/${creationDate}`;
+  return new Promise((resolve, reject) => {
+    axios__WEBPACK_IMPORTED_MODULE_0___default.a.get(url).then(resp => {
+      resolve(resp.data.quote);
+    }).catch(err => {
+      reject(err);
+    });
+  });
+}
+function putQuote(quote) {
+  let url = `${_globals__WEBPACK_IMPORTED_MODULE_1__["default"].user2}/quote`;
+  return new Promise((resolve, reject) => {
+    axios__WEBPACK_IMPORTED_MODULE_0___default.a.post(url, quote).then(resp => {
+      resolve(resp.data.response);
+    }).catch(err => {
+      reject(err);
+    });
+  });
+}
+function deleteQuote(userId, paraKey, creationDate) {
+  let url = `${_globals__WEBPACK_IMPORTED_MODULE_1__["default"].user2}/quote/${userId}/${paraKey}/${creationDate}`;
+  return new Promise((resolve, reject) => {
+    axios__WEBPACK_IMPORTED_MODULE_0___default.a.delete(url).then(resp => {
+      resolve(resp.data.response);
+    }).catch(err => {
+      reject(err);
+    });
+  });
+}
+
+/***/ }),
+
 /***/ "./src/js/modules/_user/email.js":
 /*!***************************************!*\
   !*** ./src/js/modules/_user/email.js ***!
@@ -165,16 +260,15 @@
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* WEBPACK VAR INJECTION */(function($) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "loadEmailListTable", function() { return loadEmailListTable; });
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _globals__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../globals */ "./src/js/globals.js");
-/* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! toastr */ "./node_modules/toastr/toastr.js");
-/* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(toastr__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _user_netlify__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../_user/netlify */ "./src/js/modules/_user/netlify.js");
+/* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! toastr */ "./node_modules/toastr/toastr.js");
+/* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(toastr__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _user_netlify__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../_user/netlify */ "./src/js/modules/_user/netlify.js");
+/* harmony import */ var _db_share__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../_db/share */ "./src/js/modules/_db/share.js");
 /*
   Email list management - for sharing bookmarks via email
 */
-
+//import dt from "datatables.net";
+//import "datatables.net-se/css/dataTables.semanticui.min.css";
 
 
  //module global list of email addresses
@@ -298,11 +392,11 @@ function createEventHandlers() {
 */
 
 
-function loadEmailListTable() {
-  let userInfo = Object(_user_netlify__WEBPACK_IMPORTED_MODULE_3__["getUserInfo"])();
+async function loadEmailListTable() {
+  let userInfo = Object(_user_netlify__WEBPACK_IMPORTED_MODULE_1__["getUserInfo"])();
 
   if (!userInfo) {
-    toastr__WEBPACK_IMPORTED_MODULE_2___default.a.warning("You must be signed in to edit your email list");
+    toastr__WEBPACK_IMPORTED_MODULE_0___default.a.warning("You must be signed in to edit your email list");
     setTimeout(() => {
       location.href = "/";
     }, 3 * 1000);
@@ -311,42 +405,40 @@ function loadEmailListTable() {
 
   let api = `${userInfo.userId}/maillist`;
   $(".sync.icon").addClass("loading");
-  axios__WEBPACK_IMPORTED_MODULE_0___default()(`${_globals__WEBPACK_IMPORTED_MODULE_1__["default"].user}/${api}`).then(response => {
+
+  try {
+    maillist = await Object(_db_share__WEBPACK_IMPORTED_MODULE_2__["getMailList"])(userInfo.userId);
     $(".sync.icon.loading").removeClass("loading");
-    maillist = response.data.maillist;
     let html = populateTable(maillist);
     $("#email-list-table").html(html);
-    createEventHandlers();
-  }).catch(err => {
+    createEventHandlers(); //$("#maillist-table").dataTable();
+  } catch (err) {
     $(".sync.icon.loading").removeClass("loading");
-    toastr__WEBPACK_IMPORTED_MODULE_2___default.a.error("Error getting email list: ", err);
-  });
+    toastr__WEBPACK_IMPORTED_MODULE_0___default.a.error(`Error getting email list: ${err}`);
+  }
 }
 /*
   Save changes to maillist to database
 */
 
-function saveChanges() {
-  let userInfo = Object(_user_netlify__WEBPACK_IMPORTED_MODULE_3__["getUserInfo"])();
-  let api = "maillist";
+async function saveChanges() {
+  let userInfo = Object(_user_netlify__WEBPACK_IMPORTED_MODULE_1__["getUserInfo"])();
   let newList = maillist.filter(item => !item.deleted);
-  console.log("newList: %o", newList);
   let body = {
     userId: userInfo.userId,
-    addressList: newList
+    mailList: newList
   };
-  $(".sync.icon").addClass("loading");
-  axios__WEBPACK_IMPORTED_MODULE_0___default.a.post(`${_globals__WEBPACK_IMPORTED_MODULE_1__["default"].user}/${api}`, body).then(response => {
-    $(".sync.icon.loading").removeClass("loading");
 
-    if (response.data.message === "OK") {
-      toastr__WEBPACK_IMPORTED_MODULE_2___default.a.info(`Saved! ${response.data.response}`);
-      $("button.save-to-database").addClass("disabled");
-    }
-  }).catch(err => {
+  try {
+    $(".sync.icon").addClass("loading");
+    let response = await Object(_db_share__WEBPACK_IMPORTED_MODULE_2__["putMailList"])(userInfo.userId, body);
+    toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info(`Saved! ${response}`);
     $(".sync.icon.loading").removeClass("loading");
-    toastr__WEBPACK_IMPORTED_MODULE_2___default.a.error(err);
-  });
+    $("button.save-to-database").addClass("disabled");
+  } catch (err) {
+    $(".sync.icon.loading").removeClass("loading");
+    toastr__WEBPACK_IMPORTED_MODULE_0___default.a.error(err);
+  }
 }
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/src/jquery.js")))
 
@@ -469,7 +561,7 @@ function getBookmarkText(bookmarks) {
     if (bm.bookmark.selectedText) {
       if (!bm.mgr) {
         bm.mgr = {};
-        let st = JSON.parse(bm.bookmark.selectedText);
+        let st = bm.bookmark.selectedText;
         bm.mgr.title = st.title;
         bm.mgr.url = st.url;
         bm.mgr.pid = st.pid;
@@ -525,48 +617,24 @@ function getBookmarkText(bookmarks) {
 
 /***/ }),
 
-/***/ "./src/js/modules/_user/topicmgr.js":
-/*!******************************************!*\
-  !*** ./src/js/modules/_user/topicmgr.js ***!
-  \******************************************/
-/*! exports provided: initializeTopicManager */
+/***/ "./src/js/modules/_user/source.js":
+/*!****************************************!*\
+  !*** ./src/js/modules/_user/source.js ***!
+  \****************************************/
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* WEBPACK VAR INJECTION */(function($) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "initializeTopicManager", function() { return initializeTopicManager; });
-/* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! toastr */ "./node_modules/toastr/toastr.js");
-/* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(toastr__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _net__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./net */ "./src/js/modules/_user/net.js");
-/* harmony import */ var _netlify__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./netlify */ "./src/js/modules/_user/netlify.js");
-/* harmony import */ var lodash_intersectionWith__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! lodash/intersectionWith */ "./node_modules/lodash/intersectionWith.js");
-/* harmony import */ var lodash_intersectionWith__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(lodash_intersectionWith__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var lodash_differenceWith__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! lodash/differenceWith */ "./node_modules/lodash/differenceWith.js");
-/* harmony import */ var lodash_differenceWith__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(lodash_differenceWith__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var lodash_uniqWith__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! lodash/uniqWith */ "./node_modules/lodash/uniqWith.js");
-/* harmony import */ var lodash_uniqWith__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(lodash_uniqWith__WEBPACK_IMPORTED_MODULE_6__);
-/* harmony import */ var _globals__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../globals */ "./src/js/globals.js");
-/* harmony import */ var _bookmark_bmnet__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../_bookmark/bmnet */ "./src/js/modules/_bookmark/bmnet.js");
-
-
-
-
-
-
-
-
-
-let sourceInfo = {
+/* harmony default export */ __webpack_exports__["default"] = ({
   title: {
     "10": "The Way of Mastery",
-    "16": "Polish Way of Mastery",
     "11": "The Impersonal Life",
     "12": "ACIM Sparkley Edition",
     "13": "The Raj Material",
     "14": "A Course Of Love",
-    "15": "ACIM Original Edition"
+    "15": "ACIM Original Edition",
+    "16": "Droga Mistrzostwa"
   },
   "0": [{
     "value": "*",
@@ -723,10 +791,142 @@ let sourceInfo = {
     "value": "1605",
     "name": "The Way of Knowing"
   }]
-};
+});
+
+/***/ }),
+
+/***/ "./src/js/modules/_user/topicmgr.js":
+/*!******************************************!*\
+  !*** ./src/js/modules/_user/topicmgr.js ***!
+  \******************************************/
+/*! exports provided: initializeTopicManager */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* WEBPACK VAR INJECTION */(function($) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "initializeTopicManager", function() { return initializeTopicManager; });
+/* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! toastr */ "./node_modules/toastr/toastr.js");
+/* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(toastr__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _net__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./net */ "./src/js/modules/_user/net.js");
+/* harmony import */ var _netlify__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./netlify */ "./src/js/modules/_user/netlify.js");
+/* harmony import */ var lodash_intersectionWith__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lodash/intersectionWith */ "./node_modules/lodash/intersectionWith.js");
+/* harmony import */ var lodash_intersectionWith__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(lodash_intersectionWith__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var lodash_differenceWith__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! lodash/differenceWith */ "./node_modules/lodash/differenceWith.js");
+/* harmony import */ var lodash_differenceWith__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(lodash_differenceWith__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var lodash_uniqWith__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! lodash/uniqWith */ "./node_modules/lodash/uniqWith.js");
+/* harmony import */ var lodash_uniqWith__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(lodash_uniqWith__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _bookmark_bmnet__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../_bookmark/bmnet */ "./src/js/modules/_bookmark/bmnet.js");
+/* harmony import */ var _db_topics__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../_db/topics */ "./src/js/modules/_db/topics.js");
+/* harmony import */ var _db_annotation__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../_db/annotation */ "./src/js/modules/_db/annotation.js");
+/* harmony import */ var _db_quotes__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../_db/quotes */ "./src/js/modules/_db/quotes.js");
+/* harmony import */ var lodash_startCase__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! lodash/startCase */ "./node_modules/lodash/startCase.js");
+/* harmony import */ var lodash_startCase__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(lodash_startCase__WEBPACK_IMPORTED_MODULE_10__);
+/* harmony import */ var _source__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./source */ "./src/js/modules/_user/source.js");
+
+
+
+
+
+
+
+
+
+
+ //Data for each source, sourceId, books, etc
+
+
 let bookmarks = {};
 let topics = {};
 let modified = {};
+$("button.source-select").on("click", function (e) {
+  e.preventDefault();
+  let sid = $(this).attr("data-sid");
+  let classString = $(this).attr("class");
+
+  if (classString.includes("collapse")) {
+    $(this).removeClass("collapse");
+    $(this).addClass("show-all");
+    $(this).text("Show All");
+    collapseRequest(sid);
+  }
+
+  if (classString.includes("show-all")) {
+    $(this).addClass("collapse");
+    $(this).removeClass("show-all");
+    $(this).text("Focus");
+    showAll(sid);
+  }
+
+  if (classString.includes("bookmarks")) {
+    loadBookmarksRequest(sid, this);
+  }
+});
+
+function showAll(sid) {
+  $("#sourceTable > tbody > tr").each(function () {
+    $(this).removeClass("hide");
+  });
+  removeActions(sid);
+}
+/*
+ * When a row is focused, the data can be operated on. We
+ * display buttons at the bottom of the table for that.
+ */
+
+
+function collapseRequest(sid) {
+  $("#sourceTable > tbody > tr").each(function () {
+    let id = $(this).attr("id");
+
+    if (id !== sid) {
+      $(this).addClass("hide");
+    }
+  });
+  showActions(sid);
+}
+
+function setData(sid) {
+  let topicList = topics[sid];
+  $("#topicSelectNew").dropdown("clear");
+
+  if (!topicList) {
+    $("#topic-list-new").html("");
+    return;
+  }
+
+  let html = makeTopicSelect(topicList);
+  $("#topic-list-new").html(html);
+  $("#manageTopicsButton").removeAttr("disabled").attr("data-sid", sid);
+  $("#displayBookmarksButtonNew").removeAttr("disabled").attr("data-sid", sid);
+}
+
+function showActions(sid) {
+  setData(sid);
+  $("#action-manager").removeClass("hide");
+}
+
+function removeActions(sid) {
+  $("#action-manager").addClass("hide");
+  $("#manageTopicsButton").attr("disabled", "");
+  $("#displayBookmarksButtonNew").attr("disabled", "");
+  $("#topicTable").addClass("hide");
+}
+
+function loadBookmarksRequest(sid, el) {
+  console.log("Load annotations clicked");
+  $(el).addClass("loading");
+  loadData(sid).then(info => {
+    //console.log("loadData: %o", info);
+    $(`#load-button-${sid}`).html(`Topics: ${info.topics}<br>Annotations: ${info.bookmarks}`);
+    $(el).removeClass("loading");
+
+    if (!$("#action-manager").hasClass("hide")) {
+      setData(sid);
+    }
+  }).catch(err => {
+    $(el).removeClass("loading");
+  });
+}
 
 function generateTopicList(topics) {
   return `
@@ -794,7 +994,7 @@ function generateBookmarkTextHtml(bookmarks, topicManager) {
       <button class="hide-headers ui primary button">Hide Headers</button>
     </p>
     <p>
-      ${sourceInfo.title[topicManager.source]}<br/>
+      ${_source__WEBPACK_IMPORTED_MODULE_11__["default"].title[topicManager.source]}<br/>
       ${bookmarks.length} Bookmarks include topics: <em>${topicManager.topicArray.join(" / ")}</em> <br/>
       ${new Date().toLocaleString()}
     </p>
@@ -803,7 +1003,7 @@ function generateBookmarkTextHtml(bookmarks, topicManager) {
 }
 
 function generateBookmarkText(bookmarks, topicManager) {
-  let promises = Object(_net__WEBPACK_IMPORTED_MODULE_2__["getBookmarkText"])(bookmarks);
+  let promises = Object(_net__WEBPACK_IMPORTED_MODULE_1__["getBookmarkText"])(bookmarks);
   Promise.all(promises).then(responses => {
     //console.log("promise.all: %o", responses);
     let html = generateBookmarkTextHtml(responses, topicManager);
@@ -826,8 +1026,148 @@ function makeBookSelectNew(books) {
 function getFormData() {
   return $("#topic-manager").form("get values");
 }
+/*
+ * Load topics and bookmarks for arg: sid
+ */
+
+
+function loadData(sid) {
+  let userInfo = Object(_netlify__WEBPACK_IMPORTED_MODULE_2__["getUserInfo"])();
+  return new Promise((resolve, reject) => {
+    let tList = Object(_db_topics__WEBPACK_IMPORTED_MODULE_7__["getTopicList"])(userInfo.userId, sid).then(topicList => {
+      topics[sid] = topicList;
+      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.success(`${topics[sid].length} topics loaded`);
+    }).catch(err => {
+      console.error("error fetching topicList: %s", err);
+      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.error(err);
+      reject(err);
+      return;
+    });
+    let bList = Object(_db_annotation__WEBPACK_IMPORTED_MODULE_8__["getAnnotations"])(userInfo.userId, sid).then(bmList => {
+      bookmarks[sid] = bmList;
+      bookmarks[sid].forEach(i => {
+        i.modified = false;
+      });
+      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.success(`${bookmarks[sid].length} bookmarks loaded`);
+    }).catch(err => {
+      console.error("error fetching bookmarks: %s", err);
+      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.error(err);
+      reject(err);
+      return;
+    });
+    Promise.all([tList, bList]).then(responses => {
+      let info = {
+        topics: topics[sid].length,
+        bookmarks: bookmarks[sid].length
+      };
+      resolve(info);
+    });
+  });
+}
+
+function generateTopicTableData(sid) {
+  return `
+    ${topics[sid].map((t, index) => `
+      <tr data-sid="${sid}" data-index="${index}"> 
+        <td class="edit-topic-item"><i class="pencil alternate icon"></i></td>
+        <td class="delete-topic-item"><i class="trash alternate icon"></i></td>
+        <td class="topic">${t.topic}</td>
+      </tr>
+    `).join("")}
+  `;
+}
+/**
+ * Create a topic from string. Topics are objects: {value: "", topic: ""}. The topic
+ * attribute can contain spaces but the value cannot.
+ *
+ * @param {string} - newTopic
+ * @returns {object} new topic
+ */
+
+
+function formatNewTopic(newTopic) {
+  let topic = {}; //only allow digits, alpha chars (including Polish chars) and comma's and spaces
+
+  let topicStr = newTopic.replace(/[^a-zA-Z0-9ąćęłńóśźżĄĆĘŁŃÓŚŹŻ, ]/g, "");
+
+  if (!topicStr || topicStr === "") {
+    return topic;
+  }
+
+  topicStr = topicStr.trim();
+  topicStr = lodash_startCase__WEBPACK_IMPORTED_MODULE_10___default()(topicStr);
+
+  if (/ /.test(topicStr)) {
+    topic = {
+      value: topicStr.replace(/ /g, ""),
+      topic: topicStr
+    };
+  } else {
+    topic = {
+      value: topicStr,
+      topic: topicStr
+    };
+  }
+
+  return topic;
+}
 
 function initForm() {
+  //----------------------- new ----------------------------
+  $("#topicSelectNew").dropdown();
+  $("#manageTopicsButton").on("click", function (e) {
+    let sid = $(this).attr("data-sid");
+
+    if ($("#topicTable").hasClass("hide")) {
+      let html = generateTopicTableData(sid);
+      $("#topicTable > tbody").html(html);
+      $("#topicTable").removeClass("hide");
+    } else {
+      $("#topicTable").addClass("hide");
+    }
+  }); //edit topic
+
+  $("#topicTable").on("click", "td.edit-topic-item", function (e) {
+    let index = parseInt($(this).parent().attr("data-index"), 10);
+    let sid = $(this).parent().attr("data-sid");
+    $("#edit-topic-form").form("set values", {
+      sid: sid,
+      index: index,
+      topic: topics[sid][index].topic,
+      oldtopic: topics[sid][index].topic
+    });
+    $(".edit-topic-dialog-wrapper.hide").removeClass("hide");
+  }); //submit topic edit
+
+  $("#update-topic-submit").on("click", function (e) {
+    e.preventDefault();
+    let form = $("#edit-topic-form").form("get values");
+    let index = parseInt(form.index, 10);
+
+    if (form.topic === form.oldtopic) {
+      $(".edit-topic-dialog-wrapper").addClass("hide");
+      return;
+    } //calculate new topic value, store changes, and apply topic to all related bookmarks
+
+
+    let newTopic = formatNewTopic(form.topic);
+    console.log("old Topic: %o, new Topic: %o", topics[form.sid][index], newTopic); //check if topic already exists
+
+    let found = topics[form.sid].find(t => t.value === newTopic.value);
+
+    if (found) {
+      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info("That topic already exists.");
+      return;
+    } //close the edit topic form
+
+
+    $(".edit-topic-dialog-wrapper").addClass("hide"); //update topic array with new topic
+
+    topics[form.sid][index] = newTopic; //update table with new topic
+
+    $(`[data-sid='${form.sid}'][data-index='${form.index}'] > .topic`).text(newTopic.topic); //update bookmarks with new topic
+  }); //----------------------- new end ----------------------------
+
   $("#source-list").dropdown();
   $("#book-list1.dropdown").dropdown();
   $("#topicSelect").dropdown();
@@ -879,7 +1219,7 @@ function initForm() {
     $("#topicsLabel").text("Topics (0)"); //let sourceId = e.target.selectedOptions[0].value;
 
     let sourceId = topicManager.source;
-    let html = makeBookSelectNew(sourceInfo[sourceId]);
+    let html = makeBookSelectNew(_source__WEBPACK_IMPORTED_MODULE_11__["default"][sourceId]);
     $("#book-list1").html(html); //clear activity report
 
     clearActivityReport(); //enable Get Bookmarks button
@@ -898,7 +1238,9 @@ function initForm() {
       $("#topicsLabel").text("Topics (0)");
     }
   });
-  $("#getBookmarksButton").on("click", function (e) {
+  $("#getBookmarksButton").on("click", async function (e) {
+    return;
+    let userInfo = Object(_netlify__WEBPACK_IMPORTED_MODULE_2__["getUserInfo"])();
     let topicManager = getFormData();
 
     if (topicManager.source === "0") {
@@ -911,22 +1253,21 @@ function initForm() {
     $("#topic-manager").addClass("loading"); //get topics for source
 
     if (!topics[topicManager.source]) {
-      Object(_net__WEBPACK_IMPORTED_MODULE_2__["getTopics"])(userInfo.userId, topicManager.source).then(response => {
-        topics[topicManager.source] = response.data.topics; //add "All Topics" topic
-
-        topics[topicManager.source].unshift({
-          value: "<>",
-          topic: "< All Topics >"
-        });
-        let html = makeTopicSelect(response.data.topics);
+      try {
+        let topicList = await Object(_db_topics__WEBPACK_IMPORTED_MODULE_7__["getTopicList"])(userInfo.userId, topicManager.source);
+        topics[topicManager.source] = topicList;
+        let html = makeTopicSelect(topicList);
         $("#topic-list").html(html);
-        $("#topicsLabel").text(`Topics (${response.data.topics.length})`);
+        $("#topicsLabel").text(`Topics (${topicList.length})`);
         toastr__WEBPACK_IMPORTED_MODULE_0___default.a.success(`${topics[topicManager.source].length} topics loaded`);
         $("#deleteTopicsButton").removeAttr("disabled");
         $("#renameTopicButton").removeAttr("disabled");
         $("#findFriendsButton").removeAttr("disabled");
         $("#displayBookmarksButton").removeAttr("disabled");
-      });
+      } catch (err) {
+        console.error("error fetching topicList: %s", err);
+        toastr__WEBPACK_IMPORTED_MODULE_0___default.a.error(err);
+      }
     } else {
       let html = makeTopicSelect(topics[topicManager.source]);
       $("#topic-list").html(html);
@@ -940,8 +1281,9 @@ function initForm() {
 
 
     if (!bookmarks[topicManager.source]) {
-      Object(_net__WEBPACK_IMPORTED_MODULE_2__["getBookmarks"])(userInfo.userId, topicManager.source).then(response => {
-        bookmarks[topicManager.source] = response.data.response;
+      try {
+        let bmList = await Object(_db_annotation__WEBPACK_IMPORTED_MODULE_8__["getAnnotations"])(userInfo.userId, topicManager.source);
+        bookmarks[topicManager.source] = bmList;
         $("#bookmarksLabel").text(`Bookmarks (${bookmarks[topicManager.source].length})`);
         toastr__WEBPACK_IMPORTED_MODULE_0___default.a.success(`${bookmarks[topicManager.source].length} bookmarks loaded`);
         $("#topic-manager").removeClass("loading"); //add modified indicator, set to false
@@ -949,7 +1291,10 @@ function initForm() {
         bookmarks[topicManager.source].forEach(i => {
           i.modified = false;
         });
-      });
+      } catch (err) {
+        console.error("error fetching bookmarks: %s", err);
+        toastr__WEBPACK_IMPORTED_MODULE_0___default.a.error(err);
+      }
     } else {
       $("#topic-manager").removeClass("loading");
       $("#bookmarksLabel").text(`Bookmarks (${bookmarks[topicManager.source].length})`);
@@ -1008,7 +1353,7 @@ function initForm() {
 
     let friends = [];
     matches.forEach(bm => {
-      let diff = lodash_differenceWith__WEBPACK_IMPORTED_MODULE_5___default()(bm.bookmark.topicList, topicArray, (v1, v2) => {
+      let diff = lodash_differenceWith__WEBPACK_IMPORTED_MODULE_4___default()(bm.bookmark.topicList, topicArray, (v1, v2) => {
         if (v1.value === v2) {
           return true;
         }
@@ -1018,7 +1363,7 @@ function initForm() {
       friends = friends.concat(diff);
     }); //remove duplicates
 
-    friends = lodash_uniqWith__WEBPACK_IMPORTED_MODULE_6___default()(friends, (v1, v2) => {
+    friends = lodash_uniqWith__WEBPACK_IMPORTED_MODULE_5___default()(friends, (v1, v2) => {
       if (v1.value === v2.value) {
         return true;
       }
@@ -1071,7 +1416,7 @@ function initForm() {
 
     modified.forEach(m => {
       delete m.annotation.modified;
-      _bookmark_bmnet__WEBPACK_IMPORTED_MODULE_8__["default"].postAnnotation(m.annotation, m.key, false);
+      _bookmark_bmnet__WEBPACK_IMPORTED_MODULE_6__["default"].postAnnotation(m.annotation, m.key, false);
     });
     clearModified();
     toastr__WEBPACK_IMPORTED_MODULE_0___default.a.success("Modifications Saved");
@@ -1087,7 +1432,7 @@ function initManageQuoteEventHandler() {
   $("#activity-report").on("click", ".cmi-manage-quote", function (e) {
     e.stopPropagation();
     e.preventDefault();
-    let userInfo = Object(_netlify__WEBPACK_IMPORTED_MODULE_3__["getUserInfo"])();
+    let userInfo = Object(_netlify__WEBPACK_IMPORTED_MODULE_2__["getUserInfo"])();
 
     if (!userInfo) {
       return;
@@ -1114,7 +1459,7 @@ function initManageQuoteEventHandler() {
     quoteInfo.pid = pid;
     quoteInfo.quote = quote;
     quoteInfo.userId = userInfo.userId;
-    quoteInfo.url = Object(_net__WEBPACK_IMPORTED_MODULE_2__["getNoteUrl"])(parakey);
+    quoteInfo.url = Object(_net__WEBPACK_IMPORTED_MODULE_1__["getNoteUrl"])(parakey);
     quoteInfo.citation = $(`#${annotationId}`).text().trim(); //console.log("quoteInfo: %o", quoteInfo);
     //open quote editor, query from database and populate form,
     //allow user to edit, delete or cancel
@@ -1123,26 +1468,34 @@ function initManageQuoteEventHandler() {
     initQuoteForm(quoteInfo);
   }); //submit button
 
-  $("#activity-report").on("click", "#quote-editor-form .quote-submit", function (e) {
+  $("#activity-report").on("click", "#quote-editor-form .quote-submit", async function (e) {
     e.stopPropagation();
     e.preventDefault();
     let info = $("#quote-editor-form").form("get values");
-    let action = $(this).text().startsWith("Add") ? "Added" : "Updated";
-    let url = `${_globals__WEBPACK_IMPORTED_MODULE_7__["default"].quote}/quote`;
+    let action = $(this).text().startsWith("Add") ? "Added" : "Updated"; //let url = `${globals.quote}/quote`;
+
     let postBody = {
       userId: info.userId,
-      quoteId: `${info.parakey}:${info.annotationId}`,
-      pid: info.pid,
-      quote: info.quote,
-      url: info.url,
-      citation: info.citation
+      paraKey: info.parakey,
+      creationDate: info.annotationId,
+      quote: {
+        pid: info.pid,
+        quote: info.quote,
+        url: info.url,
+        citation: info.citation
+      }
     };
     removeQuoteEditor();
     clearQuoteEditorOpen();
-    axios__WEBPACK_IMPORTED_MODULE_1___default.a.post(url, postBody).then(resp => {
+
+    try {
+      let response = await Object(_db_quotes__WEBPACK_IMPORTED_MODULE_9__["putQuote"])(postBody);
       toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info(`Quote ${action}`);
       markAsInDB(info.parakey, info.annotationId);
-    });
+    } catch (err) {
+      console.error("error posting quote to db: %o", err);
+      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.error(err);
+    }
   }); //cancel button
 
   $("#activity-report").on("click", "#quote-editor-form .quote-cancel", function (e) {
@@ -1152,17 +1505,19 @@ function initManageQuoteEventHandler() {
     clearQuoteEditorOpen();
   }); //cancel button
 
-  $("#activity-report").on("click", "#quote-editor-form .quote-delete", function (e) {
+  $("#activity-report").on("click", "#quote-editor-form .quote-delete", async function (e) {
     e.stopPropagation();
     e.preventDefault();
     let info = $("#quote-editor-form").form("get values");
-    let url = `${_globals__WEBPACK_IMPORTED_MODULE_7__["default"].quote}/quote/${info.userId}/${info.parakey}:${info.annotationId}`;
-    axios__WEBPACK_IMPORTED_MODULE_1___default.a.delete(url).then(response => {
+
+    try {
+      let response = await Object(_db_quotes__WEBPACK_IMPORTED_MODULE_9__["deleteQuote"])(info.userId, info.parakey, info.annotationId);
       toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info("Quote deleted from database");
       markAsNotInDB(info.parakey, info.annotationId);
-    }).catch(error => {
-      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.error(`failed to delete quote: ${error.message}`);
-    });
+    } catch (err) {
+      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.error(`failed to delete quote: ${err.message}`);
+    }
+
     removeQuoteEditor();
     clearQuoteEditorOpen();
   });
@@ -1212,15 +1567,16 @@ function markAsNotInDB(key, aid) {
   $(`.${aid}`).removeClass("in-database");
 }
 
-function initQuoteForm(info) {
-  let form = $("#quote-editor-form");
-  let url = `${_globals__WEBPACK_IMPORTED_MODULE_7__["default"].quote}/quotedata/${info.userId}/${info.parakey}:${info.annotationId}`;
-  $("#quote-editor-form").addClass("loading");
-  axios__WEBPACK_IMPORTED_MODULE_1___default.a.get(url).then(response => {
-    //console.log("query resp: %o", response);
-    if (response.data.quote) {
-      info.database = response.data.quote.quote; //quote is in db so allow user to delete it
+async function initQuoteForm(info) {
+  let form = $("#quote-editor-form"); //let url = `${globals.quote}/quotedata/${info.userId}/${info.parakey}:${info.annotationId}`;
 
+  $("#quote-editor-form").addClass("loading");
+
+  try {
+    let response = await Object(_db_quotes__WEBPACK_IMPORTED_MODULE_9__["getQuoteData"])(info.userId, info.parakey, info.annotationId);
+
+    if (response.q) {
+      info.database = response.q.quote;
       $("#quote-editor-form .quote-delete").removeClass("disabled");
       $("#quote-editor-form button.quote-submit").text("Update Quote");
       markAsInDB(info.parakey, info.annotationId, false);
@@ -1228,9 +1584,10 @@ function initQuoteForm(info) {
 
     $("#quote-editor-form").removeClass("loading");
     form.form("set values", info);
-  }).catch(error => {
-    $("#quote-editor-form").removeClass("loading");
-  });
+  } catch (err) {
+    toastr__WEBPACK_IMPORTED_MODULE_0___default.a.error(err);
+    console.log("Error getting quote from database: %w", err);
+  }
 }
 
 function clearActivityReport() {
@@ -1303,51 +1660,36 @@ function markTopicsDeleted(source, deletedTopics) {
 
 function getBookmarksWithAllTopic(source, topics) {
   let matches = [];
-  let wildcard = false;
 
   if (topics.length === 0) {
     return matches;
-  } //return all bookmarks
-
-
-  if (topics.includes("<>")) {
-    wildcard = true;
   }
 
-  bookmarks[source].forEach(item => {
-    item.bookmark.forEach(bmark => {
-      if (wildcard) {
-        matches.push({
-          id: item.id,
-          bookmark: bmark
-        });
-      } else {
-        if (bmark.topicList && bmark.topicList.length > 0) {
-          let index;
-          let findCount = 0;
-          topics.forEach(t => {
-            index = bmark.topicList.findIndex(bt => {
-              if (bt.value === t) {
-                return true;
-              }
-
-              return false;
-            });
-
-            if (index > -1) {
-              findCount++;
-            }
-          });
-
-          if (findCount === topics.length) {
-            matches.push({
-              id: item.id,
-              bookmark: bmark
-            });
+  bookmarks[source].forEach(bmark => {
+    if (bmark.annotation.topicList && bmark.annotation.topicList.length > 0) {
+      let index;
+      let findCount = 0;
+      topics.forEach(t => {
+        index = bmark.annotation.topicList.findIndex(bt => {
+          if (bt.value === t) {
+            return true;
           }
+
+          return false;
+        });
+
+        if (index > -1) {
+          findCount++;
         }
+      });
+
+      if (findCount === topics.length) {
+        matches.push({
+          id: bmark.paraKey,
+          bookmark: bmark.annotation
+        });
       }
-    });
+    }
   });
   return matches;
 }
@@ -1366,7 +1708,7 @@ function getBookmarksByTopic(source, topics) {
       let intersection;
 
       if (bmark.topicList) {
-        intersection = lodash_intersectionWith__WEBPACK_IMPORTED_MODULE_4___default()(topics, bmark.topicList, function (t, bt) {
+        intersection = lodash_intersectionWith__WEBPACK_IMPORTED_MODULE_3___default()(topics, bmark.topicList, function (t, bt) {
           if (t === bt.value) {
             return true;
           }
@@ -1508,10 +1850,8 @@ function clearModified() {
 
 function markQuotedState(parakey, annotationId, state) {
   let sourceId = parakey.substring(0, 2);
-  let numericKey = parseFloat(parakey);
-  let naid = parseInt(annotationId, 10);
   let b = bookmarks[sourceId].find(i => {
-    if (i.id === numericKey) {
+    if (i.paraKey === parakey && i.creationDate === annotationId) {
       return true;
     }
 
@@ -1520,27 +1860,31 @@ function markQuotedState(parakey, annotationId, state) {
 
   if (b) {
     b.modified = true;
+    b.quote = state;
   } else {
     toastr__WEBPACK_IMPORTED_MODULE_0___default.a.error("markQuotedState(): paragraph not found");
     console.error("parakey: %s, annotationId: %s", parakey, annotationId);
     return;
   }
-
-  let bookmark = b.bookmark.find(bmkark => {
-    if (bmkark.creationDate === naid) {
+  /*
+  let bookmark = b.bookmark.find((bmkark) => {
+    if (bmkark.creationDate === annotationId) {
       return true;
     }
-
     return false;
-  }); //mark annotation as in quote databas and as modified
-
+  });
+   //mark annotation as in quote databas and as modified
   if (bookmark) {
     bookmark.quote = state;
-    bookmark.modified = true; //console.log("bookmark: %o", bookmark);
-  } else {
-    toastr__WEBPACK_IMPORTED_MODULE_0___default.a.error("markQuotedState(): bookmark not found");
+    bookmark.modified = true;
+    //console.log("bookmark: %o", bookmark);
+  }
+  else {
+    notify.error("markQuotedState(): bookmark not found");
     console.error("parakey: %s, annotationId: %s", parakey, annotationId);
   }
+  */
+
 }
 
 function getQuoteForm() {
@@ -1594,7 +1938,7 @@ function checkForUnsavedChanges() {
 }
 
 function initializeTopicManager() {
-  let userInfo = Object(_netlify__WEBPACK_IMPORTED_MODULE_3__["getUserInfo"])();
+  let userInfo = Object(_netlify__WEBPACK_IMPORTED_MODULE_2__["getUserInfo"])();
 
   if (!userInfo) {
     toastr__WEBPACK_IMPORTED_MODULE_0___default.a.warning("You must be signed in to edit your email list");
@@ -1621,18 +1965,19 @@ function initializeTopicManager() {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var _vendor_semantic_semantic_min_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../vendor/semantic/semantic.min.js */ "./src/vendor/semantic/semantic.min.js");
-/* harmony import */ var _vendor_semantic_semantic_min_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_vendor_semantic_semantic_min_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _modules_page_startup__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modules/_page/startup */ "./src/js/modules/_page/startup.js");
-/* harmony import */ var _modules_bookmark_start__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modules/_bookmark/start */ "./src/js/modules/_bookmark/start.js");
-/* harmony import */ var _modules_search_search__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/_search/search */ "./src/js/modules/_search/search.js");
-/* harmony import */ var _modules_contents_toc__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./modules/_contents/toc */ "./src/js/modules/_contents/toc.js");
-/* harmony import */ var _modules_user_netlify__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./modules/_user/netlify */ "./src/js/modules/_user/netlify.js");
-/* harmony import */ var _modules_about_about__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./modules/_about/about */ "./src/js/modules/_about/about.js");
-/* harmony import */ var _modules_user_email__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./modules/_user/email */ "./src/js/modules/_user/email.js");
-/* harmony import */ var _modules_user_topicmgr__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./modules/_user/topicmgr */ "./src/js/modules/_user/topicmgr.js");
-/* harmony import */ var _modules_language_lang__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./modules/_language/lang */ "./src/js/modules/_language/lang.js");
-/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./constants */ "./src/js/constants.js");
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var _modules_util_store__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./modules/_util/store */ "./src/js/modules/_util/store.js");
+/* harmony import */ var _vendor_semantic_semantic_min_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../vendor/semantic/semantic.min.js */ "./src/vendor/semantic/semantic.min.js");
+/* harmony import */ var _vendor_semantic_semantic_min_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_vendor_semantic_semantic_min_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _modules_page_startup__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modules/_page/startup */ "./src/js/modules/_page/startup.js");
+/* harmony import */ var _modules_bookmark_start__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/_bookmark/start */ "./src/js/modules/_bookmark/start.js");
+/* harmony import */ var _modules_search_search__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./modules/_search/search */ "./src/js/modules/_search/search.js");
+/* harmony import */ var _modules_contents_toc__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./modules/_contents/toc */ "./src/js/modules/_contents/toc.js");
+/* harmony import */ var _modules_user_netlify__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./modules/_user/netlify */ "./src/js/modules/_user/netlify.js");
+/* harmony import */ var _modules_about_about__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./modules/_about/about */ "./src/js/modules/_about/about.js");
+/* harmony import */ var _modules_user_email__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./modules/_user/email */ "./src/js/modules/_user/email.js");
+/* harmony import */ var _modules_user_topicmgr__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./modules/_user/topicmgr */ "./src/js/modules/_user/topicmgr.js");
+/* harmony import */ var _modules_language_lang__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./modules/_language/lang */ "./src/js/modules/_language/lang.js");
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./constants */ "./src/js/constants.js");
 /* eslint no-console: off */
 
 
@@ -1645,22 +1990,24 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
 $(document).ready(() => {
-  Object(_modules_page_startup__WEBPACK_IMPORTED_MODULE_1__["initStickyMenu"])();
-  Object(_modules_language_lang__WEBPACK_IMPORTED_MODULE_9__["setLanguage"])(_constants__WEBPACK_IMPORTED_MODULE_10__["default"]);
-  Object(_modules_bookmark_start__WEBPACK_IMPORTED_MODULE_2__["bookmarkStart"])("page");
-  _modules_search_search__WEBPACK_IMPORTED_MODULE_3__["default"].initialize();
-  _modules_user_netlify__WEBPACK_IMPORTED_MODULE_5__["default"].initialize();
-  _modules_contents_toc__WEBPACK_IMPORTED_MODULE_4__["default"].initialize("transcript");
-  _modules_about_about__WEBPACK_IMPORTED_MODULE_6__["default"].initialize(); //email mgt page
+  Object(_modules_util_store__WEBPACK_IMPORTED_MODULE_0__["storeInit"])(_constants__WEBPACK_IMPORTED_MODULE_11__["default"]);
+  Object(_modules_page_startup__WEBPACK_IMPORTED_MODULE_2__["initStickyMenu"])();
+  Object(_modules_language_lang__WEBPACK_IMPORTED_MODULE_10__["setLanguage"])(_constants__WEBPACK_IMPORTED_MODULE_11__["default"]);
+  Object(_modules_bookmark_start__WEBPACK_IMPORTED_MODULE_3__["bookmarkStart"])("page");
+  _modules_search_search__WEBPACK_IMPORTED_MODULE_4__["default"].initialize();
+  _modules_user_netlify__WEBPACK_IMPORTED_MODULE_6__["default"].initialize();
+  _modules_contents_toc__WEBPACK_IMPORTED_MODULE_5__["default"].initialize("transcript");
+  _modules_about_about__WEBPACK_IMPORTED_MODULE_7__["default"].initialize(); //email mgt page
 
   if ($(".manage-email-list").length === 1) {
-    Object(_modules_user_email__WEBPACK_IMPORTED_MODULE_7__["loadEmailListTable"])();
+    Object(_modules_user_email__WEBPACK_IMPORTED_MODULE_8__["loadEmailListTable"])();
   } //topic mgt page
 
 
   if ($(".manage-topic-list").length === 1) {
-    Object(_modules_user_topicmgr__WEBPACK_IMPORTED_MODULE_8__["initializeTopicManager"])();
+    Object(_modules_user_topicmgr__WEBPACK_IMPORTED_MODULE_9__["initializeTopicManager"])();
   }
 });
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/src/jquery.js")))

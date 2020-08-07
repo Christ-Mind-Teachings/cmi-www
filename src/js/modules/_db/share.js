@@ -5,10 +5,21 @@ export function getMailList(userId) {
   return new Promise((resolve, reject) => {
     axios.get(`${globals.user2}/mailList/${userId}`)
       .then((response) => {
-        let mailList = response.data.mailList;
-        resolve(mailList);
+        resolve(response.data.mailList);
       })
       .catch((err) => {
+        reject(err);
+      });
+  });
+}
+
+export function putMailList(userId, list) {
+  return new Promise((resolve, reject) => {
+    axios.post(`${globals.user2}/mailList`, list)
+      .then(response => {
+        resolve(response.data.response);
+      })
+      .catch(err => {
         reject(err);
       });
   });

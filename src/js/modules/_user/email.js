@@ -1,10 +1,12 @@
 /*
   Email list management - for sharing bookmarks via email
 */
-import axios from "axios";
-import globals from "../../globals";
+//import dt from "datatables.net";
+//import "datatables.net-se/css/dataTables.semanticui.min.css";
+
 import notify from "toastr";
 import {getUserInfo} from "../_user/netlify";
+import {getMailList, putMailList} from "../_db/share";
 
 //module global list of email addresses
 let maillist = [];
@@ -135,7 +137,7 @@ function createEventHandlers() {
 /*
   Run only if page has class="manage-email-list"
 */
-export function loadEmailListTable() {
+export async function loadEmailListTable() {
   let userInfo = getUserInfo();
 
   if (!userInfo) {
@@ -148,48 +150,46 @@ export function loadEmailListTable() {
   let api = `${userInfo.userId}/maillist`;
 
   $(".sync.icon").addClass("loading");
-  axios(`${globals.user}/${api}`)
-    .then(response => {
-      $(".sync.icon.loading").removeClass("loading");
-      maillist = response.data.maillist;
 
-      let html = populateTable(maillist);
-      $("#email-list-table").html(html);
+  try {
+    maillist = await getMailList(userInfo.userId);
 
-      createEventHandlers();
-    })
-    .catch(err => {
-      $(".sync.icon.loading").removeClass("loading");
-      notify.error("Error getting email list: ", err);
-    });
+    $(".sync.icon.loading").removeClass("loading");
+
+    let html = populateTable(maillist);
+    $("#email-list-table").html(html);
+
+    createEventHandlers();
+    //$("#maillist-table").dataTable();
+  }
+  catch(err) {
+    $(".sync.icon.loading").removeClass("loading");
+    notify.error(`Error getting email list: ${err}`);
+  }
 }
 
 /*
   Save changes to maillist to database
 */
-function saveChanges() {
+async function saveChanges() {
   let userInfo = getUserInfo();
-  let api = "maillist";
   let newList = maillist.filter(item => !item.deleted);
-
-  console.log("newList: %o", newList);
 
   let body = {
     userId: userInfo.userId,
-    addressList: newList
+    mailList: newList
   };
 
-  $(".sync.icon").addClass("loading");
-  axios.post(`${globals.user}/${api}`, body)
-    .then(response => {
-      $(".sync.icon.loading").removeClass("loading");
-      if (response.data.message === "OK") {
-        notify.info(`Saved! ${response.data.response}`);
-        $("button.save-to-database").addClass("disabled");
-      }
-    })
-    .catch(err => {
-      $(".sync.icon.loading").removeClass("loading");
-      notify.error(err);
-    });
+  try {
+    $(".sync.icon").addClass("loading");
+    let response = await putMailList(userInfo.userId, body);
+    notify.info(`Saved! ${response}`);
+    $(".sync.icon.loading").removeClass("loading");
+    $("button.save-to-database").addClass("disabled");
+  }
+  catch(err) {
+    $(".sync.icon.loading").removeClass("loading");
+    notify.error(err);
+  }
 }
+

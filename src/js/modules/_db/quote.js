@@ -1,3 +1,6 @@
+/*
+ * NOTE: This is pre-user2 code. See quotes.js for more recent version.
+ */
 import axios from "axios";
 import notify from "toastr";
 import globals from "../../globals";

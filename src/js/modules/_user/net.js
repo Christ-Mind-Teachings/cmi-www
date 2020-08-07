@@ -101,7 +101,7 @@ export function getBookmarkText(bookmarks) {
       if (!bm.mgr) {
         bm.mgr = {};
 
-        let st = JSON.parse(bm.bookmark.selectedText);
+        let st = bm.bookmark.selectedText;
         bm.mgr.title = st.title;
         bm.mgr.url = st.url;
         bm.mgr.pid = st.pid;

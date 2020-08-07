@@ -1,6 +1,7 @@
 ---
 title: "Manage Email List"
 search: false
+manageEmail: true
 ---
 
 ## Manage Email List
