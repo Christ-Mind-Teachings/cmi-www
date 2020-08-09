@@ -6734,8 +6734,8 @@ let teaching = {};
 let shareInfo = {}; //load email list and setup submit and cancel listeners
 
 function initShareByEmail(constants) {
-  teaching = constants;
-  loadEmailList(); //submit
+  teaching = constants; //loadEmailList();
+  //submit
 
   $("form[name='emailshare']").on("submit", function (e) {
     e.preventDefault();
@@ -6795,19 +6795,34 @@ function initShareByEmail(constants) {
 function generateOption(item) {
   return `<option value="${item.address}">${item.first} ${item.last}</option>`;
 }
+/*
+ * Call getString() with second arg 'true' so that it returns a promise. This was necessary
+ * because the language file might not have been loaded when getString() was called.
+ *
+ * This is no longer necessary since we don't call this on page load anymore, just when the
+ * user requests sharing by email. I didn't change the code to remove promises though, but I
+ * could since they are no longer needed.
+ */
+
 
 function makeMaillistSelect(maillist) {
-  return `
-    <label>${Object(_language_lang__WEBPACK_IMPORTED_MODULE_4__["getString"])("label:listnames")}</label>
-    <select name="mailList" id="maillist-address-list" multiple="" class="search ui dropdown">
-      <option value="">${Object(_language_lang__WEBPACK_IMPORTED_MODULE_4__["getString"])("label:selectaddress")}</option>
-      ${maillist.map(item => `${generateOption(item)}`).join("")}
-    </select>
-  `;
+  let listnames = Object(_language_lang__WEBPACK_IMPORTED_MODULE_4__["getString"])("label:listnames", true);
+  let selectAddress = Object(_language_lang__WEBPACK_IMPORTED_MODULE_4__["getString"])("label:selectaddress", true);
+  return Promise.all([listnames, selectAddress]).then(values => {
+    return `
+      <label>${values[0]}</label>
+      <select name="mailList" id="maillist-address-list" multiple="" class="search ui dropdown">
+        <option value="">${values[1]}</option>
+        ${maillist.map(item => `${generateOption(item)}`).join("")}
+      </select>
+    `;
+  });
 }
 /*
   Called by initShareByEmail()
   - load only when user signed in, fail silently, it's not an error
+
+  NOTE: WE DON'T CALL THIS ANYMORE. THE CODE has been added to shareByEmail()
 */
 
 
@@ -6822,25 +6837,54 @@ function loadEmailList() {
   let api = `${userInfo.userId}/maillist`;
   axios__WEBPACK_IMPORTED_MODULE_0___default()(`${_globals__WEBPACK_IMPORTED_MODULE_2__["default"].user}/${api}`).then(response => {
     maillist = response.data.maillist;
-    let selectHtml = makeMaillistSelect(maillist);
+    return makeMaillistSelect(maillist);
+  }).then(selectHtml => {
     $("#maillist-select").html(selectHtml);
     $("#maillist-address-list.dropdown").dropdown();
   }).catch(err => {
     toastr__WEBPACK_IMPORTED_MODULE_1___default.a.error(`${Object(_language_lang__WEBPACK_IMPORTED_MODULE_4__["getString"])("error:e10")}: ${err}`);
   });
 }
+
+let mailListLoaded = false;
 /*
 */
 
-
 function shareByEmail(quote, citation, url) {
+  const userInfo = Object(_user_netlify__WEBPACK_IMPORTED_MODULE_3__["getUserInfo"])();
   shareInfo = {
     citation,
     quote,
     url
-  }; //show input form
+  }; //show dialog
 
-  $(".hide.email-share-dialog-wrapper").removeClass("hide");
+  $(".hide.email-share-dialog-wrapper").removeClass("hide"); //if user not signed in we don't need to load the email list so
+  //just show the dialog and return
+
+  if (!userInfo) {
+    return;
+  } //maillist already loaded, show the dialog and return
+
+
+  if (mailListLoaded) {
+    return;
+  }
+
+  let maillist = [];
+  let api = `${userInfo.userId}/maillist`;
+  $(".email-share-loader").addClass("active");
+  axios__WEBPACK_IMPORTED_MODULE_0___default()(`${_globals__WEBPACK_IMPORTED_MODULE_2__["default"].user}/${api}`).then(response => {
+    maillist = response.data.maillist;
+    return makeMaillistSelect(maillist);
+  }).then(selectHtml => {
+    $("#maillist-select").html(selectHtml);
+    $("#maillist-address-list.dropdown").dropdown();
+    mailListLoaded = true;
+    $(".email-share-loader").removeClass("active");
+  }).catch(err => {
+    toastr__WEBPACK_IMPORTED_MODULE_1___default.a.error(`${Object(_language_lang__WEBPACK_IMPORTED_MODULE_4__["getString"])("error:e10")}: ${err}`);
+    $(".email-share-loader").removeClass("active");
+  });
 }
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/src/jquery.js")))
 
@@ -8239,7 +8283,7 @@ function setLanguage(constants) {
 
 function waitForReady(s, k) {
   return new Promise((resolve, reject) => {
-    function wait(s, k, ms, max = 8, cnt = 0) {
+    function wait(s, k, ms, max = 10, cnt = 0) {
       if (status === LOADING) {
         if (cnt <= max) {
           setTimeout(() => wait(s, k, ms, max, cnt + 1), ms);
@@ -9700,13 +9744,10 @@ function manageState(state) {
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   initialize: function () {
-    //console.log("Init user authentication");
-
     /*
      * if user already logged in, change icon to log out
      */
     netlify_identity_widget__WEBPACK_IMPORTED_MODULE_0___default.a.on("init", user => {
-      //userInfo = user;
       manageState("init");
     });
     netlify_identity_widget__WEBPACK_IMPORTED_MODULE_0___default.a.on("login", login => {
@@ -9733,8 +9774,7 @@ function manageState(state) {
       }
     }); //init authentication
 
-    netlify_identity_widget__WEBPACK_IMPORTED_MODULE_0___default.a.init({//container: "#netlify-modal"
-    });
+    netlify_identity_widget__WEBPACK_IMPORTED_MODULE_0___default.a.init({});
   }
 });
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/src/jquery.js")))

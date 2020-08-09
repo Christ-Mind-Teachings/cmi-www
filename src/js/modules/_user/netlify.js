@@ -156,13 +156,10 @@ function manageState(state) {
 export default {
 
   initialize: function() {
-    //console.log("Init user authentication");
-
     /*
      * if user already logged in, change icon to log out
      */
     user.on("init", user => {
-      //userInfo = user;
       manageState("init");
     });
 
@@ -195,9 +192,7 @@ export default {
     });
 
     //init authentication
-    user.init({
-      //container: "#netlify-modal"
-    });
+    user.init({});
   }
 };
 

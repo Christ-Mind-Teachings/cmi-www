@@ -61,7 +61,7 @@ module.exports = {
   },
   plugins: [
     new MiniCssExtractPlugin({filename: 'me-styles.css'}),
-    new CleanWebpackPlugin(),
+    //new CleanWebpackPlugin(),
     //new BundleAnalyzerPlugin({analyzerPort: 8899}),
     new webpack.ProvidePlugin({
       $: "jquery",

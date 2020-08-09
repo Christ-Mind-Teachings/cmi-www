@@ -61,7 +61,7 @@ export function setLanguage(constants) {
  */
 function waitForReady(s, k) {
   return new Promise((resolve, reject) => {
-    function wait(s, k, ms, max=8, cnt=0) {
+    function wait(s, k, ms, max=10, cnt=0) {
       if (status === LOADING) {
         if (cnt <= max) {
           setTimeout(() => wait(s, k, ms, max, cnt+1), ms);

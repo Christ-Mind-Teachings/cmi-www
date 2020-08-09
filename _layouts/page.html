@@ -39,9 +39,17 @@
   {% include components/toc-modal.html %}
   <div class="fixed" id="netlify-modal"></div>
 
-  <script src="/public/js/vendors~page~profile~transcript.js"></script>
-  <script src="/public/js/page~profile~transcript.js"></script>
-  <script src="/public/js/page.js"></script>
-</body>
+  {% if jekyll.environment == "production" %}
+    <!-- WWW page Webpack production -->
+    <script src="/public/js/vendors~page~profile~transcript.js"></script>
+    <script src="/public/js/page~profile.js"></script>
+    <script src="/public/js/page.js"></script>
+  {% else %}
+    <!-- WWW page Webpack development -->
+    <script src="/public/js/vendors~page~profile~transcript.js"></script>
+    <script src="/public/js/page~profile~transcript.js"></script>
+    <script src="/public/js/page.js"></script>
+  {% endif %}
 
+</body>
 </html>

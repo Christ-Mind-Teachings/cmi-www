@@ -1116,7 +1116,7 @@ var require;var require;/*!
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var _config_config__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../_config/config */ "./src/js/modules/_config/config.js");
-/* harmony import */ var _mediaelement__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./mediaelement */ "./src/js/modules/_audio/mediaelement.js");
+/* harmony import */ var _mediaelement__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./mediaelement */ "./src/js/modules/_audio/mediaelement.js");
 
 
 const uiPlayerToggle = ".audio-player-toggle";
@@ -1156,7 +1156,7 @@ function createAudioPlayerToggleListener() {
 
       createAudioPlayerToggleListener(); //initialize audio player
 
-      _mediaelement__WEBPACK_IMPORTED_MODULE_1__["default"].initialize(`${info.audioBase}${info.audio}`, info.timing);
+      _mediaelement__WEBPACK_IMPORTED_MODULE_2__["default"].initialize(`${info.audioBase}${info.audio}`, info.timing);
     }
   }
 });
@@ -2542,7 +2542,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_bookmark_start__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./modules/_bookmark/start */ "./src/js/modules/_bookmark/start.js");
 /* harmony import */ var _modules_search_search__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./modules/_search/search */ "./src/js/modules/_search/search.js");
 /* harmony import */ var _modules_contents_toc__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./modules/_contents/toc */ "./src/js/modules/_contents/toc.js");
-/* harmony import */ var _modules_audio_audio__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./modules/_audio/audio */ "./src/js/modules/_audio/audio.js");
+/* harmony import */ var _modules_audio_audio__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./modules/_audio/audio */ "./src/js/modules/_audio/audio.js");
 /* harmony import */ var _modules_about_about__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./modules/_about/about */ "./src/js/modules/_about/about.js");
 /* harmony import */ var _modules_forms_contact__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./modules/_forms/contact */ "./src/js/modules/_forms/contact.js");
 /* harmony import */ var _modules_video_acq__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./modules/_video/acq */ "./src/js/modules/_video/acq.js");
@@ -2583,7 +2583,7 @@ $(document).ready(() => {
 
     if (result !== 0) {
       _modules_contents_toc__WEBPACK_IMPORTED_MODULE_8__["default"].initialize("transcript");
-      _modules_audio_audio__WEBPACK_IMPORTED_MODULE_9__["default"].initialize();
+      _modules_audio_audio__WEBPACK_IMPORTED_MODULE_15__["default"].initialize();
     }
 
     Object(_modules_util_url__WEBPACK_IMPORTED_MODULE_1__["showParagraph"])();
