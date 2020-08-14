@@ -1,5 +1,6 @@
 import axios from "axios";
 import globals from "../../globals";
+import cloneDeep from "lodash/cloneDeep";
 
 /*
  * Format paraKey so it contains 3 decimal positions
@@ -77,6 +78,22 @@ export function getAnnotations(userId, key) {
         reject(err);
       });
   });
+}
+
+/*
+ * Called by topicmanager
+ */
+export function updateAnnotation(bookmark) {
+  let clone = cloneDeep(bookmark);
+
+  if (clone.annotation.selectedText) {
+    if (typeof clone.annotation.selectedText !== "string") {
+      //convert selectedText to JSON
+      clone.annotation.selectedText = JSON.stringify(clone.annotation.selectedText);
+    }
+  }
+
+  return postAnnotation(clone.userId, clone.paraKey, clone.creationDate, clone.annotation);
 }
 
 /*

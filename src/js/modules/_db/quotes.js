@@ -5,15 +5,13 @@ import globals from "../../globals";
  * Get all quoteId's for userId and key
  *  where key is the first two or more positions of the page key
  *  ie, 10: WOM, etc
- *
- *  OLD CODE
  */
 export function getQuoteIds(userId, key) {
-  let url = `${globals.quote}/getKeys/${userId}/${key}`;
+  let url = `${globals.user2}/quoteKeys/${userId}/${key}`;
 
   return new Promise((resolve, reject) => {
     axios.get(url).then((resp) => {
-      resolve(resp.data.response);
+      resolve(resp.data.keys);
       return;
     }).catch((err) => {
       console.error(err);
@@ -23,13 +21,16 @@ export function getQuoteIds(userId, key) {
   });
 }
 
-/*
+/**
  * Get Quote by userId and quoteId
  *
- * OLD CODE
+ * @param {string} userId - md5 hash of users email address
+ * @param {string} quoteId - the paragraph key and creationDate delimited by ":"
+ * @returns {object} The requested quote
  */
 export function getQuote(userId, quoteId) {
-  let url = `${globals.quote}/quote/${userId}/${quoteId}`;
+  let [paraKey, creationDate] = quoteId.split(":");
+  let url = `${globals.user2}/quote/${userId}/${paraKey}/${creationDate}`;
 
   return new Promise((resolve, reject) => {
     axios.get(url).then((resp) => {

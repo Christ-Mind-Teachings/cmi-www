@@ -8058,18 +8058,22 @@ function getBookId() {
 /*!******************************************!*\
   !*** ./src/js/modules/_db/annotation.js ***!
   \******************************************/
-/*! exports provided: getAnnotations, postAnnotation, getAnnotation, deleteAnnotation */
+/*! exports provided: getAnnotations, updateAnnotation, postAnnotation, getAnnotation, deleteAnnotation */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getAnnotations", function() { return getAnnotations; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "updateAnnotation", function() { return updateAnnotation; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "postAnnotation", function() { return postAnnotation; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getAnnotation", function() { return getAnnotation; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deleteAnnotation", function() { return deleteAnnotation; });
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _globals__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../globals */ "./src/js/globals.js");
+/* harmony import */ var lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lodash/cloneDeep */ "./node_modules/lodash/cloneDeep.js");
+/* harmony import */ var lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_2__);
+
 
 
 /*
@@ -8142,6 +8146,22 @@ function getAnnotations(userId, key) {
       reject(err);
     });
   });
+}
+/*
+ * Called by topicmanager
+ */
+
+function updateAnnotation(bookmark) {
+  let clone = lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_2___default()(bookmark);
+
+  if (clone.annotation.selectedText) {
+    if (typeof clone.annotation.selectedText !== "string") {
+      //convert selectedText to JSON
+      clone.annotation.selectedText = JSON.stringify(clone.annotation.selectedText);
+    }
+  }
+
+  return postAnnotation(clone.userId, clone.paraKey, clone.creationDate, clone.annotation);
 }
 /*
  * Save annotation to DynamoDb
@@ -8312,7 +8332,7 @@ function getTopicList(userId, sourceId) {
 function putTopicList(userId, sourceId, topicList) {
   let body = {
     userId: userId,
-    sourceId: paraKey,
+    sourceId: sourceId,
     topicList: topicList
   };
   return new Promise((resolve, reject) => {

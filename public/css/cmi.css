@@ -134,6 +134,9 @@ i.toc-share.icon {
   box-shadow: 1rem 1rem 1rem;
 }
 
+#action-manager > .annotation-actions.hide,
+.bookmark-segment.hide,
+.bookmark-segment.qhide,
 .bookmark-header.hide,
 .note-and-links.hide {
   display: none;
@@ -162,7 +165,8 @@ i.toc-share.icon {
   margin-top: 10px;
 }
 
-#topicSelect > a[data-value*="*"],
+#topicTable tr.deleted,
+#topicSelectNew > a.ui.transition.visible[data-value="X"],
 .ui.selection .menu > .item.deleted {
   text-decoration: line-through;
   color: red;

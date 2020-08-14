@@ -8,12 +8,6 @@ export default {
     "15": "ACIM Original Edition",
     "16": "Droga Mistrzostwa"
   },
-  "0": [
-    {
-      "value": "*",
-      "name": "-- Select Source --"
-    }
-  ],
   "12": [
     {
       "value": "*",

@@ -69,7 +69,8 @@ function getNoteTranscript(id, url) {
 
 export function getNoteUrl(key) {
   let url;
-  let akey = key + "";
+  //let akey = key + "";
+  let akey = key;
   if (akey.startsWith(ACIMSOURCEID)) {
     url = acimKey.getUrl(key, true);
   }
@@ -93,6 +94,62 @@ export function getNoteUrl(key) {
   }
 
   return url;
+}
+
+export function getBookmarkTextNew(bookmarks) {
+  let promises = bookmarks.map(bm => {
+    if (bm.annotation.selectedText) {
+      if (!bm.mgr) {
+        bm.mgr = {};
+
+        let st = bm.annotation.selectedText;
+        bm.mgr.title = st.title;
+        bm.mgr.url = st.url;
+        bm.mgr.pid = st.pid;
+        bm.mgr.content = [{pid: st.pid, text: st.target.selector[1].exact}];
+        bm.mgr.comment = bm.annotation.Comment;
+        bm.mgr.note = bm.annotation.Note;
+        bm.mgr.type = "selected";
+      }
+      return Promise.resolve(bm);
+    }
+    //Note style bookmark
+    else if (!bm.mgr) {
+      let url = getNoteUrl(bm.paraKey);
+
+      bm.mgr = {};
+      bm.mgr.type = "note";
+      bm.mgr.title = bm.annotation.bookTitle;
+      bm.mgr.url = url;
+      bm.mgr.pid = bm.annotation.rangeStart;
+      bm.mgr.comment = bm.annotation.Comment;
+      bm.mgr.note = bm.annotation.Note;
+
+      //get 'document' response from axios
+      return getNoteTranscript(bm.paraKey, url).then((resp) => {
+        let paragraphs = resp.getElementsByTagName("p");
+        let rangeStart = parseInt(bm.annotation.rangeStart.substring(1), 10);
+        let rangeEnd = parseInt(bm.annotation.rangeEnd.substring(1), 10);
+        bm.mgr.content = [];
+
+        for (let p = rangeStart; p <= rangeEnd; p++) {
+          if (paragraphs[p]) {
+            bm.mgr.content.push({pid: `p${p}`, text: paragraphs[p].textContent});
+          }
+          else {
+            bm.mgr.content.push({pid: `p${p}`, text: "no data for paragraph"});
+          }
+        }
+
+        return Promise.resolve(bm);
+      });
+    }
+    else {
+      return Promise.resolve(bm);
+    }
+  });
+
+  return promises;
 }
 
 export function getBookmarkText(bookmarks) {

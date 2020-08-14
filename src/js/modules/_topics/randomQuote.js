@@ -1,4 +1,4 @@
-import {getQuote} from "../_db/quote";
+import {getQuote} from "../_db/quotes";
 
 function _getRandomInt(max) {
   return Math.floor(Math.random() * Math.floor(max));

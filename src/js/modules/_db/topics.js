@@ -27,7 +27,7 @@ export function putTopicList(userId, sourceId, topicList) {
 
   let body = {
     userId: userId,
-    sourceId: paraKey,
+    sourceId: sourceId,
     topicList: topicList
   };
 

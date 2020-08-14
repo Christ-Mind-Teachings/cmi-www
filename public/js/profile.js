@@ -178,15 +178,13 @@ __webpack_require__.r(__webpack_exports__);
  * Get all quoteId's for userId and key
  *  where key is the first two or more positions of the page key
  *  ie, 10: WOM, etc
- *
- *  OLD CODE
  */
 
 function getQuoteIds(userId, key) {
-  let url = `${_globals__WEBPACK_IMPORTED_MODULE_1__["default"].quote}/getKeys/${userId}/${key}`;
+  let url = `${_globals__WEBPACK_IMPORTED_MODULE_1__["default"].user2}/quoteKeys/${userId}/${key}`;
   return new Promise((resolve, reject) => {
     axios__WEBPACK_IMPORTED_MODULE_0___default.a.get(url).then(resp => {
-      resolve(resp.data.response);
+      resolve(resp.data.keys);
       return;
     }).catch(err => {
       console.error(err);
@@ -195,14 +193,17 @@ function getQuoteIds(userId, key) {
     });
   });
 }
-/*
+/**
  * Get Quote by userId and quoteId
  *
- * OLD CODE
+ * @param {string} userId - md5 hash of users email address
+ * @param {string} quoteId - the paragraph key and creationDate delimited by ":"
+ * @returns {object} The requested quote
  */
 
 function getQuote(userId, quoteId) {
-  let url = `${_globals__WEBPACK_IMPORTED_MODULE_1__["default"].quote}/quote/${userId}/${quoteId}`;
+  let [paraKey, creationDate] = quoteId.split(":");
+  let url = `${_globals__WEBPACK_IMPORTED_MODULE_1__["default"].user2}/quote/${userId}/${paraKey}/${creationDate}`;
   return new Promise((resolve, reject) => {
     axios__WEBPACK_IMPORTED_MODULE_0___default.a.get(url).then(resp => {
       resolve(resp.data.quote);
@@ -448,7 +449,7 @@ async function saveChanges() {
 /*!*************************************!*\
   !*** ./src/js/modules/_user/net.js ***!
   \*************************************/
-/*! exports provided: getConfig, getTopics, getBookmarks, getNoteUrl, getBookmarkText */
+/*! exports provided: getConfig, getTopics, getBookmarks, getNoteUrl, getBookmarkTextNew, getBookmarkText */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -457,6 +458,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getTopics", function() { return getTopics; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getBookmarks", function() { return getBookmarks; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getNoteUrl", function() { return getNoteUrl; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getBookmarkTextNew", function() { return getBookmarkTextNew; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getBookmarkText", function() { return getBookmarkText; });
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
@@ -533,8 +535,9 @@ function getNoteTranscript(id, url) {
 }
 
 function getNoteUrl(key) {
-  let url;
-  let akey = key + "";
+  let url; //let akey = key + "";
+
+  let akey = key;
 
   if (akey.startsWith(ACIMSOURCEID)) {
     url = acimKey.getUrl(key, true);
@@ -555,6 +558,64 @@ function getNoteUrl(key) {
   }
 
   return url;
+}
+function getBookmarkTextNew(bookmarks) {
+  let promises = bookmarks.map(bm => {
+    if (bm.annotation.selectedText) {
+      if (!bm.mgr) {
+        bm.mgr = {};
+        let st = bm.annotation.selectedText;
+        bm.mgr.title = st.title;
+        bm.mgr.url = st.url;
+        bm.mgr.pid = st.pid;
+        bm.mgr.content = [{
+          pid: st.pid,
+          text: st.target.selector[1].exact
+        }];
+        bm.mgr.comment = bm.annotation.Comment;
+        bm.mgr.note = bm.annotation.Note;
+        bm.mgr.type = "selected";
+      }
+
+      return Promise.resolve(bm);
+    } //Note style bookmark
+    else if (!bm.mgr) {
+        let url = getNoteUrl(bm.paraKey);
+        bm.mgr = {};
+        bm.mgr.type = "note";
+        bm.mgr.title = bm.annotation.bookTitle;
+        bm.mgr.url = url;
+        bm.mgr.pid = bm.annotation.rangeStart;
+        bm.mgr.comment = bm.annotation.Comment;
+        bm.mgr.note = bm.annotation.Note; //get 'document' response from axios
+
+        return getNoteTranscript(bm.paraKey, url).then(resp => {
+          let paragraphs = resp.getElementsByTagName("p");
+          let rangeStart = parseInt(bm.annotation.rangeStart.substring(1), 10);
+          let rangeEnd = parseInt(bm.annotation.rangeEnd.substring(1), 10);
+          bm.mgr.content = [];
+
+          for (let p = rangeStart; p <= rangeEnd; p++) {
+            if (paragraphs[p]) {
+              bm.mgr.content.push({
+                pid: `p${p}`,
+                text: paragraphs[p].textContent
+              });
+            } else {
+              bm.mgr.content.push({
+                pid: `p${p}`,
+                text: "no data for paragraph"
+              });
+            }
+          }
+
+          return Promise.resolve(bm);
+        });
+      } else {
+        return Promise.resolve(bm);
+      }
+  });
+  return promises;
 }
 function getBookmarkText(bookmarks) {
   let promises = bookmarks.map(bm => {
@@ -636,10 +697,6 @@ __webpack_require__.r(__webpack_exports__);
     "15": "ACIM Original Edition",
     "16": "Droga Mistrzostwa"
   },
-  "0": [{
-    "value": "*",
-    "name": "-- Select Source --"
-  }],
   "12": [{
     "value": "*",
     "name": "All Books"
@@ -809,23 +866,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(toastr__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _net__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./net */ "./src/js/modules/_user/net.js");
 /* harmony import */ var _netlify__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./netlify */ "./src/js/modules/_user/netlify.js");
-/* harmony import */ var lodash_intersectionWith__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lodash/intersectionWith */ "./node_modules/lodash/intersectionWith.js");
-/* harmony import */ var lodash_intersectionWith__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(lodash_intersectionWith__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var lodash_differenceWith__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! lodash/differenceWith */ "./node_modules/lodash/differenceWith.js");
-/* harmony import */ var lodash_differenceWith__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(lodash_differenceWith__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var lodash_uniqWith__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! lodash/uniqWith */ "./node_modules/lodash/uniqWith.js");
-/* harmony import */ var lodash_uniqWith__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(lodash_uniqWith__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _bookmark_bmnet__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../_bookmark/bmnet */ "./src/js/modules/_bookmark/bmnet.js");
-/* harmony import */ var _db_topics__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../_db/topics */ "./src/js/modules/_db/topics.js");
-/* harmony import */ var _db_annotation__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../_db/annotation */ "./src/js/modules/_db/annotation.js");
-/* harmony import */ var _db_quotes__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../_db/quotes */ "./src/js/modules/_db/quotes.js");
-/* harmony import */ var lodash_startCase__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! lodash/startCase */ "./node_modules/lodash/startCase.js");
-/* harmony import */ var lodash_startCase__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(lodash_startCase__WEBPACK_IMPORTED_MODULE_10__);
-/* harmony import */ var _source__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./source */ "./src/js/modules/_user/source.js");
-
-
-
-
+/* harmony import */ var _db_topics__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../_db/topics */ "./src/js/modules/_db/topics.js");
+/* harmony import */ var _db_annotation__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../_db/annotation */ "./src/js/modules/_db/annotation.js");
+/* harmony import */ var _db_quotes__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../_db/quotes */ "./src/js/modules/_db/quotes.js");
+/* harmony import */ var lodash_startCase__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! lodash/startCase */ "./node_modules/lodash/startCase.js");
+/* harmony import */ var lodash_startCase__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(lodash_startCase__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var _source__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./source */ "./src/js/modules/_user/source.js");
 
 
 
@@ -854,6 +900,9 @@ $("button.source-select").on("click", function (e) {
     $(this).addClass("collapse");
     $(this).removeClass("show-all");
     $(this).text("Focus");
+    manageTopics("close");
+    clearActivityReport();
+    resetAnnotationActions();
     showAll(sid);
   }
 
@@ -913,10 +962,9 @@ function removeActions(sid) {
 }
 
 function loadBookmarksRequest(sid, el) {
-  console.log("Load annotations clicked");
+  //console.log("Load annotations clicked");
   $(el).addClass("loading");
   loadData(sid).then(info => {
-    //console.log("loadData: %o", info);
     $(`#load-button-${sid}`).html(`Topics: ${info.topics}<br>Annotations: ${info.bookmarks}`);
     $(el).removeClass("loading");
 
@@ -926,18 +974,6 @@ function loadBookmarksRequest(sid, el) {
   }).catch(err => {
     $(el).removeClass("loading");
   });
-}
-
-function generateTopicList(topics) {
-  return `
-    <div class="ui list">
-      ${topics.map(t => `
-        <div class="item">
-          ${t.topic}
-        </div>
-      `).join("")}
-    </div>
-  `;
 }
 
 function generateHorizontalList(listArray, flat = false) {
@@ -970,19 +1006,19 @@ function generateContent(content) {
 
 function generateSection(bm) {
   return `
-    <div class="ui vertical segment">
+    <div class="ui vertical segment bookmark-segment ${bm.mgr.type}">
       <div class="ui small header bookmark-header">
-        <a id="${bm.bookmark.creationDate}" target="_blank" href="${bm.mgr.url}?v=${bm.mgr.pid}&key=${bm.id}">${bm.mgr.title ? bm.mgr.title : bm.mgr.url}</a>
+        <a id="${bm.annotation.creationDate}" target="_blank" href="${bm.mgr.url}?v=${bm.mgr.pid}&key=${bm.paraKey}">${bm.mgr.title ? bm.mgr.title : bm.mgr.url}</a>
         <br/>
         <div class="ui horizontal bulleted link list">
-          ${generateHorizontalList(bm.bookmark.topicList)}
+          ${generateHorizontalList(bm.annotation.topicList)}
         </div>
         ${bm.mgr.comment ? "<br/>" : ""}
         ${bm.mgr.comment ? bm.mgr.comment : ""}
       </div>
       ${generateContent(bm.mgr.content)}
-      <p ${bm.mgr.type !== "note" ? `class='cmi-manage-quote ${bm.bookmark.quote ? "in-database" : ""} ${bm.bookmark.creationDate}'` : ""}>
-        ~${bm.id}${bm.mgr.type === "note" ? "" : `:${bm.bookmark.creationDate}:${bm.bookmark.rangeStart}`}
+      <p ${bm.mgr.type !== "note" ? `class='cmi-manage-quote ${bm.annotation.quote ? "in-database" : ""} ${bm.annotation.creationDate}'` : ""}>
+        ~${bm.paraKey}${bm.mgr.type === "note" ? "" : `:${bm.annotation.creationDate}:${bm.annotation.rangeStart}`}
       </p>
     </div>
   `;
@@ -991,11 +1027,8 @@ function generateSection(bm) {
 function generateBookmarkTextHtml(bookmarks, topicManager) {
   return `
     <p>
-      <button class="hide-headers ui primary button">Hide Headers</button>
-    </p>
-    <p>
-      ${_source__WEBPACK_IMPORTED_MODULE_11__["default"].title[topicManager.source]}<br/>
-      ${bookmarks.length} Bookmarks include topics: <em>${topicManager.topicArray.join(" / ")}</em> <br/>
+      ${topicManager.source}<br/>
+      ${bookmarks.length} Bookmarks include topics: <em>${topicManager.topicArray.join(` ${topicManager.condition} `)}</em> <br/>
       ${new Date().toLocaleString()}
     </p>
     ${bookmarks.map(bookmark => `${generateSection(bookmark)}`).join("")}
@@ -1003,28 +1036,25 @@ function generateBookmarkTextHtml(bookmarks, topicManager) {
 }
 
 function generateBookmarkText(bookmarks, topicManager) {
-  let promises = Object(_net__WEBPACK_IMPORTED_MODULE_1__["getBookmarkText"])(bookmarks);
+  let promises = Object(_net__WEBPACK_IMPORTED_MODULE_1__["getBookmarkTextNew"])(bookmarks);
   Promise.all(promises).then(responses => {
-    //console.log("promise.all: %o", responses);
     let html = generateBookmarkTextHtml(responses, topicManager);
+    $("#activity-report-controls").remove();
     $("#activity-report").html(html);
   });
 }
 
+function generateTopicItem(t) {
+  return `
+    <div class="item" data-value="${t.value}">${t.topic}</div>
+  `;
+}
+
 function makeTopicSelect(topics) {
   return `
-    ${topics.map(topic => `<div class="item ${topic.deleted ? " deleted" : ""}" data-value="${topic.deleted ? "*" : ""}${topic.value}">${topic.deleted ? "*" : ""}${topic.topic}</div>`).join("")}
+    <div class="item" data-value="*">** Show All Bookmarks</div>
+    ${topics.map(t => `${!t.deleted ? generateTopicItem(t) : ""}`).join("")}
   `;
-}
-
-function makeBookSelectNew(books) {
-  return `
-    ${books.map(book => `<option value="${book.value}">${book.name}</option>`).join("")}
-  `;
-}
-
-function getFormData() {
-  return $("#topic-manager").form("get values");
 }
 /*
  * Load topics and bookmarks for arg: sid
@@ -1034,7 +1064,7 @@ function getFormData() {
 function loadData(sid) {
   let userInfo = Object(_netlify__WEBPACK_IMPORTED_MODULE_2__["getUserInfo"])();
   return new Promise((resolve, reject) => {
-    let tList = Object(_db_topics__WEBPACK_IMPORTED_MODULE_7__["getTopicList"])(userInfo.userId, sid).then(topicList => {
+    let tList = Object(_db_topics__WEBPACK_IMPORTED_MODULE_3__["getTopicList"])(userInfo.userId, sid).then(topicList => {
       topics[sid] = topicList;
       toastr__WEBPACK_IMPORTED_MODULE_0___default.a.success(`${topics[sid].length} topics loaded`);
     }).catch(err => {
@@ -1043,8 +1073,9 @@ function loadData(sid) {
       reject(err);
       return;
     });
-    let bList = Object(_db_annotation__WEBPACK_IMPORTED_MODULE_8__["getAnnotations"])(userInfo.userId, sid).then(bmList => {
-      bookmarks[sid] = bmList;
+    let bList = Object(_db_annotation__WEBPACK_IMPORTED_MODULE_4__["getAnnotations"])(userInfo.userId, sid).then(bmList => {
+      bookmarks[sid] = bmList; //initialize to not modified
+
       bookmarks[sid].forEach(i => {
         i.modified = false;
       });
@@ -1065,16 +1096,73 @@ function loadData(sid) {
   });
 }
 
+function generateTableRow(sid, t, index) {
+  return `
+    <tr data-sid="${sid}" data-index="${index}"> 
+      <td class="edit-topic-item"><i class="pencil alternate icon"></i></td>
+      <td class="delete-topic-item"><i class="trash alternate icon"></i></td>
+      <td class="topic">${t.topic}</td>
+    </tr>
+  `;
+}
+
 function generateTopicTableData(sid) {
   return `
     ${topics[sid].map((t, index) => `
-      <tr data-sid="${sid}" data-index="${index}"> 
-        <td class="edit-topic-item"><i class="pencil alternate icon"></i></td>
-        <td class="delete-topic-item"><i class="trash alternate icon"></i></td>
-        <td class="topic">${t.topic}</td>
-      </tr>
-    `).join("")}
+      ${!t.deleted ? generateTableRow(sid, t, index) : ""}`).join("")}
   `;
+}
+/*
+ * Search through bookmarks by source and filter by book for topics
+ */
+
+
+function findMatchesNew(sid, book, topicList, condition) {
+  let topicArray = topicList.split(","); //look for topic of "*", this means to include all bookmarks (don't filter by topic)
+
+  let filterByTopic = !topicArray.includes("*");
+  let matches = []; //find all bookmarks containing topics in topicArray
+  //- if condition === "OR" a match is found when the bookmark contains one or more
+  //  topics in topicArray
+  // - if condition === "AND" a match is found when the bookmark contans each topic
+  //   in topicArray
+
+  if (filterByTopic) {
+    bookmarks[sid].forEach(b => {
+      let btl = b.annotation.topicList;
+      let count = 0;
+
+      if (btl && btl.length > 0) {
+        for (let tf = 0; tf < topicArray.length; tf++) {
+          let index = btl.findIndex(bt => bt.value === topicArray[tf]);
+
+          if (condition === "OR") {
+            if (index > -1) {
+              matches.push(b);
+              break;
+            }
+          } //condition === "AND"
+          else if (index > -1) {
+              count++;
+            }
+        }
+
+        if (count === topicArray.length && condition === "AND") {
+          matches.push(b);
+        }
+      }
+    });
+  } else {
+    matches = bookmarks[sid];
+  } //filter matched bookmarks if user restricted by book, "*" means matches
+  //are not filterd by book
+
+
+  if (book !== "*") {
+    matches = matches.filter(bm => bm.paraKey.startsWith(book));
+  }
+
+  return matches;
 }
 /**
  * Create a topic from string. Topics are objects: {value: "", topic: ""}. The topic
@@ -1095,7 +1183,7 @@ function formatNewTopic(newTopic) {
   }
 
   topicStr = topicStr.trim();
-  topicStr = lodash_startCase__WEBPACK_IMPORTED_MODULE_10___default()(topicStr);
+  topicStr = lodash_startCase__WEBPACK_IMPORTED_MODULE_6___default()(topicStr);
 
   if (/ /.test(topicStr)) {
     topic = {
@@ -1111,25 +1199,96 @@ function formatNewTopic(newTopic) {
 
   return topic;
 }
+/*
+ * Set state of controls when topic manager opens or closes.
+ */
+
+
+function manageTopics(state) {
+  if (state === "open") {
+    clearActivityReport(); //hide annotation-action controls
+
+    $("#action-manager > .annotation-actions").addClass("hide");
+    $("#manageTopicsButton").text("Un-Manage Topics");
+    $("#topicTable").removeClass("hide");
+  } else if (state === "close") {
+    $("#manageTopicsButton").text("Manage Topics");
+    $("#topicTable").addClass("hide");
+  }
+}
+/*
+ * Remove bookmarks from activity-report and reset
+ * controls that operate on bookmarks
+ */
+
+
+function clearActivityReport() {
+  $("#activity-report").html("");
+  $("#topicSelectNew").dropdown("clear");
+  $(".condition-checkbox.default").trigger("click");
+  $(".style-checkbox.default").trigger("click");
+}
+
+function resetAnnotationActions() {
+  //reset style checkbox
+  $(".style-checkbox.default").trigger("click"); //reset Show Headers
+
+  if ($("#action-manager > .annotation-actions .hide-headers").hasClass("hide")) {
+    $("#action-manager > .annotation-actions .hide-headers").removeClass("hide").html("Hide Headers");
+    $("#activity-report .bookmark-header").removeClass("hide");
+  } //reset Show Quotes
+
+
+  if ($("#action-manager > .annotation-actions .hide-quotes").hasClass("hide")) {
+    $("#action-manager > .annotation-actions .hide-quotes").removeClass("hide").html("Hide Quotes");
+    $("#activity-report .bookmark-segment.hide").removeClass("hide");
+    $("#activity-report .bookmark-segment.hide").removeClass("qhide");
+  }
+}
 
 function initForm() {
-  //----------------------- new ----------------------------
   $("#topicSelectNew").dropdown();
+  $("#action-manager .ui.radio.checkbox").checkbox();
   $("#manageTopicsButton").on("click", function (e) {
     let sid = $(this).attr("data-sid");
 
     if ($("#topicTable").hasClass("hide")) {
       let html = generateTopicTableData(sid);
       $("#topicTable > tbody").html(html);
-      $("#topicTable").removeClass("hide");
+      manageTopics("open");
     } else {
-      $("#topicTable").addClass("hide");
+      manageTopics("close");
     }
+  }); //delete topic
+
+  $("#topicTable").on("click", "td.delete-topic-item", function (e) {
+    let index = parseInt($(this).parent().attr("data-index"), 10);
+    let sid = $(this).parent().attr("data-sid");
+    let deleted = $(this).parent().hasClass("deleted");
+
+    if (deleted) {
+      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info("Topic has been deleted");
+      return;
+    } //confirm delete request
+
+
+    let topicToDelete = topics[sid][index];
+    $("#confirmDelete > .header").text(`Delete Topic: "${topicToDelete.topic}"?`);
+    $("#confirmDelete .actions > .delete-approve").attr("data-sid", sid);
+    $("#confirmDelete .actions > .delete-approve").attr("data-index", index);
+    $("#confirmDelete").modal("show");
   }); //edit topic
 
   $("#topicTable").on("click", "td.edit-topic-item", function (e) {
     let index = parseInt($(this).parent().attr("data-index"), 10);
     let sid = $(this).parent().attr("data-sid");
+    let deleted = $(this).parent().hasClass("deleted");
+
+    if (deleted) {
+      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info("Topic has been deleted");
+      return;
+    }
+
     $("#edit-topic-form").form("set values", {
       sid: sid,
       index: index,
@@ -1137,12 +1296,17 @@ function initForm() {
       oldtopic: topics[sid][index].topic
     });
     $(".edit-topic-dialog-wrapper.hide").removeClass("hide");
+  }); //cancel topic edit
+
+  $("#update-topic-cancel").on("click", function (e) {
+    e.preventDefault();
+    $(".edit-topic-dialog-wrapper").addClass("hide");
   }); //submit topic edit
 
   $("#update-topic-submit").on("click", function (e) {
     e.preventDefault();
     let form = $("#edit-topic-form").form("get values");
-    let index = parseInt(form.index, 10);
+    let index = parseInt(form.index, 10); //if no changes just return
 
     if (form.topic === form.oldtopic) {
       $(".edit-topic-dialog-wrapper").addClass("hide");
@@ -1158,20 +1322,93 @@ function initForm() {
     if (found) {
       toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info("That topic already exists.");
       return;
-    } //close the edit topic form
+    } //mark topic as modified
 
+
+    markSourceModified(form.sid, "topicList"); //close the edit topic form
 
     $(".edit-topic-dialog-wrapper").addClass("hide"); //update topic array with new topic
 
+    let oldTopic = topics[form.sid][index];
     topics[form.sid][index] = newTopic; //update table with new topic
 
-    $(`[data-sid='${form.sid}'][data-index='${form.index}'] > .topic`).text(newTopic.topic); //update bookmarks with new topic
-  }); //----------------------- new end ----------------------------
+    $(`[data-sid='${form.sid}'][data-index='${form.index}'] > .topic`).text(newTopic.topic); //update topic select
 
-  $("#source-list").dropdown();
-  $("#book-list1.dropdown").dropdown();
-  $("#topicSelect").dropdown();
-  $("#activity-report").on("click", ".hide-headers", function (e) {
+    $(`#topic-list-new > [data-value='${oldTopic.value}']`).attr("data-value", newTopic.value).text(newTopic.topic); //update bookmarks with new topic
+    // - find bookmarks with old topic and replace it with new topic
+
+    bookmarks[form.sid].forEach(bm => {
+      if (bm.annotation.topicList) {
+        let idx = bm.annotation.topicList.findIndex(t => {
+          return t.value === oldTopic.value;
+        }); //bookmark has topic, replace the old topic and mark the bookmark
+        //as being modified
+
+        if (idx > -1) {
+          bm.annotation.topicList[idx] = newTopic;
+          bm.modified = true;
+          markSourceModified(form.sid, "bookmark");
+        }
+      }
+    });
+  });
+  $("#displayBookmarksButtonNew").on("click", function (e) {
+    e.preventDefault();
+    let sid = $(this).attr("data-sid");
+    let topicManager = {};
+    let actionManager = $("#action-manager").form("get values");
+
+    if (actionManager.topicListNew.length === 0) {
+      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info("Select one or more topics from the Topic Select List");
+      return;
+    } //close topics table of open
+
+
+    manageTopics("close");
+    resetAnnotationActions();
+    let bookFilter = $(`#book-list${sid} :selected`).val();
+    let matches = findMatchesNew(sid, bookFilter, actionManager.topicListNew, actionManager.condition);
+
+    if (matches.length === 0) {
+      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info("No bookmarks contain selected topics");
+      return;
+    } //show annotation controls
+
+
+    $("#action-manager > .annotation-actions").removeClass("hide");
+    topicManager.source = _source__WEBPACK_IMPORTED_MODULE_7__["default"].title[sid];
+    topicManager.topicArray = actionManager.topicListNew.split(",");
+    topicManager.condition = actionManager.condition;
+    topicManager.bookFilter = bookFilter; //generated html
+
+    generateBookmarkText(matches, topicManager);
+  });
+  $("#action-manager > .annotation-actions input[type=radio][name=annotationFilter]").on("change", function (e) {
+    let form = $("#action-manager").form("get values"); //show all bookmarks
+
+    if (form.annotationFilter === "none") {
+      $(".bookmark-segment.hide").removeClass("hide");
+    } //show note bookmarks, hide selected
+    else if (form.annotationFilter === "note") {
+        $(".bookmark-segment.note").removeClass("hide");
+        $(".bookmark-segment.selected").addClass("hide");
+      } else if (form.annotationFilter === "selected") {
+        $(".bookmark-segment.note").addClass("hide"); //don't show bookmarks that have been hidden by Hide Quotes
+
+        $(".bookmark-segment.selected").removeClass("hide");
+      }
+  });
+  $("#action-manager > .annotation-actions").on("click", ".hide-quotes", function (e) {
+    if ($(this).hasClass("hide")) {
+      $(this).removeClass("hide").html("Hide Quotes");
+      $("#activity-report .bookmark-segment.qhide").removeClass("qhide");
+    } else {
+      let quotesToHide = $("#activity-report .cmi-manage-quote.in-database").parent();
+      quotesToHide.addClass("qhide");
+      $(this).addClass("hide").html(`Show Quotes (${quotesToHide.length})`);
+    }
+  });
+  $("#action-manager > .annotation-actions").on("click", ".hide-headers", function (e) {
     if ($(this).hasClass("hide")) {
       $(this).removeClass("hide").html("Hide Headers");
       $("#activity-report .bookmark-header").removeClass("hide");
@@ -1179,247 +1416,84 @@ function initForm() {
       $(this).addClass("hide").html("Show Headers");
       $("#activity-report .bookmark-header").addClass("hide");
     }
-  }); //delete confirmation modal
+  }); //delete topic confirmation modal
 
   $("#confirmDelete").modal({
     closable: false,
     onDeny: function () {
-      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info("Delete Canceled."); //$("#topicSelect").dropdown("clear");
+      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info("Delete Canceled.");
     },
-    onApprove: function () {
-      let topicManager = getFormData();
-      let deleted = filterTopics(topicManager.topicList); //clear selected topics
+    onApprove: function (el) {
+      let index = parseInt($(el).attr("data-index"), 10);
+      let sid = $(el).attr("data-sid");
+      let deletedTopic = topics[sid][index];
+      deletedTopic.index = index; //1. mark topic in topic table as deleted
 
-      $("#topicSelect").dropdown("clear");
+      $(`#topicTable > tbody > [data-sid='${sid}'][data-index='${index}']`).addClass("deleted"); //2. mark topic in topic dropdown select as deleted, change value to "*"
 
-      if (deleted.length === 0) {
-        toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info("No topic(s) selected.");
-        return;
-      } //mark topics as deleted
+      $(`#topic-list-new > [data-value='${deletedTopic.value}']`).addClass("deleted").attr("data-value", "X"); //3. mark topic as deleted and update topicList when changes are written to db
 
+      topics[sid][index].deleted = true; //topics[sid].splice(index, 1);
 
-      markTopicsDeleted(topicManager.source, deleted); //find bookmarks with deleted topics
+      markSourceModified(sid, "topicList"); //4. delete topic from bookmark annotations
 
-      let bookmarksWithDeletedTopics = getBookmarksByTopic(topicManager.source, deleted); //console.log("matches: %o", bookmarksWithDeletedTopics);
-      //remove deleted topics from bookmarks
+      let itemsDeleted = false;
+      bookmarks[sid].forEach(bm => {
+        if (bm.annotation.topicList) {
+          let idx = bm.annotation.topicList.findIndex(t => {
+            return t.value === deletedTopic.value;
+          }); //bookmark has topic, delete it
 
-      if (bookmarksWithDeletedTopics.length > 0) {
-        deleteBookmarkTopics(topicManager.source, bookmarksWithDeletedTopics, deleted);
-      } //update topics select control
-
-
-      let html = makeTopicSelect(topics[topicManager.source]);
-      $("#topic-list").html(html);
-      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.success("Topics Deleted.");
-    }
-  });
-  $("#source-list").on("change", function () {
-    let topicManager = getFormData(); //clear topic list
-
-    $("#topicsLabel").text("Topics (0)"); //let sourceId = e.target.selectedOptions[0].value;
-
-    let sourceId = topicManager.source;
-    let html = makeBookSelectNew(_source__WEBPACK_IMPORTED_MODULE_11__["default"][sourceId]);
-    $("#book-list1").html(html); //clear activity report
-
-    clearActivityReport(); //enable Get Bookmarks button
-
-    $("#getBookmarksButton").removeAttr("disabled"); //disable buttons until topics have been loaded
-
-    $("#deleteTopicsButton").attr("disabled", "");
-    $("#renameTopicButton").attr("disabled", "");
-    $("#findFriendsButton").attr("disabled", "");
-    $("#displayBookmarksButton").attr("disabled", "");
-    $("#bookmarksLabel").text("Bookmarks (0)"); //clear topic dropdown
-
-    if ($("#topic-list > div").length > 0) {
-      $("#topic-list").html("");
-      $("#topicSelect").dropdown("clear");
-      $("#topicsLabel").text("Topics (0)");
-    }
-  });
-  $("#getBookmarksButton").on("click", async function (e) {
-    return;
-    let userInfo = Object(_netlify__WEBPACK_IMPORTED_MODULE_2__["getUserInfo"])();
-    let topicManager = getFormData();
-
-    if (topicManager.source === "0") {
-      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info("To start, first select a source");
-      return;
-    } //disable button until source is changed
-
-
-    $("#getBookmarksButton").attr("disabled", "");
-    $("#topic-manager").addClass("loading"); //get topics for source
-
-    if (!topics[topicManager.source]) {
-      try {
-        let topicList = await Object(_db_topics__WEBPACK_IMPORTED_MODULE_7__["getTopicList"])(userInfo.userId, topicManager.source);
-        topics[topicManager.source] = topicList;
-        let html = makeTopicSelect(topicList);
-        $("#topic-list").html(html);
-        $("#topicsLabel").text(`Topics (${topicList.length})`);
-        toastr__WEBPACK_IMPORTED_MODULE_0___default.a.success(`${topics[topicManager.source].length} topics loaded`);
-        $("#deleteTopicsButton").removeAttr("disabled");
-        $("#renameTopicButton").removeAttr("disabled");
-        $("#findFriendsButton").removeAttr("disabled");
-        $("#displayBookmarksButton").removeAttr("disabled");
-      } catch (err) {
-        console.error("error fetching topicList: %s", err);
-        toastr__WEBPACK_IMPORTED_MODULE_0___default.a.error(err);
-      }
-    } else {
-      let html = makeTopicSelect(topics[topicManager.source]);
-      $("#topic-list").html(html);
-      $("#topicsLabel").text(`Topics (${topics[topicManager.source].length})`);
-      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.success(`${topics[topicManager.source].length} topics loaded`);
-      $("#deleteTopicsButton").removeAttr("disabled");
-      $("#renameTopicButton").removeAttr("disabled");
-      $("#findFriendsButton").removeAttr("disabled");
-      $("#displayBookmarksButton").removeAttr("disabled");
-    } //get bookmarks for source
-
-
-    if (!bookmarks[topicManager.source]) {
-      try {
-        let bmList = await Object(_db_annotation__WEBPACK_IMPORTED_MODULE_8__["getAnnotations"])(userInfo.userId, topicManager.source);
-        bookmarks[topicManager.source] = bmList;
-        $("#bookmarksLabel").text(`Bookmarks (${bookmarks[topicManager.source].length})`);
-        toastr__WEBPACK_IMPORTED_MODULE_0___default.a.success(`${bookmarks[topicManager.source].length} bookmarks loaded`);
-        $("#topic-manager").removeClass("loading"); //add modified indicator, set to false
-
-        bookmarks[topicManager.source].forEach(i => {
-          i.modified = false;
-        });
-      } catch (err) {
-        console.error("error fetching bookmarks: %s", err);
-        toastr__WEBPACK_IMPORTED_MODULE_0___default.a.error(err);
-      }
-    } else {
-      $("#topic-manager").removeClass("loading");
-      $("#bookmarksLabel").text(`Bookmarks (${bookmarks[topicManager.source].length})`);
-      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.success(`${bookmarks[topicManager.source].length} bookmarks loaded`);
-    }
-  });
-  $("#deleteTopicsButton").on("click", function () {
-    let topicManager = getFormData();
-    let deleted = filterTopics(topicManager.topicList);
-
-    if (deleted.length === 0) {
-      $("#topicSelect").dropdown("clear");
-      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info("No topic(s) selected.");
-      return;
-    }
-
-    $("#topicsToDelete").html(`<em>${topicManager.topicList}</em>`);
-    $("#confirmDelete").modal("show");
-  });
-  /*
-   * Not yet implemented
-   */
-
-  $("#renameTopicButton").on("click", function () {
-    let topicManager = getFormData();
-
-    if (topicManager.topicList.length === 0) {
-      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info("Select topic to be renamed.");
-      return;
-    }
-
-    if (topicManager.topicList.length > 1) {
-      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info("Select only ONE topic to be renamed.");
-      return;
-    }
-  });
-  $("#findFriendsButton").on("click", function () {
-    let topicManager = getFormData();
-    let topicArray = filterTopics(topicManager.topicList); //don't all the 'All Topics' topic
-
-    topicArray = topicArray.filter(t => {
-      if (t === "<>") {
-        return false;
-      }
-
-      return true;
-    });
-
-    if (topicArray.length === 0) {
-      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info("Select at least one topic.");
-      return;
-    } //find bookmarks containing selected topics
-
-
-    let matches = findMatches(topicManager.source, topicManager.book, topicArray); //get topics from matches but don't include those in topicArray
-
-    let friends = [];
-    matches.forEach(bm => {
-      let diff = lodash_differenceWith__WEBPACK_IMPORTED_MODULE_4___default()(bm.bookmark.topicList, topicArray, (v1, v2) => {
-        if (v1.value === v2) {
-          return true;
+          if (idx > -1) {
+            bm.annotation.topicList.splice(idx, 1);
+            bm.modified = true;
+            itemsDeleted = true;
+          }
         }
-
-        return false;
       });
-      friends = friends.concat(diff);
-    }); //remove duplicates
 
-    friends = lodash_uniqWith__WEBPACK_IMPORTED_MODULE_5___default()(friends, (v1, v2) => {
-      if (v1.value === v2.value) {
-        return true;
+      if (itemsDeleted) {
+        markSourceModified(sid, "bookmark");
       }
 
-      return false;
-    }); //sort
-
-    friends.sort((v1, v2) => {
-      if (v1.value < v2.value) {
-        return -1;
-      }
-
-      if (v1.value > v2.value) {
-        return 1;
-      }
-
-      return 0;
-    });
-    let html = generateTopicList(friends);
-    $("#activity-report").html(html);
-  });
-  $("#displayBookmarksButton").on("click", function () {
-    let topicManager = getFormData();
-    let topicArray = filterTopics(topicManager.topicList);
-
-    if (topicArray.length === 0) {
-      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info("Select at least one topic.");
-      return;
+      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.success(`Topic "${deletedTopic.topic}" Deleted.`);
     }
-
-    let matches = findMatches(topicManager.source, topicManager.book, topicArray);
-
-    if (matches.length === 0) {
-      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info("No bookmarks contain selected topics");
-      clearActivityReport();
-      return;
-    } //generated html
-
-
-    topicManager.topicArray = topicArray;
-    generateBookmarkText(matches, topicManager);
   });
   /*
    * Write changes to database
    */
 
-  $("#applyChangesButton").on("click", function () {
-    let modified = getModifiedBookmarks(); //console.log("modified: %o", modified);
-    //update database
+  $("#applyChangesButtonNew").on("click", function () {
+    //get modified bookmarks
+    $(this).addClass("loading");
+    let modified = getModified();
+    let userInfo = Object(_netlify__WEBPACK_IMPORTED_MODULE_2__["getUserInfo"])(); //update database
 
-    modified.forEach(m => {
-      delete m.annotation.modified;
-      _bookmark_bmnet__WEBPACK_IMPORTED_MODULE_6__["default"].postAnnotation(m.annotation, m.key, false);
+    let results = [];
+    modified.bookmarks.forEach(m => {
+      delete m.modified;
+      delete m.pid;
+      results.push(Object(_db_annotation__WEBPACK_IMPORTED_MODULE_4__["updateAnnotation"])(m));
     });
-    clearModified();
-    toastr__WEBPACK_IMPORTED_MODULE_0___default.a.success("Modifications Saved");
+    Promise.all(results).then(responses => {
+      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.success(`${responses.length} Annotation(s) Updated`); //update modified topics
+
+      results = [];
+      modified.topics.forEach(t => {
+        let newList = topics[t].filter(t => !t.deleted);
+        results.push(Object(_db_topics__WEBPACK_IMPORTED_MODULE_3__["putTopicList"])(userInfo.userId, t, newList));
+      });
+      return Promise.all(results);
+    }).then(responses => {
+      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.success(`${responses.length} topicList(s) Updated`);
+      clearModified();
+      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.success("Modifications Saved");
+      $(this).removeClass("loading");
+    }).catch(err => {
+      toastr__WEBPACK_IMPORTED_MODULE_0___default.a.error(`Error updating items: ${err}`);
+      console.error(err);
+      $(this).removeClass("loading");
+    });
   });
 }
 
@@ -1437,13 +1511,6 @@ function initManageQuoteEventHandler() {
     if (!userInfo) {
       return;
     }
-    /*
-    if (!userInfo.roles.includes("quote-manager")) {
-      console.log("not quote-manager");
-      return;
-    }
-    */
-
 
     if (isQuoteEditorOpen()) {
       return;
@@ -1472,8 +1539,7 @@ function initManageQuoteEventHandler() {
     e.stopPropagation();
     e.preventDefault();
     let info = $("#quote-editor-form").form("get values");
-    let action = $(this).text().startsWith("Add") ? "Added" : "Updated"; //let url = `${globals.quote}/quote`;
-
+    let action = $(this).text().startsWith("Add") ? "Added" : "Updated";
     let postBody = {
       userId: info.userId,
       paraKey: info.parakey,
@@ -1489,7 +1555,7 @@ function initManageQuoteEventHandler() {
     clearQuoteEditorOpen();
 
     try {
-      let response = await Object(_db_quotes__WEBPACK_IMPORTED_MODULE_9__["putQuote"])(postBody);
+      let response = await Object(_db_quotes__WEBPACK_IMPORTED_MODULE_5__["putQuote"])(postBody);
       toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info(`Quote ${action}`);
       markAsInDB(info.parakey, info.annotationId);
     } catch (err) {
@@ -1511,7 +1577,7 @@ function initManageQuoteEventHandler() {
     let info = $("#quote-editor-form").form("get values");
 
     try {
-      let response = await Object(_db_quotes__WEBPACK_IMPORTED_MODULE_9__["deleteQuote"])(info.userId, info.parakey, info.annotationId);
+      let response = await Object(_db_quotes__WEBPACK_IMPORTED_MODULE_5__["deleteQuote"])(info.userId, info.parakey, info.annotationId);
       toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info("Quote deleted from database");
       markAsNotInDB(info.parakey, info.annotationId);
     } catch (err) {
@@ -1544,15 +1610,12 @@ function clearQuoteEditorOpen() {
  */
 
 
-function markAsInDB(key, aid, modified = true) {
-  let sourceId = key.substring(0, 2);
-
+function markAsInDB(paraKey, creationDate, modified = true) {
   if (modified) {
-    markModified(sourceId, key);
-    markQuotedState(key, aid, true);
+    markModified(paraKey, creationDate, true);
   }
 
-  $(`.${aid}`).addClass("in-database");
+  $(`.${creationDate}`).addClass("in-database");
 }
 /*
  * Indicate bookmark is not in the quote db and
@@ -1560,20 +1623,17 @@ function markAsInDB(key, aid, modified = true) {
  */
 
 
-function markAsNotInDB(key, aid) {
-  let sourceId = key.substring(0, 2);
-  markModified(sourceId, key);
-  markQuotedState(key, aid, false);
-  $(`.${aid}`).removeClass("in-database");
+function markAsNotInDB(paraKey, creationDate) {
+  markModified(paraKey, creationDate, false);
+  $(`.${creationDate}`).removeClass("in-database");
 }
 
 async function initQuoteForm(info) {
-  let form = $("#quote-editor-form"); //let url = `${globals.quote}/quotedata/${info.userId}/${info.parakey}:${info.annotationId}`;
-
+  let form = $("#quote-editor-form");
   $("#quote-editor-form").addClass("loading");
 
   try {
-    let response = await Object(_db_quotes__WEBPACK_IMPORTED_MODULE_9__["getQuoteData"])(info.userId, info.parakey, info.annotationId);
+    let response = await Object(_db_quotes__WEBPACK_IMPORTED_MODULE_5__["getQuoteData"])(info.userId, info.parakey, info.annotationId);
 
     if (response.q) {
       info.database = response.q.quote;
@@ -1589,232 +1649,45 @@ async function initQuoteForm(info) {
     console.log("Error getting quote from database: %w", err);
   }
 }
-
-function clearActivityReport() {
-  $("#activity-report").html("");
-}
 /*
- * Search through bookmarks by source and filter by book for topics
- */
-
-
-function findMatches(source, book, topics) {
-  let matches = getBookmarksWithAllTopic(source, topics);
-
-  if (matches.length === 0) {
-    return matches;
-  } //filter matched bookmarks if user restricted by book
-
-
-  if (book !== "*") {
-    matches = matches.filter(bm => {
-      let bmid = bm.id + "x";
-      return bmid.startsWith(book);
-    });
-  }
-
-  return matches;
-}
-/*
- * Given a comma separated string of user selected topics, filter deleted
- * topics and return an array.
- */
-
-
-function filterTopics(topicString) {
-  let topicArray = topicString.split(",").filter(item => {
-    if (item === "") {
-      return false;
-    }
-
-    if (item.startsWith("*")) {
-      return false;
-    }
-
-    return true;
-  });
-  return topicArray;
-}
-/*
- * Mark topics as deleted
- * Args: source: Source Id
- *       deletedTopics: array of deleted topics
- */
-
-
-function markTopicsDeleted(source, deletedTopics) {
-  topics[source].forEach(topic => {
-    deletedTopics.forEach(dt => {
-      if (dt !== "<>" && dt === topic.value) {
-        topic.deleted = true; //console.log("deleted topic: %o", topic);
-      }
-    });
-  });
-}
-/*
- * Find bookmarks containing ALL topics
- * Args: source: Source Id
- *       topics: array of topics
- */
-
-
-function getBookmarksWithAllTopic(source, topics) {
-  let matches = [];
-
-  if (topics.length === 0) {
-    return matches;
-  }
-
-  bookmarks[source].forEach(bmark => {
-    if (bmark.annotation.topicList && bmark.annotation.topicList.length > 0) {
-      let index;
-      let findCount = 0;
-      topics.forEach(t => {
-        index = bmark.annotation.topicList.findIndex(bt => {
-          if (bt.value === t) {
-            return true;
-          }
-
-          return false;
-        });
-
-        if (index > -1) {
-          findCount++;
-        }
-      });
-
-      if (findCount === topics.length) {
-        matches.push({
-          id: bmark.paraKey,
-          bookmark: bmark.annotation
-        });
-      }
-    }
-  });
-  return matches;
-}
-/*
- * Find bookmarks containing topics
- * Args: source: Source Id
- *       topics: array of topics
- */
-
-
-function getBookmarksByTopic(source, topics) {
-  //find bookmarks containing selected topics
-  let matches = [];
-  bookmarks[source].forEach(item => {
-    item.bookmark.forEach(bmark => {
-      let intersection;
-
-      if (bmark.topicList) {
-        intersection = lodash_intersectionWith__WEBPACK_IMPORTED_MODULE_3___default()(topics, bmark.topicList, function (t, bt) {
-          if (t === bt.value) {
-            return true;
-          }
-
-          return false;
-        });
-
-        if (intersection.length > 0) {
-          matches.push({
-            id: item.id,
-            bookmark: bmark
-          });
-        }
-      }
-    });
-  });
-  return matches;
-}
-/*
- * Find modified bookmarks
+ * Find modified bookmarks and topicLists
  * - sources with modified bookmarks are in the global modified array,
  * - paragraphs with modified bookmarks are marked modified: true
  * - annotations in paragraphs are marked modified: true
  */
 
 
-function getModifiedBookmarks() {
-  let matches = [];
+function getModified() {
+  let bookmarksModified = [];
+  let topicListsModified = [];
   let modifiedSources = Object.keys(modified);
   modifiedSources.forEach(sid => {
-    //gather paragraphs with modified annotations
-    let modifiedParagraphs = bookmarks[sid].filter(para => {
-      return para.modified;
-    });
-    modifiedParagraphs.forEach(p => {
-      let modifiedAnnotations = p.bookmark.filter(a => {
-        return a.modified;
+    if (modified[sid].bookmark === true) {
+      let modifiedAnnotations = bookmarks[sid].filter(para => {
+        return para.modified;
       });
       modifiedAnnotations.forEach(e => {
-        matches.push({
-          sid: sid,
-          key: p.id,
-          annotation: e
-        });
+        bookmarksModified.push(e);
       });
-    });
-  });
-  return matches;
-}
-/*
- * Delete topics in bookmarks if found in the argument array topics
- */
-
-
-function deleteBookmarkTopics(sourceId, bookmarks, topics) {
-  bookmarks.forEach(item => {
-    if (item.bookmark.topicList && item.bookmark.topicList.length > 0) {
-      let topicListCount = item.bookmark.topicList.length; //mark topics deleted
-
-      item.bookmark.topicList.forEach(t => {
-        if (topics.includes(t.value)) {
-          t.deleted = true;
-        }
-      }); //make a deletedTopicList on the annotation for topics marked deleted
-      // as history
-
-      item.bookmark.deletedTopicList = item.bookmark.topicList.filter(t => {
-        if (t.deleted) {
-          return true;
-        }
-
-        return false;
-      }); //filter topics marked deleted from topicList
-
-      item.bookmark.topicList = item.bookmark.topicList.filter(t => {
-        if (!t.deleted) {
-          return true;
-        }
-
-        delete t.deleted;
-        return false;
-      }); //check if there has been a change
-
-      if (topicListCount !== item.bookmark.topicList.length) {
-        //mark annotation as modified
-        item.bookmark.modified = true;
-      }
     }
 
-    markModified(sourceId, item.id);
+    if (modified[sid].topicList === true) {
+      topicListsModified.push(sid);
+    }
   });
+  return {
+    bookmarks: bookmarksModified,
+    topics: topicListsModified
+  };
 }
 /*
  * Mark bookmark paragraph as modified
  */
 
 
-function markModified(sourceId, bookmarkId) {
-  let bkmrkId = bookmarkId;
-
-  if (typeof bookmarkId === "string") {
-    bkmrkId = parseFloat(bookmarkId);
-  }
-
-  let b = bookmarks[sourceId].find(i => {
-    if (i.id === bkmrkId) {
+function markModified(paraKey, creationDate, isQuote) {
+  let b = bookmarks[paraKey.substring(0, 2)].find(i => {
+    if (i.paraKey === paraKey && i.creationDate === creationDate) {
       return true;
     }
 
@@ -1823,17 +1696,23 @@ function markModified(sourceId, bookmarkId) {
 
   if (b) {
     b.modified = true;
-    markSourceModified(sourceId);
-    $("#applyChangesButton").removeAttr("disabled");
+    b.quote = isQuote;
+    markSourceModified(paraKey.substring(0, 2), "bookmark");
   }
 }
 
-function markSourceModified(sid) {
+function markSourceModified(sid, kind) {
   if (!modified[sid]) {
     modified[sid] = {
-      modified: true
+      [kind]: true
     };
+  } else {
+    if (!modified[sid].hasOwnProperty(kind)) {
+      modified[sid][kind] = true;
+    }
   }
+
+  $("#applyChangesButtonNew").removeAttr("disabled");
 }
 
 function clearModified() {
@@ -1845,46 +1724,7 @@ function clearModified() {
   }); //clear modified object
 
   modified = {};
-  $("#applyChangesButton").attr("disabled", "");
-}
-
-function markQuotedState(parakey, annotationId, state) {
-  let sourceId = parakey.substring(0, 2);
-  let b = bookmarks[sourceId].find(i => {
-    if (i.paraKey === parakey && i.creationDate === annotationId) {
-      return true;
-    }
-
-    return false;
-  });
-
-  if (b) {
-    b.modified = true;
-    b.quote = state;
-  } else {
-    toastr__WEBPACK_IMPORTED_MODULE_0___default.a.error("markQuotedState(): paragraph not found");
-    console.error("parakey: %s, annotationId: %s", parakey, annotationId);
-    return;
-  }
-  /*
-  let bookmark = b.bookmark.find((bmkark) => {
-    if (bmkark.creationDate === annotationId) {
-      return true;
-    }
-    return false;
-  });
-   //mark annotation as in quote databas and as modified
-  if (bookmark) {
-    bookmark.quote = state;
-    bookmark.modified = true;
-    //console.log("bookmark: %o", bookmark);
-  }
-  else {
-    notify.error("markQuotedState(): bookmark not found");
-    console.error("parakey: %s, annotationId: %s", parakey, annotationId);
-  }
-  */
-
+  $("#applyChangesButtonNew").attr("disabled", "");
 }
 
 function getQuoteForm() {
@@ -1918,7 +1758,7 @@ function getQuoteForm() {
 
 function checkForUnsavedChanges() {
   window.onbeforeunload = function (event) {
-    let unsavedChanges = $("#applyChangesButton").attr("disabled") !== "disabled";
+    let unsavedChanges = $("#applyChangesButtonNew").attr("disabled") !== "disabled";
     var message;
 
     if (unsavedChanges) {
