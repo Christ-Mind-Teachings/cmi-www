@@ -1,7 +1,7 @@
 import {getUserInfo} from "../_user/netlify";
 import {RandomQuotes, QuoteManager} from "./randomQuote";
 import {initShareByEmail, submitEmail} from "./share";
-import {getQuoteIds} from "../_db/quotes";
+import {getQuoteIds} from "../_ajax/quotes";
 import {getRandomStyle} from "./styles";
 
 const quoteMessageSelector = "#quote-modal-message";

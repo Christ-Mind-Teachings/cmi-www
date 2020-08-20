@@ -25,6 +25,7 @@ function generateOption(topic) {
 function makeTopicSelect(topics) {
   return (`
     <select name="pageTopicList" id="page-topics-topic-list" class="search ui dropdown">
+      <option value="">Choose a topic</option>
       ${topics.map(topic => `${generateOption(topic)}`).join("")}
     </select>
   `);
@@ -164,8 +165,24 @@ function topicSelectHandler() {
   });
 }
 
+/*
+ * Initialize topics modal for filter topics on page
+ */
+let initialized = false;
 export function bookmarksLoaded() {
-  initPageTopicsModal();
+  if (!initialized) {
+    initPageTopicsModal();
+    initialized = true;
+    return;
+  }
+  $("#bookmark-filter-wrapper").removeClass("hide");
+}
+
+/*
+ * Hide topics modal, no mor topics on page
+ */
+export function noMoreBookmarks() {
+  $("#bookmark-filter-wrapper").addClass("hide");
 }
 
 /*
@@ -182,7 +199,15 @@ function getTopicList() {
   localStore.topicRefreshNeeded = false;
 }
 
+/*
+ * Called by bookmark.js after bookmarks have been loaded on 
+ * transcript page.
+ */
 function initPageTopicsModal() {
+  //show topic filter options
+  $("#bookmark-filter-wrapper").removeClass("hide");
+
+  //init topic filter modal dialog
   $(uiPageTopicsModal)
     .modal({
       dimmerSettings: {opacity: uiModalOpacity},
@@ -243,13 +268,14 @@ function filterResetHandler() {
     }
 
     $(".transcript").removeClass("topic-filter-active");
+    $("#page-topics-topic-list").dropdown("clear");
 
     //clear active filter from menu
     $("#current-topic-filter").html(`${getString("label:topicfilter")}: None`);
     $("#current-topic-filter").attr("data-filter", "");
 
     //mark bookmark icon green - no filter applied
-    $("#bookmark-dropdown-menu > span > i").eq(0).removeClass("yellow").addClass("green");
+    $("#bookmark-dropdown-menu > span  i.bookmark-icon").eq(0).removeClass("yellow").addClass("green");
 
     //close the modal
     //$(uiPageTopicsModal).modal("hide");
@@ -286,8 +312,9 @@ function setTopicFilter(topic) {
   $("#current-topic-filter").attr("data-filter", topic.value);
 
   //mark bookmark icon as yellow - filter is applied
-  $("#bookmark-dropdown-menu > span > i").eq(0).removeClass("green").addClass("yellow");
+  $("#bookmark-dropdown-menu > span i.bookmark-icon").eq(0).removeClass("green").addClass("yellow");
 
   //close the modal
   $(uiPageTopicsModal).modal("hide");
 }
+

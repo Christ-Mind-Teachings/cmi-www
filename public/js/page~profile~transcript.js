@@ -2593,27 +2593,22 @@ const keyInfo = __webpack_require__(/*! ./modules/_config/key */ "./src/js/modul
   sid: "www",
   env: "integration",
   lang: "en",
+  url_prefix: "",
+  //navigator
+  sourceId: 99,
   getPageInfo: _modules_config_config__WEBPACK_IMPORTED_MODULE_0__["getPageInfo"],
   //list
   keyInfo: keyInfo,
   //list, bmnet
-  bm_modal_key: "bm.www.modal",
-  //list
-  bm_creation_state: "bm.www.creation",
-  //bookmark
-  bm_list_store: "bm.www.list",
-  //bmnet
-  bm_topic_list: "bm.www.topics",
-  //bmnet
-  bm_modal_store: "bm.www.modal",
-  //navigator
-  url_prefix: "",
-  //navigator
   store: {
     bmList: "bm.list",
     bmCreation: "bm.creation",
     bmTopics: "bm.topics",
-    bmModal: "bm.modal"
+    bmModal: "bm.modal",
+    srchResults: "srch.results",
+    pnDisplay: "pn.display",
+    cfgacq: "cfg.acq",
+    cfgprofile: "cfg.profile"
   }
 });
 
@@ -2718,6 +2713,298 @@ function createClickHandlers() {
 
 });
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/src/jquery.js")))
+
+/***/ }),
+
+/***/ "./src/js/modules/_ajax/annotation.js":
+/*!********************************************!*\
+  !*** ./src/js/modules/_ajax/annotation.js ***!
+  \********************************************/
+/*! exports provided: getAnnotations, updateAnnotation, postAnnotation, getAnnotation, deleteAnnotation */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getAnnotations", function() { return getAnnotations; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "updateAnnotation", function() { return updateAnnotation; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "postAnnotation", function() { return postAnnotation; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getAnnotation", function() { return getAnnotation; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deleteAnnotation", function() { return deleteAnnotation; });
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _globals__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../globals */ "./src/js/globals.js");
+/* harmony import */ var lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lodash/cloneDeep */ "./node_modules/lodash/cloneDeep.js");
+/* harmony import */ var lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_2__);
+
+
+
+/*
+ * Format paraKey so it contains 3 decimal positions
+ */
+
+function formatKey(key) {
+  if (typeof key !== "string") {
+    key = key.toString(10);
+  }
+
+  let decimalPos = key.indexOf("."); //invalid key, but return it anyway.
+
+  if (decimalPos === -1) {
+    return `${key}.001`;
+  }
+
+  let intPart = key.substr(0, decimalPos);
+  let decimalPart = key.substr(decimalPos + 1);
+  let padding = decimalPart.length === 2 ? "0" : decimalPart.length === 1 ? "00" : "";
+  return `${intPart}.${decimalPart}${padding}`;
+}
+/*
+ * Get array of annotations from server, add a numeric pid to each item, and
+ * parse stringified selectedText.
+ *
+ * Return array of annotations.
+ * {
+ *   annotation: {
+ *     Comment: <string>,
+ *     rangeStart: <string>,
+ *     rangeEnd: <string>,
+ *     [selectedText]: <object>,
+ *     [aid]: <string>
+ *     topicList: [{value, topic},...],
+ *     userId: <string>,
+ *     creationDate: <string>
+ *   }, 
+ *   userId: <string>,
+ *   paraKey: <string>,
+ *   creationDate: <string>,
+ *   pid: <number>
+ * }
+ */
+
+
+function getAnnotations(userId, key) {
+  return new Promise((resolve, reject) => {
+    axios__WEBPACK_IMPORTED_MODULE_0___default.a.get(`${_globals__WEBPACK_IMPORTED_MODULE_1__["default"].user2}/queryAnnotation/${userId}/${key}`).then(response => {
+      let bmList = response.data.response;
+      bmList.forEach(b => {
+        //numeric pid, not representative of key
+        // - used to find annotations for a given paragraph
+        b.pid = parseInt(b.annotation.rangeStart.substring(1), 10); //add userId and creationDate to annotation, this is used by the
+        //bookmark navigator
+
+        b.annotation.userId = b.userId;
+        b.annotation.creationDate = b.creationDate; //parse selectedText JSON object
+
+        if (b.annotation.selectedText) {
+          b.annotation.selectedText = JSON.parse(b.annotation.selectedText);
+        }
+      }); //sort bookmarks by numeric pid
+
+      bmList.sort((a, b) => {
+        return a.paraKey - b.paraKey;
+      });
+      resolve(bmList);
+    }).catch(err => {
+      reject(err);
+    });
+  });
+}
+/*
+ * Called by topicmanager
+ */
+
+function updateAnnotation(bookmark) {
+  let clone = lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_2___default()(bookmark);
+
+  if (clone.annotation.selectedText) {
+    if (typeof clone.annotation.selectedText !== "string") {
+      //convert selectedText to JSON
+      clone.annotation.selectedText = JSON.stringify(clone.annotation.selectedText);
+    }
+  }
+
+  return postAnnotation(clone.userId, clone.paraKey, clone.creationDate, clone.annotation);
+}
+/*
+ * Save annotation to DynamoDb
+ */
+
+function postAnnotation(userId, paraKey, creationDate, annotation) {
+  if (typeof creationDate !== "string") {
+    creationDate = creationDate.toString(10);
+  }
+
+  if (typeof paraKey !== "string") {
+    paraKey = paraKey.toString(10);
+  }
+
+  let body = {
+    userId: userId,
+    paraKey: paraKey,
+    creationDate: creationDate,
+    annotation: annotation
+  };
+  return new Promise((resolve, reject) => {
+    axios__WEBPACK_IMPORTED_MODULE_0___default.a.post(`${_globals__WEBPACK_IMPORTED_MODULE_1__["default"].user2}/annotation`, body).then(response => {
+      resolve(response.data.response);
+    }).catch(err => {
+      reject(err);
+    });
+  });
+}
+/*
+ * Get annotation from server, add userId and creationDate to the annotation,
+ * parse stringified selectedText.
+ *
+ * Return annotation only.
+ */
+
+function getAnnotation(userId, paraKey, creationDate) {
+  return new Promise((resolve, reject) => {
+    axios__WEBPACK_IMPORTED_MODULE_0___default.a.get(`${_globals__WEBPACK_IMPORTED_MODULE_1__["default"].user2}/annotation/${userId}/${formatKey(paraKey)}/${creationDate}`).then(response => {
+      console.log("getAnnotation: %o", response);
+      let r = response.data.response; //annotation not found
+
+      if (!r.userId) {
+        resolve({});
+        return;
+      }
+
+      r.annotation.userId = r.userId;
+      r.annotation.creationDate = r.creationDate;
+
+      if (r.annotation.selectedText) {
+        r.annotation.selectedText = JSON.parse(r.annotation.selectedText);
+      }
+
+      resolve(r.annotation);
+    }).catch(err => {
+      reject(err);
+    });
+  });
+}
+/*
+ * Delete annotation
+ */
+
+function deleteAnnotation(userId, paraKey, creationDate) {
+  if (typeof creationDate !== "string") {
+    creationDate.toString(10);
+  }
+
+  return new Promise((resolve, reject) => {
+    axios__WEBPACK_IMPORTED_MODULE_0___default.a.delete(`${_globals__WEBPACK_IMPORTED_MODULE_1__["default"].user2}/annotation/${userId}/${formatKey(paraKey)}/${creationDate}`).then(response => {
+      resolve(response.data.response);
+    }).catch(err => {
+      reject(err);
+    });
+  });
+}
+
+/***/ }),
+
+/***/ "./src/js/modules/_ajax/share.js":
+/*!***************************************!*\
+  !*** ./src/js/modules/_ajax/share.js ***!
+  \***************************************/
+/*! exports provided: getMailList, putMailList, sendMail */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getMailList", function() { return getMailList; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "putMailList", function() { return putMailList; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sendMail", function() { return sendMail; });
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _globals__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../globals */ "./src/js/globals.js");
+
+
+function getMailList(userId) {
+  return new Promise((resolve, reject) => {
+    axios__WEBPACK_IMPORTED_MODULE_0___default.a.get(`${_globals__WEBPACK_IMPORTED_MODULE_1__["default"].user2}/mailList/${userId}`).then(response => {
+      resolve(response.data.mailList);
+    }).catch(err => {
+      reject(err);
+    });
+  });
+}
+function putMailList(userId, list) {
+  return new Promise((resolve, reject) => {
+    axios__WEBPACK_IMPORTED_MODULE_0___default.a.post(`${_globals__WEBPACK_IMPORTED_MODULE_1__["default"].user2}/mailList`, list).then(response => {
+      resolve(response.data.response);
+    }).catch(err => {
+      reject(err);
+    });
+  });
+}
+function sendMail(mailInfo) {
+  return new Promise((resolve, reject) => {
+    axios__WEBPACK_IMPORTED_MODULE_0___default.a.post(_globals__WEBPACK_IMPORTED_MODULE_1__["default"].share, mailInfo).then(response => {
+      if (response.status === 200) {
+        resolve("success");
+      } else {
+        resolve(response.data.message);
+      }
+    }).catch(error => {
+      reject(error);
+    });
+  });
+}
+
+/***/ }),
+
+/***/ "./src/js/modules/_ajax/topics.js":
+/*!****************************************!*\
+  !*** ./src/js/modules/_ajax/topics.js ***!
+  \****************************************/
+/*! exports provided: getTopicList, putTopicList */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getTopicList", function() { return getTopicList; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "putTopicList", function() { return putTopicList; });
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _globals__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../globals */ "./src/js/globals.js");
+
+
+/**
+ * @param {string} userId - md5 hash of userId
+ * @param {string} sourceId - two digit source identifier
+ * @return {array} topics - topicList
+ *
+ */
+
+function getTopicList(userId, sourceId) {
+  return new Promise((resolve, reject) => {
+    axios__WEBPACK_IMPORTED_MODULE_0___default.a.get(`${_globals__WEBPACK_IMPORTED_MODULE_1__["default"].user2}/topicList/${userId}/${sourceId}`).then(response => {
+      let topics = response.data.topics;
+      resolve(topics);
+    }).catch(err => {
+      reject(err);
+    });
+  });
+}
+/*
+ * Save topicList to DynamoDb
+ */
+
+function putTopicList(userId, sourceId, topicList) {
+  let body = {
+    userId: userId,
+    sourceId: sourceId,
+    topicList: topicList
+  };
+  return new Promise((resolve, reject) => {
+    axios__WEBPACK_IMPORTED_MODULE_0___default.a.post(`${_globals__WEBPACK_IMPORTED_MODULE_1__["default"].user2}/topicList`, body).then(response => {
+      resolve(response.data.response);
+    }).catch(err => {
+      reject(err);
+    });
+  });
+}
 
 /***/ }),
 
@@ -3047,7 +3334,7 @@ function genExtrasItem(item) {
 
 function generateComment(comment) {
   if (!comment) {
-    return Object(_language_lang__WEBPACK_IMPORTED_MODULE_7__["getString"])("annotate:m6");
+    return Object(_language_lang__WEBPACK_IMPORTED_MODULE_7__["getString"])("annotate:m7");
   } else {
     return comment;
   }
@@ -3692,8 +3979,8 @@ function getTopicList(pid, aid, data) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "netInit", function() { return netInit; });
-/* harmony import */ var _db_annotation__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../_db/annotation */ "./src/js/modules/_db/annotation.js");
-/* harmony import */ var _db_topics__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../_db/topics */ "./src/js/modules/_db/topics.js");
+/* harmony import */ var _ajax_annotation__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../_ajax/annotation */ "./src/js/modules/_ajax/annotation.js");
+/* harmony import */ var _ajax_topics__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../_ajax/topics */ "./src/js/modules/_ajax/topics.js");
 /* harmony import */ var _util_store__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../_util/store */ "./src/js/modules/_util/store.js");
 /* harmony import */ var _bookmark__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./bookmark */ "./src/js/modules/_bookmark/bookmark.js");
 /* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! toastr */ "./node_modules/toastr/toastr.js");
@@ -3771,7 +4058,7 @@ function postAnnotation(annotation, pageKey, addToLocalStorage = true) {
     pageKey = teaching.keyInfo.genParagraphKey(serverAnnotation.rangeStart);
   }
 
-  Object(_db_annotation__WEBPACK_IMPORTED_MODULE_0__["postAnnotation"])(userInfo.userId, pageKey, creationDate, serverAnnotation).then(resp => {
+  Object(_ajax_annotation__WEBPACK_IMPORTED_MODULE_0__["postAnnotation"])(userInfo.userId, pageKey, creationDate, serverAnnotation).then(resp => {
     if (addToLocalStorage) {
       _bookmark__WEBPACK_IMPORTED_MODULE_3__["localStore"].addItem(userInfo.userId, pageKey, creationDate, serverAnnotation);
     }
@@ -3792,12 +4079,8 @@ function deleteAnnotation(pid, creationDate) {
     const paraKey = teaching.keyInfo.genParagraphKey(pid);
 
     try {
-      let response = await Object(_db_annotation__WEBPACK_IMPORTED_MODULE_0__["deleteAnnotation"])(userInfo.userId, paraKey, creationDate);
+      let response = await Object(_ajax_annotation__WEBPACK_IMPORTED_MODULE_0__["deleteAnnotation"])(userInfo.userId, paraKey, creationDate);
       let result = _bookmark__WEBPACK_IMPORTED_MODULE_3__["localStore"].deleteItem(userInfo.userId, paraKey, creationDate);
-
-      if (result.modified) {//TODO update page topic list
-      }
-
       resolve(result.remaining);
     } catch (err) {
       reject(err);
@@ -3826,7 +4109,7 @@ function fetchTopics() {
 
     let sourceId = teaching.sourceId.toString(10); //user signed in, we need to get topics from server
 
-    Object(_db_topics__WEBPACK_IMPORTED_MODULE_1__["getTopicList"])(userInfo.userId, sourceId).then(topicList => {
+    Object(_ajax_topics__WEBPACK_IMPORTED_MODULE_1__["getTopicList"])(userInfo.userId, sourceId).then(topicList => {
       let topicInfo = {
         lastFetchDate: Date.now(),
         topics: topicList
@@ -3861,28 +4144,29 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getTeachingInfo", function() { return getTeachingInfo; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setQuickLinks", function() { return setQuickLinks; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "annotation", function() { return annotation; });
-/* harmony import */ var _db_annotation__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../_db/annotation */ "./src/js/modules/_db/annotation.js");
-/* harmony import */ var _db_topics__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../_db/topics */ "./src/js/modules/_db/topics.js");
+/* harmony import */ var _ajax_annotation__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../_ajax/annotation */ "./src/js/modules/_ajax/annotation.js");
+/* harmony import */ var _ajax_topics__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../_ajax/topics */ "./src/js/modules/_ajax/topics.js");
 /* harmony import */ var _user_netlify__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../_user/netlify */ "./src/js/modules/_user/netlify.js");
 /* harmony import */ var _util_store__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../_util/store */ "./src/js/modules/_util/store.js");
 /* harmony import */ var _localStore__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./localStore */ "./src/js/modules/_bookmark/localStore.js");
-/* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! toastr */ "./node_modules/toastr/toastr.js");
-/* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(toastr__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _bmnet__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./bmnet */ "./src/js/modules/_bookmark/bmnet.js");
-/* harmony import */ var lodash_differenceWith__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! lodash/differenceWith */ "./node_modules/lodash/differenceWith.js");
-/* harmony import */ var lodash_differenceWith__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(lodash_differenceWith__WEBPACK_IMPORTED_MODULE_7__);
-/* harmony import */ var lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! lodash/cloneDeep */ "./node_modules/lodash/cloneDeep.js");
-/* harmony import */ var lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_8__);
-/* harmony import */ var lodash_startCase__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! lodash/startCase */ "./node_modules/lodash/startCase.js");
-/* harmony import */ var lodash_startCase__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(lodash_startCase__WEBPACK_IMPORTED_MODULE_9__);
-/* harmony import */ var _util_url__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../_util/url */ "./src/js/modules/_util/url.js");
-/* harmony import */ var _navigator__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./navigator */ "./src/js/modules/_bookmark/navigator.js");
-/* harmony import */ var _list__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./list */ "./src/js/modules/_bookmark/list.js");
-/* harmony import */ var _topics__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./topics */ "./src/js/modules/_bookmark/topics.js");
-/* harmony import */ var _selection__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./selection */ "./src/js/modules/_bookmark/selection.js");
-/* harmony import */ var _annotate__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./annotate */ "./src/js/modules/_bookmark/annotate.js");
-/* harmony import */ var _link_setup__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ../_link/setup */ "./src/js/modules/_link/setup.js");
-/* harmony import */ var _language_lang__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ../_language/lang */ "./src/js/modules/_language/lang.js");
+/* harmony import */ var _util_sanitize__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../_util/sanitize */ "./src/js/modules/_util/sanitize.js");
+/* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! toastr */ "./node_modules/toastr/toastr.js");
+/* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(toastr__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var _bmnet__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./bmnet */ "./src/js/modules/_bookmark/bmnet.js");
+/* harmony import */ var lodash_differenceWith__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! lodash/differenceWith */ "./node_modules/lodash/differenceWith.js");
+/* harmony import */ var lodash_differenceWith__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(lodash_differenceWith__WEBPACK_IMPORTED_MODULE_8__);
+/* harmony import */ var lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! lodash/cloneDeep */ "./node_modules/lodash/cloneDeep.js");
+/* harmony import */ var lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_9__);
+/* harmony import */ var lodash_startCase__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! lodash/startCase */ "./node_modules/lodash/startCase.js");
+/* harmony import */ var lodash_startCase__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(lodash_startCase__WEBPACK_IMPORTED_MODULE_10__);
+/* harmony import */ var _util_url__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../_util/url */ "./src/js/modules/_util/url.js");
+/* harmony import */ var _navigator__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./navigator */ "./src/js/modules/_bookmark/navigator.js");
+/* harmony import */ var _list__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./list */ "./src/js/modules/_bookmark/list.js");
+/* harmony import */ var _topics__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./topics */ "./src/js/modules/_bookmark/topics.js");
+/* harmony import */ var _selection__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./selection */ "./src/js/modules/_bookmark/selection.js");
+/* harmony import */ var _annotate__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./annotate */ "./src/js/modules/_bookmark/annotate.js");
+/* harmony import */ var _util_cmi__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ../_util/cmi */ "./src/js/modules/_util/cmi.js");
+/* harmony import */ var _language_lang__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ../_language/lang */ "./src/js/modules/_language/lang.js");
 
 
 
@@ -3898,6 +4182,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
+ //import { createLinkListener, getLinkHref } from "../_link/setup";
 
 
  //teaching specific constants, assigned at initialization
@@ -3911,7 +4197,7 @@ function getTeachingInfo() {
 
 function formatLink(link) {
   let raw = JSON.parse(link.link);
-  let href = Object(_link_setup__WEBPACK_IMPORTED_MODULE_16__["getLinkHref"])(raw);
+  let href = getLinkHref(raw);
   let display = `${raw.desc.source}:${raw.desc.book}:${raw.desc.unit}`; //WOM has questions
 
   if (raw.desc.question) {
@@ -3974,7 +4260,7 @@ function addNoteHighlight(pid, bm) {
 
 function setQuickLinks(bm, type) {
   if (bm.links) {
-    $(`[data-aid="${bm.creationDate}"]`).after(`<i data-link-aid="${bm.creationDate}" data-type="${type}" class="small bm-link-list linkify icon"></i>`);
+    $(`[data-aid="${bm.creationDate}"]`).eq(-1).after(`<i data-link-aid="${bm.creationDate}" data-type="${type}" class="small bm-link-list linkify icon"></i>`);
   }
 }
 /*
@@ -3991,9 +4277,11 @@ function initBmLinkHandler() {
     let aid;
 
     if (type === "note") {
-      aid = parseInt($(this).prev("span").attr("data-aid"), 10);
+      //aid = parseInt($(this).prev("span").attr("data-aid"), 10);
+      aid = $(this).prev("span").attr("data-aid");
     } else if (type === "highlight") {
-      aid = parseInt($(this).prev("mark").attr("data-aid"), 10);
+      //aid = parseInt($(this).prev("mark").attr("data-annotation-id"), 10);
+      aid = $(this).prev("mark").attr("data-annotation-id");
     } //bookmark wont be found if it is still being created
 
 
@@ -4018,7 +4306,7 @@ function initBmLinkHandler() {
 
 
 function createAnnotation(formValues) {
-  let annotation = lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_8___default()(formValues);
+  let annotation = lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_9___default()(formValues);
   annotation.rangeStart = annotation.rangeStart.trim();
   annotation.rangeEnd = annotation.rangeEnd.trim();
 
@@ -4029,10 +4317,14 @@ function createAnnotation(formValues) {
 
   if (annotation.Comment === "") {
     delete annotation.Comment;
+  } else {
+    annotation.Comment = Object(_util_sanitize__WEBPACK_IMPORTED_MODULE_5__["purify"])(annotation.Comment);
   }
 
   if (annotation.Note === "") {
     delete annotation.Note;
+  } else {
+    annotation.Note = Object(_util_sanitize__WEBPACK_IMPORTED_MODULE_5__["purify"])(annotation.Note);
   }
 
   if (annotation.creationDate === "") {
@@ -4042,7 +4334,7 @@ function createAnnotation(formValues) {
   if (annotation.aid === "") {
     delete annotation.aid;
   } else {
-    annotation.selectedText = Object(_selection__WEBPACK_IMPORTED_MODULE_14__["getSelection"])(annotation.aid);
+    annotation.selectedText = Object(_selection__WEBPACK_IMPORTED_MODULE_15__["getSelection"])(annotation.aid);
 
     if (annotation.creationDate) {
       annotation.selectedText.aid = annotation.creationDate.toString(10);
@@ -4056,11 +4348,11 @@ function createAnnotation(formValues) {
   } //keep track of topics added or deleted
 
 
-  Object(_selection__WEBPACK_IMPORTED_MODULE_14__["updateSelectionTopicList"])(annotation);
+  Object(_selection__WEBPACK_IMPORTED_MODULE_15__["updateSelectionTopicList"])(annotation);
   delete annotation.newTopics;
   delete annotation.hasAnnotation; //persist the bookmark
 
-  let assignedCreationDate = _bmnet__WEBPACK_IMPORTED_MODULE_6__["default"].postAnnotation(annotation);
+  let assignedCreationDate = _bmnet__WEBPACK_IMPORTED_MODULE_7__["default"].postAnnotation(annotation);
   let info = {
     //this is undefined for new annotations
     existingCreationDate: annotation.creationDate,
@@ -4102,7 +4394,7 @@ function formatNewTopics({
   topics = topics.replace(/,*$/, "");
   let newTopicArray = topics.split(",");
   newTopicArray = newTopicArray.map(t => t.trim());
-  newTopicArray = newTopicArray.map(t => lodash_startCase__WEBPACK_IMPORTED_MODULE_9___default()(t));
+  newTopicArray = newTopicArray.map(t => lodash_startCase__WEBPACK_IMPORTED_MODULE_10___default()(t));
   newTopicArray = newTopicArray.map(t => {
     if (/ /.test(t)) {
       return {
@@ -4127,9 +4419,9 @@ function formatNewTopics({
 
 function addToTopicList(newTopics, formValues) {
   //Check for new topics already in topic list
-  _bmnet__WEBPACK_IMPORTED_MODULE_6__["default"].fetchTopics().then(topicList => {
+  _bmnet__WEBPACK_IMPORTED_MODULE_7__["default"].fetchTopics().then(topicList => {
     //remove duplicate topics from and return the rest in difference[]
-    let newUniqueTopics = lodash_differenceWith__WEBPACK_IMPORTED_MODULE_7___default()(newTopics, topicList.topics, (n, t) => {
+    let newUniqueTopics = lodash_differenceWith__WEBPACK_IMPORTED_MODULE_8___default()(newTopics, topicList.topics, (n, t) => {
       return t.value === n.value;
     }); //these are the new topics
 
@@ -4157,9 +4449,9 @@ function addToTopicList(newTopics, formValues) {
       topicList.topics = newTopicList;
       Object(_util_store__WEBPACK_IMPORTED_MODULE_3__["storeSet"])("bmTopics", topicList);
       let userInfo = Object(_user_netlify__WEBPACK_IMPORTED_MODULE_2__["getUserInfo"])();
-      let sourceId = teaching.getKeyInfo().sourceId; //write the new list to the db
+      let sourceId = `${teaching.sourceId}`; //write the new list to the db
 
-      Object(_db_topics__WEBPACK_IMPORTED_MODULE_1__["putTopicList"])(userInfo.userId, sourceId, newTopicList); //add new topics to this annotations topicList
+      Object(_ajax_topics__WEBPACK_IMPORTED_MODULE_1__["putTopicList"])(userInfo.userId, sourceId, newTopicList); //add new topics to this annotations topicList
 
       formValues.topicList = formValues.topicList.concat(newUniqueTopics); //add newTopics to formValues for posting to server
 
@@ -4205,23 +4497,25 @@ function bookmarkFeatureHandler() {
     let el = $(".transcript");
 
     if (el.hasClass("disable-selection") && el.hasClass("user")) {
-      Object(_language_lang__WEBPACK_IMPORTED_MODULE_17__["getString"])("menu:m1", true).then(value => {
+      Object(_language_lang__WEBPACK_IMPORTED_MODULE_18__["getString"])("menu:m1", true).then(value => {
         el.removeClass("disable-selection user");
         $(".toggle-bookmark-selection").text(value);
+        $("#bookmark-dropdown-menu > span  i.bookmark-corner-icon").addClass("hide");
 
         if (showMessage) {
-          toastr__WEBPACK_IMPORTED_MODULE_5___default.a.success("Bookmark Creation Enabled");
+          toastr__WEBPACK_IMPORTED_MODULE_6___default.a.success("Bookmark Creation Enabled");
         }
 
         Object(_util_store__WEBPACK_IMPORTED_MODULE_3__["storeSet"])("bmCreation", "enabled");
       });
     } else {
-      Object(_language_lang__WEBPACK_IMPORTED_MODULE_17__["getString"])("menu:m2", true).then(value => {
+      Object(_language_lang__WEBPACK_IMPORTED_MODULE_18__["getString"])("menu:m2", true).then(value => {
         el.addClass("disable-selection user");
         $(".toggle-bookmark-selection").text(value);
+        $("#bookmark-dropdown-menu > span  i.bookmark-corner-icon").removeClass("hide");
 
         if (showMessage) {
-          toastr__WEBPACK_IMPORTED_MODULE_5___default.a.success("Bookmark Creation Disabled");
+          toastr__WEBPACK_IMPORTED_MODULE_6___default.a.success("Bookmark Creation Disabled");
         }
 
         Object(_util_store__WEBPACK_IMPORTED_MODULE_3__["storeSet"])("bmCreation", "disabled");
@@ -4242,12 +4536,12 @@ function bookmarkFeatureHandler() {
 function initializeBookmarkFeatureState() {
   let state = Object(_util_store__WEBPACK_IMPORTED_MODULE_3__["storeGet"])("bmCreation");
 
-  if (state && state === "disabled") {
-    //console.log("triggering selection guard disable");
-    $("#bookmark-toggle-disable-selection").trigger("click", "false");
-  } else {
-    $(".transcript").addClass("disable-selection user");
-  }
+  if (state && state === "enabled") {
+    return;
+  } //set to disabled
+
+
+  $("#bookmark-toggle-disable-selection").trigger("click", "false");
 }
 /**
  * Get and activate annotations for the current page.
@@ -4283,7 +4577,7 @@ async function getPageBookmarks(sharePid) {
       }
 
       if (bm.annotation.selectedText) {
-        Object(_selection__WEBPACK_IMPORTED_MODULE_14__["markSelection"])(bm.annotation.selectedText, count, sharePid);
+        Object(_selection__WEBPACK_IMPORTED_MODULE_15__["markSelection"])(bm.annotation.selectedText, count, sharePid);
         addTopicsAsClasses(bm.annotation);
         setQuickLinks(bm.annotation, "highlight");
         count++;
@@ -4299,12 +4593,12 @@ async function getPageBookmarks(sharePid) {
         prevBm = bm;
       }
     });
-    Object(_topics__WEBPACK_IMPORTED_MODULE_13__["bookmarksLoaded"])();
+    Object(_topics__WEBPACK_IMPORTED_MODULE_14__["bookmarksLoaded"])();
   }
 
   try {
     //query annotations from database
-    let bmList = await Object(_db_annotation__WEBPACK_IMPORTED_MODULE_0__["getAnnotations"])(userInfo.userId, pageKey); //store annotations locally
+    let bmList = await Object(_ajax_annotation__WEBPACK_IMPORTED_MODULE_0__["getAnnotations"])(userInfo.userId, pageKey); //store annotations locally
 
     localStore = new _localStore__WEBPACK_IMPORTED_MODULE_4__["BookmarkLocalStore"](bmList); //apply annotations to the page
 
@@ -4324,20 +4618,20 @@ function initTranscriptPage(sharePid, constants) {
 
   getPageBookmarks(sharePid); //add support for text selection
 
-  Object(_selection__WEBPACK_IMPORTED_MODULE_14__["initialize"])(constants); //show/hide bookmark highlights
+  Object(_selection__WEBPACK_IMPORTED_MODULE_15__["initialize"])(constants); //show/hide bookmark highlights
 
   highlightHandler(); //disable/enable bookmark creation feature
 
   bookmarkFeatureHandler();
   initializeBookmarkFeatureState(); //setup bookmark link listener
 
-  Object(_link_setup__WEBPACK_IMPORTED_MODULE_16__["createLinkListener"])(_annotate__WEBPACK_IMPORTED_MODULE_15__["getLink"]);
+  createLinkListener(_annotate__WEBPACK_IMPORTED_MODULE_16__["getLink"]);
   initBmLinkHandler(); //setup bookmark navigator if requested
 
-  let pid = Object(_util_url__WEBPACK_IMPORTED_MODULE_10__["showBookmark"])();
+  let pid = Object(_util_url__WEBPACK_IMPORTED_MODULE_11__["showBookmark"])();
 
   if (pid) {
-    Object(_navigator__WEBPACK_IMPORTED_MODULE_11__["initNavigator"])(pid, teaching);
+    Object(_navigator__WEBPACK_IMPORTED_MODULE_12__["initNavigator"])(pid, teaching);
   }
 }
 
@@ -4358,8 +4652,11 @@ const annotation = {
     } //mark paragraph as having bookmark
 
 
+    let type;
+
     if (!formData.aid) {
       //bookmark has no selected text
+      type = "note";
       $(`#${formData.rangeStart} > span.pnum`).addClass("has-annotation"); //mark all paragraphs in bookmark with class .note-style-bookmark
 
       let end = parseInt(formData.rangeEnd.substr(1), 10);
@@ -4380,11 +4677,19 @@ const annotation = {
         start++;
       } while (start <= end);
     } else {
+      type = "highlight";
       $(`#${formData.rangeStart} > span.pnum`).addClass("has-bookmark"); //this is a new annotation
 
       if (formData.creationDate === "") {
         let annotationCount = localStore.itemCount(formData.rangeStart, formData.aid);
-        Object(_selection__WEBPACK_IMPORTED_MODULE_14__["updateHighlightColor"])(formData.aid, annotationCount);
+        Object(_selection__WEBPACK_IMPORTED_MODULE_15__["updateHighlightColor"])(formData.aid, annotationCount);
+      }
+    } //add linkify icon if bookmark contains links
+
+
+    if (formData.links && formData.creationDate) {
+      if ($(`[data-link-aid="${formData.creationDate}"].bm-link-list.linkify.icon`).length === 0) {
+        $(`[data-aid="${formData.creationDate}"]`).eq(-1).after(`<i data-link-aid="${formData.creationDate}" data-type="${type}" class="small bm-link-list linkify icon"></i>`);
       }
     }
   },
@@ -4393,7 +4698,7 @@ const annotation = {
   cancel(formData) {
     //no creationDate means a new annotation that hasn't been stored
     if (!formData.creationDate && formData.aid) {
-      Object(_selection__WEBPACK_IMPORTED_MODULE_14__["deleteNewSelection"])(formData.aid);
+      Object(_selection__WEBPACK_IMPORTED_MODULE_15__["deleteNewSelection"])(formData.aid);
     }
   },
 
@@ -4401,7 +4706,7 @@ const annotation = {
   async delete(formData) {
     //if annotation has selected text unwrap and delete it
     if (formData.aid) {
-      Object(_selection__WEBPACK_IMPORTED_MODULE_14__["deleteSelection"])(formData.aid);
+      Object(_selection__WEBPACK_IMPORTED_MODULE_15__["deleteSelection"])(formData.aid);
     } else {
       //remove mark from paragraph
       $(`#${formData.rangeStart} > span.pnum`).removeClass("has-annotation"); //remove all paragraphs in bookmark with class .note-style-bookmark
@@ -4432,7 +4737,7 @@ const annotation = {
 
 
     try {
-      let remainingAnnotations = await _bmnet__WEBPACK_IMPORTED_MODULE_6__["default"].deleteAnnotation(formData.rangeStart, formData.creationDate);
+      let remainingAnnotations = await _bmnet__WEBPACK_IMPORTED_MODULE_7__["default"].deleteAnnotation(formData.rangeStart, formData.creationDate);
 
       if (remainingAnnotations === 0) {
         $(`#${formData.rangeStart} > span.pnum`).removeClass("has-bookmark");
@@ -4465,11 +4770,34 @@ function updateNewAnnotation(info) {
   }
 }
 
+function getLinkHref(link) {
+  let url = Object(_util_cmi__WEBPACK_IMPORTED_MODULE_17__["getUrlByPageKey"])(link.key);
+
+  if (location.pathname === url) {
+    return `#${link.desc.pid}`;
+  }
+
+  return `${url}?v=${link.desc.pid}`;
+}
+
+function createLinkListener(getLink) {
+  $(".transcript").on("click", "td.follow-link-item", function (e) {
+    e.preventDefault(); //get link info
+
+    let index = $(this).parent("tr").attr("data-index");
+    let linkInfo = getLink(index); //build url
+
+    let link = JSON.parse(linkInfo.link); //console.log("url: %s", url);
+
+    location.href = getLinkHref(link);
+  });
+}
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   initialize: function (pid, constants) {
     teaching = constants; //provide teaching constants to bmnet
 
-    Object(_bmnet__WEBPACK_IMPORTED_MODULE_6__["netInit"])(teaching);
+    Object(_bmnet__WEBPACK_IMPORTED_MODULE_7__["netInit"])(teaching);
 
     if ($(".transcript").length) {
       //this is a transcript page
@@ -4477,7 +4805,7 @@ function updateNewAnnotation(info) {
     } //initialize bookmark list modal - available on all pages
 
 
-    _list__WEBPACK_IMPORTED_MODULE_12__["default"].initialize(constants);
+    _list__WEBPACK_IMPORTED_MODULE_13__["default"].initialize(constants);
   }
 });
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/src/jquery.js")))
@@ -4563,7 +4891,7 @@ function createInstance(selector) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var _db_annotation__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../_db/annotation */ "./src/js/modules/_db/annotation.js");
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var _ajax_annotation__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../_ajax/annotation */ "./src/js/modules/_ajax/annotation.js");
 /* harmony import */ var _user_netlify__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../_user/netlify */ "./src/js/modules/_user/netlify.js");
 /* harmony import */ var _util_store__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../_util/store */ "./src/js/modules/_util/store.js");
 /* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! toastr */ "./node_modules/toastr/toastr.js");
@@ -5131,7 +5459,7 @@ async function queryBookmarks(key) {
   }
 
   try {
-    let bmList = await Object(_db_annotation__WEBPACK_IMPORTED_MODULE_0__["getAnnotations"])(userInfo.userId, key);
+    let bmList = await Object(_ajax_annotation__WEBPACK_IMPORTED_MODULE_0__["getAnnotations"])(userInfo.userId, key);
     let bookmarks = buildBookmarkListFromServer(bmList);
     populateModal(bookmarks);
   } catch (err) {
@@ -5199,6 +5527,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _util_store__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../_util/store */ "./src/js/modules/_util/store.js");
 /* harmony import */ var lodash_difference__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! lodash/difference */ "./node_modules/lodash/difference.js");
 /* harmony import */ var lodash_difference__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(lodash_difference__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _topics__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./topics */ "./src/js/modules/_bookmark/topics.js");
 /*
  * Local storage for bookmarks on page. 
  *
@@ -5211,6 +5540,7 @@ __webpack_require__.r(__webpack_exports__);
  * We don't use the browsers local store because we don't need to persist bookmarks
  * accross pages.
  */
+
 
 
 class BookmarkLocalStore {
@@ -5231,14 +5561,15 @@ class BookmarkLocalStore {
   }
   /**
    * Add topic to Map if not present, set count to 1. If present
-   * increment count by 1. If a new topic is added return true.
+   * increment count by 1.
    *
    * @params <object> newTopic - {value: "topicNospaces", topic: "might have spaces"}
-   * @returns <boolean> Indication if topic Map has changed, new or deleted topics
    */
 
 
-  _incrementTopic(newTopic) {
+  _incrementTopic(newTopic, initializing = false) {
+    //get number of topics before updating
+    let size = this.topics.size;
     let key = newTopic.value; //if newTopic is not in topics, add it and set count to 1
 
     if (!this.topics.has(key)) {
@@ -5249,6 +5580,12 @@ class BookmarkLocalStore {
       let savedTopic = this.topics.get(key);
       savedTopic.count += 1;
       this.topics.set(key, savedTopic);
+    } //this is the first topic on the page so we
+    //need to initialize topics modal (for filtering page topics)
+
+
+    if (size === 0 && !initializing) {
+      Object(_topics__WEBPACK_IMPORTED_MODULE_2__["bookmarksLoaded"])();
     }
   }
   /**
@@ -5275,6 +5612,12 @@ class BookmarkLocalStore {
       //decrement count and store value
       trackedTopicValue.count -= 1;
       this.topics.set(key, trackedTopicValue);
+    } //if the last topic on the page has been deleted remove
+    //access to topic filter
+
+
+    if (this.topics.size === 0) {
+      Object(_topics__WEBPACK_IMPORTED_MODULE_2__["noMoreBookmarks"])();
     }
   }
   /*
@@ -5292,7 +5635,7 @@ class BookmarkLocalStore {
 
       if (b.annotation.topicList && b.annotation.topicList.length > 0) {
         b.annotation.topicList.forEach(topic => {
-          this._incrementTopic(topic);
+          this._incrementTopic(topic, true);
         });
       }
     });
@@ -5363,12 +5706,12 @@ class BookmarkLocalStore {
 
     return bkmrk;
   }
-  /*
+  /**
    * Get bookmark for pid with aid.
    *
    * Only annotations with selectedText have aid. Note style
    * annotation don't but they do have creationDate so check
-   * aid agains creationDate if annotation.aid is not present.
+   * aid against creationDate if annotation.aid is not present.
    *
    * @param {string} pid - paragraph Id starting with "p"
    * @param {string} aid - uuid, only present with selectedText
@@ -5377,7 +5720,8 @@ class BookmarkLocalStore {
 
 
   getItem(pid, aid) {
-    let id = parseInt(pid.substr(1), 10);
+    let id = parseInt(pid.substr(1), 10); //get array of bookmarks for pid
+
     let bms = this.list.filter(b => {
       return b.pid === id;
     });
@@ -6550,9 +6894,8 @@ function deleteNewSelection(id) {
 
   if (highlite.wrap) {
     highlite.wrap.unwrap();
-  } else {
-    console.log("deleteNewSelection: no wrap() in selection");
-  } //delete the annotation
+  } else {} //console.log("deleteNewSelection: no wrap() in selection");
+  //delete the annotation
 
 
   delete pageAnnotations[id];
@@ -6605,7 +6948,7 @@ function markSelection(annotation, sequence = 0, sharePid = null) {
     highlight(annotation, node);
     updateHighlightColor(annotation.id, sequence);
   } else if (sharePid) {
-    console.log("highlight of %s skipped due to share", sharePid);
+    //console.log("highlight of %s skipped due to share", sharePid);
     skippedAnnotations.push(annotation.id);
   }
 
@@ -6645,7 +6988,7 @@ function highlight(annotation, toNode = document.body) {
               range = textPosition.toRange(toNode, selector);
               annotation.wrap = wrapRange(mark, range);
             } catch (err) {
-              console.log("adjusting selector.end");
+              //console.log("adjusting selector.end");
               selector.end--;
               range = textPosition.toRange(toNode, selector);
               annotation.wrap = wrapRange(mark, range);
@@ -6730,14 +7073,14 @@ function processSelection(selection) {
   let range = selection.getRangeAt(0); //new from user2
 
   if (range.commonAncestorContainer.nodeName === "DIV") {
-    toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info(Object(_language_lang__WEBPACK_IMPORTED_MODULE_6__["getString"])("error:e8"));
-    console.log("multi paragraph selection: start: %s, end: %s", rangeStart, rangeEnd);
+    toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info(Object(_language_lang__WEBPACK_IMPORTED_MODULE_6__["getString"])("error:e8")); //console.log("multi paragraph selection: start: %s, end: %s", rangeStart, rangeEnd);
+
     return;
   }
 
   if (range.startContainer.parentElement.localName === "span") {
-    toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info(Object(_language_lang__WEBPACK_IMPORTED_MODULE_6__["getString"])("error:e6"));
-    console.log("selection includes <p>");
+    toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info(Object(_language_lang__WEBPACK_IMPORTED_MODULE_6__["getString"])("error:e6")); //console.log("selection includes <p>");
+
     return;
   } //get the paragraph node for the range
 
@@ -6759,8 +7102,8 @@ function processSelection(selection) {
 
     for (let ht of highlightedText) {
       if (selection.containsNode(ht, true)) {
-        toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info(Object(_language_lang__WEBPACK_IMPORTED_MODULE_6__["getString"])("error:e7"));
-        console.log("overlapping selections");
+        toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info(Object(_language_lang__WEBPACK_IMPORTED_MODULE_6__["getString"])("error:e7")); //console.log("overlapping selections");
+
         return;
       }
     }
@@ -6790,7 +7133,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(toastr__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _user_netlify__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../_user/netlify */ "./src/js/modules/_user/netlify.js");
 /* harmony import */ var _language_lang__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../_language/lang */ "./src/js/modules/_language/lang.js");
-/* harmony import */ var _db_share__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../_db/share */ "./src/js/modules/_db/share.js");
+/* harmony import */ var _ajax_share__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../_ajax/share */ "./src/js/modules/_ajax/share.js");
+/* harmony import */ var _util_sanitize__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../_util/sanitize */ "./src/js/modules/_util/sanitize.js");
+
 
 
 
@@ -6807,7 +7152,7 @@ function formatMessage(message) {
   message = message.replace(/@@*/g, "@@");
   let mArray = message.split("@@");
   message = mArray.reduce((current, p) => {
-    return `${current}<p>${p}</p>`;
+    return `${current}<p>${Object(_util_sanitize__WEBPACK_IMPORTED_MODULE_4__["purify"])(p)}</p>`;
   }, "");
   return message;
 } //load email list and setup submit and cancel listeners
@@ -6860,7 +7205,7 @@ function initShareByEmail(constants) {
     $(".email-share-dialog-wrapper").addClass("hide");
 
     try {
-      let result = await Object(_db_share__WEBPACK_IMPORTED_MODULE_3__["sendMail"])(shareInfo);
+      let result = await Object(_ajax_share__WEBPACK_IMPORTED_MODULE_3__["sendMail"])(shareInfo);
 
       if (result === "success") {
         toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info(Object(_language_lang__WEBPACK_IMPORTED_MODULE_2__["getString"])("action:emailsent"));
@@ -6903,7 +7248,7 @@ async function loadEmailList() {
   if (!userInfo) return;
 
   try {
-    let mailList = await Object(_db_share__WEBPACK_IMPORTED_MODULE_3__["getMailList"])(userInfo.userId);
+    let mailList = await Object(_ajax_share__WEBPACK_IMPORTED_MODULE_3__["getMailList"])(userInfo.userId);
     let selectHtml = makeMaillistSelect(mailList);
     $("#maillist-select").html(selectHtml);
     $("#maillist-address-list.dropdown").dropdown();
@@ -6975,7 +7320,6 @@ function bookmarkStart(page) {
       $("#transcript-page-info").html(title);
     });
   } else {
-    //init bookmark for non-transcript pages.
     _bookmark__WEBPACK_IMPORTED_MODULE_0__["default"].initialize(pid, _constants__WEBPACK_IMPORTED_MODULE_3__["default"]);
   }
 
@@ -6989,12 +7333,13 @@ function bookmarkStart(page) {
 /*!********************************************!*\
   !*** ./src/js/modules/_bookmark/topics.js ***!
   \********************************************/
-/*! exports provided: bookmarksLoaded */
+/*! exports provided: bookmarksLoaded, noMoreBookmarks */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* WEBPACK VAR INJECTION */(function($) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "bookmarksLoaded", function() { return bookmarksLoaded; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "noMoreBookmarks", function() { return noMoreBookmarks; });
 /* harmony import */ var _language_lang__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../_language/lang */ "./src/js/modules/_language/lang.js");
 /* harmony import */ var _bookmark__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./bookmark */ "./src/js/modules/_bookmark/bookmark.js");
 /*
@@ -7022,6 +7367,7 @@ function generateOption(topic) {
 function makeTopicSelect(topics) {
   return `
     <select name="pageTopicList" id="page-topics-topic-list" class="search ui dropdown">
+      <option value="">Choose a topic</option>
       ${topics.map(topic => `${generateOption(topic)}`).join("")}
     </select>
   `;
@@ -7151,9 +7497,27 @@ function topicSelectHandler() {
     $("#topic-menu-item").prev(".header").attr("data-filter", topic);
   });
 }
+/*
+ * Initialize topics modal for filter topics on page
+ */
 
+
+let initialized = false;
 function bookmarksLoaded() {
-  initPageTopicsModal();
+  if (!initialized) {
+    initPageTopicsModal();
+    initialized = true;
+    return;
+  }
+
+  $("#bookmark-filter-wrapper").removeClass("hide");
+}
+/*
+ * Hide topics modal, no mor topics on page
+ */
+
+function noMoreBookmarks() {
+  $("#bookmark-filter-wrapper").addClass("hide");
 }
 /*
   Get topic select element for page-topic-modal
@@ -7167,8 +7531,16 @@ function getTopicList() {
   $("#page-topics-modal-loading").removeClass("active").addClass("disabled");
   _bookmark__WEBPACK_IMPORTED_MODULE_1__["localStore"].topicRefreshNeeded = false;
 }
+/*
+ * Called by bookmark.js after bookmarks have been loaded on 
+ * transcript page.
+ */
+
 
 function initPageTopicsModal() {
+  //show topic filter options
+  $("#bookmark-filter-wrapper").removeClass("hide"); //init topic filter modal dialog
+
   $(uiPageTopicsModal).modal({
     dimmerSettings: {
       opacity: uiModalOpacity
@@ -7226,12 +7598,13 @@ function filterResetHandler() {
       $(`mark.bookmark-selected-text.${currentFilter}`).removeClass("show");
     }
 
-    $(".transcript").removeClass("topic-filter-active"); //clear active filter from menu
+    $(".transcript").removeClass("topic-filter-active");
+    $("#page-topics-topic-list").dropdown("clear"); //clear active filter from menu
 
     $("#current-topic-filter").html(`${Object(_language_lang__WEBPACK_IMPORTED_MODULE_0__["getString"])("label:topicfilter")}: None`);
     $("#current-topic-filter").attr("data-filter", ""); //mark bookmark icon green - no filter applied
 
-    $("#bookmark-dropdown-menu > span > i").eq(0).removeClass("yellow").addClass("green"); //close the modal
+    $("#bookmark-dropdown-menu > span  i.bookmark-icon").eq(0).removeClass("yellow").addClass("green"); //close the modal
     //$(uiPageTopicsModal).modal("hide");
   });
 }
@@ -7263,7 +7636,7 @@ function setTopicFilter(topic) {
   $("#current-topic-filter").html(`Topic Filter: <span class="red">${topic.topic}</span>`);
   $("#current-topic-filter").attr("data-filter", topic.value); //mark bookmark icon as yellow - filter is applied
 
-  $("#bookmark-dropdown-menu > span > i").eq(0).removeClass("green").addClass("yellow"); //close the modal
+  $("#bookmark-dropdown-menu > span i.bookmark-icon").eq(0).removeClass("green").addClass("yellow"); //close the modal
 
   $(uiPageTopicsModal).modal("hide");
 }
@@ -7275,235 +7648,83 @@ function setTopicFilter(topic) {
 /*!******************************************!*\
   !*** ./src/js/modules/_config/config.js ***!
   \******************************************/
-/*! exports provided: fetchTimingData, getConfig, loadConfig, getAudioInfo, getReservation, getPageInfo */
+/*! exports provided: getConfig, loadConfig, getPageInfo */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fetchTimingData", function() { return fetchTimingData; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getConfig", function() { return getConfig; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "loadConfig", function() { return loadConfig; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getAudioInfo", function() { return getAudioInfo; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getReservation", function() { return getReservation; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getPageInfo", function() { return getPageInfo; });
-/* harmony import */ var store__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! store */ "./node_modules/store/dist/store.legacy.js");
-/* harmony import */ var store__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(store__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _util_cmi__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../_util/cmi */ "./src/js/modules/_util/cmi.js");
+/* harmony import */ var _util_store__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../_util/store */ "./src/js/modules/_util/store.js");
 /* harmony import */ var _status__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./status */ "./src/js/modules/_config/status.js");
+//import store from "store";
 
 
 
 
-const transcript = __webpack_require__(/*! ./key */ "./src/js/modules/_config/key.js"); //change these values to reflect transcript info
+const transcript = __webpack_require__(/*! ./key */ "./src/js/modules/_config/key.js"); //this is the id used on aws s3 to store audio files
 
-
-const AWS_BUCKET = "assets.christmind.info"; //this is the id used on aws s3 to store audio files
 
 const SOURCE_ID = "www";
-const SOURCE = "CMI Library"; //mp3 and audio timing base directories
+const SOURCE = "CMI Library"; //location of configuration files
 
-const audioBase = `https://s3.amazonaws.com/${AWS_BUCKET}/${SOURCE_ID}/audio`;
-const timingBase = "/public/timing"; //location of configuration files
-
-const configUrl = "/public/config";
-const configStore = "config.www."; //the current configuration, initially null, assigned by getConfig()
+const configUrl = "/public/config"; //the current configuration, initially null, assigned by getConfig()
 
 let config;
-/*
-  The status constains the save date for each config file. We compare that to the saveDate
-  in the locally stored config file. If it's different or doesn't exist we need to get
-  a new version.
+/**
+ * Get the configuration file for 'book'. If it's not found in
+ * the cache (local storage) then get it from the server and 
+ * save it in cache.
+ *
+ * @param {string} book - the book identifier
+ * @param {boolean} assign - true if the config is to be assigned to global config variable
+ * @returns {promise}
+ */
 
-  return: true - get a new version
-          false - use the one we've got
-*/
-
-function refreshNeeded(cfg) {
-  let saveDate = _status__WEBPACK_IMPORTED_MODULE_2__["status"][cfg.bid];
-
-  if (!cfg.saveDate) {
-    cfg.saveDate = saveDate; //we don't use this anymore
-
-    if (cfg.lastFetchDate) {
-      delete cfg.lastFetchDate;
-    }
-
-    console.log("%s needs to be refreshed", cfg.bid);
-    return true; //refresh needed
-  }
-
-  if (cfg.saveDate === saveDate) {
-    //no refresh needed
-    return false;
-  } else {
-    //config file has changed, refresh needed
-    cfg.saveDate = saveDate;
-    console.log("%s needs to be refreshed", cfg.bid);
-    return true;
-  }
-}
-
-function requestConfiguration(url) {
-  return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get(url);
-}
-/*
-  Fetch audio timing data
-*/
-
-
-function fetchTimingData(url) {
+function getConfig(book, assign = true) {
+  let lsKey = `cfg${book}`;
+  let url = `${configUrl}/${book}.json`;
   return new Promise((resolve, reject) => {
-    axios__WEBPACK_IMPORTED_MODULE_1___default.a.get(`${timingBase}${url}`).then(response => {
-      resolve(response.data);
+    Object(_util_cmi__WEBPACK_IMPORTED_MODULE_0__["fetchConfiguration"])(url, lsKey, _status__WEBPACK_IMPORTED_MODULE_2__["status"]).then(resp => {
+      if (assign) {
+        config = resp;
+      }
+
+      resolve(resp);
+    }).catch(err => {
+      reject(err);
+    });
+  });
+}
+/**
+ * Load the configuration file for 'book'. If it's not found in
+ * the cache (local storage) then get it from the server and 
+ * save it in cache.
+ *
+ * @param {string} book - the book identifier
+ * @returns {promise}
+ */
+
+function loadConfig(book) {
+  let lsKey = `cfg${book}`;
+  let url = `${configUrl}/${book}.json`; //"book" is a single page, no configuration
+
+  if (!book) {
+    return Promise.resolve(false);
+  }
+
+  return new Promise((resolve, reject) => {
+    Object(_util_cmi__WEBPACK_IMPORTED_MODULE_0__["fetchConfiguration"])(url, lsKey, _status__WEBPACK_IMPORTED_MODULE_2__["status"]).then(resp => {
+      config = resp;
+      resolve(true);
     }).catch(error => {
+      config = null;
+      console.error(error);
       reject(error);
     });
   });
-}
-/*
-  We use book level configuration that is loaded by request via AJAX. Once
-  loaded the config is persisted in local storage. A check is made for
-  configuration data loaded from storage to determine if the data needs to
-  be reloaded. This is indicated using Define-webpack-plugin to set the timestamp
-  of configurations that have changed.
-
-  args:
-    book: the book identifier, woh, wot, etc
-    assign: when true, assign global variable 'config' to retrieved data
-*/
-
-function getConfig(book, assign = true) {
-  return new Promise((resolve, reject) => {
-    let cfg = store__WEBPACK_IMPORTED_MODULE_0___default.a.get(`${configStore}${book}`);
-    let url; //if config in local storage check if we need to get a freash copy
-
-    if (cfg && !refreshNeeded(cfg)) {
-      if (assign) {
-        config = cfg;
-      }
-
-      resolve(cfg);
-      return;
-    } //get config from server
-
-
-    url = `${configUrl}/${book}.json`;
-    requestConfiguration(url).then(response => {
-      //add save date before storing
-      response.data.saveDate = _status__WEBPACK_IMPORTED_MODULE_2__["status"][response.data.bid];
-      store__WEBPACK_IMPORTED_MODULE_0___default.a.set(`${configStore}${book}`, response.data);
-
-      if (assign) {
-        config = response.data;
-      }
-
-      resolve(response.data);
-    }).catch(() => {
-      config = null;
-      reject(`Config file: ${url} is not valid JSON`);
-    });
-  });
-}
-/*
-  For transcript pages; load the configuration file.
-  For non-transcript pages; configuration is loaded by getConfig()
-
-  This is the same as getConfig() except it doesn't resolve passing the data
-  but a message indicating source of the configuration file
-
-  loadConfig resolves with:
-    0: no ${book}.json file found
-    1: config loaded from local store
-    2: config loaded from server
-*/
-
-function loadConfig(book) {
-  return new Promise((resolve, reject) => {
-    if (typeof book === "undefined") {
-      resolve(0);
-      return;
-    }
-
-    let cfg = store__WEBPACK_IMPORTED_MODULE_0___default.a.get(`${configStore}${book}`);
-    let url; //if config in local storage check if we need to get a fresh copy
-
-    if (cfg && !refreshNeeded(cfg)) {
-      config = cfg;
-      resolve("config read from cache");
-      return;
-    } //get config from server
-
-
-    url = `${configUrl}/${book}.json`;
-    requestConfiguration(url).then(response => {
-      //add save date before storing
-      response.data.saveDate = _status__WEBPACK_IMPORTED_MODULE_2__["status"][response.data.bid];
-      store__WEBPACK_IMPORTED_MODULE_0___default.a.set(`${configStore}${book}`, response.data);
-      config = response.data;
-      resolve("config fetched from server");
-    }).catch(() => {
-      config = null;
-      reject(`Config file: ${url} is not valid JSON`);
-    });
-  });
-}
-/*
-  get audio info from config file
-*/
-
-function _getAudioInfo(cIdx) {
-  let audioInfo; //subtract 1 because value comes from the key which is plus 1
-
-  audioInfo = config.contents[cIdx - 1];
-  return audioInfo ? audioInfo : {};
-}
-
-function getAudioInfo(url) {
-  //check that config has been initialized
-  if (!config) {
-    throw new Error("Configuration has not been initialized");
-  } //remove leading and trailing "/"
-
-
-  url = url.substr(1);
-  url = url.substr(0, url.length - 1);
-  let idx = url.split("/"); //check the correct configuration file is loaded
-
-  if (config.bid !== idx[0]) {
-    throw new Error("Unexpected config file loaded; expecting %s but %s is loaded.", idx[0], config.bid);
-  }
-
-  let audioInfo = {};
-  let cIdx;
-
-  switch (idx[0]) {
-    //these don't have audio
-    case "grad":
-    case "yaa":
-      break;
-
-    default:
-      cIdx = transcript.getUnitId(idx[0], idx[1]);
-      audioInfo = _getAudioInfo(cIdx);
-      break;
-  }
-
-  audioInfo.audioBase = audioBase;
-  return audioInfo;
-}
-/*
- * get timer info for the current page
- */
-
-function getReservation(url) {
-  let audioInfo = getAudioInfo(url);
-
-  if (audioInfo.timer) {
-    return audioInfo.timer;
-  }
-
-  return null;
 }
 /*
   Given a page key, return data from a config file
@@ -7957,11 +8178,9 @@ function nextPrev(bid, $el) {
 function highlightCurrentTranscript(bid) {
   if ($(".transcript").length > 0 || $(".profile-page").length > 0) {
     let page = location.pathname;
-    let $el = $(`.toc-list a[href='${page}']`); //remove href to deactivate link for current page and
-    //scroll into middle of viewport
+    let $el = $(`.toc-list a[href='${page}']`); //remove href to deactivate link for current page
 
     $el.addClass("current-unit").removeAttr("href");
-    scroll_into_view__WEBPACK_IMPORTED_MODULE_0___default()($el.get(0));
 
     switch (bid) {
       case "vol":
@@ -8006,13 +8225,20 @@ function getBookId() {
    * or local storage
    */
   initialize: function (env) {
-    //dialog settings
-    console.log("init toc modal");
+    //modal dialog settings
     $(uiTocModal).modal({
       dimmerSettings: {
         opacity: uiModalOpacity
       },
-      observeChanges: true
+      observeChanges: true,
+      onVisible: function () {
+        let $el = $(".toc-list a.current-unit");
+        scroll_into_view__WEBPACK_IMPORTED_MODULE_0___default()($el.get(0), {
+          isScrollable: function (target, defaultIsScrollable) {
+            return defaultIsScrollable(target) || target.className.includes('scrolling');
+          }
+        });
+      }
     }); //load toc once for transcript pages
 
     if (env === "transcript") {
@@ -8051,298 +8277,6 @@ function getBookId() {
   }
 });
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/src/jquery.js")))
-
-/***/ }),
-
-/***/ "./src/js/modules/_db/annotation.js":
-/*!******************************************!*\
-  !*** ./src/js/modules/_db/annotation.js ***!
-  \******************************************/
-/*! exports provided: getAnnotations, updateAnnotation, postAnnotation, getAnnotation, deleteAnnotation */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getAnnotations", function() { return getAnnotations; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "updateAnnotation", function() { return updateAnnotation; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "postAnnotation", function() { return postAnnotation; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getAnnotation", function() { return getAnnotation; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deleteAnnotation", function() { return deleteAnnotation; });
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _globals__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../globals */ "./src/js/globals.js");
-/* harmony import */ var lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lodash/cloneDeep */ "./node_modules/lodash/cloneDeep.js");
-/* harmony import */ var lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_2__);
-
-
-
-/*
- * Format paraKey so it contains 3 decimal positions
- */
-
-function formatKey(key) {
-  if (typeof key !== "string") {
-    key = key.toString(10);
-  }
-
-  let decimalPos = key.indexOf("."); //invalid key, but return it anyway.
-
-  if (decimalPos === -1) {
-    return `${key}.001`;
-  }
-
-  let intPart = key.substr(0, decimalPos);
-  let decimalPart = key.substr(decimalPos + 1);
-  let padding = decimalPart.length === 2 ? "0" : decimalPart.length === 1 ? "00" : "";
-  return `${intPart}.${decimalPart}${padding}`;
-}
-/*
- * Get array of annotations from server, add a numeric pid to each item, and
- * parse stringified selectedText.
- *
- * Return array of annotations.
- * {
- *   annotation: {
- *     Comment: <string>,
- *     rangeStart: <string>,
- *     rangeEnd: <string>,
- *     [selectedText]: <object>,
- *     [aid]: <string>
- *     topicList: [{value, topic},...],
- *     userId: <string>,
- *     creationDate: <string>
- *   }, 
- *   userId: <string>,
- *   paraKey: <string>,
- *   creationDate: <string>,
- *   pid: <number>
- * }
- */
-
-
-function getAnnotations(userId, key) {
-  return new Promise((resolve, reject) => {
-    axios__WEBPACK_IMPORTED_MODULE_0___default.a.get(`${_globals__WEBPACK_IMPORTED_MODULE_1__["default"].user2}/queryAnnotation/${userId}/${key}`).then(response => {
-      let bmList = response.data.response;
-      bmList.forEach(b => {
-        //numeric pid, not representative of key
-        // - used to find annotations for a given paragraph
-        b.pid = parseInt(b.annotation.rangeStart.substring(1), 10); //add userId and creationDate to annotation, this is used by the
-        //bookmark navigator
-
-        b.annotation.userId = b.userId;
-        b.annotation.creationDate = b.creationDate; //parse selectedText JSON object
-
-        if (b.annotation.selectedText) {
-          b.annotation.selectedText = JSON.parse(b.annotation.selectedText);
-        }
-      }); //sort bookmarks by numeric pid
-
-      bmList.sort((a, b) => {
-        return a.paraKey - b.paraKey;
-      });
-      resolve(bmList);
-    }).catch(err => {
-      reject(err);
-    });
-  });
-}
-/*
- * Called by topicmanager
- */
-
-function updateAnnotation(bookmark) {
-  let clone = lodash_cloneDeep__WEBPACK_IMPORTED_MODULE_2___default()(bookmark);
-
-  if (clone.annotation.selectedText) {
-    if (typeof clone.annotation.selectedText !== "string") {
-      //convert selectedText to JSON
-      clone.annotation.selectedText = JSON.stringify(clone.annotation.selectedText);
-    }
-  }
-
-  return postAnnotation(clone.userId, clone.paraKey, clone.creationDate, clone.annotation);
-}
-/*
- * Save annotation to DynamoDb
- */
-
-function postAnnotation(userId, paraKey, creationDate, annotation) {
-  if (typeof creationDate !== "string") {
-    creationDate = creationDate.toString(10);
-  }
-
-  if (typeof paraKey !== "string") {
-    paraKey = paraKey.toString(10);
-  }
-
-  let body = {
-    userId: userId,
-    paraKey: paraKey,
-    creationDate: creationDate,
-    annotation: annotation
-  };
-  return new Promise((resolve, reject) => {
-    axios__WEBPACK_IMPORTED_MODULE_0___default.a.post(`${_globals__WEBPACK_IMPORTED_MODULE_1__["default"].user2}/annotation`, body).then(response => {
-      resolve(response.data.response);
-    }).catch(err => {
-      reject(err);
-    });
-  });
-}
-/*
- * Get annotation from server, add userId and creationDate to the annotation,
- * parse stringified selectedText.
- *
- * Return annotation only.
- */
-
-function getAnnotation(userId, paraKey, creationDate) {
-  return new Promise((resolve, reject) => {
-    axios__WEBPACK_IMPORTED_MODULE_0___default.a.get(`${_globals__WEBPACK_IMPORTED_MODULE_1__["default"].user2}/annotation/${userId}/${formatKey(paraKey)}/${creationDate}`).then(response => {
-      console.log("getAnnotation: %o", response);
-      let r = response.data.response; //annotation not found
-
-      if (!r.userId) {
-        resolve({});
-        return;
-      }
-
-      r.annotation.userId = r.userId;
-      r.annotation.creationDate = r.creationDate;
-
-      if (r.annotation.selectedText) {
-        r.annotation.selectedText = JSON.parse(r.annotation.selectedText);
-      }
-
-      resolve(r.annotation);
-    }).catch(err => {
-      reject(err);
-    });
-  });
-}
-/*
- * Delete annotation
- */
-
-function deleteAnnotation(userId, paraKey, creationDate) {
-  if (typeof creationDate !== "string") {
-    creationDate.toString(10);
-  }
-
-  return new Promise((resolve, reject) => {
-    axios__WEBPACK_IMPORTED_MODULE_0___default.a.delete(`${_globals__WEBPACK_IMPORTED_MODULE_1__["default"].user2}/annotation/${userId}/${formatKey(paraKey)}/${creationDate}`).then(response => {
-      resolve(response.data.response);
-    }).catch(err => {
-      reject(err);
-    });
-  });
-}
-
-/***/ }),
-
-/***/ "./src/js/modules/_db/share.js":
-/*!*************************************!*\
-  !*** ./src/js/modules/_db/share.js ***!
-  \*************************************/
-/*! exports provided: getMailList, putMailList, sendMail */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getMailList", function() { return getMailList; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "putMailList", function() { return putMailList; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sendMail", function() { return sendMail; });
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _globals__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../globals */ "./src/js/globals.js");
-
-
-function getMailList(userId) {
-  return new Promise((resolve, reject) => {
-    axios__WEBPACK_IMPORTED_MODULE_0___default.a.get(`${_globals__WEBPACK_IMPORTED_MODULE_1__["default"].user2}/mailList/${userId}`).then(response => {
-      resolve(response.data.mailList);
-    }).catch(err => {
-      reject(err);
-    });
-  });
-}
-function putMailList(userId, list) {
-  return new Promise((resolve, reject) => {
-    axios__WEBPACK_IMPORTED_MODULE_0___default.a.post(`${_globals__WEBPACK_IMPORTED_MODULE_1__["default"].user2}/mailList`, list).then(response => {
-      resolve(response.data.response);
-    }).catch(err => {
-      reject(err);
-    });
-  });
-}
-function sendMail(mailInfo) {
-  return new Promise((resolve, reject) => {
-    axios__WEBPACK_IMPORTED_MODULE_0___default.a.post(_globals__WEBPACK_IMPORTED_MODULE_1__["default"].share, mailInfo).then(response => {
-      if (response.status === 200) {
-        resolve("success");
-      } else {
-        resolve(response.data.message);
-      }
-    }).catch(error => {
-      reject(error);
-    });
-  });
-}
-
-/***/ }),
-
-/***/ "./src/js/modules/_db/topics.js":
-/*!**************************************!*\
-  !*** ./src/js/modules/_db/topics.js ***!
-  \**************************************/
-/*! exports provided: getTopicList, putTopicList */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getTopicList", function() { return getTopicList; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "putTopicList", function() { return putTopicList; });
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _globals__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../globals */ "./src/js/globals.js");
-
-
-/**
- * @param {string} userId - md5 hash of userId
- * @param {string} sourceId - two digit source identifier
- * @return {array} topics - topicList
- *
- */
-
-function getTopicList(userId, sourceId) {
-  return new Promise((resolve, reject) => {
-    axios__WEBPACK_IMPORTED_MODULE_0___default.a.get(`${_globals__WEBPACK_IMPORTED_MODULE_1__["default"].user2}/topicList/${userId}/${sourceId}`).then(response => {
-      let topics = response.data.topics;
-      resolve(topics);
-    }).catch(err => {
-      reject(err);
-    });
-  });
-}
-/*
- * Save topicList to DynamoDb
- */
-
-function putTopicList(userId, sourceId, topicList) {
-  let body = {
-    userId: userId,
-    sourceId: sourceId,
-    topicList: topicList
-  };
-  return new Promise((resolve, reject) => {
-    axios__WEBPACK_IMPORTED_MODULE_0___default.a.post(`${_globals__WEBPACK_IMPORTED_MODULE_1__["default"].user2}/topicList`, body).then(response => {
-      resolve(response.data.response);
-    }).catch(err => {
-      reject(err);
-    });
-  });
-}
 
 /***/ }),
 
@@ -8539,122 +8473,17 @@ function __lang(strings, ...values) {
 
     return t;
   });
-  return strings.reduce((result, string, i) => {
-    return `${result}${string}${tokens[i] || ""}`;
+  let newString = strings.reduce((result, string, i) => {
+    let token = tokens[i];
+
+    if (typeof token === "undefined") {
+      token = "";
+    }
+
+    return `${result}${string}${token}`;
   }, "");
+  return newString;
 }
-
-/***/ }),
-
-/***/ "./src/js/modules/_link/setup.js":
-/*!***************************************!*\
-  !*** ./src/js/modules/_link/setup.js ***!
-  \***************************************/
-/*! exports provided: getUrl, getLinkHref, createLinkListener */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* WEBPACK VAR INJECTION */(function($) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getUrl", function() { return getUrl; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getLinkHref", function() { return getLinkHref; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createLinkListener", function() { return createLinkListener; });
-const {
-  getUrl: www_getUrl
-} = __webpack_require__(/*! ../_config/key */ "./src/js/modules/_config/key.js");
-
-const {
-  getUrl: acim_getUrl
-} = __webpack_require__(/*! acim/modules/_config/key */ "../cmi-acim/src/js/modules/_config/key.js");
-
-const {
-  getUrl: oe_getUrl
-} = __webpack_require__(/*! oe/modules/_config/key */ "../cmi-oe/src/js/modules/_config/key.js");
-
-const {
-  getUrl: acol_getUrl
-} = __webpack_require__(/*! acol/modules/_config/key */ "../cmi-acol/src/js/modules/_config/key.js");
-
-const {
-  getUrl: jsb_getUrl
-} = __webpack_require__(/*! jsb/modules/_config/key */ "../cmi-jsb/src/js/modules/_config/key.js");
-
-const {
-  getUrl: raj_getUrl
-} = __webpack_require__(/*! raj/modules/_config/key */ "../cmi-raj/src/js/modules/_config/key.js");
-
-const {
-  getUrl: wom_getUrl
-} = __webpack_require__(/*! wom/modules/_config/key */ "../cmi-wom/src/js/modules/_config/key.js");
-
-const {
-  getUrl: pwom_getUrl
-} = __webpack_require__(/*! pwom/modules/_config/key */ "../cmi-pwom/src/js/modules/_config/key.js");
-
-function getUrl(source, key) {
-  let url;
-
-  switch (source) {
-    case "acol":
-      url = acol_getUrl(key, true);
-      break;
-
-    case "acim":
-      url = acim_getUrl(key, true);
-      break;
-
-    case "acimoe":
-      url = oe_getUrl(key, true);
-      break;
-
-    case "jsb":
-      url = jsb_getUrl(key, true);
-      break;
-
-    case "raj":
-      url = raj_getUrl(key, true);
-      break;
-
-    case "wom":
-      url = wom_getUrl(key, true);
-      break;
-
-    case "pwom":
-      url = pwom_getUrl(key, true);
-      break;
-
-    case "www":
-      url = www_getUrl(key, true);
-      break;
-
-    default:
-      url = "/invalid/source";
-  }
-
-  return url;
-}
-function getLinkHref(link) {
-  let url = getUrl(link.desc.source, link.key);
-
-  if (location.pathname === url) {
-    return `#${link.desc.pid}`;
-  }
-
-  return `${url}?v=${link.desc.pid}`;
-}
-function createLinkListener(getLink) {
-  $(".transcript").on("click", "td.follow-link-item", function (e) {
-    e.preventDefault(); //get link info
-
-    let index = $(this).parent("tr").attr("data-index");
-    let linkInfo = getLink(index); //build url
-
-    let link = JSON.parse(linkInfo.link); //let url = getUrl(link.desc.source, link.key);
-    //console.log("url: %s", url);
-
-    location.href = getLinkHref(link);
-  });
-}
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/src/jquery.js")))
 
 /***/ }),
 
@@ -8671,13 +8500,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "initStickyMenu", function() { return initStickyMenu; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "initAnimation", function() { return initAnimation; });
 /* harmony import */ var gsap__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! gsap */ "./node_modules/gsap/index.js");
-/* harmony import */ var store__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! store */ "./node_modules/store/dist/store.legacy.js");
-/* harmony import */ var store__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(store__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _util_store__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../_util/store */ "./src/js/modules/_util/store.js");
 
 
-let storeKey = "pnDisplayState:";
-function initTranscriptPage() {
-  storeKey = `${storeKey}${$("body").attr("sourceId")}`;
+let storeKey;
+function initTranscriptPage(key) {
+  //local storage key to save paragraph number display state
+  storeKey = key;
   initStickyMenu();
   labelParagraphs();
   setParagraphNumberDisplayState();
@@ -8736,25 +8565,27 @@ function createParagraphNumberToggleListener() {
 
     if (el.hasClass("hide-pnum")) {
       el.removeClass("hide-pnum");
-      store__WEBPACK_IMPORTED_MODULE_1___default.a.set(storeKey, "on");
-      setParagraphNumberDisplayColor("on");
+      Object(_util_store__WEBPACK_IMPORTED_MODULE_1__["storeSet"])(storeKey, "on");
+      setParagraphNumberDisplay("on");
     } else {
       el.addClass("hide-pnum");
-      store__WEBPACK_IMPORTED_MODULE_1___default.a.set(storeKey, "off");
-      setParagraphNumberDisplayColor("off");
+      Object(_util_store__WEBPACK_IMPORTED_MODULE_1__["storeSet"])(storeKey, "off");
+      setParagraphNumberDisplay("off");
     }
   });
 }
 
-function setParagraphNumberDisplayColor(state) {
-  let color = state === "on" ? "green" : "red";
-  let oldColor = state === "on" ? "red" : "green";
-  $(".toggle-paragraph-markers > span > .paragraph.icon").removeClass(oldColor).addClass(color);
+function setParagraphNumberDisplay(state) {
+  if (state === "on") {
+    $(".toggle-paragraph-markers > span .paragraph-corner-icon").addClass("hide");
+  } else {
+    $(".toggle-paragraph-markers > span .paragraph-corner-icon").removeClass("hide");
+  }
 }
 
 function setParagraphNumberDisplayState() {
   let toggleAvailable = $(".toggle-paragraph-markers").length === 0 ? false : true;
-  let state = store__WEBPACK_IMPORTED_MODULE_1___default.a.get(storeKey);
+  let state = Object(_util_store__WEBPACK_IMPORTED_MODULE_1__["storeGet"])(storeKey);
   let el = $(".transcript.ui.text.container");
   let current = el.hasClass("hide-pnum") ? "off" : "on"; //if toggle menu option not available set page to hide paragraph numbers and return
 
@@ -8766,7 +8597,7 @@ function setParagraphNumberDisplayState() {
 
   if (!state) {
     state = current;
-    store__WEBPACK_IMPORTED_MODULE_1___default.a.set(storeKey, state);
+    Object(_util_store__WEBPACK_IMPORTED_MODULE_1__["storeSet"])(storeKey, state);
   }
 
   if (state !== current) {
@@ -8777,7 +8608,7 @@ function setParagraphNumberDisplayState() {
     }
   }
 
-  setParagraphNumberDisplayColor(state);
+  setParagraphNumberDisplay(state);
 }
 /*
   Fix main menu to top of page when scrolled
@@ -8831,8 +8662,7 @@ __webpack_require__.r(__webpack_exports__);
 /* WEBPACK VAR INJECTION */(function($) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "initNavigator", function() { return initNavigator; });
 /* harmony import */ var scroll_into_view__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! scroll-into-view */ "./node_modules/scroll-into-view/scrollIntoView.js");
 /* harmony import */ var scroll_into_view__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(scroll_into_view__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var store__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! store */ "./node_modules/store/dist/store.legacy.js");
-/* harmony import */ var store__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(store__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _util_store__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../_util/store */ "./src/js/modules/_util/store.js");
 /* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! toastr */ "./node_modules/toastr/toastr.js");
 /* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(toastr__WEBPACK_IMPORTED_MODULE_2__);
 /*
@@ -8844,11 +8674,9 @@ __webpack_require__.r(__webpack_exports__);
 
 const page = __webpack_require__(/*! ../_config/key */ "./src/js/modules/_config/key.js");
 
-const queryResultName = "query-result-raj";
 const SCROLL_INTERVAL = 250;
 
-function scrollComplete(message, type) {
-  console.log(`${message}: ${type}`);
+function scrollComplete(message, type) {//console.log(`${message}: ${type}`);
 }
 
 function scrollIntoView(id, caller) {
@@ -9054,7 +8882,7 @@ function findPositions(pid, pageKey, flat) {
 }
 
 function initControls(pid) {
-  let lastSearch = store__WEBPACK_IMPORTED_MODULE_1___default.a.get(queryResultName);
+  let lastSearch = Object(_util_store__WEBPACK_IMPORTED_MODULE_1__["storeGet"])("srchResults");
 
   if (!lastSearch) {
     toastr__WEBPACK_IMPORTED_MODULE_2___default.a.warning("There are no search results to show.");
@@ -9318,15 +9146,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _config_config__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../_config/config */ "./src/js/modules/_config/config.js");
 /* harmony import */ var lodash_uniq__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! lodash/uniq */ "./node_modules/lodash/uniq.js");
 /* harmony import */ var lodash_uniq__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(lodash_uniq__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var store__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! store */ "./node_modules/store/dist/store.legacy.js");
-/* harmony import */ var store__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(store__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _util_store__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../_util/store */ "./src/js/modules/_util/store.js");
 
 
  //this needs to use require because it is also used by a node app and node doesn't support import
 
 const womInfo = __webpack_require__(/*! ../_config/key */ "./src/js/modules/_config/key.js");
-
-const queryResultName = "query-result-wom";
 
 function getUnitName(pageInfo, unitInfo) {
   return pageInfo[unitInfo.pageKey].title;
@@ -9500,7 +9325,7 @@ function saveQueryResults(queryString, matchCount, titleArray, pageInfo, data, o
     }
   }
 
-  store__WEBPACK_IMPORTED_MODULE_2___default.a.set(queryResultName, {
+  Object(_util_store__WEBPACK_IMPORTED_MODULE_2__["storeSet"])("srchResults", {
     query: queryString,
     count: matchCount,
     titleArray: titleArray,
@@ -9512,7 +9337,7 @@ function saveQueryResults(queryString, matchCount, titleArray, pageInfo, data, o
 
 
 function showSavedQuery() {
-  const queryResult = store__WEBPACK_IMPORTED_MODULE_2___default.a.get(queryResultName);
+  const queryResult = Object(_util_store__WEBPACK_IMPORTED_MODULE_2__["storeGet"])("srchResults");
 
   if (!queryResult) {
     return;
@@ -9546,7 +9371,7 @@ function showSavedQuery() {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var _util_url__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../_util/url */ "./src/js/modules/_util/url.js");
-/* harmony import */ var _db_annotation__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../_db/annotation */ "./src/js/modules/_db/annotation.js");
+/* harmony import */ var _ajax_annotation__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../_ajax/annotation */ "./src/js/modules/_ajax/annotation.js");
 /* harmony import */ var _bookmark_selection__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../_bookmark/selection */ "./src/js/modules/_bookmark/selection.js");
 /* harmony import */ var lodash_range__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lodash/range */ "./node_modules/lodash/range.js");
 /* harmony import */ var lodash_range__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(lodash_range__WEBPACK_IMPORTED_MODULE_3__);
@@ -9678,7 +9503,7 @@ function showAnnotation() {
     */
 
     try {
-      const annotation = await Object(_db_annotation__WEBPACK_IMPORTED_MODULE_1__["getAnnotation"])(uid, paraKey, aid);
+      const annotation = await Object(_ajax_annotation__WEBPACK_IMPORTED_MODULE_1__["getAnnotation"])(uid, paraKey, aid);
 
       if (!annotation.userId) {
         Object(_bookmark_selection__WEBPACK_IMPORTED_MODULE_2__["highlightSkippedAnnotations"])();
@@ -9744,7 +9569,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-let login_state_key = "login.state";
+let login_state_key = "cmi.login.state";
 let userInfo;
 
 function prodUserInfo() {
@@ -9790,7 +9615,6 @@ function setAsSignedIn() {
   $(".hide.profile-management.item").removeClass("hide"); //show menu options for account holders
 
   $(".requires-signin").removeClass("hide");
-  console.log("requires-signin set to show");
 }
 /*
   Modify menubar icons "bookmark" and "sign in" to
@@ -9817,7 +9641,6 @@ function setAsSignedOut() {
   $(".profile-management.item").addClass("hide"); //hide account users menu options
 
   $(".requires-signin").addClass("hide");
-  console.log("requires-signin set to hide");
 }
 /*
   ACOL restricts access to some content based on the "acol" user role. When the user
@@ -9906,6 +9729,222 @@ function manageState(state) {
   }
 });
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/src/jquery.js")))
+
+/***/ }),
+
+/***/ "./src/js/modules/_util/cmi.js":
+/*!*************************************!*\
+  !*** ./src/js/modules/_util/cmi.js ***!
+  \*************************************/
+/*! exports provided: getUrlByPageKey, getBookmarkText, fetchConfiguration */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getUrlByPageKey", function() { return getUrlByPageKey; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getBookmarkText", function() { return getBookmarkText; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fetchConfiguration", function() { return fetchConfiguration; });
+/* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./store */ "./src/js/modules/_util/store.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_1__);
+
+
+
+const acimKey = __webpack_require__(/*! acim/modules/_config/key */ "../cmi-acim/src/js/modules/_config/key.js");
+
+const oeKey = __webpack_require__(/*! oe/modules/_config/key */ "../cmi-oe/src/js/modules/_config/key.js");
+
+const acolKey = __webpack_require__(/*! acol/modules/_config/key */ "../cmi-acol/src/js/modules/_config/key.js");
+
+const rajKey = __webpack_require__(/*! raj/modules/_config/key */ "../cmi-raj/src/js/modules/_config/key.js");
+
+const jsbKey = __webpack_require__(/*! jsb/modules/_config/key */ "../cmi-jsb/src/js/modules/_config/key.js");
+
+const womKey = __webpack_require__(/*! wom/modules/_config/key */ "../cmi-wom/src/js/modules/_config/key.js");
+
+const pwomKey = __webpack_require__(/*! pwom/modules/_config/key */ "../cmi-pwom/src/js/modules/_config/key.js");
+
+const ACIMSOURCEID = "12";
+const OESOURCEID = "15";
+const ACOLSOURCEID = "14";
+const RAJSOURCEID = "13";
+const WOMSOURCEID = "10";
+const PWOMSOURCEID = "16";
+const JSBSOURCEID = "11";
+/**
+ * Get the url for the page identified by "key"
+ *
+ * @param {string} key - the page key (paraKey)
+ * @returns {string} the url of the page
+ */
+
+function getUrlByPageKey(key) {
+  if (typeof key !== "string") {
+    key = `${key}`;
+  }
+
+  if (key.startsWith(ACIMSOURCEID)) {
+    return acimKey.getUrl(key, true);
+  }
+
+  if (key.startsWith(OESOURCEID)) {
+    return oeKey.getUrl(key, true);
+  }
+
+  if (key.startsWith(ACOLSOURCEID)) {
+    return acolKey.getUrl(key, true);
+  }
+
+  if (key.startsWith(JSBSOURCEID)) {
+    return jsbKey.getUrl(key, true);
+  }
+
+  if (key.startsWith(RAJSOURCEID)) {
+    return rajKey.getUrl(key, true);
+  }
+
+  if (key.startsWith(WOMSOURCEID)) {
+    return womKey.getUrl(key, true);
+  }
+
+  if (key.startsWith(PWOMSOURCEID)) {
+    return pwomKey.getUrl(key, true);
+  }
+
+  throw new Error(`getUrlByPageKey(${key}): invalid key`);
+} //transcript Node cache used by getBookmarkText()
+
+let htmlCache = {};
+
+function getNoteTranscript(id, url) {
+  if (htmlCache[id]) {
+    return Promise.resolve(htmlCache[id]);
+  }
+
+  const config = {
+    responseType: "document"
+  };
+  return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get(url, config).then(response => {
+    let transcriptNode = response.data.getElementsByClassName("transcript")[0];
+    htmlCache[id] = transcriptNode;
+    return Promise.resolve(transcriptNode);
+  });
+}
+
+function getBookmarkText(bookmarks) {
+  let promises = bookmarks.map(bm => {
+    if (bm.annotation.selectedText) {
+      if (!bm.mgr) {
+        bm.mgr = {};
+        let st = bm.annotation.selectedText;
+        bm.mgr.title = st.title;
+        bm.mgr.url = st.url;
+        bm.mgr.pid = st.pid;
+        bm.mgr.content = [{
+          pid: st.pid,
+          text: st.target.selector[1].exact
+        }];
+        bm.mgr.comment = bm.annotation.Comment;
+        bm.mgr.note = bm.annotation.Note;
+        bm.mgr.type = "selected";
+      }
+
+      return Promise.resolve(bm);
+    } //Note style bookmark
+    else if (!bm.mgr) {
+        let url = getUrlByPageKey(bm.paraKey);
+        bm.mgr = {};
+        bm.mgr.type = "note";
+        bm.mgr.title = bm.annotation.bookTitle;
+        bm.mgr.url = url;
+        bm.mgr.pid = bm.annotation.rangeStart;
+        bm.mgr.comment = bm.annotation.Comment;
+        bm.mgr.note = bm.annotation.Note; //get 'document' response from axios
+
+        return getNoteTranscript(bm.paraKey, url).then(resp => {
+          let paragraphs = resp.getElementsByTagName("p");
+          let rangeStart = parseInt(bm.annotation.rangeStart.substring(1), 10);
+          let rangeEnd = parseInt(bm.annotation.rangeEnd.substring(1), 10);
+          bm.mgr.content = [];
+
+          for (let p = rangeStart; p <= rangeEnd; p++) {
+            if (paragraphs[p]) {
+              bm.mgr.content.push({
+                pid: `p${p}`,
+                text: paragraphs[p].textContent
+              });
+            } else {
+              bm.mgr.content.push({
+                pid: `p${p}`,
+                text: "no data for paragraph"
+              });
+            }
+          }
+
+          return Promise.resolve(bm);
+        });
+      } else {
+        return Promise.resolve(bm);
+      }
+  });
+  return promises;
+}
+/**
+  We use book level configuration that is loaded by request via AJAX. Once
+  loaded the config is persisted in local storage. A check is made for
+  configuration data loaded from local storage to determine if the data needs to
+  be reloaded.
+
+  @params {string} url - The url of the config file
+  @params {string} lsKey - local storage key (cfgwoh)
+  @returns {Promise} The config file
+*/
+
+function fetchConfiguration(url, lsKey, configStatus) {
+  return new Promise((resolve, reject) => {
+    let cfg = Object(_store__WEBPACK_IMPORTED_MODULE_0__["storeGet"])(lsKey); //if config in local storage check if we need to get a fresh copy
+
+    if (cfg && !refreshNeeded(cfg, configStatus)) {
+      resolve(cfg);
+      return;
+    } //get config from server
+
+
+    axios__WEBPACK_IMPORTED_MODULE_1___default.a.get(url).then(response => {
+      response.data.saveDate = configStatus[response.data.bid];
+      Object(_store__WEBPACK_IMPORTED_MODULE_0__["storeSet"])(lsKey, response.data);
+      resolve(response.data);
+    }).catch(err => {
+      console.error(err);
+      reject(err);
+    });
+  });
+}
+/*
+  The status constains the save date for each config file. We compare that to the saveDate
+  in the locally stored config file. If it's different or doesn't exist we need to get
+  a new version.
+
+  return: true - get a new version
+          false - use the one we've got
+*/
+
+function refreshNeeded(cfg, configStatus) {
+  let lastSaveDate = configStatus[cfg.bid];
+
+  if (!cfg.saveDate) {
+    cfg.saveDate = lastSaveDate;
+    return true; //refresh needed
+  }
+
+  if (cfg.saveDate === lastSaveDate) {
+    return false; //no refresh needed
+  } else {
+    //config file has changed, refresh needed
+    cfg.saveDate = lastSaveDate;
+    return true;
+  }
+}
 
 /***/ }),
 
@@ -10224,6 +10263,27 @@ function transcriptDriver() {
 
 /***/ }),
 
+/***/ "./src/js/modules/_util/sanitize.js":
+/*!******************************************!*\
+  !*** ./src/js/modules/_util/sanitize.js ***!
+  \******************************************/
+/*! exports provided: purify */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "purify", function() { return purify; });
+/* harmony import */ var dompurify__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! dompurify */ "./node_modules/dompurify/dist/purify.js");
+/* harmony import */ var dompurify__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(dompurify__WEBPACK_IMPORTED_MODULE_0__);
+
+function purify(dirty) {
+  return dompurify__WEBPACK_IMPORTED_MODULE_0___default.a.sanitize(dirty, {
+    SAFE_FOR_JQUERY: true
+  });
+}
+
+/***/ }),
+
 /***/ "./src/js/modules/_util/store.js":
 /*!***************************************!*\
   !*** ./src/js/modules/_util/store.js ***!
@@ -10252,7 +10312,7 @@ function getKey(key) {
   const storeKey = keys.get(key);
 
   if (!storeKey) {
-    throw new Error(`store: invalid key: ${key}`);
+    throw new Error(`store: key not found: ${key}`);
   }
 
   return storeKey;

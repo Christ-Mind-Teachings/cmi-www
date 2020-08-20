@@ -1,7 +1,8 @@
 import notify from "toastr";
 import {getUserInfo} from "../_user/netlify";
 import {getString} from "../_language/lang";
-import {sendMail, getMailList} from "../_db/share";
+import {sendMail, getMailList} from "../_ajax/share";
+import {purify} from "../_util/sanitize";
 
 //teaching specific constants
 let teaching = {};
@@ -17,7 +18,7 @@ function formatMessage(message) {
   let mArray = message.split("@@");
 
   message = mArray.reduce((current, p) => {
-    return `${current}<p>${p}</p>`;
+    return `${current}<p>${purify(p)}</p>`;
   }, "");
 
   return message;

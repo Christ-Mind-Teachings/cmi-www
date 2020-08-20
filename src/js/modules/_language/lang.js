@@ -176,9 +176,15 @@ export function __lang(strings, ...values) {
     return t;
   });
 
-  return strings.reduce((result, string, i) => {
-    return `${result}${string}${tokens[i] || ""}`;
+  let newString = strings.reduce((result, string, i) => {
+    let token = tokens[i];
+    if (typeof token === "undefined") {
+      token = "";
+    }
+    return `${result}${string}${token}`;
   }, "");
+
+  return newString;
 }
 
 

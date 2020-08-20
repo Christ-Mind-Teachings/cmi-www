@@ -15,11 +15,11 @@ import {
   postAnnotation as putAnnotation,
   deleteAnnotation as delAnnotation,
   getAnnotations,
-} from "../_db/annotation";
+} from "../_ajax/annotation";
 
 import {
   getTopicList
-} from "../_db/topics";
+} from "../_ajax/topics";
 
 import {storeSet, storeGet} from "../_util/store";
 import {localStore} from "./bookmark";
@@ -106,9 +106,6 @@ function deleteAnnotation(pid, creationDate) {
     try {
       let response = await delAnnotation(userInfo.userId, paraKey, creationDate);
       let result = localStore.deleteItem(userInfo.userId, paraKey, creationDate);
-      if (result.modified) {
-        //TODO update page topic list
-      }
       resolve(result.remaining);
     }
     catch(err) {

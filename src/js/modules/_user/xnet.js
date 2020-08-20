@@ -69,6 +69,41 @@ function getNoteTranscript(id, url) {
   });
 }
 
+/**
+ * Get the url for the page identified by "key"
+ *
+ * @param {string} key - the page key (paraKey)
+ * @returns {string} the url of the page
+ */
+export function getNoteUrl(key) {
+  let url;
+  let akey = key;
+
+  if (akey.startsWith(ACIMSOURCEID)) {
+    url = acimKey.getUrl(key, true);
+  }
+  if (akey.startsWith(OESOURCEID)) {
+    url = oeKey.getUrl(key, true);
+  }
+  else if (akey.startsWith(ACOLSOURCEID)) {
+    url = acolKey.getUrl(key, true);
+  }
+  else if (akey.startsWith(JSBSOURCEID)) {
+    url = jsbKey.getUrl(key, true);
+  }
+  else if (akey.startsWith(RAJSOURCEID)) {
+    url = rajKey.getUrl(key, true);
+  }
+  else if (akey.startsWith(WOMSOURCEID)) {
+    url = womKey.getUrl(key, true);
+  }
+  else if (akey.startsWith(PWOMSOURCEID)) {
+    url = pwomKey.getUrl(key, true);
+  }
+
+  return url;
+}
+
 export function getBookmarkTextNew(bookmarks) {
   let promises = bookmarks.map(bm => {
     if (bm.annotation.selectedText) {

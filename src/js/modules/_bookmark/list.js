@@ -18,7 +18,7 @@
  *
  */
 
-import {getAnnotations} from "../_db/annotation";
+import {getAnnotations} from "../_ajax/annotation";
 import {getUserInfo} from "../_user/netlify";
 import {storeGet, storeSet} from "../_util/store"
 

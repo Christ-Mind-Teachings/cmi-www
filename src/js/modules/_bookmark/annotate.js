@@ -307,7 +307,7 @@ function genExtrasItem(item) {
 
 function generateComment(comment) {
   if (!comment) {
-    return getString("annotate:m6");
+    return getString("annotate:m7");
   }
   else {
     return comment;

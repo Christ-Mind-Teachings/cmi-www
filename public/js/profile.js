@@ -155,10 +155,10 @@
 /************************************************************************/
 /******/ ({
 
-/***/ "./src/js/modules/_db/quotes.js":
-/*!**************************************!*\
-  !*** ./src/js/modules/_db/quotes.js ***!
-  \**************************************/
+/***/ "./src/js/modules/_ajax/quotes.js":
+/*!****************************************!*\
+  !*** ./src/js/modules/_ajax/quotes.js ***!
+  \****************************************/
 /*! exports provided: getQuoteIds, getQuote, getQuoteData, putQuote, deleteQuote */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -264,12 +264,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! toastr */ "./node_modules/toastr/toastr.js");
 /* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(toastr__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _user_netlify__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../_user/netlify */ "./src/js/modules/_user/netlify.js");
-/* harmony import */ var _db_share__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../_db/share */ "./src/js/modules/_db/share.js");
+/* harmony import */ var _ajax_share__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../_ajax/share */ "./src/js/modules/_ajax/share.js");
+/* harmony import */ var _util_sanitize__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../_util/sanitize */ "./src/js/modules/_util/sanitize.js");
 /*
   Email list management - for sharing bookmarks via email
 */
-//import dt from "datatables.net";
-//import "datatables.net-se/css/dataTables.semanticui.min.css";
+
 
 
  //module global list of email addresses
@@ -349,6 +349,9 @@ function createEventHandlers() {
     e.stopPropagation();
     let status = $("#add-or-update").text();
     let formData = $("#addto-maillist-form").form("get values");
+    formData.first = Object(_util_sanitize__WEBPACK_IMPORTED_MODULE_3__["purify"])(formData.first);
+    formData.last = Object(_util_sanitize__WEBPACK_IMPORTED_MODULE_3__["purify"])(formData.last);
+    formData.address = Object(_util_sanitize__WEBPACK_IMPORTED_MODULE_3__["purify"])(formData.address);
 
     if (status === "Add") {
       maillist.push({
@@ -360,7 +363,6 @@ function createEventHandlers() {
 
       $("#email-list-table").append(row);
       enableSave();
-      console.log("after Add: maillist: %o", maillist);
     } //update
     else {
         let index = parseInt($("#add-or-update").attr("data-index"), 10); //update array
@@ -408,7 +410,7 @@ async function loadEmailListTable() {
   $(".sync.icon").addClass("loading");
 
   try {
-    maillist = await Object(_db_share__WEBPACK_IMPORTED_MODULE_2__["getMailList"])(userInfo.userId);
+    maillist = await Object(_ajax_share__WEBPACK_IMPORTED_MODULE_2__["getMailList"])(userInfo.userId);
     $(".sync.icon.loading").removeClass("loading");
     let html = populateTable(maillist);
     $("#email-list-table").html(html);
@@ -432,7 +434,7 @@ async function saveChanges() {
 
   try {
     $(".sync.icon").addClass("loading");
-    let response = await Object(_db_share__WEBPACK_IMPORTED_MODULE_2__["putMailList"])(userInfo.userId, body);
+    let response = await Object(_ajax_share__WEBPACK_IMPORTED_MODULE_2__["putMailList"])(userInfo.userId, body);
     toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info(`Saved! ${response}`);
     $(".sync.icon.loading").removeClass("loading");
     $("button.save-to-database").addClass("disabled");
@@ -442,239 +444,6 @@ async function saveChanges() {
   }
 }
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/src/jquery.js")))
-
-/***/ }),
-
-/***/ "./src/js/modules/_user/net.js":
-/*!*************************************!*\
-  !*** ./src/js/modules/_user/net.js ***!
-  \*************************************/
-/*! exports provided: getConfig, getTopics, getBookmarks, getNoteUrl, getBookmarkTextNew, getBookmarkText */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getConfig", function() { return getConfig; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getTopics", function() { return getTopics; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getBookmarks", function() { return getBookmarks; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getNoteUrl", function() { return getNoteUrl; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getBookmarkTextNew", function() { return getBookmarkTextNew; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getBookmarkText", function() { return getBookmarkText; });
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _globals__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../globals */ "./src/js/globals.js");
-
-
-
-const acimKey = __webpack_require__(/*! acim/modules/_config/key */ "../cmi-acim/src/js/modules/_config/key.js");
-
-const oeKey = __webpack_require__(/*! oe/modules/_config/key */ "../cmi-oe/src/js/modules/_config/key.js");
-
-const acolKey = __webpack_require__(/*! acol/modules/_config/key */ "../cmi-acol/src/js/modules/_config/key.js");
-
-const rajKey = __webpack_require__(/*! raj/modules/_config/key */ "../cmi-raj/src/js/modules/_config/key.js");
-
-const jsbKey = __webpack_require__(/*! jsb/modules/_config/key */ "../cmi-jsb/src/js/modules/_config/key.js");
-
-const womKey = __webpack_require__(/*! wom/modules/_config/key */ "../cmi-wom/src/js/modules/_config/key.js");
-
-const pwomKey = __webpack_require__(/*! pwom/modules/_config/key */ "../cmi-pwom/src/js/modules/_config/key.js");
-
-const ACIMSOURCEID = "12";
-const OESOURCEID = "15";
-const ACOLSOURCEID = "14";
-const RAJSOURCEID = "13";
-const WOMSOURCEID = "10";
-const PWOMSOURCEID = "16";
-const JSBSOURCEID = "11";
-function getConfig(key) {
-  let url = _globals__WEBPACK_IMPORTED_MODULE_1__["default"][key];
-
-  if (!url) {
-    throw `key: ${key} not found in globals`;
-  }
-
-  return axios__WEBPACK_IMPORTED_MODULE_0___default.a.get(url);
-}
-function getTopics(userId, sourceId) {
-  let url = _globals__WEBPACK_IMPORTED_MODULE_1__["default"]["topicsEndPoint"];
-
-  if (!url) {
-    throw "key: topicsEndPoint not found in globals";
-  }
-
-  url = `${url}/user/${userId}/topics/${sourceId}`;
-  return axios__WEBPACK_IMPORTED_MODULE_0___default.a.get(url);
-}
-function getBookmarks(userId, sourceId) {
-  let url = _globals__WEBPACK_IMPORTED_MODULE_1__["default"]["bookmarkApi"];
-
-  if (!url) {
-    throw "key: 'bookmarkApi' not found in globals";
-  }
-
-  url = `${url}/bookmark/query/${userId}/${sourceId}`;
-  return axios__WEBPACK_IMPORTED_MODULE_0___default.a.get(url);
-} //transcript Node cache
-
-let htmlCache = {};
-
-function getNoteTranscript(id, url) {
-  if (htmlCache[id]) {
-    return Promise.resolve(htmlCache[id]);
-  }
-
-  const config = {
-    responseType: "document"
-  };
-  return axios__WEBPACK_IMPORTED_MODULE_0___default.a.get(url, config).then(response => {
-    let transcriptNode = response.data.getElementsByClassName("transcript")[0];
-    htmlCache[id] = transcriptNode;
-    return Promise.resolve(transcriptNode);
-  });
-}
-
-function getNoteUrl(key) {
-  let url; //let akey = key + "";
-
-  let akey = key;
-
-  if (akey.startsWith(ACIMSOURCEID)) {
-    url = acimKey.getUrl(key, true);
-  }
-
-  if (akey.startsWith(OESOURCEID)) {
-    url = oeKey.getUrl(key, true);
-  } else if (akey.startsWith(ACOLSOURCEID)) {
-    url = acolKey.getUrl(key, true);
-  } else if (akey.startsWith(JSBSOURCEID)) {
-    url = jsbKey.getUrl(key, true);
-  } else if (akey.startsWith(RAJSOURCEID)) {
-    url = rajKey.getUrl(key, true);
-  } else if (akey.startsWith(WOMSOURCEID)) {
-    url = womKey.getUrl(key, true);
-  } else if (akey.startsWith(PWOMSOURCEID)) {
-    url = pwomKey.getUrl(key, true);
-  }
-
-  return url;
-}
-function getBookmarkTextNew(bookmarks) {
-  let promises = bookmarks.map(bm => {
-    if (bm.annotation.selectedText) {
-      if (!bm.mgr) {
-        bm.mgr = {};
-        let st = bm.annotation.selectedText;
-        bm.mgr.title = st.title;
-        bm.mgr.url = st.url;
-        bm.mgr.pid = st.pid;
-        bm.mgr.content = [{
-          pid: st.pid,
-          text: st.target.selector[1].exact
-        }];
-        bm.mgr.comment = bm.annotation.Comment;
-        bm.mgr.note = bm.annotation.Note;
-        bm.mgr.type = "selected";
-      }
-
-      return Promise.resolve(bm);
-    } //Note style bookmark
-    else if (!bm.mgr) {
-        let url = getNoteUrl(bm.paraKey);
-        bm.mgr = {};
-        bm.mgr.type = "note";
-        bm.mgr.title = bm.annotation.bookTitle;
-        bm.mgr.url = url;
-        bm.mgr.pid = bm.annotation.rangeStart;
-        bm.mgr.comment = bm.annotation.Comment;
-        bm.mgr.note = bm.annotation.Note; //get 'document' response from axios
-
-        return getNoteTranscript(bm.paraKey, url).then(resp => {
-          let paragraphs = resp.getElementsByTagName("p");
-          let rangeStart = parseInt(bm.annotation.rangeStart.substring(1), 10);
-          let rangeEnd = parseInt(bm.annotation.rangeEnd.substring(1), 10);
-          bm.mgr.content = [];
-
-          for (let p = rangeStart; p <= rangeEnd; p++) {
-            if (paragraphs[p]) {
-              bm.mgr.content.push({
-                pid: `p${p}`,
-                text: paragraphs[p].textContent
-              });
-            } else {
-              bm.mgr.content.push({
-                pid: `p${p}`,
-                text: "no data for paragraph"
-              });
-            }
-          }
-
-          return Promise.resolve(bm);
-        });
-      } else {
-        return Promise.resolve(bm);
-      }
-  });
-  return promises;
-}
-function getBookmarkText(bookmarks) {
-  let promises = bookmarks.map(bm => {
-    if (bm.bookmark.selectedText) {
-      if (!bm.mgr) {
-        bm.mgr = {};
-        let st = bm.bookmark.selectedText;
-        bm.mgr.title = st.title;
-        bm.mgr.url = st.url;
-        bm.mgr.pid = st.pid;
-        bm.mgr.content = [{
-          pid: st.pid,
-          text: st.target.selector[1].exact
-        }];
-        bm.mgr.comment = bm.bookmark.Comment;
-        bm.mgr.note = bm.bookmark.Note;
-        bm.mgr.type = "selected";
-      }
-
-      return Promise.resolve(bm);
-    } //Note style bookmark
-    else if (!bm.mgr) {
-        let url = getNoteUrl(bm.id);
-        bm.mgr = {};
-        bm.mgr.type = "note";
-        bm.mgr.title = bm.bookmark.bookTitle;
-        bm.mgr.url = url;
-        bm.mgr.pid = bm.bookmark.rangeStart;
-        bm.mgr.comment = bm.bookmark.Comment;
-        bm.mgr.note = bm.bookmark.Note; //get 'document' response from axios
-
-        return getNoteTranscript(bm.id, url).then(resp => {
-          let paragraphs = resp.getElementsByTagName("p");
-          let rangeStart = parseInt(bm.bookmark.rangeStart.substring(1), 10);
-          let rangeEnd = parseInt(bm.bookmark.rangeEnd.substring(1), 10);
-          bm.mgr.content = [];
-
-          for (let p = rangeStart; p <= rangeEnd; p++) {
-            if (paragraphs[p]) {
-              bm.mgr.content.push({
-                pid: `p${p}`,
-                text: paragraphs[p].textContent
-              });
-            } else {
-              bm.mgr.content.push({
-                pid: `p${p}`,
-                text: "no data for paragraph"
-              });
-            }
-          }
-
-          return Promise.resolve(bm);
-        });
-      } else {
-        return Promise.resolve(bm);
-      }
-  });
-  return promises;
-}
 
 /***/ }),
 
@@ -864,14 +633,16 @@ __webpack_require__.r(__webpack_exports__);
 /* WEBPACK VAR INJECTION */(function($) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "initializeTopicManager", function() { return initializeTopicManager; });
 /* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! toastr */ "./node_modules/toastr/toastr.js");
 /* harmony import */ var toastr__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(toastr__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _net__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./net */ "./src/js/modules/_user/net.js");
+/* harmony import */ var _util_cmi__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../_util/cmi */ "./src/js/modules/_util/cmi.js");
 /* harmony import */ var _netlify__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./netlify */ "./src/js/modules/_user/netlify.js");
-/* harmony import */ var _db_topics__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../_db/topics */ "./src/js/modules/_db/topics.js");
-/* harmony import */ var _db_annotation__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../_db/annotation */ "./src/js/modules/_db/annotation.js");
-/* harmony import */ var _db_quotes__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../_db/quotes */ "./src/js/modules/_db/quotes.js");
+/* harmony import */ var _ajax_topics__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../_ajax/topics */ "./src/js/modules/_ajax/topics.js");
+/* harmony import */ var _ajax_annotation__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../_ajax/annotation */ "./src/js/modules/_ajax/annotation.js");
+/* harmony import */ var _ajax_quotes__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../_ajax/quotes */ "./src/js/modules/_ajax/quotes.js");
 /* harmony import */ var lodash_startCase__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! lodash/startCase */ "./node_modules/lodash/startCase.js");
 /* harmony import */ var lodash_startCase__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(lodash_startCase__WEBPACK_IMPORTED_MODULE_6__);
-/* harmony import */ var _source__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./source */ "./src/js/modules/_user/source.js");
+/* harmony import */ var _util_sanitize__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../_util/sanitize */ "./src/js/modules/_util/sanitize.js");
+/* harmony import */ var _source__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./source */ "./src/js/modules/_user/source.js");
+
 
 
 
@@ -1036,7 +807,7 @@ function generateBookmarkTextHtml(bookmarks, topicManager) {
 }
 
 function generateBookmarkText(bookmarks, topicManager) {
-  let promises = Object(_net__WEBPACK_IMPORTED_MODULE_1__["getBookmarkTextNew"])(bookmarks);
+  let promises = Object(_util_cmi__WEBPACK_IMPORTED_MODULE_1__["getBookmarkText"])(bookmarks);
   Promise.all(promises).then(responses => {
     let html = generateBookmarkTextHtml(responses, topicManager);
     $("#activity-report-controls").remove();
@@ -1064,7 +835,7 @@ function makeTopicSelect(topics) {
 function loadData(sid) {
   let userInfo = Object(_netlify__WEBPACK_IMPORTED_MODULE_2__["getUserInfo"])();
   return new Promise((resolve, reject) => {
-    let tList = Object(_db_topics__WEBPACK_IMPORTED_MODULE_3__["getTopicList"])(userInfo.userId, sid).then(topicList => {
+    let tList = Object(_ajax_topics__WEBPACK_IMPORTED_MODULE_3__["getTopicList"])(userInfo.userId, sid).then(topicList => {
       topics[sid] = topicList;
       toastr__WEBPACK_IMPORTED_MODULE_0___default.a.success(`${topics[sid].length} topics loaded`);
     }).catch(err => {
@@ -1073,7 +844,7 @@ function loadData(sid) {
       reject(err);
       return;
     });
-    let bList = Object(_db_annotation__WEBPACK_IMPORTED_MODULE_4__["getAnnotations"])(userInfo.userId, sid).then(bmList => {
+    let bList = Object(_ajax_annotation__WEBPACK_IMPORTED_MODULE_4__["getAnnotations"])(userInfo.userId, sid).then(bmList => {
       bookmarks[sid] = bmList; //initialize to not modified
 
       bookmarks[sid].forEach(i => {
@@ -1376,7 +1147,7 @@ function initForm() {
 
 
     $("#action-manager > .annotation-actions").removeClass("hide");
-    topicManager.source = _source__WEBPACK_IMPORTED_MODULE_7__["default"].title[sid];
+    topicManager.source = _source__WEBPACK_IMPORTED_MODULE_8__["default"].title[sid];
     topicManager.topicArray = actionManager.topicListNew.split(",");
     topicManager.condition = actionManager.condition;
     topicManager.bookFilter = bookFilter; //generated html
@@ -1473,7 +1244,7 @@ function initForm() {
     modified.bookmarks.forEach(m => {
       delete m.modified;
       delete m.pid;
-      results.push(Object(_db_annotation__WEBPACK_IMPORTED_MODULE_4__["updateAnnotation"])(m));
+      results.push(Object(_ajax_annotation__WEBPACK_IMPORTED_MODULE_4__["updateAnnotation"])(m));
     });
     Promise.all(results).then(responses => {
       toastr__WEBPACK_IMPORTED_MODULE_0___default.a.success(`${responses.length} Annotation(s) Updated`); //update modified topics
@@ -1481,7 +1252,7 @@ function initForm() {
       results = [];
       modified.topics.forEach(t => {
         let newList = topics[t].filter(t => !t.deleted);
-        results.push(Object(_db_topics__WEBPACK_IMPORTED_MODULE_3__["putTopicList"])(userInfo.userId, t, newList));
+        results.push(Object(_ajax_topics__WEBPACK_IMPORTED_MODULE_3__["putTopicList"])(userInfo.userId, t, newList));
       });
       return Promise.all(results);
     }).then(responses => {
@@ -1526,7 +1297,7 @@ function initManageQuoteEventHandler() {
     quoteInfo.pid = pid;
     quoteInfo.quote = quote;
     quoteInfo.userId = userInfo.userId;
-    quoteInfo.url = Object(_net__WEBPACK_IMPORTED_MODULE_1__["getNoteUrl"])(parakey);
+    quoteInfo.url = Object(_util_cmi__WEBPACK_IMPORTED_MODULE_1__["getUrlByPageKey"])(parakey);
     quoteInfo.citation = $(`#${annotationId}`).text().trim(); //console.log("quoteInfo: %o", quoteInfo);
     //open quote editor, query from database and populate form,
     //allow user to edit, delete or cancel
@@ -1546,7 +1317,7 @@ function initManageQuoteEventHandler() {
       creationDate: info.annotationId,
       quote: {
         pid: info.pid,
-        quote: info.quote,
+        quote: Object(_util_sanitize__WEBPACK_IMPORTED_MODULE_7__["purify"])(info.quote),
         url: info.url,
         citation: info.citation
       }
@@ -1555,7 +1326,7 @@ function initManageQuoteEventHandler() {
     clearQuoteEditorOpen();
 
     try {
-      let response = await Object(_db_quotes__WEBPACK_IMPORTED_MODULE_5__["putQuote"])(postBody);
+      let response = await Object(_ajax_quotes__WEBPACK_IMPORTED_MODULE_5__["putQuote"])(postBody);
       toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info(`Quote ${action}`);
       markAsInDB(info.parakey, info.annotationId);
     } catch (err) {
@@ -1577,7 +1348,7 @@ function initManageQuoteEventHandler() {
     let info = $("#quote-editor-form").form("get values");
 
     try {
-      let response = await Object(_db_quotes__WEBPACK_IMPORTED_MODULE_5__["deleteQuote"])(info.userId, info.parakey, info.annotationId);
+      let response = await Object(_ajax_quotes__WEBPACK_IMPORTED_MODULE_5__["deleteQuote"])(info.userId, info.parakey, info.annotationId);
       toastr__WEBPACK_IMPORTED_MODULE_0___default.a.info("Quote deleted from database");
       markAsNotInDB(info.parakey, info.annotationId);
     } catch (err) {
@@ -1633,7 +1404,7 @@ async function initQuoteForm(info) {
   $("#quote-editor-form").addClass("loading");
 
   try {
-    let response = await Object(_db_quotes__WEBPACK_IMPORTED_MODULE_5__["getQuoteData"])(info.userId, info.parakey, info.annotationId);
+    let response = await Object(_ajax_quotes__WEBPACK_IMPORTED_MODULE_5__["getQuoteData"])(info.userId, info.parakey, info.annotationId);
 
     if (response.q) {
       info.database = response.q.quote;

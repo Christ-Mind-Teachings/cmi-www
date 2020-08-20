@@ -197,6 +197,9 @@ i.toc-share.icon {
   color: #e21631;
 }
 
+#bookmark-filter-wrapper.hide,
+.toggle-paragraph-markers > span  i.paragraph-corner-icon.hide,
+#bookmark-dropdown-menu > span  i.bookmark-corner-icon.hide,
 .ui.form > input.hidden-field {
   display: none;
 }

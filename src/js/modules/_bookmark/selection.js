@@ -120,13 +120,12 @@ export function deleteNewSelection(id) {
     return;
   }
 
-
   //remove highlight
   if (highlite.wrap) {
     highlite.wrap.unwrap();
   }
   else {
-    console.log("deleteNewSelection: no wrap() in selection");
+    //console.log("deleteNewSelection: no wrap() in selection");
   }
 
   //delete the annotation
@@ -191,7 +190,7 @@ export function markSelection(annotation, sequence = 0, sharePid = null) {
     updateHighlightColor(annotation.id, sequence);
   }
   else if (sharePid) {
-    console.log("highlight of %s skipped due to share", sharePid);
+    //console.log("highlight of %s skipped due to share", sharePid);
     skippedAnnotations.push(annotation.id);
   }
   pageAnnotations[annotation.id] = annotation;
@@ -230,7 +229,7 @@ export function highlight(annotation, toNode = document.body) {
               annotation.wrap = wrapRange(mark, range);
             }
             catch(err) {
-              console.log("adjusting selector.end");
+              //console.log("adjusting selector.end");
               selector.end--;
               range = textPosition.toRange(toNode, selector);
               annotation.wrap = wrapRange(mark, range);
@@ -322,13 +321,13 @@ function processSelection(selection) {
   //new from user2
   if (range.commonAncestorContainer.nodeName === "DIV") {
     notify.info(getString("error:e8"));
-    console.log("multi paragraph selection: start: %s, end: %s", rangeStart, rangeEnd);
+    //console.log("multi paragraph selection: start: %s, end: %s", rangeStart, rangeEnd);
     return;
   }
 
   if (range.startContainer.parentElement.localName === "span") {
     notify.info(getString("error:e6"));
-    console.log("selection includes <p>");
+    //console.log("selection includes <p>");
     return;
   }
 
@@ -350,7 +349,7 @@ function processSelection(selection) {
     for (let ht of highlightedText) {
       if (selection.containsNode(ht, true)) {
         notify.info(getString("error:e7"));
-        console.log("overlapping selections");
+        //console.log("overlapping selections");
         return;
       }
     }

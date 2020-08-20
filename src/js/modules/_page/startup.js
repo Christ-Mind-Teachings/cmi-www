@@ -1,10 +1,11 @@
 import {TweenMax} from "gsap";
-import store from "store";
+import {storeGet, storeSet} from "../_util/store";
 
-let storeKey = "pnDisplayState:";
+let storeKey;
 
-export function initTranscriptPage() {
-  storeKey = `${storeKey}${$("body").attr("sourceId")}`;
+export function initTranscriptPage(key) {
+  //local storage key to save paragraph number display state
+  storeKey = key;
 
   initStickyMenu();
   labelParagraphs();
@@ -68,28 +69,30 @@ function createParagraphNumberToggleListener() {
     let el = $(".transcript.ui.text.container");
     if (el.hasClass("hide-pnum")) {
       el.removeClass("hide-pnum");
-      store.set(storeKey, "on");
-      setParagraphNumberDisplayColor("on");
+      storeSet(storeKey, "on");
+      setParagraphNumberDisplay("on");
     }
     else {
       el.addClass("hide-pnum");
-      store.set(storeKey, "off");
-      setParagraphNumberDisplayColor("off");
+      storeSet(storeKey, "off");
+      setParagraphNumberDisplay("off");
     }
   });
 }
 
-function setParagraphNumberDisplayColor(state) {
-  let color = state === "on"? "green": "red";
-  let oldColor = state === "on"? "red": "green";
-
-  $(".toggle-paragraph-markers > span > .paragraph.icon").removeClass(oldColor).addClass(color);
+function setParagraphNumberDisplay(state) {
+  if (state === "on") {
+    $(".toggle-paragraph-markers > span .paragraph-corner-icon").addClass("hide");
+  }
+  else {
+    $(".toggle-paragraph-markers > span .paragraph-corner-icon").removeClass("hide");
+  }
 }
 
 function setParagraphNumberDisplayState() {
   let toggleAvailable = $(".toggle-paragraph-markers").length === 0 ? false: true;
 
-  let state = store.get(storeKey);
+  let state = storeGet(storeKey);
   let el = $(".transcript.ui.text.container");
   let current = el.hasClass("hide-pnum") ? "off": "on";
 
@@ -102,7 +105,7 @@ function setParagraphNumberDisplayState() {
   //if not set use current value
   if (!state) {
     state = current;
-    store.set(storeKey, state);
+    storeSet(storeKey, state);
   }
 
   if (state !== current) {
@@ -114,7 +117,7 @@ function setParagraphNumberDisplayState() {
     }
   }
 
-  setParagraphNumberDisplayColor(state);
+  setParagraphNumberDisplay(state);
 }
 
 /*

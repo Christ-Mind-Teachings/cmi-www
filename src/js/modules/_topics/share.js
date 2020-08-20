@@ -1,9 +1,10 @@
 //import axios from "axios";
 //import globals from "../../globals";
-import {getMailList, sendMail} from "../_db/share";
+import {getMailList, sendMail} from "../_ajax/share";
 import {getUserInfo} from "../_user/netlify";
 import {getString} from "../_language/lang";
 import {displayWarning} from "./message";
+import {purify} from "../_util/sanitize";
 
 const quoteMessageSelector = "#quote-modal-message";
 const shareMessageSelector = "#share-modal .message";
@@ -51,7 +52,7 @@ function formatMessage(message) {
   let mArray = message.split("@@");
 
   message = mArray.reduce((current, p) => {
-    return `${current}<p>${p}</p>`;
+    return `${current}<p>${purify(p)}</p>`;
   }, "");
 
   return message;

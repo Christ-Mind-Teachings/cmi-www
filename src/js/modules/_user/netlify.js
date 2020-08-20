@@ -6,7 +6,7 @@ import store from "store";
 import {getUser} from "../_util/url";
 import {getString} from "../_language/lang";
 
-let login_state_key = "login.state";
+let login_state_key = "cmi.login.state";
 let userInfo;
 
 function prodUserInfo() {
@@ -59,7 +59,6 @@ function setAsSignedIn() {
 
   //show menu options for account holders
   $(".requires-signin").removeClass("hide");
-  console.log("requires-signin set to show");
 }
 
 /*
@@ -91,7 +90,6 @@ function setAsSignedOut() {
 
   //hide account users menu options
   $(".requires-signin").addClass("hide");
-  console.log("requires-signin set to hide");
 }
 
 /*

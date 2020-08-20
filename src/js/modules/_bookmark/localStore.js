@@ -13,6 +13,7 @@
 
 import {storeGet, storeSet} from "../_util/store";
 import difference from "lodash/difference";
+import {noMoreBookmarks, bookmarksLoaded} from "./topics";
 
 export class BookmarkLocalStore {
   /**
@@ -34,12 +35,13 @@ export class BookmarkLocalStore {
 
   /**
    * Add topic to Map if not present, set count to 1. If present
-   * increment count by 1. If a new topic is added return true.
+   * increment count by 1.
    *
    * @params <object> newTopic - {value: "topicNospaces", topic: "might have spaces"}
-   * @returns <boolean> Indication if topic Map has changed, new or deleted topics
    */
-  _incrementTopic(newTopic) {
+  _incrementTopic(newTopic, initializing = false) {
+    //get number of topics before updating
+    let size = this.topics.size;
     let key = newTopic.value;
 
     //if newTopic is not in topics, add it and set count to 1
@@ -52,6 +54,12 @@ export class BookmarkLocalStore {
       let savedTopic = this.topics.get(key);
       savedTopic.count += 1;
       this.topics.set(key, savedTopic);
+    }
+
+    //this is the first topic on the page so we
+    //need to initialize topics modal (for filtering page topics)
+    if (size === 0 && !initializing) {
+      bookmarksLoaded();
     }
   }
 
@@ -81,6 +89,12 @@ export class BookmarkLocalStore {
       trackedTopicValue.count -= 1;
       this.topics.set(key, trackedTopicValue);
     }
+
+    //if the last topic on the page has been deleted remove
+    //access to topic filter
+    if (this.topics.size === 0) {
+      noMoreBookmarks();
+    }
   }
 
   /*
@@ -95,7 +109,7 @@ export class BookmarkLocalStore {
       }
       if (b.annotation.topicList && b.annotation.topicList.length > 0) {
         b.annotation.topicList.forEach((topic) => {
-          this._incrementTopic(topic);
+          this._incrementTopic(topic, true);
         });
       }
     });
@@ -165,12 +179,12 @@ export class BookmarkLocalStore {
     return bkmrk;
   }
 
-  /*
+  /**
    * Get bookmark for pid with aid.
    *
    * Only annotations with selectedText have aid. Note style
    * annotation don't but they do have creationDate so check
-   * aid agains creationDate if annotation.aid is not present.
+   * aid against creationDate if annotation.aid is not present.
    *
    * @param {string} pid - paragraph Id starting with "p"
    * @param {string} aid - uuid, only present with selectedText
@@ -179,6 +193,7 @@ export class BookmarkLocalStore {
   getItem(pid, aid) {
     let id = parseInt(pid.substr(1), 10);
 
+    //get array of bookmarks for pid
     let bms = this.list.filter((b) => {
       return b.pid === id;
     });

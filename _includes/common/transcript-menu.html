@@ -3,15 +3,20 @@
   <div id="transcript-menu" class="ui text container">
     <a id="bookmark-dropdown-menu" href="#" class="requires-signin hide ui dropdown item">
       <span data-xposition="left center" data-xtooltip="Show/Set Bookmarks">
-        <i class="red bookmark icon"></i>
+        <i class="icons">
+          <i class="bookmark-icon green bookmark icon"></i>
+          <i class="bookmark-corner-icon hide corner close icon"></i>
+        </i>
       </span>
       <div class="menu">
         <div id="bookmark-modal-open" class="bookmark-modal-open item">Show Bookmarks</div>
         <div id="bookmark-toggle-disable-selection" class="toggle-bookmark-selection item">Disable Bookmark Creation</div>
         <div id="bookmark-toggle-highlight" class="toggle-bookmark-highlight item">Hide Highlighted Text</div>
-        <div class="divider"></div>
-        <div id="current-topic-filter" data-filter="none" class="header">Topic Filter: None</div>
-        <div id="page-topics-modal-open" class="page-topics-modal-open item">Filter Bookmarks</div>
+        <div id="bookmark-filter-wrapper" class="hide">
+          <div class="divider"></div>
+          <div id="current-topic-filter" data-filter="none" class="item header">Topic Filter: None</div>
+          <div id="page-topics-modal-open" class="page-topics-modal-open item">Filter Bookmarks</div>
+        </div>
       </div>
     </a>
     {% unless page.search == false %}
@@ -29,7 +34,10 @@
     {% unless page.pnumToggle == false %}
     <a href="#" class="toggle-paragraph-markers item">
       <span data-position="bottom center" data-tooltip="Toggle Display of Paragraph Numbers">
-        <i class="paragraph icon"></i>
+        <i class="icons">
+          <i class="paragraph icon"></i>
+          <i class="paragraph-corner-icon hide corner close icon"></i>
+        </i>
       </span>
     </a>
     {% endunless %}

@@ -35,7 +35,6 @@ export function bookmarkStart(page) {
       });
   }
   else {
-    //init bookmark for non-transcript pages.
     bookmark.initialize(pid, constants);
   }
   initShareByEmail(constants);

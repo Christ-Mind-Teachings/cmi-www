@@ -13,7 +13,7 @@
 
 */
 import {showAnnotation as showAnnotationRequest, loadStart, loadComplete} from "../_util/url";
-import {getAnnotation} from "../_db/annotation";
+import {getAnnotation} from "../_ajax/annotation";
 import {highlightSkippedAnnotations, highlight} from "../_bookmark/selection";
 import range from "lodash/range";
 import scroll from "scroll-into-view";

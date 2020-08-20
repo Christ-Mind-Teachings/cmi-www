@@ -13,7 +13,7 @@ function getKey(key) {
   const storeKey = keys.get(key);
 
   if (!storeKey) {
-    throw new Error(`store: invalid key: ${key}`);
+    throw new Error(`store: key not found: ${key}`);
   }
 
   return storeKey;

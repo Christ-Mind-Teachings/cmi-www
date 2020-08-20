@@ -1,12 +1,10 @@
 /*
   Email list management - for sharing bookmarks via email
 */
-//import dt from "datatables.net";
-//import "datatables.net-se/css/dataTables.semanticui.min.css";
-
 import notify from "toastr";
 import {getUserInfo} from "../_user/netlify";
-import {getMailList, putMailList} from "../_db/share";
+import {getMailList, putMailList} from "../_ajax/share";
+import {purify} from "../_util/sanitize";
 
 //module global list of email addresses
 let maillist = [];
@@ -95,6 +93,10 @@ function createEventHandlers() {
     let status = $("#add-or-update").text();
     let formData = $("#addto-maillist-form").form("get values");
 
+    formData.first = purify(formData.first);
+    formData.last = purify(formData.last);
+    formData.address = purify(formData.address);
+
     if (status === "Add") {
       maillist.push({first: formData.first, last: formData.last, address: formData.address});
       let row = makeTableRow(formData, maillist.length - 1);
@@ -102,8 +104,6 @@ function createEventHandlers() {
       //append row to table
       $("#email-list-table").append(row);
       enableSave();
-
-      console.log("after Add: maillist: %o", maillist);
     }
     //update
     else {

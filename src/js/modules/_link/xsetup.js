@@ -7,7 +7,7 @@ const {getUrl: raj_getUrl} = require("raj/modules/_config/key");
 const {getUrl: wom_getUrl} = require("wom/modules/_config/key");
 const {getUrl: pwom_getUrl} = require("pwom/modules/_config/key");
 
-export function getUrl(source, key) {
+function getUrl(source, key) {
   let url;
   switch(source) {
     case "acol":
@@ -41,8 +41,10 @@ export function getUrl(source, key) {
   return url;
 }
 
+import {getUrlByPageKey} from "../_util/cmi";
+
 export function getLinkHref(link) {
-  let url = getUrl(link.desc.source, link.key);
+  let url = getUrlByPageKey(link.desc.source, link.key);
 
   if (location.pathname === url) {
     return `#${link.desc.pid}`;
@@ -60,8 +62,6 @@ export function createLinkListener(getLink) {
 
     //build url
     let link = JSON.parse(linkInfo.link);
-
-    //let url = getUrl(link.desc.source, link.key);
 
     //console.log("url: %s", url);
     location.href = getLinkHref(link);

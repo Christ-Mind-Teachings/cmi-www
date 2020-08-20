@@ -1,10 +1,11 @@
 import notify from "toastr";
-import {getNoteUrl as getUrl, getBookmarkText, getBookmarkTextNew} from "./net";
+import {getBookmarkText, getUrlByPageKey} from "../_util/cmi";
 import {getUserInfo} from "./netlify";
-import {getTopicList, putTopicList} from "../_db/topics";
-import {getAnnotations, updateAnnotation} from "../_db/annotation";
-import {deleteQuote, putQuote, getQuoteData} from "../_db/quotes";
+import {getTopicList, putTopicList} from "../_ajax/topics";
+import {getAnnotations, updateAnnotation} from "../_ajax/annotation";
+import {deleteQuote, putQuote, getQuoteData} from "../_ajax/quotes";
 import startCase from "lodash/startCase";
+import {purify} from "../_util/sanitize";
 
 //Data for each source, sourceId, books, etc
 import sourceInfo from "./source";
@@ -167,7 +168,7 @@ function generateBookmarkTextHtml(bookmarks, topicManager) {
 }
 
 function generateBookmarkText(bookmarks, topicManager) {
-  let promises = getBookmarkTextNew(bookmarks);
+  let promises = getBookmarkText(bookmarks);
 
   Promise.all(promises).then(responses => {
     let html = generateBookmarkTextHtml(responses, topicManager);
@@ -699,7 +700,7 @@ function initManageQuoteEventHandler() {
     quoteInfo.pid = pid;
     quoteInfo.quote = quote;
     quoteInfo.userId = userInfo.userId;
-    quoteInfo.url = getUrl(parakey); 
+    quoteInfo.url = getUrlByPageKey(parakey); 
     quoteInfo.citation = $(`#${annotationId}`).text().trim();
 
     //console.log("quoteInfo: %o", quoteInfo);
@@ -724,7 +725,7 @@ function initManageQuoteEventHandler() {
       creationDate: info.annotationId,
       quote: {
         pid: info.pid,
-        quote: info.quote,
+        quote: purify(info.quote),
         url: info.url,
         citation: info.citation
       }
