@@ -24,7 +24,6 @@ import {
   updateSelectionTopicList
 } from "./selection";
 import {getLink} from "./annotate";
-//import { createLinkListener, getLinkHref } from "../_link/setup";
 import {getUrlByPageKey} from "../_util/cmi";
 import {getString} from "../_language/lang";
 
@@ -36,6 +35,104 @@ export let localStore;
 
 export function getTeachingInfo() {
   return teaching;
+}
+
+let counter = new Map();
+function getCount(pid) {
+  let count = counter.get(pid);
+  if (typeof count === "undefined") {
+    counter.set(pid, 0);
+    return 0;
+  }
+  else {
+    count += 1;
+    counter.set(pid, count);
+    return count;
+  }
+}
+
+function loadSelectedTextBookmark(bm, sharePid) {
+  $(`#p${bm.pid} > span.pnum`).addClass("has-bookmark"); 
+  markSelection(bm.annotation.selectedText, getCount(bm.pid), sharePid);
+  addTopicsAsClasses(bm.annotation);
+  setQuickLinks(bm.annotation, "highlight");
+}
+
+function loadNoteStyleBookmark(bm) {
+  addNoteHighlight(bm.pid, bm.annotation);
+  setQuickLinks(bm.annotation, "note");
+}
+
+function loadBookmark(bm, sharePid) {
+  let type = bm.annotation.selectedText ? "selectedText" : "note";
+  type === "selectedText" ? loadSelectedTextBookmark(bm) : loadNoteStyleBookmark(bm);
+}
+
+function createSelectedTextBookmark(bm, count) {
+  $(`#p${bm.pid} > span.pnum`).addClass("has-bookmark"); 
+  markSelection(bm.annotation.selectedText, count);
+  addTopicsAsClasses(bm.annotation);
+  setQuickLinks(bm.annotation, "highlight");
+
+  //add creationDate
+  $(`[data-annotation-id="${bm.annotation.aid}"]`).attr("data-aid", bm.creationDate);
+}
+
+function createNoteStyleBookmark(bm) {
+  addNoteHighlight(bm.pid, bm.annotation);
+  setQuickLinks(bm.annotation, "note");
+
+  //add creationDate
+  $(`#${bm.annotation.rangeStart} > span.pnum`).attr("data-aid", bm.creationDate);
+}
+
+function deleteSelectedTextBookmark(bm) {
+  deleteSelection(bm.annotation.aid);
+}
+
+function deleteNoteStyleBookmark(bm) {
+  removeNoteHighlight(bm);
+}
+
+function createBookmark(bm, count) {
+  let type = bm.annotation.selectedText ? "selectedText" : "note";
+  type === "selectedText" ? createSelectedTextBookmark(bm, count) : createNoteStyleBookmark(bm);
+}
+
+function deleteBookmark(bm, remainingCount) {
+  let type = bm.annotation.selectedText ? "selectedText" : "note";
+  type === "selectedText" ? deleteSelectedTextBookmark(bm) : deleteNoteStyleBookmark(bm);
+
+  if (bm.annotation.links) {
+    $(`i[data-link-aid="${bm.creationDate}"]`).remove();
+  }
+
+  if (remainingCount === 0) {
+    $(`#${bm.annotation.rangeStart} > span.pnum`).removeClass("has-bookmark");
+  }
+}
+
+/**
+ * Process each bookmark loaded, created, updated, or deleted
+ * - process includes highlighting selected text and note paragraphs,
+ *   setting quick links and filtering by topic
+ */
+export function processBookmark(status, bm, arg) {
+
+  switch(status) {
+    case "loaded":
+      loadBookmark(bm, arg);
+      break;
+    case "created":
+      createBookmark(bm, arg);
+      break;
+    case "updated":
+      updateSelectionTopicList(bm.annotation);
+      break;
+    case "deleted":
+      deleteBookmark(bm, arg);
+      break;
+  }
 }
 
 function formatLink(link) {
@@ -63,6 +160,7 @@ function generateLinkList(links) {
   `;
 }
 
+// --------------- begin Bookmark DOM -------------------------
 /**
  * Add classes to selectedText bookmarks for each topic
  *
@@ -98,6 +196,26 @@ function addNoteHighlight(pid, bm) {
   } while(start <= end);
 }
 
+function removeNoteHighlight(bm) {
+  //remove mark from paragraph
+  $(`#${bm.annotation.rangeStart} > span.pnum`).removeClass("has-annotation");
+
+  //remove all paragraphs in bookmark with class .note-style-bookmark
+  let end = parseInt(bm.annotation.rangeEnd.substr(1), 10);
+  let start = parseInt(bm.annotation.rangeStart.substr(1), 10);
+  let pid = start;
+  do {
+    $(`#p${start}`).removeClass("note-style-bookmark");
+    if (start === pid) {
+      $(`#p${start}`).removeClass("note-style-bookmark-start");
+    }
+    if (start === end) {
+      $(`#p${start}`).removeClass("note-style-bookmark-end");
+    }
+    start++;
+  } while(start <= end);
+}
+
 /*
   Add linkify icon after bookmark so user can click to view links
 */
@@ -106,6 +224,7 @@ export function setQuickLinks(bm, type) {
     $(`[data-aid="${bm.creationDate}"]`).eq(-1).after(`<i data-link-aid="${bm.creationDate}" data-type="${type}" class="small bm-link-list linkify icon"></i>`);
   }
 }
+// --------------- end Bookmark DOM -------------------------
 
 /*
   Bookmark link click handler. Links are placed on both note and selected text
@@ -195,25 +314,13 @@ function createAnnotation(formValues) {
   }
 
   //keep track of topics added or deleted
-  updateSelectionTopicList(annotation);
+  //updateSelectionTopicList(annotation);
 
   delete annotation.newTopics;
   delete annotation.hasAnnotation;
 
   //persist the bookmark
-  let assignedCreationDate = net.postAnnotation(annotation);
-
-  let info = {
-    //this is undefined for new annotations
-    existingCreationDate: annotation.creationDate,
-    annotationType: annotation.selectedText ? "selectedText" : "Note",
-    uuid: annotation.aid,
-    pid: annotation.rangeStart,
-    assignedCreationDate: assignedCreationDate
-  };
-
-  //add [data-id] attribute to new bookmark html
-  updateNewAnnotation(info);
+  net.postAnnotation(annotation);
 }
 
 /*
@@ -409,57 +516,13 @@ async function getPageBookmarks(sharePid) {
     return;
   }
 
-  function processAnnotations(bmList, sharePid) {
-    let count = 0;
-    let hasBookmark = false;
-    let lastOne = bmList.length - 1;
-
-    //check for no results
-    if (bmList.length === 0) return;
-
-    let prevBm;
-    bmList.forEach((bm, idx) => {
-
-      //if there's a change in paragraph
-      if (prevBm && bm.pid !== prevBm.pid) {
-        if (hasBookmark) {
-          $(`#p${prevBm.pid} > span.pnum`).addClass("has-bookmark"); }
-        count = 0;
-        hasBookmark = false;
-      }
-
-      if (bm.annotation.selectedText) {
-        markSelection(bm.annotation.selectedText, count, sharePid);
-        addTopicsAsClasses(bm.annotation);
-        setQuickLinks(bm.annotation, "highlight");
-        count++;
-        hasBookmark = true;
-      }
-      else {
-        addNoteHighlight(bm.pid, bm.annotation);
-        setQuickLinks(bm.annotation, "note");
-      }
-
-      if (idx === lastOne && hasBookmark) {
-        $(`#p${bm.pid} > span.pnum`).addClass("has-bookmark");
-      }
-      else {
-        prevBm = bm;
-      }
-    });
-
-    bookmarksLoaded();
-  }
-
   try {
     //query annotations from database
     let bmList = await getAnnotations(userInfo.userId, pageKey);
 
     //store annotations locally
-    localStore = new BookmarkLocalStore(bmList);
-
-    //apply annotations to the page
-    processAnnotations(bmList, sharePid);
+    localStore = new BookmarkLocalStore(bmList, sharePid);
+    bookmarksLoaded();
   }
   catch(err) {
     console.error(err);
@@ -515,48 +578,6 @@ export const annotation = {
       //post the bookmark
       createAnnotation(formData);
     }
-
-    //mark paragraph as having bookmark
-    let type;
-    if (!formData.aid) {
-      //bookmark has no selected text
-      type = "note";
-      $(`#${formData.rangeStart} > span.pnum`).addClass("has-annotation");
-
-      //mark all paragraphs in bookmark with class .note-style-bookmark
-      let end = parseInt(formData.rangeEnd.substr(1), 10);
-      let start = parseInt(formData.rangeStart.substr(1), 10);
-      let pid = start;
-      do {
-        $(`#p${start}`).addClass("note-style-bookmark");
-        if (start === pid) {
-          $(`#p${start}`).addClass("note-style-bookmark-start");
-        }
-        if (start === end) {
-          $(`#p${start}`).addClass("note-style-bookmark-end");
-        }
-        start++;
-      } while(start <= end);
-    }
-    else {
-      type = "highlight";
-      $(`#${formData.rangeStart} > span.pnum`).addClass("has-bookmark");
-
-      //this is a new annotation
-      if (formData.creationDate === "") {
-        let annotationCount = localStore.itemCount(formData.rangeStart, formData.aid);
-        updateHighlightColor(formData.aid, annotationCount);
-      }
-    }
-
-    //add linkify icon if bookmark contains links
-    if (formData.links && formData.creationDate) {
-      if ( $(`[data-link-aid="${formData.creationDate}"].bm-link-list.linkify.icon`).length === 0) {
-        $(`[data-aid="${formData.creationDate}"]`)
-          .eq(-1)
-          .after(`<i data-link-aid="${formData.creationDate}" data-type="${type}" class="small bm-link-list linkify icon"></i>`);
-      }
-    }
   },
 
   //user pressed cancel on annotation form
@@ -570,6 +591,7 @@ export const annotation = {
   //delete annotation
   async delete(formData) {
     //if annotation has selected text unwrap and delete it
+    /*
     if (formData.aid) {
       deleteSelection(formData.aid);
     }
@@ -597,40 +619,21 @@ export const annotation = {
     if (formData.links) {
       $(`i[data-link-aid="${formData.creationDate}"]`).remove();
     }
+    */
 
     //mark as having no annotations if all have been deleted
     try {
-      let remainingAnnotations = await net.deleteAnnotation(formData.rangeStart, formData.creationDate);
+      await net.deleteAnnotation(formData.rangeStart, formData.creationDate);
 
+      /*
       if (remainingAnnotations === 0) {
         $(`#${formData.rangeStart} > span.pnum`).removeClass("has-bookmark");
       }
+      */
     }
     catch(err) {
       throw new Error(err);
     }
-  }
-}
-
-/**
- * Update new bookmark markup to add the creationDate as [data-aid] so
- * sharing doesn't require a page refresh.
- *
- * There are two kinds of bookmarks, selectedText and Note, updates are
- * different for each.
- *
- */
-function updateNewAnnotation(info) {
-  //this isn't a new annotation
-  if (info.existingCreationDate === info.assignedCreationDate) {
-    return;
-  }
-
-  if (info.annotationType === "selectedText") {
-    $(`[data-annotation-id="${info.uuid}"]`).attr("data-aid", info.assignedCreationDate);
-  }
-  else {
-    $(`#${info.pid} > span.pnum`).attr("data-aid", info.assignedCreationDate);
   }
 }
 

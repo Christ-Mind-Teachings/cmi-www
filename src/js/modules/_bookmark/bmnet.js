@@ -85,6 +85,9 @@ function postAnnotation(annotation, pageKey, addToLocalStorage=true) {
 
   putAnnotation(userInfo.userId, pageKey, creationDate, serverAnnotation).then((resp) => {
     if (addToLocalStorage) {
+      if (serverAnnotation.selectedText) {
+        serverAnnotation.selectedText = JSON.parse(serverAnnotation.selectedText);
+      }
       localStore.addItem(userInfo.userId, pageKey, creationDate, serverAnnotation);
     }
   }).catch((err) => {

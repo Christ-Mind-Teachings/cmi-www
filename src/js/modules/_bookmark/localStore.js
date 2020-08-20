@@ -14,6 +14,7 @@
 import {storeGet, storeSet} from "../_util/store";
 import difference from "lodash/difference";
 import {noMoreBookmarks, bookmarksLoaded} from "./topics";
+import {processBookmark} from "./bookmark";
 
 export class BookmarkLocalStore {
   /**
@@ -24,10 +25,11 @@ export class BookmarkLocalStore {
    * @constructor
    * @param {array} bmList - array of bookmarks on page
    */
-  constructor(bmList) {
+  constructor(bmList, sharePid) {
     this.list = bmList;
     this.topics = new Map();
     this.topicsModified = false;
+    this.sharePid = sharePid;
 
     //load topics from bmList in to topic Map
     this._initTopics();
@@ -104,6 +106,7 @@ export class BookmarkLocalStore {
    */
   _initTopics() {
     this.list.forEach((b) => {
+      processBookmark("loaded", b, this.sharePid);
       if (!b.annotation.selectedText) {
         return;
       }
@@ -225,12 +228,13 @@ export class BookmarkLocalStore {
     let id = parseInt(pid.substr(1), 10);
 
     if (annotation.status === "new") {
+      annotation.creationDate = creationDate;
       let bkmrk = {
         userId: userId,
         paraKey: `${paraKey}`,
         creationDate: `${creationDate}`,
         pid: id,
-        annotation: annotation
+        annotation: annotation,
       };
       this.list.push(bkmrk);
 
@@ -243,6 +247,14 @@ export class BookmarkLocalStore {
 
       //item has been added so invalidate bmList
       this._invalidateBmList();
+
+      //get number of bookmarks on paragraph
+      let bms = this.list.filter((b) => {
+        return b.pid === id;
+      });
+
+      //process new bookmark
+      processBookmark("created", bkmrk, bms.length - 1);
     }
     else { //this is an update
       let pKey = `${paraKey}`;
@@ -251,7 +263,7 @@ export class BookmarkLocalStore {
         return (i.paraKey === pKey && i.creationDate === cDate);
       });
 
-      if (index === -1) throw new Error("bookmark to update not found in list");
+      if (index === -1) throw new Error("localStore: addItem:update: bookmark to update not found in list");
 
       //update topic Map if needed
       if (annotation.selectedText) {
@@ -298,6 +310,9 @@ export class BookmarkLocalStore {
 
       //update annotation in local store
       this.list[index].annotation = annotation;
+
+      //process updated bookmark
+      processBookmark("updated", this.list[index]);
     }
   }
 
@@ -330,7 +345,8 @@ export class BookmarkLocalStore {
     //bookmarks on paragraph
     let topicsModified = false;
     if (index > -1) {
-      let pid = this.list[index].pid;
+      let bkmrk = this.list[index];
+      let pid = bkmrk.pid;
 
       //delete topics from topic Map
       if (this.list[index].annotation.topicList) {
@@ -345,9 +361,13 @@ export class BookmarkLocalStore {
       //item has been deleted so invalidate bmList
       this._invalidateBmList();
 
+      //get remaining bookmarks on paragraph
       let bms = this.list.filter((b) => {
         return b.pid === pid;
       });
+
+      //process deleted bookmark
+      processBookmark("deleted", bkmrk, bms.length);
 
       return {remainingCount: bms.length, modified: topicsModified};
     }

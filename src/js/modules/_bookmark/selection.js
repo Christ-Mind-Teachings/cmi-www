@@ -150,9 +150,6 @@ export function deleteSelection(id) {
   if (highlite.wrap) {
     highlite.wrap.unwrap();
   }
-  else {
-    console.log("deleteSelection: no wrap() in selection");
-  }
 
   //delete the annotation
   delete pageAnnotations[id];

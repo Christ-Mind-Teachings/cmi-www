@@ -4060,6 +4060,10 @@ function postAnnotation(annotation, pageKey, addToLocalStorage = true) {
 
   Object(_ajax_annotation__WEBPACK_IMPORTED_MODULE_0__["postAnnotation"])(userInfo.userId, pageKey, creationDate, serverAnnotation).then(resp => {
     if (addToLocalStorage) {
+      if (serverAnnotation.selectedText) {
+        serverAnnotation.selectedText = JSON.parse(serverAnnotation.selectedText);
+      }
+
       _bookmark__WEBPACK_IMPORTED_MODULE_3__["localStore"].addItem(userInfo.userId, pageKey, creationDate, serverAnnotation);
     }
   }).catch(err => {
@@ -4135,13 +4139,14 @@ function fetchTopics() {
 /*!**********************************************!*\
   !*** ./src/js/modules/_bookmark/bookmark.js ***!
   \**********************************************/
-/*! exports provided: localStore, getTeachingInfo, setQuickLinks, annotation, default */
+/*! exports provided: localStore, getTeachingInfo, processBookmark, setQuickLinks, annotation, default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* WEBPACK VAR INJECTION */(function($) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "localStore", function() { return localStore; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getTeachingInfo", function() { return getTeachingInfo; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "processBookmark", function() { return processBookmark; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setQuickLinks", function() { return setQuickLinks; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "annotation", function() { return annotation; });
 /* harmony import */ var _ajax_annotation__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../_ajax/annotation */ "./src/js/modules/_ajax/annotation.js");
@@ -4183,7 +4188,6 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
- //import { createLinkListener, getLinkHref } from "../_link/setup";
 
 
  //teaching specific constants, assigned at initialization
@@ -4193,6 +4197,105 @@ let teaching = {}; //manages bookmark store for bookmarks on page
 let localStore;
 function getTeachingInfo() {
   return teaching;
+}
+let counter = new Map();
+
+function getCount(pid) {
+  let count = counter.get(pid);
+
+  if (typeof count === "undefined") {
+    counter.set(pid, 0);
+    return 0;
+  } else {
+    count += 1;
+    counter.set(pid, count);
+    return count;
+  }
+}
+
+function loadSelectedTextBookmark(bm, sharePid) {
+  $(`#p${bm.pid} > span.pnum`).addClass("has-bookmark");
+  Object(_selection__WEBPACK_IMPORTED_MODULE_15__["markSelection"])(bm.annotation.selectedText, getCount(bm.pid), sharePid);
+  addTopicsAsClasses(bm.annotation);
+  setQuickLinks(bm.annotation, "highlight");
+}
+
+function loadNoteStyleBookmark(bm) {
+  addNoteHighlight(bm.pid, bm.annotation);
+  setQuickLinks(bm.annotation, "note");
+}
+
+function loadBookmark(bm, sharePid) {
+  let type = bm.annotation.selectedText ? "selectedText" : "note";
+  type === "selectedText" ? loadSelectedTextBookmark(bm) : loadNoteStyleBookmark(bm);
+}
+
+function createSelectedTextBookmark(bm, count) {
+  $(`#p${bm.pid} > span.pnum`).addClass("has-bookmark");
+  Object(_selection__WEBPACK_IMPORTED_MODULE_15__["markSelection"])(bm.annotation.selectedText, count);
+  addTopicsAsClasses(bm.annotation);
+  setQuickLinks(bm.annotation, "highlight"); //add creationDate
+
+  $(`[data-annotation-id="${bm.annotation.aid}"]`).attr("data-aid", bm.creationDate);
+}
+
+function createNoteStyleBookmark(bm) {
+  addNoteHighlight(bm.pid, bm.annotation);
+  setQuickLinks(bm.annotation, "note"); //add creationDate
+
+  $(`#${bm.annotation.rangeStart} > span.pnum`).attr("data-aid", bm.creationDate);
+}
+
+function deleteSelectedTextBookmark(bm) {
+  Object(_selection__WEBPACK_IMPORTED_MODULE_15__["deleteSelection"])(bm.annotation.aid);
+}
+
+function deleteNoteStyleBookmark(bm) {
+  removeNoteHighlight(bm);
+}
+
+function createBookmark(bm, count) {
+  let type = bm.annotation.selectedText ? "selectedText" : "note";
+  type === "selectedText" ? createSelectedTextBookmark(bm, count) : createNoteStyleBookmark(bm);
+}
+
+function deleteBookmark(bm, remainingCount) {
+  let type = bm.annotation.selectedText ? "selectedText" : "note";
+  type === "selectedText" ? deleteSelectedTextBookmark(bm) : deleteNoteStyleBookmark(bm);
+
+  if (bm.annotation.links) {
+    $(`i[data-link-aid="${bm.creationDate}"]`).remove();
+  }
+
+  if (remainingCount === 0) {
+    $(`#${bm.annotation.rangeStart} > span.pnum`).removeClass("has-bookmark");
+  }
+}
+/**
+ * Process each bookmark loaded, created, updated, or deleted
+ * - process includes highlighting selected text and note paragraphs,
+ *   setting quick links and filtering by topic
+ */
+
+
+function processBookmark(status, bm, arg) {
+  switch (status) {
+    case "loaded":
+      loadBookmark(bm, arg);
+      break;
+
+    case "created":
+      createBookmark(bm, arg);
+      break;
+
+    case "updated":
+      Object(_selection__WEBPACK_IMPORTED_MODULE_15__["updateSelectionTopicList"])(bm.annotation);
+      break;
+
+    case "deleted":
+      deleteBookmark(bm, arg);
+      break;
+  }
 }
 
 function formatLink(link) {
@@ -4216,7 +4319,8 @@ function generateLinkList(links) {
       ${formatLink(item)}
     `).join("")}
   `;
-}
+} // --------------- begin Bookmark DOM -------------------------
+
 /**
  * Add classes to selectedText bookmarks for each topic
  *
@@ -4253,6 +4357,29 @@ function addNoteHighlight(pid, bm) {
     start++;
   } while (start <= end);
 }
+
+function removeNoteHighlight(bm) {
+  //remove mark from paragraph
+  $(`#${bm.annotation.rangeStart} > span.pnum`).removeClass("has-annotation"); //remove all paragraphs in bookmark with class .note-style-bookmark
+
+  let end = parseInt(bm.annotation.rangeEnd.substr(1), 10);
+  let start = parseInt(bm.annotation.rangeStart.substr(1), 10);
+  let pid = start;
+
+  do {
+    $(`#p${start}`).removeClass("note-style-bookmark");
+
+    if (start === pid) {
+      $(`#p${start}`).removeClass("note-style-bookmark-start");
+    }
+
+    if (start === end) {
+      $(`#p${start}`).removeClass("note-style-bookmark-end");
+    }
+
+    start++;
+  } while (start <= end);
+}
 /*
   Add linkify icon after bookmark so user can click to view links
 */
@@ -4262,7 +4389,8 @@ function setQuickLinks(bm, type) {
   if (bm.links) {
     $(`[data-aid="${bm.creationDate}"]`).eq(-1).after(`<i data-link-aid="${bm.creationDate}" data-type="${type}" class="small bm-link-list linkify icon"></i>`);
   }
-}
+} // --------------- end Bookmark DOM -------------------------
+
 /*
   Bookmark link click handler. Links are placed on both note and selected text
   bookmarks. When clicked, get the bookmark and display a list of links defined
@@ -4346,23 +4474,13 @@ function createAnnotation(formValues) {
   if (annotation.topicList.length === 0) {
     delete annotation.topicList;
   } //keep track of topics added or deleted
+  //updateSelectionTopicList(annotation);
 
 
-  Object(_selection__WEBPACK_IMPORTED_MODULE_15__["updateSelectionTopicList"])(annotation);
   delete annotation.newTopics;
   delete annotation.hasAnnotation; //persist the bookmark
 
-  let assignedCreationDate = _bmnet__WEBPACK_IMPORTED_MODULE_7__["default"].postAnnotation(annotation);
-  let info = {
-    //this is undefined for new annotations
-    existingCreationDate: annotation.creationDate,
-    annotationType: annotation.selectedText ? "selectedText" : "Note",
-    uuid: annotation.aid,
-    pid: annotation.rangeStart,
-    assignedCreationDate: assignedCreationDate
-  }; //add [data-id] attribute to new bookmark html
-
-  updateNewAnnotation(info);
+  _bmnet__WEBPACK_IMPORTED_MODULE_7__["default"].postAnnotation(annotation);
 }
 /*
   new topics entered on the annotation form are formatted
@@ -4558,51 +4676,12 @@ async function getPageBookmarks(sharePid) {
     return;
   }
 
-  function processAnnotations(bmList, sharePid) {
-    let count = 0;
-    let hasBookmark = false;
-    let lastOne = bmList.length - 1; //check for no results
-
-    if (bmList.length === 0) return;
-    let prevBm;
-    bmList.forEach((bm, idx) => {
-      //if there's a change in paragraph
-      if (prevBm && bm.pid !== prevBm.pid) {
-        if (hasBookmark) {
-          $(`#p${prevBm.pid} > span.pnum`).addClass("has-bookmark");
-        }
-
-        count = 0;
-        hasBookmark = false;
-      }
-
-      if (bm.annotation.selectedText) {
-        Object(_selection__WEBPACK_IMPORTED_MODULE_15__["markSelection"])(bm.annotation.selectedText, count, sharePid);
-        addTopicsAsClasses(bm.annotation);
-        setQuickLinks(bm.annotation, "highlight");
-        count++;
-        hasBookmark = true;
-      } else {
-        addNoteHighlight(bm.pid, bm.annotation);
-        setQuickLinks(bm.annotation, "note");
-      }
-
-      if (idx === lastOne && hasBookmark) {
-        $(`#p${bm.pid} > span.pnum`).addClass("has-bookmark");
-      } else {
-        prevBm = bm;
-      }
-    });
-    Object(_topics__WEBPACK_IMPORTED_MODULE_14__["bookmarksLoaded"])();
-  }
-
   try {
     //query annotations from database
     let bmList = await Object(_ajax_annotation__WEBPACK_IMPORTED_MODULE_0__["getAnnotations"])(userInfo.userId, pageKey); //store annotations locally
 
-    localStore = new _localStore__WEBPACK_IMPORTED_MODULE_4__["BookmarkLocalStore"](bmList); //apply annotations to the page
-
-    processAnnotations(bmList, sharePid);
+    localStore = new _localStore__WEBPACK_IMPORTED_MODULE_4__["BookmarkLocalStore"](bmList, sharePid);
+    Object(_topics__WEBPACK_IMPORTED_MODULE_14__["bookmarksLoaded"])();
   } catch (err) {
     console.error(err); //Notify error 
   }
@@ -4649,48 +4728,6 @@ const annotation = {
     } else {
       //post the bookmark
       createAnnotation(formData);
-    } //mark paragraph as having bookmark
-
-
-    let type;
-
-    if (!formData.aid) {
-      //bookmark has no selected text
-      type = "note";
-      $(`#${formData.rangeStart} > span.pnum`).addClass("has-annotation"); //mark all paragraphs in bookmark with class .note-style-bookmark
-
-      let end = parseInt(formData.rangeEnd.substr(1), 10);
-      let start = parseInt(formData.rangeStart.substr(1), 10);
-      let pid = start;
-
-      do {
-        $(`#p${start}`).addClass("note-style-bookmark");
-
-        if (start === pid) {
-          $(`#p${start}`).addClass("note-style-bookmark-start");
-        }
-
-        if (start === end) {
-          $(`#p${start}`).addClass("note-style-bookmark-end");
-        }
-
-        start++;
-      } while (start <= end);
-    } else {
-      type = "highlight";
-      $(`#${formData.rangeStart} > span.pnum`).addClass("has-bookmark"); //this is a new annotation
-
-      if (formData.creationDate === "") {
-        let annotationCount = localStore.itemCount(formData.rangeStart, formData.aid);
-        Object(_selection__WEBPACK_IMPORTED_MODULE_15__["updateHighlightColor"])(formData.aid, annotationCount);
-      }
-    } //add linkify icon if bookmark contains links
-
-
-    if (formData.links && formData.creationDate) {
-      if ($(`[data-link-aid="${formData.creationDate}"].bm-link-list.linkify.icon`).length === 0) {
-        $(`[data-aid="${formData.creationDate}"]`).eq(-1).after(`<i data-link-aid="${formData.creationDate}" data-type="${type}" class="small bm-link-list linkify icon"></i>`);
-      }
     }
   },
 
@@ -4705,70 +4742,48 @@ const annotation = {
   //delete annotation
   async delete(formData) {
     //if annotation has selected text unwrap and delete it
-    if (formData.aid) {
-      Object(_selection__WEBPACK_IMPORTED_MODULE_15__["deleteSelection"])(formData.aid);
-    } else {
-      //remove mark from paragraph
-      $(`#${formData.rangeStart} > span.pnum`).removeClass("has-annotation"); //remove all paragraphs in bookmark with class .note-style-bookmark
 
+    /*
+    if (formData.aid) {
+      deleteSelection(formData.aid);
+    }
+    else {
+      //remove mark from paragraph
+      $(`#${formData.rangeStart} > span.pnum`).removeClass("has-annotation");
+       //remove all paragraphs in bookmark with class .note-style-bookmark
       let end = parseInt(formData.rangeEnd.substr(1), 10);
       let start = parseInt(formData.rangeStart.substr(1), 10);
       let pid = start;
-
       do {
         $(`#p${start}`).removeClass("note-style-bookmark");
-
         if (start === pid) {
           $(`#p${start}`).removeClass("note-style-bookmark-start");
         }
-
         if (start === end) {
           $(`#p${start}`).removeClass("note-style-bookmark-end");
         }
-
         start++;
-      } while (start <= end);
-    } //if annotation has links, remove the linkify icon
-
-
+      } while(start <= end);
+    }
+     //if annotation has links, remove the linkify icon
     if (formData.links) {
       $(`i[data-link-aid="${formData.creationDate}"]`).remove();
-    } //mark as having no annotations if all have been deleted
-
-
+    }
+    */
+    //mark as having no annotations if all have been deleted
     try {
-      let remainingAnnotations = await _bmnet__WEBPACK_IMPORTED_MODULE_7__["default"].deleteAnnotation(formData.rangeStart, formData.creationDate);
-
+      await _bmnet__WEBPACK_IMPORTED_MODULE_7__["default"].deleteAnnotation(formData.rangeStart, formData.creationDate);
+      /*
       if (remainingAnnotations === 0) {
         $(`#${formData.rangeStart} > span.pnum`).removeClass("has-bookmark");
       }
+      */
     } catch (err) {
       throw new Error(err);
     }
   }
 
 };
-/**
- * Update new bookmark markup to add the creationDate as [data-aid] so
- * sharing doesn't require a page refresh.
- *
- * There are two kinds of bookmarks, selectedText and Note, updates are
- * different for each.
- *
- */
-
-function updateNewAnnotation(info) {
-  //this isn't a new annotation
-  if (info.existingCreationDate === info.assignedCreationDate) {
-    return;
-  }
-
-  if (info.annotationType === "selectedText") {
-    $(`[data-annotation-id="${info.uuid}"]`).attr("data-aid", info.assignedCreationDate);
-  } else {
-    $(`#${info.pid} > span.pnum`).attr("data-aid", info.assignedCreationDate);
-  }
-}
 
 function getLinkHref(link) {
   let url = Object(_util_cmi__WEBPACK_IMPORTED_MODULE_17__["getUrlByPageKey"])(link.key);
@@ -5528,6 +5543,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var lodash_difference__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! lodash/difference */ "./node_modules/lodash/difference.js");
 /* harmony import */ var lodash_difference__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(lodash_difference__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _topics__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./topics */ "./src/js/modules/_bookmark/topics.js");
+/* harmony import */ var _bookmark__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./bookmark */ "./src/js/modules/_bookmark/bookmark.js");
 /*
  * Local storage for bookmarks on page. 
  *
@@ -5543,6 +5559,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
 class BookmarkLocalStore {
   /**
    * Add list of bookmarks on page to this.list and add the topics for each
@@ -5552,10 +5569,11 @@ class BookmarkLocalStore {
    * @constructor
    * @param {array} bmList - array of bookmarks on page
    */
-  constructor(bmList) {
+  constructor(bmList, sharePid) {
     this.list = bmList;
     this.topics = new Map();
-    this.topicsModified = false; //load topics from bmList in to topic Map
+    this.topicsModified = false;
+    this.sharePid = sharePid; //load topics from bmList in to topic Map
 
     this._initTopics();
   }
@@ -5629,6 +5647,8 @@ class BookmarkLocalStore {
 
   _initTopics() {
     this.list.forEach(b => {
+      Object(_bookmark__WEBPACK_IMPORTED_MODULE_3__["processBookmark"])("loaded", b, this.sharePid);
+
       if (!b.annotation.selectedText) {
         return;
       }
@@ -5754,6 +5774,7 @@ class BookmarkLocalStore {
     let id = parseInt(pid.substr(1), 10);
 
     if (annotation.status === "new") {
+      annotation.creationDate = creationDate;
       let bkmrk = {
         userId: userId,
         paraKey: `${paraKey}`,
@@ -5770,7 +5791,14 @@ class BookmarkLocalStore {
       } //item has been added so invalidate bmList
 
 
-      this._invalidateBmList();
+      this._invalidateBmList(); //get number of bookmarks on paragraph
+
+
+      let bms = this.list.filter(b => {
+        return b.pid === id;
+      }); //process new bookmark
+
+      Object(_bookmark__WEBPACK_IMPORTED_MODULE_3__["processBookmark"])("created", bkmrk, bms.length - 1);
     } else {
       //this is an update
       let pKey = `${paraKey}`;
@@ -5778,7 +5806,7 @@ class BookmarkLocalStore {
       let index = this.list.findIndex(i => {
         return i.paraKey === pKey && i.creationDate === cDate;
       });
-      if (index === -1) throw new Error("bookmark to update not found in list"); //update topic Map if needed
+      if (index === -1) throw new Error("localStore: addItem:update: bookmark to update not found in list"); //update topic Map if needed
 
       if (annotation.selectedText) {
         let newTopicList = [];
@@ -5823,7 +5851,9 @@ class BookmarkLocalStore {
       } //update annotation in local store
 
 
-      this.list[index].annotation = annotation;
+      this.list[index].annotation = annotation; //process updated bookmark
+
+      Object(_bookmark__WEBPACK_IMPORTED_MODULE_3__["processBookmark"])("updated", this.list[index]);
     }
   }
   /**
@@ -5858,7 +5888,8 @@ class BookmarkLocalStore {
     let topicsModified = false;
 
     if (index > -1) {
-      let pid = this.list[index].pid; //delete topics from topic Map
+      let bkmrk = this.list[index];
+      let pid = bkmrk.pid; //delete topics from topic Map
 
       if (this.list[index].annotation.topicList) {
         this.list[index].annotation.topicList.forEach(i => {
@@ -5869,11 +5900,14 @@ class BookmarkLocalStore {
 
       this.list.splice(index, 1); //item has been deleted so invalidate bmList
 
-      this._invalidateBmList();
+      this._invalidateBmList(); //get remaining bookmarks on paragraph
+
 
       let bms = this.list.filter(b => {
         return b.pid === pid;
-      });
+      }); //process deleted bookmark
+
+      Object(_bookmark__WEBPACK_IMPORTED_MODULE_3__["processBookmark"])("deleted", bkmrk, bms.length);
       return {
         remainingCount: bms.length,
         modified: topicsModified
@@ -6918,8 +6952,6 @@ function deleteSelection(id) {
 
   if (highlite.wrap) {
     highlite.wrap.unwrap();
-  } else {
-    console.log("deleteSelection: no wrap() in selection");
   } //delete the annotation
 
 
