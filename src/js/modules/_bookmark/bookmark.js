@@ -522,7 +522,10 @@ async function getPageBookmarks(sharePid) {
 
     //store annotations locally
     localStore = new BookmarkLocalStore(bmList, sharePid);
-    bookmarksLoaded();
+
+    if (bmList.length > 0) {
+      bookmarksLoaded();
+    }
   }
   catch(err) {
     console.error(err);
