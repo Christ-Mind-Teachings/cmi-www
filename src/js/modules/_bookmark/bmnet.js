@@ -64,7 +64,11 @@ function postAnnotation(annotation, pageKey, addToLocalStorage=true) {
     delete serverAnnotation.modified;
   }
 
+  let wrapFunction;
   if (serverAnnotation.selectedText) {
+    //don't save wrap() to db but we do need it so save it and put
+    //it back before we save it to local store
+    wrapFunction = serverAnnotation.selectedText.wrap;
     delete serverAnnotation.selectedText.wrap;
 
     //selectedText is already stringified when called by topicmgr.js
@@ -87,6 +91,9 @@ function postAnnotation(annotation, pageKey, addToLocalStorage=true) {
     if (addToLocalStorage) {
       if (serverAnnotation.selectedText) {
         serverAnnotation.selectedText = JSON.parse(serverAnnotation.selectedText);
+        if (wrapFunction) {
+          serverAnnotation.selectedText.wrap = wrapFunction;
+        }
       }
       localStore.addItem(userInfo.userId, pageKey, creationDate, serverAnnotation);
     }

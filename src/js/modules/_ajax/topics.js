@@ -9,7 +9,7 @@ import globals from "../../globals";
  */
 export function getTopicList(userId, sourceId) {
   return new Promise((resolve, reject) => {
-    axios.get(`${globals.user2}/topicList/${userId}/${sourceId}`)
+    axios.get(`${globals.user}/topicList/${userId}/${sourceId}`)
       .then((response) => {
         let topics = response.data.topics;
         resolve(topics);
@@ -32,7 +32,7 @@ export function putTopicList(userId, sourceId, topicList) {
   };
 
   return new Promise((resolve, reject) => {
-    axios.post(`${globals.user2}/topicList`, body)
+    axios.post(`${globals.user}/topicList`, body)
       .then((response) => { resolve(response.data.response); })
       .catch((err) => { reject(err); });
   });

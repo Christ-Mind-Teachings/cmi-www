@@ -3,7 +3,7 @@ import globals from "../../globals";
 
 export function getMailList(userId) {
   return new Promise((resolve, reject) => {
-    axios.get(`${globals.user2}/mailList/${userId}`)
+    axios.get(`${globals.user}/mailList/${userId}`)
       .then((response) => {
         resolve(response.data.mailList);
       })
@@ -15,7 +15,7 @@ export function getMailList(userId) {
 
 export function putMailList(userId, list) {
   return new Promise((resolve, reject) => {
-    axios.post(`${globals.user2}/mailList`, list)
+    axios.post(`${globals.user}/mailList`, list)
       .then(response => {
         resolve(response.data.response);
       })
@@ -27,7 +27,7 @@ export function putMailList(userId, list) {
 
 export function sendMail(mailInfo) {
   return new Promise((resolve, reject) => {
-    axios.post(globals.share, mailInfo)
+    axios.post(`${globals.user}/share`, mailInfo)
       .then((response) => {
         if (response.status === 200) {
           resolve("success");

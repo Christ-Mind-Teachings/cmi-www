@@ -48,7 +48,7 @@ function formatKey(key) {
  */
 export function getAnnotations(userId, key) {
   return new Promise((resolve, reject) => {
-    axios.get(`${globals.user2}/queryAnnotation/${userId}/${key}`)
+    axios.get(`${globals.user}/queryAnnotation/${userId}/${key}`)
       .then((response) => {
         let bmList = response.data.response;
 
@@ -115,7 +115,7 @@ export function postAnnotation(userId, paraKey, creationDate, annotation) {
   };
 
   return new Promise((resolve, reject) => {
-    axios.post(`${globals.user2}/annotation`, body)
+    axios.post(`${globals.user}/annotation`, body)
       .then((response) => { resolve(response.data.response); })
       .catch((err) => { reject(err); });
   });
@@ -129,7 +129,7 @@ export function postAnnotation(userId, paraKey, creationDate, annotation) {
  */
 export function getAnnotation(userId, paraKey, creationDate) {
   return new Promise((resolve, reject) => {
-    axios.get(`${globals.user2}/annotation/${userId}/${formatKey(paraKey)}/${creationDate}`)
+    axios.get(`${globals.user}/annotation/${userId}/${formatKey(paraKey)}/${creationDate}`)
       .then((response) => {
         console.log("getAnnotation: %o", response);
         let r = response.data.response;
@@ -164,7 +164,7 @@ export function deleteAnnotation(userId, paraKey, creationDate) {
   }
 
   return new Promise((resolve, reject) => {
-    axios.delete(`${globals.user2}/annotation/${userId}/${formatKey(paraKey)}/${creationDate}`)
+    axios.delete(`${globals.user}/annotation/${userId}/${formatKey(paraKey)}/${creationDate}`)
       .then((response) => {
         resolve(response.data.response);
       })

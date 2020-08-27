@@ -35,7 +35,7 @@ function setAsSignedIn() {
   let userInfo = getUserInfo();
 
   //change sign-in icon to sign-out and change color from red to green
-  getString("action:signout", true).then((resp) => {
+  getString("action:signout", true, "Sign Out").then((resp) => {
     /*
     $(".login-menu-option > span")
       .html("<i class='green sign out icon'></i>")
@@ -43,7 +43,7 @@ function setAsSignedIn() {
     */
     $(".login-menu-option-guest").addClass("hide");
     $(".login-menu-option-account").removeClass("hide");
-    $(".account-signout-option").text(`Sign out: ${userInfo.name}`);
+    $(".account-signout-option").text(`${resp}: ${userInfo.name}`);
   });
 
   //change bookmark menu icon to green from red

@@ -460,7 +460,7 @@ function bookmarkFeatureHandler() {
     let el = $(".transcript");
 
     if (el.hasClass("disable-selection") && el.hasClass("user")) {
-      getString("menu:m1", true).then(value => {
+      getString("menu:m1", true, "Disable Bookmark Creation").then(value => {
         el.removeClass("disable-selection user");
         $(".toggle-bookmark-selection").text(value);
         $("#bookmark-dropdown-menu > span  i.bookmark-corner-icon").addClass("hide");
@@ -471,7 +471,7 @@ function bookmarkFeatureHandler() {
       });
     }
     else {
-      getString("menu:m2", true).then(value => {
+      getString("menu:m2", true, "Enable Bookmark Creation").then(value => {
         el.addClass("disable-selection user");
         $(".toggle-bookmark-selection").text(value);
         $("#bookmark-dropdown-menu > span  i.bookmark-corner-icon").removeClass("hide");

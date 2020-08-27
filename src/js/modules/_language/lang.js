@@ -59,7 +59,7 @@ export function setLanguage(constants) {
  * If status == LOADING wait for 250ms up to 8 times for the status
  * to change. Bail if it doens't change.
  */
-function waitForReady(s, k) {
+function waitForReady(s, k, timeoutValue) {
   return new Promise((resolve, reject) => {
     function wait(s, k, ms, max=8, cnt=0) {
       if (status === LOADING) {
@@ -67,20 +67,23 @@ function waitForReady(s, k) {
           setTimeout(() => wait(s, k, ms, max, cnt+1), ms);
         }
         else {
-          console.log("timeout waiting for language to load: '%s:%s'", s, k);
-          resolve("timeout");
+          console.error("timeout waiting for language to load: '%s:%s'", s, k);
+          if (timeoutValue) {
+            resolve(timeoutValue);
+          }
+          else {
+            resolve("timeout");
+          }
           return;
         }
       }
       else {
-        //console.log("Language loaded at wait count: %s", cnt);
         resolve(keyValue(s,k));
         return;
       }
     }
 
     if (status == LOADING) {
-      //console.log("wait started for language to load: '%s:%s'", s, k);
       wait(s, k, 250);
     }
     else {
@@ -145,7 +148,7 @@ function keyValue(s, k) {
 * if getString() returns a value of "loading(s:k)" to wait until
 * language file is loaded before requesting a translation.
 */
-export function getString(key, wait = false) {
+export function getString(key, wait = false, timeoutValue) {
   if (typeof key !== "string") {
     return null;
   }
@@ -153,7 +156,7 @@ export function getString(key, wait = false) {
   let [s,k] = key.split(":");
 
   if (wait) {
-    return waitForReady(s, k);
+    return waitForReady(s, k, timeoutValue);
   }
 
   return keyValue(s, k);

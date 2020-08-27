@@ -101,13 +101,20 @@ function generateOption(item) {
 }
 
 function makeMaillistSelect(maillist) {
-  return (`
-    <label>${getString("label:listnames")}</label>
-    <select name="mailList" id="maillist-address-list" multiple="" class="search ui dropdown">
-      <option value="">${getString("label:selectaddress")}</option>
-      ${maillist.map(item => `${generateOption(item)}`).join("")}
-    </select>
-  `);
+  return new Promise((resolve, reject) => {
+    let listnames = getString("label:listnames", true);
+    let selectaddress = getString("label:selectaddress", true);
+
+    Promise.all([listnames, selectaddress]).then((resp) => {
+      resolve(`
+        <label>${resp[0]}</label>
+        <select name="mailList" id="maillist-address-list" multiple="" class="search ui dropdown">
+          <option value="">${resp[1]}</option>
+          ${maillist.map(item => `${generateOption(item)}`).join("")}
+        </select>
+      `);
+    });
+  });
 }
 
 /*
@@ -120,7 +127,7 @@ async function loadEmailList() {
 
   try {
     let mailList = await getMailList(userInfo.userId);
-    let selectHtml = makeMaillistSelect(mailList);
+    let selectHtml = await makeMaillistSelect(mailList);
 
     $("#maillist-select").html(selectHtml);
     $("#maillist-address-list.dropdown").dropdown();
@@ -132,8 +139,8 @@ async function loadEmailList() {
 
 /*
 */
-export function shareByEmail(quote, citation, url) {
-  shareInfo = {citation, quote, url};
+export function shareByEmail(quote, citation, url, bmId) {
+  shareInfo = {citation, quote, url, bmId};
 
   //show input form
   $(".hide.email-share-dialog-wrapper").removeClass("hide");

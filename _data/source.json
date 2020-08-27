@@ -169,31 +169,31 @@
     "books": [
       {
         "value": "*",
-        "name": "All Books"
+        "name": "Wszystkie książki"
       },
       {
         "value": "1601",
-        "name": "The Jeshua Letters"
+        "name": "Listy Jeszuy"
       },
       {
         "value": "1602",
-        "name": "The Way of the Servant"
+        "name": "Droga Sługi"
       },
       {
         "value": "1606",
-        "name": "The Early Years"
+        "name": "Wczesne lata Drogi"
       },
       {
         "value": "1603",
-        "name": "The Way of the Heart"
+        "name": "Droga Serca"
       },
       {
         "value": "1604",
-        "name": "The Way of Transformation"
+        "name": "Droga Przemiany"
       },
       {
         "value": "1605",
-        "name": "The Way of Knowing"
+        "name": "Droga Poznania"
       }
     ]
   },

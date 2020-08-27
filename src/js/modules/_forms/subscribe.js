@@ -53,7 +53,6 @@ export default {
 
     if ($form.length > 0) {
       createSubmitHandler($form);
-      console.log("Subscribe form initialized.");
     }
   }
 };

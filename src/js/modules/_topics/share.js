@@ -121,39 +121,43 @@ function generateOption(item) {
 }
 
 function makeMaillistSelect(maillist) {
-  return (`
-    <label>${getString("label:listnames")}</label>
-    <select name="mailList" id="maillist-modal-address-list" multiple="" class="search ui dropdown">
-      <option value="">${getString("label:selectaddress")}</option>
-      ${maillist.map(item => `${generateOption(item)}`).join("")}
-    </select>
-  `);
+  return new Promise((resolve, reject) => {
+    let listnames = getString("label:listnames", true);
+    let selectaddress = getString("label:selectaddress", true);
+
+    Promise.all([listnames, selectaddress]).then((resp) => {
+      resolve(`
+        <label>${resp[0]}</label>
+        <select name="mailList" id="maillist-modal-address-list" multiple="" class="search ui dropdown">
+          <option value="">${resp[1]}</option>
+          ${maillist.map(item => `${generateOption(item)}`).join("")}
+        </select>
+      `);
+    });
+  });
 }
 
 /*
   Called by initShareByEmail()
   - load only when user signed in, fail silently, it's not an error
 */
-function loadEmailList() {
+async function loadEmailList() {
   const userInfo = getUserInfo();
 
-  if (!userInfo) {
-    return;
-  }
+  if (!userInfo) return;
 
-  let maillist = [];
   let api = `${userInfo.userId}/maillist`;
 
-  getMailList(userInfo.userId)
-    .then(( maillist ) => {
-      let selectHtml = makeMaillistSelect(maillist);
+  try {
+    let maillist = await getMailList(userInfo.userId);
+    let selectHtml = await makeMaillistSelect(maillist);
 
-      $("#maillist-modal-select").html(selectHtml);
-      $("#maillist-modal-address-list.dropdown").dropdown();
-    })
-    .catch(( err ) => {
-      notify.error(`${getString("error:e10")}: ${err}`);
-    });
+    $("#maillist-modal-select").html(selectHtml);
+    $("#maillist-modal-address-list.dropdown").dropdown();
+  }
+  catch( err ) {
+    notify.error(`${getString("error:e10")}: ${err}`);
+  };
 }
 
 

@@ -11,12 +11,12 @@ export function runFeatureIntro(stepArray, options) {
     let element = i.element.substring(1);
     let el = document.getElementById(element);
     let result = el ? el.offsetParent !== null : false;
-    if (!result) console.log(`${i.element} filtered from stepArray`);
+    //if (!result) console.log(`${i.element} filtered from stepArray`);
     return result;
   });
 
   if (validSteps.length === 0) {
-    console.log("no steps in requested feature introduction");
+    //console.log("no steps in requested feature introduction");
     return;
   }
 

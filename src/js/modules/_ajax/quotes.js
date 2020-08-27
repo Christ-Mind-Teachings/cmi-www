@@ -7,7 +7,7 @@ import globals from "../../globals";
  *  ie, 10: WOM, etc
  */
 export function getQuoteIds(userId, key) {
-  let url = `${globals.user2}/quoteKeys/${userId}/${key}`;
+  let url = `${globals.user}/quoteKeys/${userId}/${key}`;
 
   return new Promise((resolve, reject) => {
     axios.get(url).then((resp) => {
@@ -30,7 +30,7 @@ export function getQuoteIds(userId, key) {
  */
 export function getQuote(userId, quoteId) {
   let [paraKey, creationDate] = quoteId.split(":");
-  let url = `${globals.user2}/quote/${userId}/${paraKey}/${creationDate}`;
+  let url = `${globals.user}/quote/${userId}/${paraKey}/${creationDate}`;
 
   return new Promise((resolve, reject) => {
     axios.get(url).then((resp) => {
@@ -47,7 +47,7 @@ export function getQuote(userId, quoteId) {
  * url of the source.
  */
 export function getQuoteData(userId, paraKey, creationDate) {
-  let url = `${globals.user2}/quoteData/${userId}/${paraKey}/${creationDate}`;
+  let url = `${globals.user}/quoteData/${userId}/${paraKey}/${creationDate}`;
 
   return new Promise((resolve, reject) => {
     axios.get(url).then((resp) => {
@@ -59,7 +59,7 @@ export function getQuoteData(userId, paraKey, creationDate) {
 }
 
 export function putQuote(quote) {
-  let url = `${globals.user2}/quote`;
+  let url = `${globals.user}/quote`;
 
   return new Promise((resolve, reject) => {
     axios.post(url, quote).then((resp) => {
@@ -71,7 +71,7 @@ export function putQuote(quote) {
 }
 
 export function deleteQuote(userId, paraKey, creationDate) {
-  let url = `${globals.user2}/quote/${userId}/${paraKey}/${creationDate}`;
+  let url = `${globals.user}/quote/${userId}/${paraKey}/${creationDate}`;
 
   return new Promise((resolve, reject) => {
     axios.delete(url).then((resp) => {
