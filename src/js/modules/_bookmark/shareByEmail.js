@@ -1,20 +1,36 @@
-import axios from "axios";
 import notify from "toastr";
-import globals from "../../globals";
 import {getUserInfo} from "../_user/netlify";
 import {getString} from "../_language/lang";
+import {sendMail, getMailList} from "../_ajax/share";
+import {purify} from "../_util/sanitize";
 
 //teaching specific constants
 let teaching = {};
 let shareInfo = {};
 
+/*
+ * format message to wrap pargraphs in <p> tags
+ */
+function formatMessage(message) {
+  message = message.replace(/\n/g, "@@");
+  message = message.replace(/@@*/g, "@@");
+
+  let mArray = message.split("@@");
+
+  message = mArray.reduce((current, p) => {
+    return `${current}<p>${purify(p)}</p>`;
+  }, "");
+
+  return message;
+}
+
 //load email list and setup submit and cancel listeners
 export function initShareByEmail(constants) {
   teaching = constants;
-  //loadEmailList();
+  loadEmailList();
 
   //submit
-  $("form[name='emailshare']").on("submit", function(e) {
+  $("form[name='emailshare']").on("submit", async function(e) {
     e.preventDefault();
 
     const userInfo = getUserInfo();
@@ -48,23 +64,26 @@ export function initShareByEmail(constants) {
     shareInfo.senderName = userInfo.name;
     shareInfo.senderEmail = userInfo.email;
     shareInfo.sid = teaching.sid;
-    //console.log("shareInfo: %o", shareInfo);
+
+    if (formData.emailMessage) {
+      shareInfo.message = formatMessage(formData.emailMessage);
+    }
 
     //hide form not sure if this will work
     $(".email-share-dialog-wrapper").addClass("hide");
 
-    axios.post(globals.share, shareInfo)
-      .then((response) => {
-        if (response.status === 200) {
-          notify.info(getString("action:emailsent"));
-        }
-        else {
-          notify.info(response.data.message);
-        }
-      })
-      .catch((error) => {
-        console.error("share error: %s", error);
-      });
+    try {
+      let result = await sendMail(shareInfo);
+      if (result === "success") {
+        notify.info(getString("action:emailsent"));
+      }
+      else {
+        notify.info(response.data.message);
+      }
+    }
+    catch(err) {
+      notify.error(err);
+    }
   });
 
   //cancel
@@ -90,17 +109,19 @@ function generateOption(item) {
  * could since they are no longer needed.
  */
 function makeMaillistSelect(maillist) {
-  let listnames = getString("label:listnames", true);
-  let selectAddress = getString("label:selectaddress", true);
+  return new Promise((resolve, reject) => {
+    let listnames = getString("label:listnames", true);
+    let selectaddress = getString("label:selectaddress", true);
 
-  return Promise.all([listnames, selectAddress]).then((values) => {
-    return (`
-      <label>${values[0]}</label>
-      <select name="mailList" id="maillist-address-list" multiple="" class="search ui dropdown">
-        <option value="">${values[1]}</option>
-        ${maillist.map(item => `${generateOption(item)}`).join("")}
-      </select>
-    `);
+    Promise.all([listnames, selectaddress]).then((resp) => {
+      resolve(`
+        <label>${resp[0]}</label>
+        <select name="mailList" id="maillist-address-list" multiple="" class="search ui dropdown">
+          <option value="">${resp[1]}</option>
+          ${maillist.map(item => `${generateOption(item)}`).join("")}
+        </select>
+      `);
+    });
   });
 }
 
@@ -110,31 +131,21 @@ function makeMaillistSelect(maillist) {
 
   NOTE: WE DON'T CALL THIS ANYMORE. THE CODE has been added to shareByEmail()
 */
-function loadEmailList() {
+async function loadEmailList() {
   const userInfo = getUserInfo();
+  if (!userInfo) return;
 
-  if (!userInfo) {
-    return;
+  try {
+    let mailList = await getMailList(userInfo.userId);
+    let selectHtml = await makeMaillistSelect(mailList);
+
+    $("#maillist-select").html(selectHtml);
+    $("#maillist-address-list.dropdown").dropdown();
   }
-
-  let maillist = [];
-  let api = `${userInfo.userId}/maillist`;
-
-  axios(`${globals.user}/${api}`)
-    .then(response => {
-      maillist = response.data.maillist;
-      return makeMaillistSelect(maillist);
-    })
-    .then((selectHtml) => {
-      $("#maillist-select").html(selectHtml);
-      $("#maillist-address-list.dropdown").dropdown();
-    })
-    .catch(err => {
-      notify.error(`${getString("error:e10")}: ${err}`);
-    });
+  catch(err) {
+    notify.error(`${getString("error:e10")}: ${err}`);
+  }
 }
-
-let mailListLoaded = false;
 
 /*
 */
@@ -144,38 +155,5 @@ export function shareByEmail(quote, citation, url) {
 
   //show dialog
   $(".hide.email-share-dialog-wrapper").removeClass("hide");
-
-  //if user not signed in we don't need to load the email list so
-  //just show the dialog and return
-  if (!userInfo) {
-    return;
-  }
-
-  //maillist already loaded, show the dialog and return
-  if (mailListLoaded) {
-    return;
-  }
-
-  let maillist = [];
-  let api = `${userInfo.userId}/maillist`;
-
-  $(".email-share-loader").addClass("active");
-
-  axios(`${globals.user}/${api}`)
-    .then(response => {
-      maillist = response.data.maillist;
-      return makeMaillistSelect(maillist);
-    })
-    .then((selectHtml) => {
-      $("#maillist-select").html(selectHtml);
-      $("#maillist-address-list.dropdown").dropdown();
-      mailListLoaded = true;
-      $(".email-share-loader").removeClass("active");
-    })
-    .catch(err => {
-      notify.error(`${getString("error:e10")}: ${err}`);
-      $(".email-share-loader").removeClass("active");
-    });
-
 }
 

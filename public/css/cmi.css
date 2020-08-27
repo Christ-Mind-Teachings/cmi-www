@@ -134,6 +134,9 @@ i.toc-share.icon {
   box-shadow: 1rem 1rem 1rem;
 }
 
+#action-manager > .annotation-actions.hide,
+.bookmark-segment.hide,
+.bookmark-segment.qhide,
 .bookmark-header.hide,
 .note-and-links.hide {
   display: none;
@@ -162,7 +165,8 @@ i.toc-share.icon {
   margin-top: 10px;
 }
 
-#topicSelect > a[data-value*="*"],
+#topicTable tr.deleted,
+#topicSelectNew > a.ui.transition.visible[data-value="X"],
 .ui.selection .menu > .item.deleted {
   text-decoration: line-through;
   color: red;
@@ -193,6 +197,9 @@ i.toc-share.icon {
   color: #e21631;
 }
 
+#bookmark-filter-wrapper.hide,
+.toggle-paragraph-markers > span  i.paragraph-corner-icon.hide,
+#bookmark-dropdown-menu > span  i.bookmark-corner-icon.hide,
 .ui.form > input.hidden-field {
   display: none;
 }
@@ -328,3 +335,12 @@ i.toc-share.icon {
 .hide.email-share-dialog-wrapper {
   display: none;
 }
+
+a.login-menu-option-account.hide.dropdown.ui.floated.item,
+a.login-menu-option-guest.item.hide.ui.floated,
+a.requires-signin.hide.ui.item {
+  display: none;
+}
+
+
+

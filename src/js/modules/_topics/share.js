@@ -1,8 +1,10 @@
-import axios from "axios";
-import globals from "../../globals";
+//import axios from "axios";
+//import globals from "../../globals";
+import {getMailList, sendMail} from "../_ajax/share";
 import {getUserInfo} from "../_user/netlify";
 import {getString} from "../_language/lang";
 import {displayWarning} from "./message";
+import {purify} from "../_util/sanitize";
 
 const quoteMessageSelector = "#quote-modal-message";
 const shareMessageSelector = "#share-modal .message";
@@ -40,6 +42,22 @@ function setSendFailure() {
   }, 2 * 1000);
 }
 
+/*
+ * format message to wrap pargraphs in <p> tags
+ */
+function formatMessage(message) {
+  message = message.replace(/\n/g, "@@");
+  message = message.replace(/@@*/g, "@@");
+
+  let mArray = message.split("@@");
+
+  message = mArray.reduce((current, p) => {
+    return `${current}<p>${purify(p)}</p>`;
+  }, "");
+
+  return message;
+}
+
 export function submitEmail(q) {
   const userInfo = getUserInfo();
   let formData = $("#email-modal-share-form").form("get values");
@@ -68,22 +86,25 @@ export function submitEmail(q) {
   shareInfo.senderName = userInfo.name;
   shareInfo.senderEmail = userInfo.email;
   shareInfo.sid = sid;
-  shareInfo.citation = q.citation;
+  shareInfo.citation = `~ ${q.citation}`;
   shareInfo.quote = q.quote;
   shareInfo.url = `${location.origin}${q.url}`;
-  //console.log("shareInfo: %o", shareInfo);
+
+  if (formData.emailMessage) {
+    shareInfo.message = formatMessage(formData.emailMessage);
+  }
 
   // start loading indicator
   resetSendIndicator();
 
-  axios.post(globals.share, shareInfo)
+  sendMail(shareInfo)
     .then((response) => {
-      if (response.status === 200) {
+      if (response === "success") {
         setSendSuccess();
       }
       else {
         setSendFailure();
-        console.log("post message; %s", response.data.message);
+        console.log("post message; %s", response);
       }
     })
     .catch((error) => {
@@ -100,40 +121,43 @@ function generateOption(item) {
 }
 
 function makeMaillistSelect(maillist) {
-  return (`
-    <label>${getString("label:listnames")}</label>
-    <select name="mailList" id="maillist-modal-address-list" multiple="" class="search ui dropdown">
-      <option value="">${getString("label:selectaddress")}</option>
-      ${maillist.map(item => `${generateOption(item)}`).join("")}
-    </select>
-  `);
+  return new Promise((resolve, reject) => {
+    let listnames = getString("label:listnames", true);
+    let selectaddress = getString("label:selectaddress", true);
+
+    Promise.all([listnames, selectaddress]).then((resp) => {
+      resolve(`
+        <label>${resp[0]}</label>
+        <select name="mailList" id="maillist-modal-address-list" multiple="" class="search ui dropdown">
+          <option value="">${resp[1]}</option>
+          ${maillist.map(item => `${generateOption(item)}`).join("")}
+        </select>
+      `);
+    });
+  });
 }
 
 /*
   Called by initShareByEmail()
   - load only when user signed in, fail silently, it's not an error
 */
-function loadEmailList() {
+async function loadEmailList() {
   const userInfo = getUserInfo();
 
-  if (!userInfo) {
-    return;
-  }
+  if (!userInfo) return;
 
-  let maillist = [];
   let api = `${userInfo.userId}/maillist`;
 
-  axios(`${globals.user}/${api}`)
-    .then(response => {
-      maillist = response.data.maillist;
-      let selectHtml = makeMaillistSelect(maillist);
+  try {
+    let maillist = await getMailList(userInfo.userId);
+    let selectHtml = await makeMaillistSelect(maillist);
 
-      $("#maillist-modal-select").html(selectHtml);
-      $("#maillist-modal-address-list.dropdown").dropdown();
-    })
-    .catch(err => {
-      notify.error(`${getString("error:e10")}: ${err}`);
-    });
+    $("#maillist-modal-select").html(selectHtml);
+    $("#maillist-modal-address-list.dropdown").dropdown();
+  }
+  catch( err ) {
+    notify.error(`${getString("error:e10")}: ${err}`);
+  };
 }
 
 

@@ -1,19 +1,16 @@
 /*
-  Keeps track of topics used by page annotations that have selectedText
-
-  The list of topics is added to the bookmark menu option on transcript pages
-  and allows the user to show only highlighted text of the selected topic.
-
-  When the user selects a topic, the class .topic-filter-active is added to .transcript
-  and the class .show is added to each highlight containing the selected topic. This works
-  because each highlight contains a class that corresponds to each topic the annotation 
-  contains.
+ * Keeps track of topics used by page annotations that have selectedText
+ *
+ * The list of topics is added to the bookmark menu option on transcript pages
+ * and allows the user to show only highlighted text of the selected topic.
+ *
+ * When the user selects a topic, the class .topic-filter-active is added to .transcript
+ * and the class .show is added to each highlight containing the selected topic. This works
+ * because each highlight contains a class that corresponds to each topic the annotation 
+ * contains.
 */
 import {getString} from "../_language/lang";
-
-let topics = new Map();
-let listRefreshNeeded = true;
-let deletedKeys = [];
+import {localStore} from "./bookmark";
 
 const uiPageTopicsModal = "#page-topics-modal";
 const uiOpenPageTopicsModal = "#page-topics-modal-open";
@@ -21,16 +18,14 @@ const uiModalOpacity = 0.5;
 
 //generate the option element of a select statement
 function generateOption(topic) {
-  if (typeof topic === "object") {
-    return `<option value="${topic.value}">${topic.topic}</option>`;
-  }
-  return `<option value="${topic}">${topic}</option>`;
+  return `<option value="${topic.value}">${topic.topic}</option>`;
 }
 
 //generate select html for Topics
 function makeTopicSelect(topics) {
   return (`
     <select name="pageTopicList" id="page-topics-topic-list" class="search ui dropdown">
+      <option value="">Choose a topic</option>
       ${topics.map(topic => `${generateOption(topic)}`).join("")}
     </select>
   `);
@@ -44,7 +39,7 @@ function formatTopic(topic) {
 }
 
 function makeTopicSelectElement() {
-  let topicMap = getTopics();
+  let topicMap = localStore.getTopics();
   let topicKeys = Array.from(topicMap.keys());
   let topics = topicKeys.map(key => {
     return topicMap.get(key);
@@ -70,14 +65,15 @@ function getTopics() {
 /*
   Generate html for page topic list and reset listRefreshNeeded indicator
 */
-function makeTopicList(topicMap) {
+function makeTopicList() {
+  let topicMap = localStore.getTopics();
   let topicKeys = Array.from(topicMap.keys());
   let topics = topicKeys.map(key => {
     let t = topicMap.get(key);
     return t.topic;
   });
 
-  listRefreshNeeded = false;
+  localStore.topicRefreshNeeded = false;
 
   if (topics.length === 0) {
     return `<div class='ntf item'>${getString("annotate:m15")}</div>`;
@@ -170,188 +166,48 @@ function topicSelectHandler() {
 }
 
 /*
-  If topics have been added or deleted from the topic list then
-  the dropdown menu option needs to be updated
-*/
-function updateTopicList() {
-  /*
-  if (listRefreshNeeded) {
-    let html = makeTopicList(topics);
-    $("#topic-menu-select").html(html);
-  }
-  */
-
-  //check if there is a topic filter on a deleted key, if so, clear
-  //the filter
-  if (deletedKeys.length > 0) {
-    let activeFilter = $("#topic-menu-item").prev(".header").attr("data-filter");
-
-    //no active filter
-    if (activeFilter === "none") {
-      return;
-    }
-    let found = deletedKeys.reduce((fnd, item) => {
-      if (item.topic === activeFilter) {
-        return fnd + 1;
-      }
-      return fnd;
-    }, 0);
-
-    //reset the filter
-    if (found > 0) {
-      //console.log("active filter topic has been deleted: %o", deletedKeys);
-
-      //remove filter indication from .transcript
-      $(".transcript").removeClass("topic-filter-active");
-
-      //reset header text to indicate filter has cleared
-      $("#topic-menu-item").prev(".header").text(`${getString("label:topicfilter")}: None`);
-      $("#topic-menu-item").prev(".header").attr("data-filter", "none");
-    }
-
-  }
-}
-
-/*
-  Keep track of topics on the page. If we have a untracted topic add it
-  to 'topic' and set count to 1. If the topic is already tracked just 
-  increment the count
-
-  All topics look like this: {value: "nospaces", topic: "might have spaces"}
-*/
-function increment(newTopic) {
-  let key = newTopic.value;
-
-  //if newTopic is not in topics, add it and set count to 1
-  if (!topics.has(key)) {
-    newTopic.count = 1;
-    topics.set(key, newTopic);
-    listRefreshNeeded = true;
-  }
-  else {
-    //otherwise increment the count
-    let savedTopic = topics.get(key);
-    savedTopic.count += 1;
-    topics.set(key, savedTopic);
-  }
-}
-
-/*
-  Decrement count for tracked topic
-*/
-function decrement(trackedTopic) {
-  let key = trackedTopic;
-
-  if (typeof key === "object") {
-    key = key.value;
-  }
-
-  if (!topics.has(key)) {
-    throw new Error(`Unexpected error: topic ${key} not found in topic Map`);
-  }
-  else {
-    let trackedTopicValue = topics.get(key);
-
-    //no more bookmarks on page with this topic
-    if (trackedTopicValue.count === 1) {
-      topics.delete(key);
-      listRefreshNeeded = true;
-      deletedKeys.push(trackedTopicValue);
-    }
-    else {
-      //decrement count and store value
-      trackedTopicValue.count -= 1;
-      topics.set(key, trackedTopicValue);
-    }
-  }
-}
-
-export default {
-  //add topics from an annotation - this happens when bookmarks are loaded
-  //and before the topicList is rendered
-  add(annotation) {
-    if (!annotation.selectedText) {
-      return;
-    }
-    if (annotation.topicList && annotation.topicList.length > 0) {
-      annotation.topicList.forEach((topic) => {
-        increment(topic);
-      });
-    }
-  },
-
-  delete(formData) {
-    if (!formData.topicList) {
-      return;
-    }
-    if (formData.topicList && formData.topicList.length > 0) {
-      formData.topicList.forEach((topic) => {
-        decrement(topic);
-      });
-
-      updateTopicList();
-    }
-  },
-  addTopics(topicArray) {
-    //console.log("addTopics()");
-    topicArray.forEach((topic) => {
-      increment(topic);
-    });
-    updateTopicList();
-  },
-  deleteTopics(topicArray) {
-    topicArray.forEach((topic) => {
-      decrement(topic);
-    });
-    updateTopicList();
-  },
-
-  //generate topic select list and setup listeners
-  bookmarksLoaded() {
+ * Initialize topics modal for filter topics on page
+ */
+let initialized = false;
+export function bookmarksLoaded() {
+  if (!initialized) {
     initPageTopicsModal();
-
-    /*
-    let html = makeTopicList(topics);
-    $("#topic-menu-select").html(html);
-
-    //init click handler
-    topicSelectHandler();
-    */
-  },
-
-  //given a topic value return the topic.topic
-  getTopic(value) {
-    let t = topics.get(value);
-
-    if (t) {
-      return t.topic;
-    }
-
-    return null;
-  },
-
-  report() {
-    for (var [key, value] of topics) {
-      console.log("%s: %s", key, value);
-    }
+    initialized = true;
+    return;
   }
-};
+  $("#bookmark-filter-wrapper").removeClass("hide");
+}
+
+/*
+ * Hide topics modal, no mor topics on page
+ */
+export function noMoreBookmarks() {
+  $("#bookmark-filter-wrapper").addClass("hide");
+}
 
 /*
   Get topic select element for page-topic-modal
 */
 function getTopicList() {
-  if (!listRefreshNeeded) return;
+  if (!localStore.topicRefreshNeeded) return;
   let selectHtml = makeTopicSelectElement();
 
   $("#page-topics-modal-topic-select").html(selectHtml);
   $("#page-topics-topic-list").dropdown();
 
   $("#page-topics-modal-loading").removeClass("active").addClass("disabled");
-  listRefreshNeeded = false;
+  localStore.topicRefreshNeeded = false;
 }
 
+/*
+ * Called by bookmark.js after bookmarks have been loaded on 
+ * transcript page.
+ */
 function initPageTopicsModal() {
+  //show topic filter options
+  $("#bookmark-filter-wrapper").removeClass("hide");
+
+  //init topic filter modal dialog
   $(uiPageTopicsModal)
     .modal({
       dimmerSettings: {opacity: uiModalOpacity},
@@ -385,7 +241,6 @@ function initPageTopicsModal() {
   Apply topic filter to bookmarks on page
 */
 function filterSubmitHandler() {
-  //apply topic filter
   $("#page-topics-filter-submit").on("click", function(e) {
     e.preventDefault();
     let form = $("#page-topics-filter-form");
@@ -393,40 +248,6 @@ function filterSubmitHandler() {
 
     let topicTopic = $(`#page-topics-topic-list > [value='${filterTopic}']`).text();
     setTopicFilter({value: filterTopic, topic: topicTopic});
-
-    /*
-    let bookmarkItems = $(".cmi-bookmark-list .bookmark-item");
-    bookmarkItems.each(function() {
-      let classList = $(this).attr("class");
-      if (classList.match(topicRegExp)) {
-        //the bookmark could be hidden from a previous filter, so just remove the class
-        //in case it's there
-        $(this).removeClass("hide-bookmark-item");
-      }
-      else {
-        $(this).addClass("hide-bookmark-item");
-      }
-    });
-
-    //keep track of the state of the bookmark Modal
-    let bookmarkModalInfo = bookmarkModalState("get");
-
-    //if we have data we're initializing and so we don't need to save state
-    if (!data) {
-      bookmarkModalInfo["modal"].filter = true;
-      bookmarkModalInfo["modal"].topics = topics;
-      bookmarkModalState("set", bookmarkModalInfo);
-    }
-
-    $("[data-bid]").each(function() {
-      let bid = $(this).data("bid");
-      let filtered = $(`[data-bid="${bid}"] .bookmark-item.hide-bookmark-item`).length;
-      let remaining = bookmarkModalInfo[bid].count - filtered;
-
-      //update title to reflect number of bookmarks shown after filter applied
-      $(`.${bid}-header`).html(`${bookmarkModalInfo[bid].header} (<span class="bookmark-filter-color">${remaining}</span>/${bookmarkModalInfo[bid].count})`);
-    });
-    */
   });
 }
 
@@ -447,13 +268,14 @@ function filterResetHandler() {
     }
 
     $(".transcript").removeClass("topic-filter-active");
+    $("#page-topics-topic-list").dropdown("clear");
 
     //clear active filter from menu
     $("#current-topic-filter").html(`${getString("label:topicfilter")}: None`);
     $("#current-topic-filter").attr("data-filter", "");
 
     //mark bookmark icon green - no filter applied
-    $("#bookmark-dropdown-menu > span > i").eq(0).removeClass("yellow").addClass("green");
+    $("#bookmark-dropdown-menu > span  i.bookmark-icon").eq(0).removeClass("yellow").addClass("green");
 
     //close the modal
     //$(uiPageTopicsModal).modal("hide");
@@ -490,8 +312,9 @@ function setTopicFilter(topic) {
   $("#current-topic-filter").attr("data-filter", topic.value);
 
   //mark bookmark icon as yellow - filter is applied
-  $("#bookmark-dropdown-menu > span > i").eq(0).removeClass("green").addClass("yellow");
+  $("#bookmark-dropdown-menu > span i.bookmark-icon").eq(0).removeClass("green").addClass("yellow");
 
   //close the modal
   $(uiPageTopicsModal).modal("hide");
 }
+

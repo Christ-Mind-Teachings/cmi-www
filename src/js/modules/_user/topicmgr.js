@@ -1,251 +1,112 @@
 import notify from "toastr";
-import axios from "axios";
-import {getNoteUrl as getUrl, getBookmarkText, getTopics, getBookmarks} from "./net";
+import {getBookmarkText, getUrlByPageKey} from "../_util/cmi";
 import {getUserInfo} from "./netlify";
-import intersectionWith from "lodash/intersectionWith";
-import differenceWith from "lodash/differenceWith";
-import uniqWith from "lodash/uniqWith";
-import globals from "../../globals";
-import bmnet from "../_bookmark/bmnet";
+import {getTopicList, putTopicList} from "../_ajax/topics";
+import {getAnnotations, updateAnnotation} from "../_ajax/annotation";
+import {deleteQuote, putQuote, getQuoteData} from "../_ajax/quotes";
+import startCase from "lodash/startCase";
+import {purify} from "../_util/sanitize";
 
-let sourceInfo = {
-  title: {
-    "10": "The Way of Mastery",
-    "16": "Polish Way of Mastery",
-    "11": "The Impersonal Life",
-    "12": "ACIM Sparkley Edition",
-    "13": "The Raj Material",
-    "14": "A Course Of Love",
-    "15": "ACIM Original Edition"
-  },
-  "0": [
-    {
-      "value": "*",
-      "name": "-- Select Source --"
-    }
-  ],
-  "12": [
-    {
-      "value": "*",
-      "name": "All Books"
-    },
-    {
-      "value": "122",
-      "name": "Text"
-    },
-    {
-      "value": "123",
-      "name": "Workbook for Students"
-    },
-    {
-      "value": "124",
-      "name": "Manual for Teachers"
-    },
-    {
-      "value": "121",
-      "name": "Preface"
-    }
-  ],
-  "15": [
-    {
-      "value": "*",
-      "name": "All Books"
-    },
-    {
-      "value": "151",
-      "name": "Text"
-    },
-    {
-      "value": "152",
-      "name": "Workbook for Students"
-    },
-    {
-      "value": "153",
-      "name": "Manual for Teachers"
-    }
-  ],
-  "14": [
-    {
-      "value": "*",
-      "name": "All Books"
-    },
-    {
-      "value": "1404",
-      "name": "The Course"
-    },
-    {
-      "value": "1402",
-      "name": "The Treatises"
-    },
-    {
-      "value": "1403",
-      "name": "The Dialogues"
-    }
-  ],
-  "11": [
-    {
-      "value": "*",
-      "name": "All Books"
-    }
-  ],
-  "13": [
-    {
-      "value": "*",
-      "name": "All Books"
-    },
-    {
-      "value": "1301",
-      "name": "You Are the Answer"
-    },
-    {
-      "value": "1302",
-      "name": "Graduation"
-    },
-    {
-      "value": "1303",
-      "name": "ACIM Study Group 2002"
-    },
-    {
-      "value": "1304",
-      "name": "ACIM Study Group 2003"
-    },
-    {
-      "value": "1305",
-      "name": "ACIM Study Group 2004"
-    },
-    {
-      "value": "1306",
-      "name": "ACIM Study Group 2005"
-    },
-    {
-      "value": "1307",
-      "name": "ACIM Study Group 2006"
-    },
-    {
-      "value": "1308",
-      "name": "ACIM Study Group 2007"
-    },
-    {
-      "value": "1309",
-      "name": "ACIM Study Group 2008"
-    },
-    {
-      "value": "1310",
-      "name": "ACIM Study Group 2009"
-    },
-    {
-      "value": "1311",
-      "name": "ACIM Study Group 2010"
-    },
-    {
-      "value": "1312",
-      "name": "ACIM Study Group 2011"
-    },
-    {
-      "value": "1313",
-      "name": "ACIM Study Group 2012"
-    },
-    {
-      "value": "1314",
-      "name": "ACIM Study Group 2013"
-    },
-    {
-      "value": "1315",
-      "name": "ACIM Study Group 2014"
-    },
-    {
-      "value": "1316",
-      "name": "ACIM Study Group 2015"
-    },
-    {
-      "value": "1317",
-      "name": "ACIM Study Group 2016"
-    },
-    {
-      "value": "1318",
-      "name": "ACIM Study Group 2017"
-    },
-    {
-      "value": "1319",
-      "name": "ACIM Study Group 2018"
-    }
-  ],
-  "10": [
-    {
-      "value": "*",
-      "name": "All Books"
-    },
-    {
-      "value": "101",
-      "name": "The Jeshua Letters"
-    },
-    {
-      "value": "102",
-      "name": "The Way of the Servant"
-    },
-    {
-      "value": "103",
-      "name": "The Early Years"
-    },
-    {
-      "value": "104",
-      "name": "The Way of the Heart"
-    },
-    {
-      "value": "105",
-      "name": "The Way of Transformation"
-    },
-    {
-      "value": "106",
-      "name": "The Way of Knowing"
-    }
-  ],
-  "16": [
-    {
-      "value": "*",
-      "name": "All Books"
-    },
-    {
-      "value": "1601",
-      "name": "The Jeshua Letters"
-    },
-    {
-      "value": "1602",
-      "name": "The Way of the Servant"
-    },
-    {
-      "value": "1606",
-      "name": "The Early Years"
-    },
-    {
-      "value": "1603",
-      "name": "The Way of the Heart"
-    },
-    {
-      "value": "1604",
-      "name": "The Way of Transformation"
-    },
-    {
-      "value": "1605",
-      "name": "The Way of Knowing"
-    }
-  ]
-};
+//Data for each source, sourceId, books, etc
+import sourceInfo from "./source";
 
 let bookmarks = {};
 let topics = {};
 let modified = {};
 
-function generateTopicList(topics) {
-  return (`
-    <div class="ui list">
-      ${topics.map((t) => `
-        <div class="item">
-          ${t.topic}
-        </div>
-      `).join("")}
-    </div>
-  `);
+$("button.source-select").on("click", function(e) {
+  e.preventDefault();
+  let sid = $(this).attr("data-sid");
+  let classString = $(this).attr("class");
+
+  if (classString.includes("collapse")) {
+    $(this).removeClass("collapse");
+    $(this).addClass("show-all");
+    $(this).text("Show All");
+
+    collapseRequest(sid);
+  }
+
+  if (classString.includes("show-all")) {
+    $(this).addClass("collapse");
+    $(this).removeClass("show-all");
+    $(this).text("Focus");
+
+    manageTopics("close");
+    clearActivityReport();
+    resetAnnotationActions();
+    showAll(sid);
+  }
+  if (classString.includes("bookmarks")) {
+    loadBookmarksRequest(sid, this);
+  }
+});
+
+function showAll(sid) {
+  $("#sourceTable > tbody > tr").each(function() {
+    $(this).removeClass("hide");
+  });
+
+  removeActions(sid);
+}
+
+/*
+ * When a row is focused, the data can be operated on. We
+ * display buttons at the bottom of the table for that.
+ */
+function collapseRequest(sid) {
+  $("#sourceTable > tbody > tr").each(function() {
+    let id = $(this).attr("id");
+    if (id !== sid) {
+      $(this).addClass("hide");
+    }
+  });
+  showActions(sid);
+}
+
+function setData(sid) {
+  let topicList = topics[sid];
+  $("#topicSelectNew").dropdown("clear");
+
+  if (!topicList) {
+    $("#topic-list-new").html("");
+    return;
+  }
+
+  let html = makeTopicSelect(topicList);
+  $("#topic-list-new").html(html);
+
+  $("#manageTopicsButton").removeAttr("disabled").attr("data-sid", sid);
+  $("#displayBookmarksButtonNew").removeAttr("disabled").attr("data-sid", sid);
+}
+
+function showActions(sid) {
+  setData(sid);
+  $("#action-manager").removeClass("hide");
+}
+
+function removeActions(sid) {
+  $("#action-manager").addClass("hide");
+  $("#manageTopicsButton").attr("disabled", "");
+  $("#displayBookmarksButtonNew").attr("disabled", "");
+  $("#topicTable").addClass("hide");
+}
+
+function loadBookmarksRequest(sid, el) {
+  //console.log("Load annotations clicked");
+  $(el).addClass("loading");
+
+  loadData(sid).then((info) => {
+    $(`#load-button-${sid}`).html(`Topics: ${info.topics}<br>Annotations: ${info.bookmarks}`);
+    $(el).removeClass("loading");
+
+    if (!$("#action-manager").hasClass("hide")) {
+      setData(sid);
+    }
+
+  }).catch((err) => {
+    $(el).removeClass("loading");
+  });
 }
 
 function generateHorizontalList(listArray, flat = false) {
@@ -277,19 +138,19 @@ function generateContent(content) {
 
 function generateSection(bm) {
   return (`
-    <div class="ui vertical segment">
+    <div class="ui vertical segment bookmark-segment ${bm.mgr.type}">
       <div class="ui small header bookmark-header">
-        <a id="${bm.bookmark.creationDate}" target="_blank" href="${bm.mgr.url}?v=${bm.mgr.pid}&key=${bm.id}">${bm.mgr.title?bm.mgr.title:bm.mgr.url}</a>
+        <a id="${bm.annotation.creationDate}" target="_blank" href="${bm.mgr.url}?v=${bm.mgr.pid}&key=${bm.paraKey}">${bm.mgr.title?bm.mgr.title:bm.mgr.url}</a>
         <br/>
         <div class="ui horizontal bulleted link list">
-          ${generateHorizontalList(bm.bookmark.topicList)}
+          ${generateHorizontalList(bm.annotation.topicList)}
         </div>
         ${bm.mgr.comment?"<br/>":""}
         ${bm.mgr.comment?bm.mgr.comment:""}
       </div>
       ${generateContent(bm.mgr.content)}
-      <p ${bm.mgr.type !== "note"?`class='cmi-manage-quote ${bm.bookmark.quote?"in-database":""} ${bm.bookmark.creationDate}'`:""}>
-        ~${bm.id}${bm.mgr.type === "note"?"":`:${bm.bookmark.creationDate}:${bm.bookmark.rangeStart}`}
+      <p ${bm.mgr.type !== "note"?`class='cmi-manage-quote ${bm.annotation.quote?"in-database":""} ${bm.annotation.creationDate}'`:""}>
+        ~${bm.paraKey}${bm.mgr.type === "note"?"":`:${bm.annotation.creationDate}:${bm.annotation.rangeStart}`}
       </p>
     </div>
   `);
@@ -298,11 +159,8 @@ function generateSection(bm) {
 function generateBookmarkTextHtml(bookmarks, topicManager) {
   return (`
     <p>
-      <button class="hide-headers ui primary button">Hide Headers</button>
-    </p>
-    <p>
-      ${sourceInfo.title[topicManager.source]}<br/>
-      ${bookmarks.length} Bookmarks include topics: <em>${topicManager.topicArray.join(" / ")}</em> <br/>
+      ${topicManager.source}<br/>
+      ${bookmarks.length} Bookmarks include topics: <em>${topicManager.topicArray.join(` ${topicManager.condition} `)}</em> <br/>
       ${new Date().toLocaleString()}
     </p>
     ${bookmarks.map(bookmark => `${generateSection(bookmark)}`).join("")}
@@ -313,34 +171,400 @@ function generateBookmarkText(bookmarks, topicManager) {
   let promises = getBookmarkText(bookmarks);
 
   Promise.all(promises).then(responses => {
-    //console.log("promise.all: %o", responses);
     let html = generateBookmarkTextHtml(responses, topicManager);
+    $("#activity-report-controls").remove();
     $("#activity-report").html(html);
   });
 }
 
+function generateTopicItem(t) {
+  return (`
+    <div class="item" data-value="${t.value}">${t.topic}</div>
+  `);
+}
+
 function makeTopicSelect(topics) {
   return (`
-    ${topics.map(topic => `<div class="item ${topic.deleted?" deleted":""}" data-value="${topic.deleted?"*":""}${topic.value}">${topic.deleted?"*":""}${topic.topic}</div>`).join("")}
+    <div class="item" data-value="*">** Show All Bookmarks</div>
+    ${topics.map(t => `${!t.deleted?generateTopicItem(t):""}`).join("")}
   `);
 }
 
-function makeBookSelectNew(books) {
+/*
+ * Load topics and bookmarks for arg: sid
+ */
+function loadData(sid) {
+  let userInfo = getUserInfo();
+
+  return new Promise((resolve, reject) => {
+
+    let tList = getTopicList(userInfo.userId, sid).then((topicList) => {
+      topics[sid] = topicList;
+      notify.success(`${topics[sid].length} topics loaded`);
+    }).catch((err) => {
+      console.error("error fetching topicList: %s", err);
+      notify.error(err);
+      reject(err);
+      return;
+    });
+
+    let bList = getAnnotations(userInfo.userId, sid).then((bmList) => {
+      bookmarks[sid] = bmList;
+
+      //initialize to not modified
+      bookmarks[sid].forEach(i => {
+        i.modified = false;
+      });
+      notify.success(`${bookmarks[sid].length} bookmarks loaded`);
+    }).catch((err) => {
+      console.error("error fetching bookmarks: %s", err);
+      notify.error(err);
+      reject(err);
+      return;
+    });
+
+    Promise.all([tList, bList]).then(responses => {
+      let info = {
+        topics: topics[sid].length,
+        bookmarks: bookmarks[sid].length
+      }
+      resolve(info);
+    });
+  });
+}
+
+function generateTableRow(sid, t, index) {
   return (`
-    ${books.map(book => `<option value="${book.value}">${book.name}</option>`).join("")}
+    <tr data-sid="${sid}" data-index="${index}"> 
+      <td class="edit-topic-item"><i class="pencil alternate icon"></i></td>
+      <td class="delete-topic-item"><i class="trash alternate icon"></i></td>
+      <td class="topic">${t.topic}</td>
+    </tr>
   `);
 }
 
-function getFormData() {
-  return $("#topic-manager").form("get values");
+function generateTopicTableData(sid) {
+  return (`
+    ${topics[sid].map((t,index) => `
+      ${!t.deleted?generateTableRow(sid, t, index):""}`).join("")}
+  `);
+}
+
+/*
+ * Search through bookmarks by source and filter by book for topics
+ */
+function findMatchesNew(sid, book, topicList, condition) {
+  let topicArray = topicList.split(",");
+
+  //look for topic of "*", this means to include all bookmarks (don't filter by topic)
+  let filterByTopic = !topicArray.includes("*");
+  let matches = [];
+
+  //find all bookmarks containing topics in topicArray
+  //- if condition === "OR" a match is found when the bookmark contains one or more
+  //  topics in topicArray
+  // - if condition === "AND" a match is found when the bookmark contans each topic
+  //   in topicArray
+  if (filterByTopic) {
+    bookmarks[sid].forEach((b) => {
+      let btl = b.annotation.topicList;
+      let count = 0;
+      if (btl && btl.length > 0) {
+        for (let tf = 0; tf < topicArray.length; tf++) {
+          let index = btl.findIndex(bt => bt.value === topicArray[tf]);
+          if (condition === "OR") {
+            if (index > -1) {
+              matches.push(b);
+              break;
+            }
+          }
+          //condition === "AND"
+          else if (index > -1) {
+            count++;
+          }
+        }
+        if (count === topicArray.length && condition === "AND") {
+          matches.push(b);
+        }
+      }
+    });
+  }
+  else {
+    matches = bookmarks[sid];
+  }
+
+  //filter matched bookmarks if user restricted by book, "*" means matches
+  //are not filterd by book
+  if (book !== "*") {
+    matches = matches.filter(bm => bm.paraKey.startsWith(book));
+  }
+
+  return matches;
+}
+
+/**
+ * Create a topic from string. Topics are objects: {value: "", topic: ""}. The topic
+ * attribute can contain spaces but the value cannot.
+ *
+ * @param {string} - newTopic
+ * @returns {object} new topic
+ */
+function formatNewTopic(newTopic) {
+  let topic = {};
+
+  //only allow digits, alpha chars (including Polish chars) and comma's and spaces
+  let topicStr = newTopic.replace(/[^a-zA-Z0-9ąćęłńóśźżĄĆĘŁŃÓŚŹŻ, ]/g, "");
+
+  if (!topicStr || topicStr === "") {
+    return topic
+  }
+
+  topicStr = topicStr.trim();
+  topicStr = startCase(topicStr);
+
+  if (/ /.test(topicStr)) {
+    topic = {value: topicStr.replace(/ /g, ""), topic: topicStr};
+  }
+  else {
+    topic = { value: topicStr, topic: topicStr};
+  }
+
+  return topic;
+}
+
+/*
+ * Set state of controls when topic manager opens or closes.
+ */
+function manageTopics(state) {
+  if (state === "open") {
+    clearActivityReport();
+
+    //hide annotation-action controls
+    $("#action-manager > .annotation-actions").addClass("hide");
+    $("#manageTopicsButton").text("Un-Manage Topics");
+    $("#topicTable").removeClass("hide");
+  }
+  else if (state === "close") {
+    $("#manageTopicsButton").text("Manage Topics");
+    $("#topicTable").addClass("hide");
+  }
+}
+
+/*
+ * Remove bookmarks from activity-report and reset
+ * controls that operate on bookmarks
+ */
+function clearActivityReport() {
+  $("#activity-report").html("");
+  $("#topicSelectNew").dropdown("clear");
+  $(".condition-checkbox.default").trigger("click");
+  $(".style-checkbox.default").trigger("click");
+}
+
+function resetAnnotationActions() {
+  //reset style checkbox
+  $(".style-checkbox.default").trigger("click");
+
+  //reset Show Headers
+  if ($("#action-manager > .annotation-actions .hide-headers").hasClass("hide") ) {
+    $("#action-manager > .annotation-actions .hide-headers").removeClass("hide").html("Hide Headers");
+    $("#activity-report .bookmark-header").removeClass("hide");
+  }
+
+  //reset Show Quotes
+  if ($("#action-manager > .annotation-actions .hide-quotes").hasClass("hide") ) {
+    $("#action-manager > .annotation-actions .hide-quotes").removeClass("hide").html("Hide Quotes");
+    $("#activity-report .bookmark-segment.hide").removeClass("hide");
+    $("#activity-report .bookmark-segment.hide").removeClass("qhide");
+  }
 }
 
 function initForm() {
-  $("#source-list").dropdown();
-  $("#book-list1.dropdown").dropdown();
-  $("#topicSelect").dropdown();
+  $("#topicSelectNew").dropdown();
+  $("#action-manager .ui.radio.checkbox").checkbox();
 
-  $("#activity-report").on("click", ".hide-headers", function(e) {
+  $("#manageTopicsButton").on("click", function(e) {
+    let sid = $(this).attr("data-sid");
+    if ($("#topicTable").hasClass("hide")) {
+      let html = generateTopicTableData(sid);
+      $("#topicTable > tbody").html(html);
+      manageTopics("open");
+    }
+    else {
+      manageTopics("close");
+    }
+  });
+
+  //delete topic
+  $("#topicTable").on("click", "td.delete-topic-item", function(e) {
+    let index = parseInt($(this).parent().attr("data-index"), 10);
+    let sid = $(this).parent().attr("data-sid");
+    let deleted = $(this).parent().hasClass("deleted");
+
+    if (deleted) {
+      notify.info("Topic has been deleted");
+      return;
+    }
+
+    //confirm delete request
+    let topicToDelete = topics[sid][index];
+    $("#confirmDelete > .header").text(`Delete Topic: "${topicToDelete.topic}"?`);
+    $("#confirmDelete .actions > .delete-approve").attr("data-sid", sid);
+    $("#confirmDelete .actions > .delete-approve").attr("data-index", index);
+    $("#confirmDelete").modal("show");
+  });
+
+  //edit topic
+  $("#topicTable").on("click", "td.edit-topic-item", function(e) {
+    let index = parseInt($(this).parent().attr("data-index"), 10);
+    let sid = $(this).parent().attr("data-sid");
+    let deleted = $(this).parent().hasClass("deleted");
+
+    if (deleted) {
+      notify.info("Topic has been deleted");
+      return;
+    }
+
+    $("#edit-topic-form").form("set values", {
+      sid: sid,
+      index: index,
+      topic: topics[sid][index].topic,
+      oldtopic: topics[sid][index].topic
+    });
+    $(".edit-topic-dialog-wrapper.hide").removeClass("hide");
+  });
+
+  //cancel topic edit
+  $("#update-topic-cancel").on("click", function(e) {
+    e.preventDefault();
+    $(".edit-topic-dialog-wrapper").addClass("hide");
+  });
+
+  //submit topic edit
+  $("#update-topic-submit").on("click", function(e) {
+    e.preventDefault();
+    let form = $("#edit-topic-form").form("get values");
+    let index = parseInt(form.index,10);
+
+    //if no changes just return
+    if (form.topic === form.oldtopic) {
+      $(".edit-topic-dialog-wrapper").addClass("hide");
+      return;
+    }
+
+    //calculate new topic value, store changes, and apply topic to all related bookmarks
+    let newTopic = formatNewTopic(form.topic);
+    console.log("old Topic: %o, new Topic: %o", topics[form.sid][index], newTopic);
+
+    //check if topic already exists
+    let found = topics[form.sid].find((t)  => t.value === newTopic.value);
+    if (found) {
+      notify.info("That topic already exists.");
+      return;
+    }
+
+    //mark topic as modified
+    markSourceModified(form.sid, "topicList");
+
+    //close the edit topic form
+    $(".edit-topic-dialog-wrapper").addClass("hide");
+      
+    //update topic array with new topic
+    let oldTopic = topics[form.sid][index];
+    topics[form.sid][index] = newTopic;
+
+    //update table with new topic
+    $(`[data-sid='${form.sid}'][data-index='${form.index}'] > .topic`).text(newTopic.topic);
+
+    //update topic select
+    $(`#topic-list-new > [data-value='${oldTopic.value}']`).attr("data-value", newTopic.value).text(newTopic.topic);
+
+    //update bookmarks with new topic
+    // - find bookmarks with old topic and replace it with new topic
+    bookmarks[form.sid].forEach(bm => {
+      if (bm.annotation.topicList) {
+        let idx = bm.annotation.topicList.findIndex((t) => {
+          return t.value === oldTopic.value;
+        });
+
+        //bookmark has topic, replace the old topic and mark the bookmark
+        //as being modified
+        if (idx > -1) {
+          bm.annotation.topicList[idx] = newTopic;
+          bm.modified = true;
+          markSourceModified(form.sid, "bookmark");
+        }
+      }
+    });
+  });
+
+  $("#displayBookmarksButtonNew").on("click", function(e) {
+    e.preventDefault();
+    let sid = $(this).attr("data-sid");
+    let topicManager = {};
+
+    let actionManager = $("#action-manager").form("get values");
+    if (actionManager.topicListNew.length === 0) {
+      notify.info("Select one or more topics from the Topic Select List");
+      return;
+    }
+
+    //close topics table of open
+    manageTopics("close");
+    resetAnnotationActions();
+
+    let bookFilter = $(`#book-list${sid} :selected`).val();
+
+    let matches = findMatchesNew(sid, bookFilter, actionManager.topicListNew, actionManager.condition);
+
+    if (matches.length === 0) {
+      notify.info("No bookmarks contain selected topics");
+      return;
+    }
+    //show annotation controls
+    $("#action-manager > .annotation-actions").removeClass("hide");
+
+    topicManager.source = sourceInfo.title[sid];
+    topicManager.topicArray = actionManager.topicListNew.split(",");
+    topicManager.condition = actionManager.condition;
+    topicManager.bookFilter = bookFilter;
+
+    //generated html
+    generateBookmarkText(matches, topicManager);
+  });
+
+  $("#action-manager > .annotation-actions input[type=radio][name=annotationFilter]").on("change", function(e) {
+    let form = $("#action-manager").form("get values");
+
+    //show all bookmarks
+    if (form.annotationFilter === "none") {
+      $(".bookmark-segment.hide").removeClass("hide");
+    }
+    //show note bookmarks, hide selected
+    else if (form.annotationFilter === "note") {
+      $(".bookmark-segment.note").removeClass("hide");
+      $(".bookmark-segment.selected").addClass("hide");
+    }
+    else if (form.annotationFilter === "selected") {
+      $(".bookmark-segment.note").addClass("hide");
+      //don't show bookmarks that have been hidden by Hide Quotes
+      $(".bookmark-segment.selected").removeClass("hide");
+    }
+  });
+
+  $("#action-manager > .annotation-actions").on("click", ".hide-quotes", function(e) {
+    if ($(this).hasClass("hide")) {
+      $(this).removeClass("hide").html("Hide Quotes");
+      $("#activity-report .bookmark-segment.qhide").removeClass("qhide");
+    }
+    else {
+      let quotesToHide = $("#activity-report .cmi-manage-quote.in-database").parent();
+      quotesToHide.addClass("qhide");
+      $(this).addClass("hide").html(`Show Quotes (${quotesToHide.length})`);
+    }
+  });
+
+  $("#action-manager > .annotation-actions").on("click", ".hide-headers", function(e) {
     if ($(this).hasClass("hide")) {
       $(this).removeClass("hide").html("Hide Headers");
       $("#activity-report .bookmark-header").removeClass("hide");
@@ -351,274 +575,96 @@ function initForm() {
     }
   });
 
-  //delete confirmation modal
+  //delete topic confirmation modal
   $("#confirmDelete").modal({
     closable  : false,
     onDeny    : function() {
       notify.info("Delete Canceled.");
-      //$("#topicSelect").dropdown("clear");
     },
-    onApprove : function() {
-      let topicManager = getFormData();
-      let deleted = filterTopics(topicManager.topicList);
+    onApprove : function(el) {
+      let index = parseInt($(el).attr("data-index"), 10);
+      let sid = $(el).attr("data-sid");
 
-      //clear selected topics
-      $("#topicSelect").dropdown("clear");
-      if (deleted.length === 0) {
-        notify.info("No topic(s) selected.");
-        return;
-      }
+      let deletedTopic = topics[sid][index];
+      deletedTopic.index = index;
 
-      //mark topics as deleted
-      markTopicsDeleted(topicManager.source, deleted);
+      //1. mark topic in topic table as deleted
+      $(`#topicTable > tbody > [data-sid='${sid}'][data-index='${index}']`).addClass("deleted");
 
-      //find bookmarks with deleted topics
-      let bookmarksWithDeletedTopics = getBookmarksByTopic(topicManager.source, deleted);
-      //console.log("matches: %o", bookmarksWithDeletedTopics);
+      //2. mark topic in topic dropdown select as deleted, change value to "*"
+      $(`#topic-list-new > [data-value='${deletedTopic.value}']`).addClass("deleted").attr("data-value", "X");
 
-      //remove deleted topics from bookmarks
-      if (bookmarksWithDeletedTopics.length > 0) {
-        deleteBookmarkTopics(topicManager.source, bookmarksWithDeletedTopics, deleted);
-      }
+      //3. mark topic as deleted and update topicList when changes are written to db
+      topics[sid][index].deleted = true;
+      //topics[sid].splice(index, 1);
 
-      //update topics select control
-      let html = makeTopicSelect(topics[topicManager.source]);
-      $("#topic-list").html(html);
+      markSourceModified(sid, "topicList");
 
-      notify.success("Topics Deleted.");
-    }
-  });
+      //4. delete topic from bookmark annotations
+      let itemsDeleted = false;
+      bookmarks[sid].forEach(bm => {
+        if (bm.annotation.topicList) {
+          let idx = bm.annotation.topicList.findIndex((t) => {
+            return t.value === deletedTopic.value;
+          });
 
-  $("#source-list").on("change", function() {
-    let topicManager = getFormData();
-
-    //clear topic list
-    $("#topicsLabel").text("Topics (0)");
-
-    //let sourceId = e.target.selectedOptions[0].value;
-    let sourceId = topicManager.source;
-
-    let html = makeBookSelectNew(sourceInfo[sourceId]);
-    $("#book-list1").html(html);
-
-    //clear activity report
-    clearActivityReport();
-
-    //enable Get Bookmarks button
-    $("#getBookmarksButton").removeAttr("disabled");
-
-    //disable buttons until topics have been loaded
-    $("#deleteTopicsButton").attr("disabled","");
-    $("#renameTopicButton").attr("disabled","");
-    $("#findFriendsButton").attr("disabled","");
-    $("#displayBookmarksButton").attr("disabled","");
-
-    $("#bookmarksLabel").text("Bookmarks (0)");
-
-    //clear topic dropdown
-    if ($("#topic-list > div").length > 0) {
-      $("#topic-list").html("");
-      $("#topicSelect").dropdown("clear");
-      $("#topicsLabel").text("Topics (0)");
-    }
-  });
-
-  $("#getBookmarksButton").on("click", function(e) {
-    let topicManager = getFormData();
-
-    if (topicManager.source === "0") {
-      notify.info("To start, first select a source");
-      return;
-    }
-
-    let userInfo = getUserInfo();
-    if (!userInfo) {
-      notify.error("You must be signed in to use this page");
-      return;
-    }
-
-    //disable button until source is changed
-    $("#getBookmarksButton").attr("disabled","");
-
-    $("#topic-manager").addClass("loading");
-
-    //get topics for source
-    if (!topics[topicManager.source]) {
-      getTopics(userInfo.userId, topicManager.source).then(response => {
-        topics[topicManager.source] = response.data.topics;
-
-        //add "All Topics" topic
-        topics[topicManager.source].unshift({value: "<>", topic: "< All Topics >"});
-
-        let html = makeTopicSelect(response.data.topics);
-        $("#topic-list").html(html);
-        $("#topicsLabel").text(`Topics (${response.data.topics.length})`);
-        notify.success(`${topics[topicManager.source].length} topics loaded`);
-
-        $("#deleteTopicsButton").removeAttr("disabled");
-        $("#renameTopicButton").removeAttr("disabled");
-        $("#findFriendsButton").removeAttr("disabled");
-        $("#displayBookmarksButton").removeAttr("disabled");
-      });
-    }
-    else {
-      let html = makeTopicSelect(topics[topicManager.source]);
-      $("#topic-list").html(html);
-      $("#topicsLabel").text(`Topics (${topics[topicManager.source].length})`);
-      notify.success(`${topics[topicManager.source].length} topics loaded`);
-
-      $("#deleteTopicsButton").removeAttr("disabled");
-      $("#renameTopicButton").removeAttr("disabled");
-      $("#findFriendsButton").removeAttr("disabled");
-      $("#displayBookmarksButton").removeAttr("disabled");
-    }
-
-    //get bookmarks for source
-    if (!bookmarks[topicManager.source]) {
-      getBookmarks(userInfo.userId, topicManager.source).then(response => {
-        bookmarks[topicManager.source] = response.data.response;
-        $("#bookmarksLabel").text(`Bookmarks (${bookmarks[topicManager.source].length})`);
-        notify.success(`${bookmarks[topicManager.source].length} bookmarks loaded`);
-
-        $("#topic-manager").removeClass("loading");
-
-        //add modified indicator, set to false
-        bookmarks[topicManager.source].forEach(i => {
-          i.modified = false;
-        });
-      });
-    }
-    else {
-      $("#topic-manager").removeClass("loading");
-      $("#bookmarksLabel").text(`Bookmarks (${bookmarks[topicManager.source].length})`);
-      notify.success(`${bookmarks[topicManager.source].length} bookmarks loaded`);
-    }
-  });
-
-  $("#deleteTopicsButton").on("click", function() {
-    let topicManager = getFormData();
-
-    let deleted = filterTopics(topicManager.topicList);
-    if (deleted.length === 0) {
-      $("#topicSelect").dropdown("clear");
-      notify.info("No topic(s) selected.");
-      return;
-    }
-
-    $("#topicsToDelete").html(`<em>${topicManager.topicList}</em>`);
-    $("#confirmDelete").modal("show");
-  });
-
-  /*
-   * Not yet implemented
-   */
-  $("#renameTopicButton").on("click", function() {
-    let topicManager = getFormData();
-
-    if (topicManager.topicList.length === 0) {
-      notify.info("Select topic to be renamed.");
-      return;
-    }
-
-    if (topicManager.topicList.length > 1) {
-      notify.info("Select only ONE topic to be renamed.");
-      return;
-    }
-  });
-
-  $("#findFriendsButton").on("click", function() {
-    let topicManager = getFormData();
-    let topicArray = filterTopics(topicManager.topicList);
-
-    //don't all the 'All Topics' topic
-    topicArray = topicArray.filter(t => {
-      if (t === "<>") {
-        return false;
-      }
-      return true;
-    });
-
-    if (topicArray.length === 0) {
-      notify.info("Select at least one topic.");
-      return;
-    }
-
-    //find bookmarks containing selected topics
-    let matches = findMatches(topicManager.source, topicManager.book, topicArray);
-
-    //get topics from matches but don't include those in topicArray
-    let friends = [];
-    matches.forEach((bm) => {
-      let diff = differenceWith(bm.bookmark.topicList, topicArray, (v1, v2) => {
-        if (v1.value === v2) {
-          return true;
+          //bookmark has topic, delete it
+          if (idx > -1) {
+            bm.annotation.topicList.splice(idx, 1);
+            bm.modified = true;
+            itemsDeleted = true;
+          }
         }
-        return false;
       });
-      friends = friends.concat(diff);
-    });
 
-    //remove duplicates
-    friends = uniqWith(friends, (v1, v2) => {
-      if (v1.value === v2.value) {
-        return true;
+      if (itemsDeleted) {
+        markSourceModified(sid, "bookmark");
       }
-      return false;
-    });
 
-    //sort
-    friends.sort((v1, v2) => {
-      if (v1.value < v2.value) {
-        return -1;
-      }
-      if (v1.value > v2.value) {
-        return 1;
-      }
-      return 0;
-    });
-
-    let html = generateTopicList(friends);
-    $("#activity-report").html(html);
-  });
-
-  $("#displayBookmarksButton").on("click", function() {
-    let topicManager = getFormData();
-    let topicArray = filterTopics(topicManager.topicList);
-
-    if (topicArray.length === 0) {
-      notify.info("Select at least one topic.");
-      return;
+      notify.success(`Topic "${deletedTopic.topic}" Deleted.`);
     }
-
-    let matches = findMatches(topicManager.source, topicManager.book, topicArray);
-
-    if (matches.length === 0) {
-      notify.info("No bookmarks contain selected topics");
-      clearActivityReport();
-      return;
-    }
-
-    //generated html
-    topicManager.topicArray = topicArray;
-    generateBookmarkText(matches, topicManager);
-
   });
 
   /*
    * Write changes to database
    */
-  $("#applyChangesButton").on("click", function() {
-    let modified = getModifiedBookmarks();
-    //console.log("modified: %o", modified);
+  $("#applyChangesButtonNew").on("click", function() {
+    //get modified bookmarks
+    $(this).addClass("loading");
+    let modified = getModified();
+    let userInfo = getUserInfo();
 
     //update database
-    modified.forEach(m => {
-      delete m.annotation.modified;
-      bmnet.postAnnotation(m.annotation, m.key, false);
+    let results = [];
+    modified.bookmarks.forEach(m => {
+      delete m.modified;
+      delete m.pid;
+      results.push(updateAnnotation(m));
     });
 
-    clearModified();
-    notify.success("Modifications Saved");
+    Promise.all(results)
+      .then((responses) => {
+        notify.success(`${responses.length} Annotation(s) Updated`);
+
+        //update modified topics
+        results = [];
+        modified.topics.forEach(t => {
+          let newList = topics[t].filter((t) => !t.deleted);
+          results.push(putTopicList(userInfo.userId, t, newList));
+        });
+
+        return Promise.all(results);
+      }).then((responses) => {
+        notify.success(`${responses.length} topicList(s) Updated`);
+
+        clearModified();
+        notify.success("Modifications Saved");
+        $(this).removeClass("loading");
+      }).catch((err) => {
+        notify.error(`Error updating items: ${err}`);
+        console.error(err);
+        $(this).removeClass("loading");
+      });
   });
 }
 
@@ -638,13 +684,6 @@ function initManageQuoteEventHandler() {
       return;
     }
 
-    /*
-    if (!userInfo.roles.includes("quote-manager")) {
-      console.log("not quote-manager");
-      return;
-    }
-    */
-
     if (isQuoteEditorOpen()) {
       return;
     }
@@ -661,7 +700,7 @@ function initManageQuoteEventHandler() {
     quoteInfo.pid = pid;
     quoteInfo.quote = quote;
     quoteInfo.userId = userInfo.userId;
-    quoteInfo.url = getUrl(parakey); 
+    quoteInfo.url = getUrlByPageKey(parakey); 
     quoteInfo.citation = $(`#${annotationId}`).text().trim();
 
     //console.log("quoteInfo: %o", quoteInfo);
@@ -673,30 +712,37 @@ function initManageQuoteEventHandler() {
   });
 
   //submit button
-  $("#activity-report").on("click", "#quote-editor-form .quote-submit", function(e) {
+  $("#activity-report").on("click", "#quote-editor-form .quote-submit", async function(e) {
     e.stopPropagation();
     e.preventDefault();
 
     let info = $("#quote-editor-form").form("get values");
     let action = $(this).text().startsWith("Add") ? "Added" : "Updated";
 
-    let url = `${globals.quote}/quote`;
     let postBody = {
       userId: info.userId,
-      quoteId: `${info.parakey}:${info.annotationId}`,
-      pid: info.pid,
-      quote: info.quote,
-      url: info.url,
-      citation: info.citation
+      paraKey: info.parakey,
+      creationDate: info.annotationId,
+      quote: {
+        pid: info.pid,
+        quote: purify(info.quote),
+        url: info.url,
+        citation: info.citation
+      }
     };
 
     removeQuoteEditor();
     clearQuoteEditorOpen();
 
-    axios.post(url, postBody).then((resp) => {
+    try {
+      let response = await putQuote(postBody);
       notify.info(`Quote ${action}`);
       markAsInDB(info.parakey, info.annotationId);
-    });
+    }
+    catch(err) {
+      console.error("error posting quote to db: %o", err);
+      notify.error(err);
+    }
   });
 
   //cancel button
@@ -709,20 +755,20 @@ function initManageQuoteEventHandler() {
   });
 
   //cancel button
-  $("#activity-report").on("click", "#quote-editor-form .quote-delete", function(e) {
+  $("#activity-report").on("click", "#quote-editor-form .quote-delete", async function(e) {
     e.stopPropagation();
     e.preventDefault();
 
     let info = $("#quote-editor-form").form("get values");
-    let url = `${globals.quote}/quote/${info.userId}/${info.parakey}:${info.annotationId}`;
 
-    axios.delete(url).then((response) => {
+    try {
+      let response = await deleteQuote(info.userId, info.parakey, info.annotationId);
       notify.info("Quote deleted from database");
       markAsNotInDB(info.parakey, info.annotationId);
-    })
-    .catch((error) => {
-      notify.error(`failed to delete quote: ${error.message}`); 
-    });
+    }
+    catch(err) {
+      notify.error(`failed to delete quote: ${err.message}`); 
+    }
 
     removeQuoteEditor();
     clearQuoteEditorOpen();
@@ -749,264 +795,80 @@ function clearQuoteEditorOpen() {
  * Indicate bookmark is in quote db and
  * mark bookmark as being modified and in quote db so it can be updated.
  */
-function markAsInDB(key, aid, modified = true) {
-  let sourceId = key.substring(0,2);
-
+function markAsInDB(paraKey, creationDate, modified = true) {
   if (modified) {
-    markModified(sourceId, key);
-    markQuotedState(key, aid, true);
+    markModified(paraKey, creationDate, true);
   }
 
-  $(`.${aid}`).addClass("in-database");
+  $(`.${creationDate}`).addClass("in-database");
 }
 
 /*
  * Indicate bookmark is not in the quote db and
  * mark as modified
  */
-function markAsNotInDB(key, aid) {
-  let sourceId = key.substring(0,2);
-
-  markModified(sourceId, key);
-  markQuotedState(key, aid, false);
-  $(`.${aid}`).removeClass("in-database");
+function markAsNotInDB(paraKey, creationDate) {
+  markModified(paraKey, creationDate, false);
+  $(`.${creationDate}`).removeClass("in-database");
 }
 
-function initQuoteForm(info) {
+async function initQuoteForm(info) {
   let form = $("#quote-editor-form");
-  let url = `${globals.quote}/quotedata/${info.userId}/${info.parakey}:${info.annotationId}`;
 
   $("#quote-editor-form").addClass("loading");
-  axios.get(url).then((response) => {
-    //console.log("query resp: %o", response);
-    if (response.data.quote) {
-      info.database = response.data.quote.quote;
-
-      //quote is in db so allow user to delete it
+  try {
+    let response = await getQuoteData(info.userId, info.parakey, info.annotationId);
+    if (response.q) {
+      info.database = response.q.quote;
       $("#quote-editor-form .quote-delete").removeClass("disabled");
       $("#quote-editor-form button.quote-submit").text("Update Quote");
       markAsInDB(info.parakey, info.annotationId, false);
     }
     $("#quote-editor-form").removeClass("loading");
     form.form("set values", info);
-  }).catch((error) => {
-    $("#quote-editor-form").removeClass("loading");
-  });
-}
-
-function clearActivityReport() {
-  $("#activity-report").html("");
-}
-
-/*
- * Search through bookmarks by source and filter by book for topics
- */
-function findMatches(source, book, topics) {
-  let matches = getBookmarksWithAllTopic(source, topics);
-  if (matches.length === 0) {
-    return matches;
   }
-
-  //filter matched bookmarks if user restricted by book
-  if (book !== "*") {
-    matches = matches.filter(bm => {
-      let bmid = bm.id + "x";
-      return bmid.startsWith(book);
-    });
+  catch(err) {
+    notify.error(err);
+    console.log("Error getting quote from database: %w", err);
   }
-
-  return matches;
 }
 
 /*
- * Given a comma separated string of user selected topics, filter deleted
- * topics and return an array.
- */
-function filterTopics(topicString) {
-  let topicArray = topicString.split(",").filter(item => {
-    if (item === "") {
-      return false;
-    }
-    if (item.startsWith("*")) {
-      return false;
-    }
-    return true;
-  });
-  return topicArray;
-}
-
-/*
- * Mark topics as deleted
- * Args: source: Source Id
- *       deletedTopics: array of deleted topics
- */
-function markTopicsDeleted(source, deletedTopics) {
-  topics[source].forEach(topic => {
-    deletedTopics.forEach(dt => {
-      if (dt !== "<>" && dt === topic.value) {
-        topic.deleted = true;
-        //console.log("deleted topic: %o", topic);
-      }
-    });
-  });
-}
-
-/*
- * Find bookmarks containing ALL topics
- * Args: source: Source Id
- *       topics: array of topics
- */
-function getBookmarksWithAllTopic(source, topics) {
-  let matches = [];
-  let wildcard = false;
-  if (topics.length === 0) {
-    return matches;
-  }
-
-  //return all bookmarks
-  if (topics.includes("<>")) {
-    wildcard = true;
-  }
-
-  bookmarks[source].forEach((item) => {
-    item.bookmark.forEach((bmark) => {
-      if (wildcard) {
-        matches.push({id: item.id, bookmark: bmark});
-      }
-      else {
-        if (bmark.topicList && bmark.topicList.length > 0) {
-          let index;
-          let findCount = 0;
-          topics.forEach(t => {
-            index = bmark.topicList.findIndex(bt => {
-              if (bt.value === t) {
-                return true;
-              }
-              return false;
-            });
-            if (index > -1) {
-              findCount++;
-            }
-          });
-          if (findCount === topics.length) {
-            matches.push({id: item.id, bookmark: bmark});
-          }
-        }
-      }
-    });
-  });
-  return matches;
-}
-
-/*
- * Find bookmarks containing topics
- * Args: source: Source Id
- *       topics: array of topics
- */
-function getBookmarksByTopic(source, topics) {
-  //find bookmarks containing selected topics
-  let matches = [];
-  bookmarks[source].forEach((item) => {
-    item.bookmark.forEach((bmark) => {
-      let intersection;
-      if (bmark.topicList) {
-        intersection = intersectionWith(topics, bmark.topicList, function(t, bt) {
-          if (t === bt.value) {
-            return true;
-          }
-          return false;
-        });
-        if (intersection.length > 0) {
-          matches.push({id: item.id, bookmark: bmark});
-        }
-      }
-    });
-  });
-  return matches;
-}
-
-/*
- * Find modified bookmarks
+ * Find modified bookmarks and topicLists
  * - sources with modified bookmarks are in the global modified array,
  * - paragraphs with modified bookmarks are marked modified: true
  * - annotations in paragraphs are marked modified: true
  */
-function getModifiedBookmarks() {
-  let matches = [];
+function getModified() {
+  let bookmarksModified = [];
+  let topicListsModified = [];
   let modifiedSources = Object.keys(modified);
 
   modifiedSources.forEach(sid => {
-    //gather paragraphs with modified annotations
-    let modifiedParagraphs = bookmarks[sid].filter(para => {
-      return para.modified;
-    });
-
-    modifiedParagraphs.forEach(p => {
-      let modifiedAnnotations = p.bookmark.filter(a => {
-        return a.modified;
+    if (modified[sid].bookmark === true) {
+      let modifiedAnnotations = bookmarks[sid].filter(para => {
+        return para.modified;
       });
 
       modifiedAnnotations.forEach(e => {
-        matches.push({sid: sid, key: p.id, annotation: e}); 
+        bookmarksModified.push(e); 
       });
-    });
-
-  });
-
-  return matches;
-}
-
-/*
- * Delete topics in bookmarks if found in the argument array topics
- */
-function deleteBookmarkTopics(sourceId, bookmarks, topics) {
-  bookmarks.forEach(item => {
-    if (item.bookmark.topicList && item.bookmark.topicList.length > 0) {
-      let topicListCount = item.bookmark.topicList.length;
-      //mark topics deleted
-      item.bookmark.topicList.forEach(t => {
-        if (topics.includes(t.value)) {
-          t.deleted = true;
-        }
-      });
-      //make a deletedTopicList on the annotation for topics marked deleted
-      // as history
-      item.bookmark.deletedTopicList = item.bookmark.topicList.filter(t => {
-        if (t.deleted) {
-          return true;
-        }
-        return false;
-      });
-      //filter topics marked deleted from topicList
-      item.bookmark.topicList = item.bookmark.topicList.filter(t => {
-        if (!t.deleted) {
-          return true;
-        }
-        delete t.deleted;
-        return false;
-      });
-
-      //check if there has been a change
-      if (topicListCount !== item.bookmark.topicList.length) {
-        //mark annotation as modified
-        item.bookmark.modified = true;
-      }
     }
-    markModified(sourceId, item.id);
+
+    if (modified[sid].topicList === true) {
+      topicListsModified.push(sid);
+    }
   });
+
+  return {bookmarks: bookmarksModified, topics: topicListsModified};
 }
 
 /*
  * Mark bookmark paragraph as modified
  */
-function markModified(sourceId, bookmarkId) {
-  let bkmrkId = bookmarkId;
-  if (typeof bookmarkId === "string") {
-    bkmrkId = parseFloat(bookmarkId);
-  }
-
-  let b = bookmarks[sourceId].find(i => {
-    if (i.id === bkmrkId) {
+function markModified(paraKey, creationDate, isQuote) {
+  let b = bookmarks[paraKey.substring(0,2)].find(i => {
+    if (i.paraKey === paraKey && i.creationDate === creationDate) {
       return true;
     }
     return false;
@@ -1014,15 +876,21 @@ function markModified(sourceId, bookmarkId) {
 
   if (b) {
     b.modified = true;
-    markSourceModified(sourceId);
-    $("#applyChangesButton").removeAttr("disabled");
+    b.quote = isQuote;
+    markSourceModified(paraKey.substring(0,2), "bookmark");
   }
 }
 
-function markSourceModified(sid) {
+function markSourceModified(sid, kind) {
   if (!modified[sid]) {
-    modified[sid] = {modified: true};
+    modified[sid] = {[kind]: true};
   }
+  else {
+    if (!modified[sid].hasOwnProperty(kind)) {
+      modified[sid][kind] = true;
+    }
+  }
+  $("#applyChangesButtonNew").removeAttr("disabled");
 }
 
 function clearModified() {
@@ -1037,46 +905,7 @@ function clearModified() {
   //clear modified object
   modified = {};
 
-  $("#applyChangesButton").attr("disabled", "");
-}
-
-function markQuotedState(parakey, annotationId, state) {
-  let sourceId = parakey.substring(0,2);
-  let numericKey = parseFloat(parakey);
-  let naid = parseInt(annotationId, 10);
-  let b = bookmarks[sourceId].find(i => {
-    if (i.id === numericKey) {
-      return true;
-    }
-    return false;
-  });
-
-  if (b) {
-    b.modified = true;
-  }
-  else {
-    notify.error("markQuotedState(): paragraph not found");
-    console.error("parakey: %s, annotationId: %s", parakey, annotationId);
-    return;
-  }
-  
-  let bookmark = b.bookmark.find((bmkark) => {
-    if (bmkark.creationDate === naid) {
-      return true;
-    }
-    return false;
-  });
-
-  //mark annotation as in quote databas and as modified
-  if (bookmark) {
-    bookmark.quote = state;
-    bookmark.modified = true;
-    //console.log("bookmark: %o", bookmark);
-  }
-  else {
-    notify.error("markQuotedState(): bookmark not found");
-    console.error("parakey: %s, annotationId: %s", parakey, annotationId);
-  }
+  $("#applyChangesButtonNew").attr("disabled", "");
 }
 
 function getQuoteForm() {
@@ -1111,7 +940,7 @@ function getQuoteForm() {
 
 function checkForUnsavedChanges() {
   window.onbeforeunload = function (event) {
-    let unsavedChanges = $("#applyChangesButton").attr("disabled") !== "disabled";
+    let unsavedChanges = $("#applyChangesButtonNew").attr("disabled") !== "disabled";
     var message;
 
     if (unsavedChanges) {
@@ -1128,6 +957,16 @@ function checkForUnsavedChanges() {
 }
 
 export function initializeTopicManager() {
+  let userInfo = getUserInfo();
+
+  if (!userInfo) {
+    notify.warning("You must be signed in to edit your email list");
+    setTimeout(() => {
+      location.href = "/";
+    }, 3 * 1000);
+    return;
+  }
+
   initForm();
   initManageQuoteEventHandler();
   checkForUnsavedChanges();

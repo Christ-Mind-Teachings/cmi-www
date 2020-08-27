@@ -1,3 +1,5 @@
+
+.edit-topic-dialog-wrapper,
 .addto-maillist-dialog-wrapper {
   position: fixed;
   bottom: 55px;
@@ -5,15 +7,23 @@
   width: 60%;
 }
 
+.edit-topic-dialog,
 .addto-maillist-dialog {
   position: relative;
   left: -50%;
 }
 
+.hide.edit-topic-dialog-wrapper,
 .hide.addto-maillist-dialog-wrapper {
   display: none;
 }
 
+form > input.hidden-field {
+  display: none;
+}
+
+td.edit-topic-item,
+td.delete-topic-item,
 td.delete-maillist-item,
 td.edit-maillist-item {
   cursor: pointer;
@@ -21,5 +31,11 @@ td.edit-maillist-item {
 
 #maillist-table {
   margin-bottom: 300px;;
+}
+
+#topicTable.hide.ui.table,
+#action-manager.hide.ui.form,
+#sourceTable > tbody > tr.hide {
+  display: none;
 }
 

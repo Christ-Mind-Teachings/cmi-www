@@ -17,6 +17,7 @@ const WOMSOURCEID = "10";
 const PWOMSOURCEID = "16";
 const JSBSOURCEID = "11";
 
+/*
 export function getConfig(key) {
   let url = globals[key];
 
@@ -50,6 +51,7 @@ export function getBookmarks(userId, sourceId) {
 
   return axios.get(url);
 }
+*/
 
 //transcript Node cache
 let htmlCache = {};
@@ -67,68 +69,40 @@ function getNoteTranscript(id, url) {
   });
 }
 
-export function getNoteUrl(key) {
-  let url;
-  let akey = key + "";
-  if (akey.startsWith(ACIMSOURCEID)) {
-    url = acimKey.getUrl(key, true);
-  }
-  if (akey.startsWith(OESOURCEID)) {
-    url = oeKey.getUrl(key, true);
-  }
-  else if (akey.startsWith(ACOLSOURCEID)) {
-    url = acolKey.getUrl(key, true);
-  }
-  else if (akey.startsWith(JSBSOURCEID)) {
-    url = jsbKey.getUrl(key, true);
-  }
-  else if (akey.startsWith(RAJSOURCEID)) {
-    url = rajKey.getUrl(key, true);
-  }
-  else if (akey.startsWith(WOMSOURCEID)) {
-    url = womKey.getUrl(key, true);
-  }
-  else if (akey.startsWith(PWOMSOURCEID)) {
-    url = pwomKey.getUrl(key, true);
-  }
-
-  return url;
-}
-
-export function getBookmarkText(bookmarks) {
+export function getBookmarkTextNew(bookmarks) {
   let promises = bookmarks.map(bm => {
-    if (bm.bookmark.selectedText) {
+    if (bm.annotation.selectedText) {
       if (!bm.mgr) {
         bm.mgr = {};
 
-        let st = JSON.parse(bm.bookmark.selectedText);
+        let st = bm.annotation.selectedText;
         bm.mgr.title = st.title;
         bm.mgr.url = st.url;
         bm.mgr.pid = st.pid;
         bm.mgr.content = [{pid: st.pid, text: st.target.selector[1].exact}];
-        bm.mgr.comment = bm.bookmark.Comment;
-        bm.mgr.note = bm.bookmark.Note;
+        bm.mgr.comment = bm.annotation.Comment;
+        bm.mgr.note = bm.annotation.Note;
         bm.mgr.type = "selected";
       }
       return Promise.resolve(bm);
     }
     //Note style bookmark
     else if (!bm.mgr) {
-      let url = getNoteUrl(bm.id);
+      let url = getNoteUrl(bm.paraKey);
 
       bm.mgr = {};
       bm.mgr.type = "note";
-      bm.mgr.title = bm.bookmark.bookTitle;
+      bm.mgr.title = bm.annotation.bookTitle;
       bm.mgr.url = url;
-      bm.mgr.pid = bm.bookmark.rangeStart;
-      bm.mgr.comment = bm.bookmark.Comment;
-      bm.mgr.note = bm.bookmark.Note;
+      bm.mgr.pid = bm.annotation.rangeStart;
+      bm.mgr.comment = bm.annotation.Comment;
+      bm.mgr.note = bm.annotation.Note;
 
       //get 'document' response from axios
-      return getNoteTranscript(bm.id, url).then((resp) => {
+      return getNoteTranscript(bm.paraKey, url).then((resp) => {
         let paragraphs = resp.getElementsByTagName("p");
-        let rangeStart = parseInt(bm.bookmark.rangeStart.substring(1), 10);
-        let rangeEnd = parseInt(bm.bookmark.rangeEnd.substring(1), 10);
+        let rangeStart = parseInt(bm.annotation.rangeStart.substring(1), 10);
+        let rangeEnd = parseInt(bm.annotation.rangeEnd.substring(1), 10);
         bm.mgr.content = [];
 
         for (let p = rangeStart; p <= rangeEnd; p++) {
@@ -150,3 +124,4 @@ export function getBookmarkText(bookmarks) {
 
   return promises;
 }
+

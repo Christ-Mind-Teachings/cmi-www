@@ -1,5 +1,6 @@
 /* eslint no-console: off */
 
+import {storeInit} from "./modules/_util/store";
 import "../vendor/semantic/semantic.min.js";
 
 //common modules
@@ -12,8 +13,8 @@ import {loadConfig} from "./modules/_config/config";
 import {bookmarkStart} from "./modules/_bookmark/start";
 import search from "./modules/_search/search";
 import toc, {getBookId} from "./modules/_contents/toc";
-import audio from "./modules/_audio/audio";
 import about from "./modules/_about/about";
+//import audio from "./modules/_audio/audio";
 
 import contact from "./modules/_forms/contact";
 import {initialize as acqVideoInit} from "./modules/_video/acq";
@@ -22,9 +23,9 @@ import {setLanguage} from "./modules/_language/lang";
 import constants from "./constants";
 
 $(document).ready(() => {
-
+  storeInit(constants);
   setLanguage(constants);
-  initTranscriptPage();
+  initTranscriptPage("pnDisplay");
   auth.initialize();
   fb.initialize();
   about.initialize();
@@ -32,23 +33,13 @@ $(document).ready(() => {
   acqVideoInit();
 
   //load config file and do initializations that depend on a loaded config file
-  loadConfig(getBookId())
-    .then((result) => {
-      search.initialize();
-
-      /*
-        result of 0 indicates no contents config found
-        - toc, and audio depend on config file
-      */
-      if (result !== 0) {
-        toc.initialize("transcript");
-        audio.initialize();
-      }
-      showParagraph();
-      bookmarkStart("transcript");
-    })
-    .catch((error) => {
-      //report error to the user - somehow
-      console.error(error);
-    });
+  loadConfig(getBookId()).then((result) => {
+    search.initialize();
+    toc.initialize("transcript");
+    //audio.initialize();
+    showParagraph();
+    bookmarkStart("transcript");
+  }).catch((error) => {
+    console.error(error);
+  });
 });

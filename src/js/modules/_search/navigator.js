@@ -3,15 +3,13 @@
 */
 
 import scroll from "scroll-into-view";
-import store from "store";
+import {storeGet} from "../_util/store";
 import notify from "toastr";
 const page = require("../_config/key");
-
-const queryResultName = "query-result-raj";
 const SCROLL_INTERVAL = 250;
 
 function scrollComplete(message, type) {
-  console.log(`${message}: ${type}`);
+  //console.log(`${message}: ${type}`);
 }
 
 function scrollIntoView(id, caller) {
@@ -207,7 +205,7 @@ function findPositions(pid, pageKey, flat) {
 }
 
 function initControls(pid) {
-  let lastSearch = store.get(queryResultName);
+  let lastSearch = storeGet("srchResults");
 
   if (!lastSearch) {
     notify.warning("There are no search results to show.");

@@ -1,17 +1,31 @@
 /*
-  Display list of bookmarks for user/source and allow for filtering by topic
-*/
+ * _bookmark/list.js
+ *
+ * Manaage bookmark display modal dialog.
+ *
+ * Query bookmarks by sourceId and format data for display in
+ * sorted order by book, chapter, and paragraph.
+ *
+ * Bookmarks are stored in local storage to avoid having to query
+ * each time list is displayed unless bookmarks have been added,
+ * deleted, or updated.
+ *
+ * Stored bookmarks are used by _bookmark/navigator.js to navigate
+ * through the list of bookmarks.
+ *
+ * Requires that _includes/componetns/bookmark-modal.html is included
+ * on page. Modal open on click of .bookmark.ui.modal.
+ *
+ */
 
-import net from "./bmnet";
+import {getAnnotations} from "../_ajax/annotation";
+import {getUserInfo} from "../_user/netlify";
+import {storeGet, storeSet} from "../_util/store"
+
 import notify from "toastr";
 import flatten from "lodash/flatten";
 import uniqWith from "lodash/uniqWith";
-import store from "store";
 import {getString, __lang} from "../_language/lang";
-
-//import {getSourceId, getKeyInfo} from "../_config/key";
-//const transcript = require("../_config/key");
-//import {getPageInfo} from "../_config/config";
 
 const uiBookmarkModal = ".bookmark.ui.modal";
 const uiOpenBookmarkModal = ".bookmark-modal-open";
@@ -19,25 +33,6 @@ const uiModalOpacity = 0.5;
 
 //teaching specific constants
 let teaching = {}; 
-
-function bookmarkModalState(option, modalInfo) {
-  const name = teaching.bm_modal_key;
-  let info;
-
-  switch(option) {
-    case "get":
-      info = store.get(name);
-      if (!info) {
-        info = {modal: {filter: false}};
-      }
-      return info;
-    case "set":
-      store.set(name, modalInfo);
-      break;
-    default:
-      throw new Error("Invalid value for 'option' argument: use 'set' or 'get'");
-  }
-}
 
 //generate the option element of a select statement
 function generateOption(topic) {
@@ -304,7 +299,7 @@ function combinePages(pages) {
   set bookmark modal form to previous state
 */
 function restoreModalState() {
-  let {modal} = bookmarkModalState("get");
+  let {modal} = storeGet("bmModal", {modal: {filter: false}}); //bookmarkModalState("get");
   let form = $("#bookmark-filter-form");
 
   console.log("modal: ", modal);
@@ -328,7 +323,7 @@ function filterResetHandler() {
     });
 
     //keep track of the state of the bookmark Modal
-    let bookmarkModalInfo = bookmarkModalState("get");
+    let bookmarkModalInfo = storeGet("bmModal", {modal: {filter: false}}); //bookmarkModalState("get");
 
     //update book title to reflect number of bookmarks
     $("[data-bid]").each(function() {
@@ -339,7 +334,7 @@ function filterResetHandler() {
 
     bookmarkModalInfo["modal"].filter = false;
     delete bookmarkModalInfo["modal"].topics;
-    bookmarkModalState("set", bookmarkModalInfo);
+    storeSet("bmModal", bookmarkModalInfo); //bookmarkModalState("set", bookmarkModalInfo);
   });
 }
 
@@ -369,7 +364,7 @@ function filterSubmitHandler() {
     });
 
     //keep track of the state of the bookmark Modal
-    let bookmarkModalInfo = bookmarkModalState("get");
+    let bookmarkModalInfo = storeGet("bmModal", {modal: {filter: false}}); //bookmarkModalState("get");
 
     let fullTopic = topics.map((t) => {
       return {value: t, topic: $(`#bookmark-topic-list > [value='${t}']`).text()};
@@ -380,7 +375,7 @@ function filterSubmitHandler() {
       bookmarkModalInfo["modal"].filter = true;
       bookmarkModalInfo["modal"].topics = topics;
       bookmarkModalInfo["modal"].fullTopic = fullTopic;
-      bookmarkModalState("set", bookmarkModalInfo);
+      storeSet("bmModal", bookmarkModalInfo); //bookmarkModalState("set", bookmarkModalInfo);
     }
 
     $("[data-bid]").each(function() {
@@ -468,7 +463,7 @@ function populateModal(bookmarks) {
 
       $("#bookmark-modal-loading").removeClass("active").addClass("disabled");
 
-      let bookmarkModalInfo = bookmarkModalState("get");
+      let bookmarkModalInfo = storeGet("bmModal", {modal: {filter: false}} ); //bookmarkModalState("get");
 
       //get number of bookmarks for each book
       $("[data-bid]").each(function() {
@@ -486,7 +481,7 @@ function populateModal(bookmarks) {
 
       //only do this the first time 
       if (initialCall) {
-        bookmarkModalState("set", bookmarkModalInfo);
+        storeSet("bmModal", bookmarkModalInfo); //bookmarkModalState("set", bookmarkModalInfo);
 
         openCloseHandler();
         filterSubmitHandler();
@@ -503,20 +498,75 @@ function populateModal(bookmarks) {
 }
 
 /*
+ * Build bookmark list:
+ *  { pageKey: {pid: [], pid2:[] }
+ *
+ *  Store result in local storage
+ */
+function buildBookmarkListFromServer(response) {
+  let bookmarks = {};
+
+  response.forEach((b) => {
+    let [pageKey, pKey] = b.paraKey.split(".");
+    pKey = parseInt(pKey, 10) + "";
+
+    if (!bookmarks[pageKey]) {
+      bookmarks[pageKey] = {};
+    }
+
+    if (!bookmarks[pageKey][pKey]) {
+      bookmarks[pageKey][pKey] = [];
+    }
+    bookmarks[pageKey][pKey].push(b.annotation);
+  });
+  bookmarks.lastFetchDate = Date.now();
+  bookmarks.lastBuildDate = Date.now();
+
+  storeSet("bmList",bookmarks);
+  return bookmarks;
+}
+
+/*
+ * Query db for bookmarks by sourceId. Check for valid list of bookmarks in
+ * local storage first. If not found go to database.
+ */
+async function queryBookmarks(key) {
+  const retentionTime = 1000 * 60 * 60 * 8; //eight hours of milliseconds
+  const userInfo = getUserInfo();
+
+  //check for bookmarks stored in local storage
+  let bookmarkList = storeGet("bmList", {modal: {filter: false}}); //getBookmarkList();
+  if (bookmarkList) {
+    let expireDate = bookmarkList.lastFetchDate + retentionTime;
+
+    //if list has not expired or been invalidated resolve and return
+    //otherwise query the server
+    if (Date.now() < expireDate) {
+      if (bookmarkList.lastBuildDate > 0) {
+        populateModal(bookmarkList);
+        return;
+      }
+    }
+  }
+
+  try {
+    let bmList = await getAnnotations(userInfo.userId, key);
+    let bookmarks = buildBookmarkListFromServer(bmList);
+
+    populateModal(bookmarks);
+  }
+  catch(err) {
+    console.error(err);
+    notify.error(getString("error:e4"));
+  }
+}
+
+/*
   We query bookmarks just once per day and whenever bookmarks have changed
 */
 function initList() {
   const {sourceId} = teaching.keyInfo.getKeyInfo();
-
-  net.queryBookmarks(sourceId)
-    .then((response) => {
-      console.log("calling populateModal()");
-      populateModal(response);
-    })
-    .catch((err) => {
-      notify.error(getString("error:e4"));
-      console.error("Error getting bookmarks for: %s from server", sourceId, err);
-    });
+  queryBookmarks(sourceId);
 }
 
 function initBookmarkModal() {

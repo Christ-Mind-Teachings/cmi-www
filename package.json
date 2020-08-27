@@ -8,6 +8,10 @@
   "repository": "github:rmercer33/cmi-www",
   "main": "index.js",
   "scripts": {
+    "base:dev:webpack": "webpack --mode development",
+    "base:dev:jekyll": "JEKYLL_ENV=development bundle exec jekyll build --config ./_config.prod.yml",
+    "base:prod:webpack": "webpack --mode production",
+    "base:prod:jekyll": "JEKYLL_ENV=production bundle exec jekyll build --config ./_config.prod.yml",
     "test": "jest",
     "base:dev:webpack": "webpack --mode development",
     "base:prod:webpack": "webpack --mode production",
@@ -29,7 +33,7 @@
     "p:jekyll": "JEKYLL_ENV=production bundle exec jekyll build --config ./_config.prod.yml",
     "deploy:prod": "npm run p:webpack && npm run p:jekyll",
     "preview:jekyll": "JEKYLL_ENV=production bundle exec jekyll s --config ./_config.prod.yml",
-    "preview": "npm run p:webpack && npm run preview:jekyll"
+    "preview": "npm run preview:jekyll"
   },
   "keywords": [
     "cmi",
@@ -56,6 +60,7 @@
     "axios": "^0.19.2",
     "clipboard": "^2.0.6",
     "dom-anchor-text-quote": "^4.0.2",
+    "dompurify": "^2.0.12",
     "driver.js": "^0.9.8",
     "gsap": "^2.1.3",
     "hotkeys-js": "^3.7.6",

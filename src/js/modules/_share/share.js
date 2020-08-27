@@ -13,7 +13,7 @@
 
 */
 import {showAnnotation as showAnnotationRequest, loadStart, loadComplete} from "../_util/url";
-import {fetchBookmark} from "../_bookmark/bmnet";
+import {getAnnotation} from "../_ajax/annotation";
 import {highlightSkippedAnnotations, highlight} from "../_bookmark/selection";
 import range from "lodash/range";
 import scroll from "scroll-into-view";
@@ -34,7 +34,6 @@ let sharedAnnotation;
   the requested bookmark and when the user closes the share raised segment
 */
 function clearSharedAnnotation() {
-  console.log("clearSharedAnnotation");
 
   //unwrap shared annotation
   if (sharedAnnotation.selectedText) {
@@ -84,61 +83,55 @@ function wrapRange(annotation) {
   scroll(document.getElementById("shared-annotation-wrapper"), {align: {top: 0.2}});
 }
 
-/*
-  Display annotation requested by query parameter "as"
-  ?as=pid:annotationId:userId
+/**
+  Display shared annotation requested by query parameter "as" ?as=pid:annotationId:userId. This
+  is called when the user click 'To The Source' on a shared quote or FB post. The annotation
+  could have been created by anyone.
+
+  @returns {promise} pid - resolves to pid number when sharing requested, false otherwise
 */
 function showAnnotation() {
-  let info = showAnnotationRequest();
-  if (!info) {
-    return false;
-  }
+  return new Promise(async (resolve, reject) => {
+    let info = showAnnotationRequest();
+    if (!info) {
+      resolve(false);
+      return;
+    }
 
-  let [pid, aid, uid] = decodeURIComponent(info).split(":");
+    let [pid, aid, uid] = decodeURIComponent(info).split(":");
 
-  //make sure pid exists
-  if (!pid) {
-    return false;
-  }
+    //make sure pid exists
+    if (!pid) {
+      resolve(false);
+      return;
+    }
 
-  if ($(`#${pid}`).length === 0) {
-    // console.log("invalid pid: %s", pid);
-    return false;
-  }
+    if ($(`#${pid}`).length === 0) {
+      resolve(false);
+      return;
+    }
 
-  let bookmarkId = teaching.keyInfo.genParagraphKey(pid);
+    let paraKey = teaching.keyInfo.genParagraphKey(pid);
 
-  //show loading indicator
-  loadStart();
+    //show loading indicator
+    loadStart();
 
-  /*
-    fetch shared bookmark and wrap it in a raised segment
-    - if user has a bookmark in the same paragraph as the shared annotation, it will not be highlighted so
-      if we fail to get the bookmark or can't find the shared annotation we need to highlight the users
-      annotations for the paragraph before returning
-  */
-  fetchBookmark(bookmarkId, uid)
-    .then((response) => {
-      //bookmark not found
-      if (!response.Item) {
-        // console.log("bookmark not found");
+    /*
+      fetch shared bookmark and wrap it in a raised segment
+      - if user has a bookmark in the same paragraph as the shared annotation, it will not be highlighted so
+        if we fail to get the bookmark or can't find the shared annotation we need to highlight the users
+        annotations for the paragraph before returning
+    */
+    try {
+      const annotation = await getAnnotation(uid, paraKey, aid);
+
+      if (!annotation.userId) {
         highlightSkippedAnnotations();
         loadComplete();
         notify.warning("Requested Bookmark was not found");
+        resolve(false);
         return;
       }
-
-      let bookmark = response.Item.bookmark;
-      // console.log("bookmark from fetch: %o", bookmark);
-
-      let annotation = bookmark.find((a) => a.creationDate.toString(10) === aid);
-
-      if (!annotation) {
-        // console.log("annotation not found");
-        highlightSkippedAnnotations();
-        return;
-      }
-      // console.log("annotation: %o", annotation);
 
       let node = document.getElementById(annotation.rangeStart);
 
@@ -150,21 +143,18 @@ function showAnnotation() {
 
       wrapRange(annotation);
       sharedAnnotation = annotation;
-
       initCloseHandler();
-      //console.log("sharing pid: %s", pid);
-
-      //stop page loading indicator
       loadComplete();
-    })
-    .catch((err) => {
-      //stop page loading indicator
+    }
+    catch(err) {
       loadComplete();
-
       console.error(err);
-    });
+      resolve(false);
+      return;
+    }
 
-  return pid;
+    resolve(pid);
+  });
 }
 
 export default {

@@ -34,10 +34,19 @@
     {% include common/footer.html %}
   {% endif %}
 
-  {% include components/bookmark-modal.html %}
-  {% include components/search-modal.html %}
+  {% if page.search != false %}
+    {% include components/search-modal.html %}
+  {% endif %}
+
+  {% if page.manageEmail == true %}
+    {% include components/addto-maillist-dialog.html %}
+  {% endif %}
+ 
+  {% if page.manageTopics == true %}
+    {% include components/edit-topic-dialog.html %}
+  {% endif %}
+
   {% include components/toc-modal.html %}
-  {% include components/addto-maillist-dialog.html %}
   <div class="fixed" id="netlify-modal"></div>
 
   {% if jekyll.environment == "production" %}

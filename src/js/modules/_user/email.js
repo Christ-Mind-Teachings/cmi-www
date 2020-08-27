@@ -1,10 +1,10 @@
 /*
   Email list management - for sharing bookmarks via email
 */
-import axios from "axios";
-import globals from "../../globals";
 import notify from "toastr";
 import {getUserInfo} from "../_user/netlify";
+import {getMailList, putMailList} from "../_ajax/share";
+import {purify} from "../_util/sanitize";
 
 //module global list of email addresses
 let maillist = [];
@@ -93,6 +93,10 @@ function createEventHandlers() {
     let status = $("#add-or-update").text();
     let formData = $("#addto-maillist-form").form("get values");
 
+    formData.first = purify(formData.first);
+    formData.last = purify(formData.last);
+    formData.address = purify(formData.address);
+
     if (status === "Add") {
       maillist.push({first: formData.first, last: formData.last, address: formData.address});
       let row = makeTableRow(formData, maillist.length - 1);
@@ -100,8 +104,6 @@ function createEventHandlers() {
       //append row to table
       $("#email-list-table").append(row);
       enableSave();
-
-      console.log("after Add: maillist: %o", maillist);
     }
     //update
     else {
@@ -135,58 +137,59 @@ function createEventHandlers() {
 /*
   Run only if page has class="manage-email-list"
 */
-export function loadEmailListTable() {
+export async function loadEmailListTable() {
   let userInfo = getUserInfo();
 
   if (!userInfo) {
     notify.warning("You must be signed in to edit your email list");
+    setTimeout(() => {
+      location.href = "/";
+    }, 3 * 1000);
     return;
   }
   let api = `${userInfo.userId}/maillist`;
 
   $(".sync.icon").addClass("loading");
-  axios(`${globals.user}/${api}`)
-    .then(response => {
-      $(".sync.icon.loading").removeClass("loading");
-      maillist = response.data.maillist;
 
-      let html = populateTable(maillist);
-      $("#email-list-table").html(html);
+  try {
+    maillist = await getMailList(userInfo.userId);
 
-      createEventHandlers();
-    })
-    .catch(err => {
-      $(".sync.icon.loading").removeClass("loading");
-      notify.error("Error getting email list: ", err);
-    });
+    $(".sync.icon.loading").removeClass("loading");
+
+    let html = populateTable(maillist);
+    $("#email-list-table").html(html);
+
+    createEventHandlers();
+    //$("#maillist-table").dataTable();
+  }
+  catch(err) {
+    $(".sync.icon.loading").removeClass("loading");
+    notify.error(`Error getting email list: ${err}`);
+  }
 }
 
 /*
   Save changes to maillist to database
 */
-function saveChanges() {
+async function saveChanges() {
   let userInfo = getUserInfo();
-  let api = "maillist";
   let newList = maillist.filter(item => !item.deleted);
-
-  console.log("newList: %o", newList);
 
   let body = {
     userId: userInfo.userId,
-    addressList: newList
+    mailList: newList
   };
 
-  $(".sync.icon").addClass("loading");
-  axios.post(`${globals.user}/${api}`, body)
-    .then(response => {
-      $(".sync.icon.loading").removeClass("loading");
-      if (response.data.message === "OK") {
-        notify.info(`Saved! ${response.data.response}`);
-        $("button.save-to-database").addClass("disabled");
-      }
-    })
-    .catch(err => {
-      $(".sync.icon.loading").removeClass("loading");
-      notify.error(err);
-    });
+  try {
+    $(".sync.icon").addClass("loading");
+    let response = await putMailList(userInfo.userId, body);
+    notify.info(`Saved! ${response}`);
+    $(".sync.icon.loading").removeClass("loading");
+    $("button.save-to-database").addClass("disabled");
+  }
+  catch(err) {
+    $(".sync.icon.loading").removeClass("loading");
+    notify.error(err);
+  }
 }
+

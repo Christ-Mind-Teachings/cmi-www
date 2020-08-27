@@ -192,7 +192,7 @@
 }
 
 #topic-menu-select > .item.active.selected,
-.menu.transition.visible > .header > span.red {
+.menu.transition.visible .header.item > span.red {
   color: red;
 }
 

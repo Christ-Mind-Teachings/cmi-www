@@ -6,49 +6,8 @@ import store from "store";
 import {getUser} from "../_util/url";
 import {getString} from "../_language/lang";
 
-let login_state_key = "login.state";
+let login_state_key = "cmi.login.state";
 let userInfo;
-
-let testUsers = {
-  "rick": {
-    email: "rmercer33@gmail.com",
-    userId: md5("rmercer33@gmail.com"),
-    name: "Rick Mercer",
-    roles: ["acol", "timer", "editor"]
-  },
-  "julie": {
-    email: "julief8@me.com",
-    userId: md5("julief8@me.com"),
-    name: "Julie Franklin",
-    roles: ["timer", "editor"]
-  },
-  "yodi": {
-    email: "yodi@yodith.com",
-    userId: md5("yodi@yodith.com"),
-    name: "Yodi Debebe",
-    roles: ["timer"]
-  },
-  "hettie": {
-    email: "hcmercer@gmail.com",
-    userId: md5("hcmercer@gmail.com"),
-    name: "Hettie Mercer",
-    roles: []
-  }
-};
-
-function devUserInfo() {
-  let user = getUser();
-
-  if (user && testUsers[user]) {
-    return testUsers[user];
-  }
-  else {
-    //use rick
-    return testUsers["rick"];
-  }
-
-  return null;
-}
 
 function prodUserInfo() {
   if (userInfo) {
@@ -76,10 +35,15 @@ function setAsSignedIn() {
   let userInfo = getUserInfo();
 
   //change sign-in icon to sign-out and change color from red to green
-  getString("action:signout", true).then((resp) => {
+  getString("action:signout", true, "Sign Out").then((resp) => {
+    /*
     $(".login-menu-option > span")
       .html("<i class='green sign out icon'></i>")
       .attr("data-tooltip", `${resp}: ${userInfo.name}`);
+    */
+    $(".login-menu-option-guest").addClass("hide");
+    $(".login-menu-option-account").removeClass("hide");
+    $(".account-signout-option").text(`${resp}: ${userInfo.name}`);
   });
 
   //change bookmark menu icon to green from red
@@ -92,6 +56,9 @@ function setAsSignedIn() {
 
   //reveal profile-management menu option
   $(".hide.profile-management.item").removeClass("hide");
+
+  //show menu options for account holders
+  $(".requires-signin").removeClass("hide");
 }
 
 /*
@@ -101,9 +68,13 @@ function setAsSignedIn() {
 function setAsSignedOut() {
   //change sign-in icon to sign-out and change color from red to green
   getString("action:signin", true).then((resp) => {
+    /*
     $(".login-menu-option > span")
       .html("<i class='red sign in icon'></i>")
       .attr("data-tooltip", resp);
+    */
+    $(".login-menu-option-guest").removeClass("hide");
+    $(".login-menu-option-account").addClass("hide");
   });
 
   //change bookmark menu icon to green from red
@@ -116,10 +87,13 @@ function setAsSignedOut() {
 
   //hide profile-management menu option
   $(".profile-management.item").addClass("hide");
+
+  //hide account users menu options
+  $(".requires-signin").addClass("hide");
 }
 
 /*
-  ACOL restricts access to some contents based on the "acol" user role. When the user
+  ACOL restricts access to some content based on the "acol" user role. When the user
   logs in, redirect them to the acol home page if they are currently viewing an acol
   transcript page. This will ensure that the TOC will give them access to all content.
 
@@ -139,6 +113,8 @@ function manageState(state) {
       break;
     case "login":
       if (currentState === "dialog") {
+        //refresh the page after login
+        //location.href = location.href;
         //if user has "acol" role, refresh page to enable access to all content
         if (userInfo.app_metadata.roles && userInfo.app_metadata.roles.find(r => r === "acol")) {
           //if user is on an acol transcript page
@@ -179,16 +155,20 @@ export default {
       console.error("user.on('error'): ", err);
     });
 
-    $(".login-menu-option").on("click", (e) => {
+    $(".login-menu-option-account > .menu > .account-signout-option").on("click", (e) => {
       e.preventDefault();
+      //console.log("user signout");
+      user.logout();
+    });
 
-      if (userInfo) {
-        user.logout();
-      }
-      else {
-        manageState("dialog");
-        user.open();
-      }
+    /*
+     * User Sign In
+     */
+    $(".login-menu-option-guest").on("click", (e) => {
+      //console.log("user sign in");
+      e.preventDefault();
+      manageState("dialog");
+      user.open();
     });
 
     //init authentication

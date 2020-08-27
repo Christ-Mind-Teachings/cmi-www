@@ -1,7 +1,7 @@
 import net from "./bmnet";
 import notify from "toastr";
 import {getTeachingInfo, annotation} from "./bookmark";
-import {getBookmark} from "./bmnet";
+import {localStore} from "./bookmark";
 import range from "lodash/range";
 import {initShareDialog} from "./navigator";
 import clipboard from "./clipboard";
@@ -11,21 +11,10 @@ import {getString, __lang} from "../_language/lang";
 //teaching specific constants, assigned at initialization
 let teaching = {};
 
-var warningIssued = false;
-function warnNotSignedIn() {
-  let userInfo = getUserInfo();
-  if (!userInfo && !warningIssued) {
-    notify.options.timeOut = "10000";
-    notify.success(getString("annotate:m1"));
-    notify.warning(getString("annotate:m2"));
-
-    warningIssued = true;
-  }
-}
-
 function getAnnotationForm() {
   let form = __lang`
     <form name="annotation" id="annotation-form" class="ui form">
+      <input class="hidden-field" type="text" readonly="" name="status">
       <input class="hidden-field" type="text" readonly="" name="creationDate">
       <input class="hidden-field" type="text" name="aid" readonly>
       <input class="hidden-field" type="text" readonly="" name="rangeStart">
@@ -253,7 +242,6 @@ function noteToggle() {
   });
 }
 
-
 const wrapper = `
   <div class="annotate-wrapper ui raised segment"></div>`;
 
@@ -319,7 +307,7 @@ function genExtrasItem(item) {
 
 function generateComment(comment) {
   if (!comment) {
-    return getString("annotate:m6");
+    return getString("annotate:m7");
   }
   else {
     return comment;
@@ -343,6 +331,7 @@ function initializeForm(pid, aid, annotation) {
   //a new annotation
   if (!annotation) {
     form.form("set values", {
+      status: "new",
       rangeStart: pid,
       rangeEnd: pid,
       aid: aid
@@ -363,6 +352,7 @@ function initializeForm(pid, aid, annotation) {
     }
 
     form.form("set values", {
+      status: "update",
       rangeStart: annotation.rangeStart,
       rangeEnd: annotation.rangeEnd,
       aid: annotation.aid,
@@ -418,9 +408,6 @@ function editAnnotation(pid, aid, annotation) {
   else {
     $(`#${pid}`).addClass("annotation-edit");
   }
-  //console.log("editAnnotation");
-
-  warnNotSignedIn();
 
   //.disable-selection will prevent text selection during annotation creation/edit
   addSelectionGuard();
@@ -445,16 +432,12 @@ function noteHandler() {
       return;
     }
 
-    let bookmarkData = getBookmark(pid);
-
-    if (bookmarkData.bookmark) {
-      let annotation = bookmarkData.bookmark.find(value => typeof value.aid === "undefined");
-
-      //we found a note - so edit it
-      if (annotation) {
-        editAnnotation(pid, undefined, annotation);
-        return;
-      }
+    let bkmrk = localStore.getItem(pid);
+    
+    //we found a note - so edit it
+    if (bkmrk) {
+      editAnnotation(pid, undefined, bkmrk.annotation);
+      return;
     }
 
     //disable text selection while annotation form is open
@@ -482,17 +465,12 @@ function hoverNoteHandler() {
     let pid = $(this).parent("p").attr("id");
 
     //bookmark wont be found if it is still being created
-    let bookmarkData = getBookmark(pid);
-    if (!bookmarkData.bookmark) {
+    let bkmrk = localStore.getItem(pid, aid);
+    if (!bkmrk) {
       return;
     }
 
-    let annotation = bookmarkData.bookmark.find(value => value.creationDate === aid);
-
-    //sometimes the annotation won't be found because it is being created, so just return
-    if (!annotation) {
-      return;
-    }
+    let annotation = bkmrk.annotation;
 
     let topicList = generateHorizontalList(annotation.topicList);
     let comment = generateComment(annotation.Comment);
@@ -518,7 +496,8 @@ function hoverNoteHandler() {
 
 
 /*
- * Highlighted text hover; show popup
+ * Show popup containing info about the bookmark when mouse hovers over
+ * selectedText.
  */
 function hoverHandler() {
   $(".transcript").on("mouseenter", "[data-annotation-id]", function(e) {
@@ -527,6 +506,12 @@ function hoverHandler() {
     let aid = $(this).attr("data-annotation-id");
     let pid = $(this).parent("p").attr("id");
     let realAid = $(this).data("aid");
+
+    //don't know why this happens
+    if (!pid) {
+      console.log("hoverHandler: pid not found");
+      return;
+    }
 
     //disable hover if highlights are hidden
     if ($(".transcript").hasClass("hide-bookmark-highlights")) {
@@ -564,18 +549,14 @@ function hoverHandler() {
       return;
     }
 
-    //bookmark wont be found if it is still being created
-    let bookmarkData = getBookmark(pid);
-    if (!bookmarkData.bookmark) {
-      return;
-    }
-
-    let annotation = bookmarkData.bookmark.find(value => value.aid === aid);
+    //get bookmark from local store
+    let bkmrk = localStore.getItem(pid, aid);
 
     //sometimes the annotation won't be found because it is being created, so just return
-    if (!annotation) {
+    if (!bkmrk) {
       return;
     }
+    let annotation = bkmrk.annotation;
 
     let topicList = generateHorizontalList(annotation.topicList);
     let comment = generateComment(annotation.Comment);
@@ -666,10 +647,8 @@ function editHandler() {
     //show this highlight, all others are hidden
     $(this).addClass("show");
 
-    let bookmarkData = getBookmark(pid);
-    let annotation = bookmarkData.bookmark.find(value => value.aid === aid);
-
-    editAnnotation(pid, aid, annotation);
+    let bkmrk = localStore.getItem(pid, aid);
+    editAnnotation(pid, aid, bkmrk.annotation);
   });
 }
 
@@ -723,7 +702,8 @@ function submitHandler() {
     $(`[data-annotation-id="${formData.aid}"]`).removeClass("show");
 
     //this is a note annotation, no selected text, add page title to formData
-    if ($(".transcript .annotation-edit").hasClass("annotation-note")) {
+    //if ($(".transcript .annotation-edit").hasClass("annotation-note")) {
+    if ($(".transcript .annotation-edit").hasClass("note-style-bookmark")) {
       formData.bookTitle = $("#book-title").text();
     }
 
@@ -781,7 +761,7 @@ function shareHandler() {
     //remove class "show" added when form was displayed
     $(`[data-annotation-id="${formData.aid}"]`).removeClass("show");
 
-    annotation.cancel(formData);
+    //annotation.cancel(formData);
     $(".transcript .annotation-edit").removeClass("annotation-edit");
 
     let userInfo = getUserInfo();
@@ -802,10 +782,18 @@ function shareHandler() {
     if (annotation_id.length > 0) {
       aid = $(`[data-annotation-id="${annotation_id}"]`).attr("data-aid");
       $(`[data-annotation-id="${annotation_id}"]`).addClass("show");
+
+      //aid is undefined when new annotations are shared, the real aid is the annotation
+      //creationDate. If aid is undefined try to get the creationDate from local store
+      if (!aid) {
+        aid = localStore.getCreationDate(annotation_id);
+        $(`[data-annotation-id="${annotation_id}"]`).attr("data-aid", aid);
+      }
     }
     else {
       aid = $(`#${pid} > span.pnum`).attr("data-aid");
     }
+
 
     let url = `https://${location.hostname}${location.pathname}?as=${pid}:${aid}:${userInfo.userId}`;
 
@@ -926,8 +914,6 @@ export function getUserInput(highlight) {
 
   //.disable-selection will prevent text selection during annotation creation/edit
   addSelectionGuard();
-
-  warnNotSignedIn();
 
   $(`#${highlight.pid}`).addClass("annotation-edit");
   $(".annotation-edit").wrapAll(wrapper);

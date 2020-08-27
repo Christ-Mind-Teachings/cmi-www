@@ -1,8 +1,8 @@
+import {storeGet} from "../_util/store";
 
 import intersection from "lodash/intersection";
 import intersectionWith from "lodash/intersectionWith";
 import range from "lodash/range";
-import store from "store";
 import scroll from "scroll-into-view";
 import notify from "toastr";
 
@@ -50,10 +50,7 @@ function generateAnnotation(annotation, topics = []) {
 
   //convert annotation topics list into string array
   let topicList = annotation.topicList.map((topic) => {
-    if (typeof topic === "object") {
-      return topic.value;
-    }
-    return topic;
+    return topic.value;
   });
 
   if (topics.length > 0) {
@@ -450,8 +447,8 @@ function getCurrentBookmark(pageKey, actualPid, allBookmarks, bmModal, whoCalled
 function bookmarkManager(actualPid) {
   let sourceId = teaching.keyInfo.getSourceId();
   let pageKey = teaching.keyInfo.genPageKey().toString(10);
-  let bmList = store.get(teaching.bm_list_store);
-  let bmModal = store.get(teaching.bm_modal_store);
+  let bmList = storeGet("bmList");
+  let bmModal = storeGet("bmModal");
 
   if (bmList) {
     //store globally
@@ -519,8 +516,8 @@ function bookmarkManager(actualPid) {
 */
 function updateNavigator(pid, update) {
   //console.log("updateNavigator, pid: %s, update: %s", pid, update);
-  let bmList = store.get(teaching.bm_list_store);
-  let bmModal = store.get(teaching.bm_modal_store);
+  let bmList = storeGet("bmList");
+  let bmModal = storeGet("bmModal");
   getCurrentBookmark(gPageKey, pid, bmList, bmModal, update);
 }
 
@@ -559,6 +556,47 @@ function scrollIntoView(id, caller) {
   });
 }
 
+/**
+ * Format bookmark text to share by email or Facebook.
+ *
+ * @param {string} channel - either 'email' or 'facebook'
+ * @param {string} text - the text to format
+ * @returns {string} the formatted text
+ */
+function formatToShare(channel, text) {
+  let separator = channel === "email" ? "@@" : "\n\n";
+
+  //remove unwanted characters
+  text = text.replace(/[^\x20-\x7E]/g, " ");
+
+  //replace multiple spaces with one
+  text = text.replace(/ {2,}/g, " ");
+
+  //insert separator characters in front of paragraph numbers
+  text = text.replace(/\(p\d*\)/g, (m) => {
+    return `${separator}${m}`;
+  });
+
+  //split into array to remove a empty first element
+  let pArray = text.split(separator);
+
+  if (pArray[0].length === 0) {
+    pArray.shift();
+  }
+
+  //wrap paragraphs with <p></p> and join
+  if (channel === "email") {
+    text = pArray.reduce((current,p) => {
+      return `${current}\n<p>${p}</p>`;
+    }, "");
+  }
+  else {
+    text = pArray.join("\n");
+  }
+
+  return text;
+}
+
 /*
   Click handler for FB and email share dialog. This can be called from this
   module when the bookmark navigator is active or from annotate.js when
@@ -569,8 +607,6 @@ export function initShareDialog(source) {
   if (shareEventListenerCreated) {
     return;
   }
-
-  //console.log("initShareDialog(%s)", source);
 
   //share icon click handler
   $(".transcript").on("click", ".selected-annotation-wrapper .share-annotation", function(e) {
@@ -616,14 +652,16 @@ export function initShareDialog(source) {
 
     pid = $(".selected-annotation-wrapper p").attr("id");
 
-    //no highlighted text so grab the whole paragraph
+    //this is a Note style annotation because it has no selectedText
+    // - get the text of all <p> siblings to .selected-annotation-wrapper
     if (annotation.length === 0) {
-      text = $(`#${pid}`).text().replace(/\n/," ");
+      text = $(".selected-annotation-wrapper > p").text();
+      text = formatToShare(channel, text);
     }
     else {
       text = annotation.text().replace(/\n/," ");
     }
-    console.log("share text: %s", text);
+    //console.log("share text: %s", text);
 
     let srcTitle = $("#src-title").text();
     let bookTitle = $("#book-title").text();

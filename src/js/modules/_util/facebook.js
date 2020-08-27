@@ -11,7 +11,7 @@ export default {
         FB.init({
           appId      : "448658485318107",
           xfbml      : true,
-          version    : "v3.0"
+          version    : "v3.1"
         });
       }
     });

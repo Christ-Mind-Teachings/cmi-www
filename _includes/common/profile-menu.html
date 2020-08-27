@@ -1,19 +1,14 @@
-<!-- _includes/common/transcript-menu.html -->
+<!-- _includes/common/profile-menu.html -->
 <div class="ui borderless main menu">
-  <div id="transcript-menu" class="ui text container">
-    <a href="#" class="bookmark-modal-open ui dropdown item">
-      <span data-position="bottom center" data-tooltip="Show Bookmarks">
-        <i class="red bookmark icon"></i>
-      </span>
-    </a>
+  <div id="profile-menu" class="ui text container">
     {% unless page.search == false %}
-    <a href="#" id="search-modal-open" class="item search-modal-open">
+    <a id="search-modal-open" href="#" id="search-modal-open" class="item search-modal-open">
       <span data-position="bottom center" data-tooltip="Search {{site.title}}">
         <i class="search icon"></i>
       </span>
     </a>
     {% endunless %}
-    <a href="#masthead-title" class="top-of-page item">
+    <a id="jump-to-top-menu-option" href="#masthead-title" class="top-of-page item">
       <span data-position="bottom center" data-tooltip="Top of Page">
         <i class="level up icon"></i>
       </span>
@@ -24,12 +19,12 @@
         <i class="align justify icon"></i>
       </span>
     </a>
-    <a id="previous-page-menu-item" href="#" class="item">
+    <a id="toc-previous-page" href="#" class="item">
       <span data-position="bottom center" data-tooltip="Previous Page">
         <i class="arrow circle left icon"></i>
       </span>
     </a>
-    <a id="next-page-menu-item" href="#" class="item">
+    <a id="toc-next-page" href="#" class="item">
       <span data-position="bottom center" data-tooltip="Next Page">
         <i class="arrow circle right icon"></i>
       </span>
@@ -39,18 +34,23 @@
     <a id="about-dropdown-menu" href="#" class="ui dropdown item">
       <i class="question icon"></i>
       <div id="help-menu" class="menu">
-        <div class="transcript-tour item">Tour the Page</div>
-        <div class="read-documentation item">Read Documentation</div>
-        <div class="view-documentation item">Watch Video Instruction</div>
-        <div class="divider"></div>
-        <div class="hide profile-management item">Manage Email List</div>
-        <div class="hide topic-management item">Manage Topics</div>
+        <div id="help-page-tour" class="transcript-tour item">Tour the Page</div>
+        <div id="help-read-docs" class="read-documentation item">Read Documentation</div>
+        <div id="help-view-docs" class="view-documentation item">Watch Video Instruction</div>
       </div>
     </a>
-    <a href="#" class="login-menu-option ui right floated item">
-      <span data-position="bottom center" data-tooltip="Sign In">
-        <i class="red sign in icon"></i>
-      </span>
+    {% comment %}
+    This page is only for signed in users, we don't need to show or hide it
+    based on sign in status
+    {% endcomment %}
+    <a id="login-account-menu-option" href="#" class="login-menu-option-account dropdown ui right floated item">
+      <span> <i class="green sign out icon"></i> </span>
+      <div class="menu">
+        <div id="account-signout-menu-option" class="account-signout-option item">Sign Out</div>
+        <div class="divider"></div>
+        <div id="account-manage-email-menu-option" class="profile-management item">Manage Email List</div>
+        <div id="account-manager-topics-menu-option" class="topic-management item">Manage Topics</div>
+      </div>
     </a>
   </div>
 </div>
