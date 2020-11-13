@@ -58,6 +58,26 @@ function formatMessage(message) {
   return message;
 }
 
+/*
+ * Format recipientArray into a string of email addresses and
+ * a structure of recipient variables per Mailgun
+ */
+function formatRecipientInfo(recipientArray) {
+  let addresses = [];
+  let info = {};
+
+  recipientArray.forEach((i) => {
+    let [email, first, last] = i.split(":");
+    addresses.push(email);
+    info[email] = {first: first === "" ? "No First Name" : first, last: last === "" ? "No Last Name" : last};
+  });
+
+  return {
+    to: addresses.join(","),
+    variables: JSON.stringify(info)
+  };
+}
+
 export function submitEmail(q) {
   const userInfo = getUserInfo();
   let formData = $("#email-modal-share-form").form("get values");
@@ -71,7 +91,9 @@ export function submitEmail(q) {
 
   shareInfo.to = "";
   if (formData.mailList.length > 0) {
-    shareInfo.to = formData.mailList.join(",");
+    let info = formatRecipientInfo(formData.mailList);
+    shareInfo.to = info.to;
+    shareInfo.variables = info.variables;
   }
 
   if (formData.emailAddresses.length > 0) {
@@ -117,7 +139,7 @@ export function submitEmail(q) {
 
 //generate the option element of a select statement
 function generateOption(item) {
-  return `<option value="${item.address}">${item.first} ${item.last}</option>`;
+  return `<option value="${item.address}:${item.first}:${item.last}">${item.first} ${item.last}</option>`;
 }
 
 function makeMaillistSelect(maillist) {

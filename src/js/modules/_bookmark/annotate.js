@@ -794,8 +794,7 @@ function shareHandler() {
       aid = $(`#${pid} > span.pnum`).attr("data-aid");
     }
 
-
-    let url = `https://${location.hostname}${location.pathname}?as=${pid}:${aid}:${userInfo.userId}`;
+    let url = `${location.origin}${location.pathname}?as=${pid}:${aid}:${userInfo.userId}`;
 
     let annotationRange = range(numericRange[0], numericRange[1] + 1);
     let header2;
@@ -803,28 +802,28 @@ function shareHandler() {
     if (userInfo.userId === "xxx") {
       header2 = `
         <h4 class="ui left floated header">
-          <i title="${getString("annotate:m11")}" class="red window close outline small icon"></i>
+          <i title="${getString("annotate:m11")}" class="red window close outline icon"></i>
           <div class="content">
             ${formData.Comment}
           </div>
         </h4>
         <h4 class="ui right floated header">
-          <i title="${getString("action:closewin")}" class="share-annotation window close small icon"></i>
+          <i title="${getString("action:closewin")}" class="share-annotation window close icon"></i>
         </h4>
       `;
     }
     else {
       header2 = `
         <h4 class="ui left floated header">
-          <i title="${getString("action:fbshare")}" class="share-annotation facebook small icon"></i>
-          <i title="${getString("action:emailshare")}" class="share-annotation envelope outline small icon"></i>
-          <i data-clipboard-text="${url}" title="${getString("action:cp2clip")}" class="share-annotation linkify small icon"></i>
+          <i title="${getString("action:fbshare")}" class="share-annotation facebook icon"></i>
+          <i title="${getString("action:emailshare")}" class="share-annotation envelope outline icon"></i>
+          <i data-clipboard-text="${url}" title="${getString("action:cp2clip")}" class="share-annotation linkify icon"></i>
           <div class="content">
             ${formData.Comment}
           </div>
         </h4>
         <h4 class="ui right floated header">
-          <i title="${getString("action:closewin")}" class="share-annotation window close small icon"></i>
+          <i title="${getString("action:closewin")}" class="share-annotation window close icon"></i>
         </h4>
       `;
     }

@@ -52,7 +52,7 @@ each page. Video documentation is also available.
 <div id="page-contents">
   <div class="ui three cards">
     <div class="card">
-      <a id="get-acquainted" href="#" data-book="acq" class="toc-modal-open image" data-tooltip="Click to view the Getting Acquainted table of contents." data-position="bottom center">
+      <a id="book-acq" href="#" data-book="acq" class="toc-modal-open image" data-tooltip="Click to view the Getting Acquainted table of contents." data-position="bottom center">
         <img src="/public/img/cmi/acq-big.jpg">
       </a>
       <div class="content">

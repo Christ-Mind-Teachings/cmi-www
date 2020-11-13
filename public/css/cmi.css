@@ -342,5 +342,17 @@ a.requires-signin.hide.ui.item {
   display: none;
 }
 
+#condition-toggle.ui.checkbox.toggle {
+  margin-top: 8px;
+}
+
+#annotation-filter.inline.fields {
+  align-items: start;
+}
+
+#annotation-filter .field .cmi-filter.ui.radio.checkbox {
+  margin-top: 0;
+}
+
 
 

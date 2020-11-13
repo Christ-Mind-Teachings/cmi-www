@@ -1,7 +1,8 @@
 /* eslint no-console: off */
 
 import {storeInit} from "./modules/_util/store";
-import "../vendor/semantic/semantic.min.js";
+//import "../vendor/semantic/semantic.min.js";
+//import "../../public/vendor/semantic/semantic.js";
 
 import {initStickyMenu} from "./modules/_page/startup";
 import {bookmarkStart} from "./modules/_bookmark/start";

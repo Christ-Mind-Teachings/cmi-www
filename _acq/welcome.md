@@ -1,123 +1,92 @@
 ---
 title: Welcome
+tour: enable
 ---
 
 <h2 class="disable-paragraph-marker ui header">
   Welcome to the Library of Christ Mind Teachings.
 </h2>
 
-The library is a collection of authoritative channeled insight and inspiration that offers a perspective on the individual and collective challenges of our lives and world that is not commonly taught. For many, this new perspective is immediately grasped as the only real solution to the problems of the world, from little annoyances to major conflict and from those of a personal nature to those that have global effect.
+<div markdown="1" class="ui basic segment">
+<h2 class="ui header">Introduction</h2>
 
-The books in the library express a similar message but each source presents it in a different way and often using somewhat different language. The content is the same, just the form differs. The variety of forms of teachings support a deeper understanding of the material.
+<img class="ui small left floated image" src="/public/img/cmi/cmi-logo-200.png">
 
-The library is organized by teaching or *source* and each source contains one or more *books*. The [home page](/) displays an image that represents each source and a *Get Acquainted* guide. 
+The library is a collection of authoritative channeled insight and inspiration
+that offers a perspective on the individual and collective challenges of our
+lives and world that is not commonly taught. For many, this new perspective is
+immediately grasped as the only real solution to the problems of the world,
+from little annoyances to major conflict and from those of a personal nature to
+those that have global effect.
 
-Since this is a new version of the Library the original edition is still available and represented by the first image on the page. 
+The books in the library express a similar message but each source presents it
+in a different way and often using somewhat different language. The content is
+the same, just the form differs. The variety of forms of teachings support a
+deeper understanding of the material.
 
-Click on an image to display a table of contents for a book or to go to the homepage of a particular source.
+The library is organized by teaching or *source* and each source contains one
+or more *books*. The [home page](/) displays an image that represents each
+source in the Library and a *Get Acquainted* guide containing details of the features
+of the site and other potentially useful information.
 
-<h3 class="ui header">Listed here are contents of the library.</h3>
+To navigate to a source teaching, click on its book image. Clicking on the image will display
+the table of contents for a book within the home page of a teaching.
 
-<div class="ui items">
+See the [Quick Start](/acq/quick/) to learn the basics of navigating and using the features of
+the site.
+
+<button type="button" class="ui basic button">
+  <i class="icon user"></i>
+  Take a Quick Navigation Tour
+</button>
+
+<h2 class="ui header">Features</h2>
+
+Details of the features mentioned here are found in subsequent pages.
+
+<h3 class="ui header">Read, Listen, Search</h3>
+
+<div class="ui list">
   <div class="item">
-    <a href="#" data-book="acq" class="toc-modal-open ui tiny image" data-tooltip="Click to view the Getting Acquainted table of contents.">
-      <img src="/public/img/cmi/acq-toc.jpg">
-    </a>
+    <i class="book icon"></i>
     <div class="content">
-      <a class="header">Getting Acquainted</a>
-      <div class="description">
-        <p>
-          A guide to the Library of Christ Mind Teachings. Clicking on the cover image will display a table of contents.
-        </p>
-      </div>
+      All content in the library is freely available to everyone with an internet connection
+      and presented in a uncluttered easily accessible and distraction free environment.
     </div>
   </div>
   <div class="item">
-    <a href="/t/acim/" class="ui tiny image" data-tooltip="Click to view the ACIM Sparkly Edition.">
-      <img src="/public/img/cmi/acim-toc.jpg">
-    </a>
+    <i class="volume up icon"></i>
     <div class="content">
-      <a href="/t/acim/" class="header">A Course In Miracles</a>
-      <div class="description">
-        <p>
-          The Sparkly Edition of <em>A Course In Miracles</em>. Clicking on the cover image will take you to the ACIM homepage in the library. You can learn more about ACIM there in the <em>Get Acquainted</em> guide.
-        </p>
-        <p>
-          The Sparkly Edition is included in the Library because its the version Raj uses in his ACIM Study Group.
-        </p>
-      </div>
+      Many of the sources in the library contain audio so you can listen along as you read. You
+      can easily jump forward or back while listening and the paragraph being spoken
+      is highlighted so you can find your place again.
     </div>
   </div>
   <div class="item">
-    <a href="/t/raj/" class="ui tiny image" data-tooltip="Click to view the Raj Material.">
-      <img src="/public/img/cmi/raj-toc.jpg">
-    </a>
+    <i class="search icon"></i>
     <div class="content">
-      <a href="/t/raj/" class="header">The Raj Material</a>
-      <div class="description">
-        <p>
-          Raj has been sharing wisdom and inspiration through Paul Tuttle since 1982. Paul has written two books on his experience with Raj, <em>You ARE the Answer</em> and <em>Graduation</em>, both of which are available here. Raj has also facilitated an enlightening ACIM Study Group since 2002; the text and audio for all sessions (over 400) is available.
-        </p>
-        <p>
-          Click on the cover image to go to the Raj Material homepage.
-        </p>
-      </div>
-    </div>
-  </div>
-  <div class="item">
-    <a href="/t/wom/" class="ui tiny image" data-tooltip="Click to view the Way of Mastery.">
-      <img src="/public/img/cmi/wom-toc.jpg">
-    </a>
-    <div class="content">
-      <a class="header">Way of Mastery</a>
-      <div class="description">
-        <p>
-        The Way of Mastery was birthed from the relationship between Jeshua (Jesus) and Jayem (Jon Marc Hammer) beginning in 1987.
-        </p>
-
-        <p>
-        Click on the cover image to go to the <em>Way of Mastery</em> homepage.
-        </p>
-      </div>
-    </div>
-  </div>
-  <div class="item">
-    <a href="/t/acol/" class="ui tiny image" data-tooltip="Click to view A Course Of Love">
-      <img src="/public/img/cmi/acol-toc.jpg">
-    </a>
-    <div class="content">
-      <a href="/t/acol/" class="header">A Course Of Love</a>
-      <div class="description">
-        <p>
-        Forty years ago Jesus dictated ACIM to the scribe Helen Schucman. More recently, over three years, he similarly dictated A Course of Love to Mari Perron. Students of ACIM will recognize the Voice. Jesus describes ACOL as a "continuation" of A Course in Miracles. Students of truth, whatever their background, will find that ACOL resonates with the heart.
-        </p>
-        <p>
-          Click on the cover image to go the ACOL homepage.
-        </p>
-      </div>
-    </div>
-  </div>
-  <div class="item">
-    <a href="/t/jsb/" class="ui tiny image" data-tooltip="Click to view The Impersonal Life.">
-      <img src="/public/img/cmi/jsb-toc.jpg">
-    </a>
-    <div class="content">
-      <a href="/t/jsb/" class="header">The Impersonal Life</a>
-      <div class="description">
-        <p>
-          <em>The Impersonal Life</em> was published in 1914 by Joepsh S. Benner. It is a teaching from a time much earlier than the other sources in the library and serves to illustrate the timeless nature of Christ Mind teachings.
-        </p>
-        <p markdown="1">
-          Audio is provided by Barry Peterson from the Youtube channel [Giving Voice to the Wisdom of the Ages](https://www.youtube.com/channel/UCOdt4ugDsU0R6Qis6lfW2Ew).
-        </p>
-        <p>
-          Click on the cover image to go the Joesph S. Benner homepage.
-        </p>
-      </div>
+      All sources (accept *The Impersonal Life*) are searchable and you can easily jump directly
+      in the source to search matches.
     </div>
   </div>
 </div>
 
+<h3 class="ui header">Free User Account</h3>
 
+When you create an account you have access to the Bookmarking and Annotating feature as well
+as the ability to share Bookmarks and Quotes with your friends via Facebook and by email.
 
+<h3 class="ui header">Display Quotes</h3>
+
+Some of the teachings contain a section on the Home Page that displays a randomly
+selected quote. Signed in users can share quotes to Facebook and by email.
+
+<h3 class="ui header">Bookmarks and Annotations</h3>
+
+Bookmarks are created by selecting text or groups of paragraphs. You can add a comment and 
+associate one or more categories to make them easier to find. You can even link two or more
+bookmarks together and use bookmarks to create your own quotes that will appear on
+the teachings home page.
+
+</div>
 

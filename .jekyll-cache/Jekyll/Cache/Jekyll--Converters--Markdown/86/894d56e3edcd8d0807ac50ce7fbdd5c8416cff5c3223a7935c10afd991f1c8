@@ -1,0 +1,342 @@
+I"�,<h1 class="disable-paragraph-marker" id="technical-information">Technical Information</h1>
+
+<p>The Library of Christ Mind Teachings is a set of static sites generated
+by <a href="https://jekyllrb.com/">Jekyll</a>, hosted by <a href="app.netlify.com">Netlify</a>
+and extended by API’s implemented on <a href="https://aws.amazon.com/">AWS</a>. The
+software is open source and available on
+<a href="https://github.com/Christ-Mind-Teachings">GitHub</a>.</p>
+
+<p>The Library includes the following components.</p>
+
+<div class="ui items">
+  <div class="item">
+    <div class="content">
+      <div class="header">Card Catalog, Documentation and User Profile</div>
+      <div class="description">
+        <p>
+          This is the main page of the Library and includes links to
+          documentation and all teachings. Anything related to the
+          Library in general and not related to an individual teaching
+          is found here.
+        </p>
+        <div class="ui list">
+          <div class="item">
+            <i class="github square icon"></i>
+            <div class="content">
+              Git Repo:
+              <a href="https://github.com/Christ-Mind-Teachings/cmi-www">
+                Christ-Mind-Teachings/cmi-www
+              </a>
+            </div>
+          </div>
+          <div class="item">
+            <i class="linkify icon"></i>
+            <div class="content">
+              Website: 
+              <a href="https://www.christmind.info">
+                https://www.christmind.info
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="item">
+    <div class="content">
+      <div class="header">ACIM Sparkly Edition</div>
+      <div class="description">
+        <p>
+          The Sparkly Edition of <em>A Course in Miracles</em>.
+        </p>
+        <div class="ui list">
+          <div class="item">
+            <i class="github square icon"></i>
+            <div class="content">
+              Git Repo:
+              <a href="https://github.com/Christ-Mind-Teachings/cmi-acim">
+                Christ-Mind-Teachings/cmi-acim
+              </a>
+            </div>
+          </div>
+          <div class="item">
+            <i class="linkify icon"></i>
+            <div class="content">
+              Website: 
+              <a href="https://www.christmind.info/t/acim">
+                https://www.christmind.info/t/acim
+              </a>
+            </div>
+          </div>
+          <div class="item">
+            <i class="search icon"></i>
+            <div class="content">
+              Search API on <i class="aws icon"></i> Lambda
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="item">
+    <div class="content">
+      <div class="header">The Raj Material</div>
+      <div class="description">
+        <p>
+          The Raj Material from Paul Tuttle and <a href="https://nwffacim.org">The Northwest
+          Foundation for ACIM</a>. Transcripts and
+          audio were obtained from this site, <a href="http://www.pamelaparnell.com/index.html">Pamela
+          Parnell</a> and the
+          <a href="https://www.celestialrealm.com/">Celestial Realm</a>.
+        </p>
+        <div class="ui list">
+          <div class="item">
+            <i class="github square icon"></i>
+            <div class="content">
+              Git Repo:
+              <a href="https://github.com/Christ-Mind-Teachings/cmi-raj">
+                Christ-Mind-Teachings/cmi-raj
+              </a>
+            </div>
+          </div>
+          <div class="item">
+            <i class="linkify icon"></i>
+            <div class="content">
+              Website: 
+              <a href="https://www.christmind.info/t/raj">
+                https://www.christmind.info/t/raj
+              </a>
+            </div>
+          </div>
+          <div class="item">
+            <i class="search icon"></i>
+            <div class="content">
+              Search API on <i class="aws icon"></i> Lambda
+            </div>
+          </div>
+          <div class="item">
+            <i class="aws icon"></i>
+            <div class="content">
+              Audio stored in: S3 Bucket &ldquo;assets.christmind.info&rdquo;
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="item">
+    <div class="content">
+      <div class="header">The Way of Mastery</div>
+      <div class="description">
+        <p>
+          Content of the Way of Mastery was obtained from Jon Marc
+          Hammer and is used by permission.
+        </p>
+        <div class="ui list">
+          <div class="item">
+            <i class="github square icon"></i>
+            <div class="content">
+              Git Repo:
+              <a href="https://github.com/Christ-Mind-Teachings/cmi-wom">
+                Christ-Mind-Teachings/cmi-wom
+              </a>
+            </div>
+          </div>
+          <div class="item">
+            <i class="linkify icon"></i>
+            <div class="content">
+              Website:
+              <a href="https://www.christmind.info/t/wom">
+                https://www.christmind.info/t/wom
+              </a>
+            </div>
+          </div>
+          <div class="item">
+            <i class="search icon"></i>
+            <div class="content">
+              Search API on <i class="aws icon"></i> Lambda
+            </div>
+          </div>
+          <div class="item">
+            <i class="aws icon"></i>
+            <div class="content">
+              Audio stored in: S3 Bucket &ldquo;assets.christmind.info&rdquo;
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="item">
+    <div class="content">
+      <div class="header">The Impersonal Life</div>
+      <div class="description">
+        <p>
+          <em>The Impersonal Life</em> was obtained from <a href="http://www.pamelaparnell.com/index.html">Pamela
+          Parnell</a>.
+        </p>
+        <p>
+          Audio is provided by Barry Peterson from the Youtube channel
+          <a href="https://www.youtube.com/channel/UCOdt4ugDsU0R6Qis6lfW2Ew">Giving Voice to the Wisdom of the
+          Ages</a>.
+        </p>
+        <div class="ui list">
+          <div class="item">
+            <i class="github square icon"></i>
+            <div class="content">
+              Git Repo:
+              <a href="https://github.com/Christ-Mind-Teachings/cmi-jsb">
+                Christ-Mind-Teachings/cmi-jsb
+              </a>
+            </div>
+          </div>
+          <div class="item">
+            <i class="linkify icon"></i>
+            <div class="content">
+              Website:
+              <a href="https://www.christmind.info/t/jsb">
+                https://www.christmind.info/t/jsb
+              </a>
+            </div>
+          </div>
+          <div class="item">
+            <i class="aws icon"></i>
+            <div class="content">
+              Audio stored in: S3 Bucket &ldquo;assets.christmind.info&rdquo;
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="item">
+    <div class="content">
+      <div class="header">A Course Of Love</div>
+      <div class="description">
+        <p>
+          <em>A Course Of Love</em> was obtained through agreement with Glenn
+          Hoveman, publisher <a href="https://www.takeheartpublications.org/">Take Heart Publications</a>.
+        </p>
+        <div class="ui list">
+          <div class="item">
+            <i class="github square icon"></i>
+            <div class="content">
+              Git Repo:
+              <a href="https://github.com/Christ-Mind-Teachings/cmi-acol">
+                Christ-Mind-Teachings/cmi-acol
+              </a>
+            </div>
+          </div>
+          <div class="item">
+            <i class="linkify icon"></i>
+            <div class="content">
+              Website:
+              <a href="https://www.christmind.info/t/acol">
+                https://www.christmind.info/t/acol
+              </a>
+            </div>
+          </div>
+          <div class="item">
+            <i class="aws icon"></i>
+            <div class="content">
+              Audio stored in: S3 Bucket &ldquo;assets.christmind.info&rdquo;
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="item">
+    <div class="content">
+      <div class="header">A Course in Miracles Original Edition</div>
+      <div class="description">
+        <p>
+          <em>A Course in Miracles Original Edition</em> was obtained through
+          agreement with the <a href="https://www.jcim.net/">Course in Miracles Society
+          </a>.
+        </p>
+        <div class="ui list">
+          <div class="item">
+            <i class="github square icon"></i>
+            <div class="content">
+              Git Repo:
+              <a href="https://github.com/Christ-Mind-Teachings/cmi-oe">
+                Christ-Mind-Teachings/cmi-oe
+              </a>
+            </div>
+          </div>
+          <div class="item">
+            <i class="linkify icon"></i>
+            <div class="content">
+              Website:
+              <a href="https://www.christmind.info/t/acimoe">
+                https://www.christmind.info/t/acimoe
+              </a>
+            </div>
+          </div>
+          <div class="item">
+            <i class="aws icon"></i>
+            <div class="content">
+              Audio stored in: S3 Bucket &ldquo;assets.christmind.info&rdquo;
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="item">
+    <div class="content">
+      <div class="header">The Way of Mastery - Polish Translation</div>
+      <div class="description">
+        <p>
+          Content of the Way of Mastery Polish translation was obtained from Marek Konieczniak
+          and is used by permission.
+        </p>
+        <div class="ui list">
+          <div class="item">
+            <i class="github square icon"></i>
+            <div class="content">
+              Git Repo:
+              <a href="https://github.com/Christ-Mind-Teachings/cmi-pwom">
+                Christ-Mind-Teachings/cmi-pwom
+              </a>
+            </div>
+          </div>
+          <div class="item">
+            <i class="linkify icon"></i>
+            <div class="content">
+              Website:
+              <a href="https://www.christmind.info/t/pwom">
+                https://www.christmind.info/t/pwom
+              </a>
+            </div>
+          </div>
+          <div class="item">
+            <i class="aws icon"></i>
+            <div class="content">
+              Audio stored in: S3 Bucket &ldquo;assets.christmind.info&rdquo;
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h1 id="hosting">Hosting</h1>
+
+<p>The Library is hosted by <a href="https://www.netlify.com/"> Netlify </a> with a free Open Source Team Plan,
+thank you Netlify!</p>
+
+<h2 id="amazon-web-services">Amazon Web Services</h2>
+
+<p>Amazon Route 53 is our Domain Name Registrar, audio files are stored in
+an S3 bucket, DynamoDB is our database, and API Gateway and Lambda
+provide API’s for search, bookmarks, and user functions.</p>
+
+<h1 id="project-contributors">Project Contributors</h1>
+
+<p>Those wishing to contribute to the project, you’re most welcome. See
+<a href="https://www.github.com/Christ-Mind-Teachings/cmi-www">README.md</a>.</p>
+
+:ET

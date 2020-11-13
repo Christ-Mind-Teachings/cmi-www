@@ -128,6 +128,7 @@ export function processBookmark(status, bm, arg) {
       break;
     case "updated":
       updateSelectionTopicList(bm.annotation);
+      updateNoteHighlight(bm);
       break;
     case "deleted":
       deleteBookmark(bm, arg);
@@ -174,6 +175,47 @@ function addTopicsAsClasses(bookmark) {
 
     $(`[data-annotation-id="${bookmark.aid}"]`).addClass(topicList);
   }
+}
+
+/*
+ * Remove note highlight and add it back in case the range
+ * has changed in the updated bookmark
+ */
+function updateNoteHighlight(bm) {
+  //return in not a note style bookmark
+  if (bm.annotation.selectedText) {
+    return;
+  }
+  
+  let start = parseInt(bm.annotation.rangeStart.substr(1), 10);
+  let end = parseInt(bm.annotation.rangeEnd.substr(1), 10);
+  let pid = start;
+  let done = false;
+
+  //remove current highlight
+  do {
+    $(`#p${start}`).removeClass("note-style-bookmark");
+    $(`#p${start}`).removeClass("note-style-bookmark-start");
+
+    if ($(`#p${start}`).hasClass("note-style-bookmark-end")) {
+      $(`#p${start}`).removeClass("note-style-bookmark-end");
+      done = true;
+    }
+    start++;
+  } while(!done);
+
+  //add new highlight
+  start = pid;
+  do {
+    $(`#p${start}`).addClass("note-style-bookmark");
+    if (start === pid) {
+      $(`#p${start}`).addClass("note-style-bookmark-start");
+    }
+    if (start === end) {
+      $(`#p${start}`).addClass("note-style-bookmark-end");
+    }
+    start++;
+  } while(start <= end);
 }
 
 function addNoteHighlight(pid, bm) {
@@ -303,6 +345,9 @@ function createAnnotation(formValues) {
   else {
     annotation.selectedText = getSelection(annotation.aid);
 
+    //make sure rangeEnd === rangeStart for selected text bookmarks
+    annotation.rangeEnd = annotation.rangeStart;
+
     if (annotation.creationDate) {
       annotation.selectedText.aid = annotation.creationDate.toString(10);
     }
@@ -312,9 +357,6 @@ function createAnnotation(formValues) {
   if (annotation.topicList.length === 0) {
     delete annotation.topicList;
   }
-
-  //keep track of topics added or deleted
-  //updateSelectionTopicList(annotation);
 
   delete annotation.newTopics;
   delete annotation.hasAnnotation;

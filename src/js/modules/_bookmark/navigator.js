@@ -765,7 +765,7 @@ function initClickListeners() {
       aid = $(`#${pid} > span.pnum`).attr("data-aid");
     }
 
-    let url = `https://${location.hostname}${location.pathname}?as=${pid}:${aid}:${userInfo.userId}`;
+    let url = `${location.origin}${location.pathname}?as=${pid}:${aid}:${userInfo.userId}`;
 
     let numericRange = rangeArray.map((r) => parseInt(r.substr(1),10));
     let annotationRange = range(numericRange[0], numericRange[1] + 1);
@@ -774,7 +774,7 @@ function initClickListeners() {
     if (userInfo.userId === "xxx") {
       header = `
         <h4 class="ui header">
-          <i title="${getString("annotate:m11")}" class="red window close outline small icon"></i>
+          <i title="${getString("annotate:m11")}" class="red window close outline icon"></i>
           <div class="content">
             ${$(this).text()}
           </div>
@@ -784,9 +784,9 @@ function initClickListeners() {
     else {
       header = __lang`
         <h4 class="ui header">
-          <i title="${"action:fbshare"}" class="share-annotation facebook small icon"></i>
-          <i title="${"action:emailshare"}" class="share-annotation envelope outline small icon"></i>
-          <i data-clipboard-text="${url}" title="${"action:cp2clip"}" class="share-annotation linkify small icon"></i>
+          <i title="${"action:fbshare"}" class="share-annotation facebook icon"></i>
+          <i title="${"action:emailshare"}" class="share-annotation envelope outline icon"></i>
+          <i data-clipboard-text="${url}" title="${"action:cp2clip"}" class="share-annotation linkify icon"></i>
           <div class="content">
             ${$(this).text()}
           </div>

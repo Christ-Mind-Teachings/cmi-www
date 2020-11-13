@@ -24,10 +24,30 @@ function formatMessage(message) {
   return message;
 }
 
+/*
+ * Format recipientArray into a string of email addresses and
+ * a structure of recipient variables per Mailgun
+ */
+function formatRecipientInfo(recipientArray) {
+  let addresses = [];
+  let info = {};
+
+  recipientArray.forEach((i) => {
+    let [email, first, last] = i.split(":");
+    addresses.push(email);
+    info[email] = {first: first === "" ? "No First Name" : first, last: last === "" ? "No Last Name" : last};
+  });
+
+  return {
+    to: addresses.join(","),
+    variables: JSON.stringify(info)
+  };
+}
+
 //load email list and setup submit and cancel listeners
 export function initShareByEmail(constants) {
   teaching = constants;
-  loadEmailList();
+  //loadEmailList();
 
   //submit
   $("form[name='emailshare']").on("submit", async function(e) {
@@ -49,7 +69,9 @@ export function initShareByEmail(constants) {
 
     shareInfo.to = "";
     if (formData.mailList.length > 0) {
-      shareInfo.to = formData.mailList.join(",");
+      let info = formatRecipientInfo(formData.mailList);
+      shareInfo.to = info.to;
+      shareInfo.variables = info.variables;
     }
 
     if (formData.emailAddresses.length > 0) {
@@ -69,7 +91,7 @@ export function initShareByEmail(constants) {
       shareInfo.message = formatMessage(formData.emailMessage);
     }
 
-    //hide form not sure if this will work
+    //hide form
     $(".email-share-dialog-wrapper").addClass("hide");
 
     try {
@@ -97,7 +119,7 @@ export function initShareByEmail(constants) {
 
 //generate the option element of a select statement
 function generateOption(item) {
-  return `<option value="${item.address}">${item.first} ${item.last}</option>`;
+  return `<option value="${item.address}:${item.first}:${item.last}">${item.first} ${item.last}</option>`;
 }
 
 /*
@@ -148,12 +170,32 @@ async function loadEmailList() {
 }
 
 /*
+ * Show mail list dialog when sharing by email. Load mail list if
+ * not already loaded
 */
-export function shareByEmail(quote, citation, url) {
+let mailListLoaded = false;
+export async function shareByEmail(quote, citation, url) {
   const userInfo = getUserInfo();
   shareInfo = {citation, quote, url};
 
-  //show dialog
   $(".hide.email-share-dialog-wrapper").removeClass("hide");
+  if (!mailListLoaded) {
+    try {
+      $(".email-share-loader").addClass("active");
+
+      let mailList = await getMailList(userInfo.userId);
+      let selectHtml = await makeMaillistSelect(mailList);
+
+      $("#maillist-select").html(selectHtml);
+      $("#maillist-address-list.dropdown").dropdown();
+
+      mailListLoaded = true;
+      $(".email-share-loader").removeClass("active");
+    }
+    catch(err) {
+      notify.error(`${getString("error:e10")}: ${err}`);
+    }
+  }
 }
+
 

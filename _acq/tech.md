@@ -19,7 +19,7 @@ The Library includes the following components.
 <div class="ui items">
   <div class="item">
     <div class="content">
-      <div class="header">Card Catalog and Documentation</div>
+      <div class="header">Card Catalog, Documentation and User Profile</div>
       <div class="description">
         <p>
           This is the main page of the Library and includes links to

@@ -126,7 +126,13 @@ function setParagraphNumberDisplayState() {
 export function initStickyMenu() {
   // fix main menu to page on passing
   $(".main.menu").visibility({
-    type: "fixed"
+    type: "fixed",
+    onFixed: function(el) {
+      //console.log("menu is fixed");
+    },
+    onUnfixed: function(el) {
+      //console.log("menu is un fixed");
+    }
   });
 
   // show dropdown on hover

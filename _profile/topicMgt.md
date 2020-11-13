@@ -44,27 +44,13 @@ manageTopics: true
 
 <div id="action-manager" class="hide ui form">
   <div class="fields">
-    <div class="field">
+    <div class="three wide field">
       <button id="manageTopicsButton" title="Edit and delete topics" disabled class="ui blue button"> Manage Topics </button>
     </div>
-    <div class="field">
+    <div class="three wide field">
       <button id="displayBookmarksButtonNew" title="Display annotations optionally filtered by book and topic" disabled class="ui green button"> Display Annotations </button>
     </div>
-    <div class="inline fields">
-      <div class="field">
-        <div class="condition-checkbox default ui radio checkbox">
-          <input type="radio" name="condition" checked="" value="OR" tabindex="0" class="hidden">
-          <label>OR</label>
-        </div>
-      </div>
-      <div class="field">
-        <div class="ui radio checkbox">
-          <input type="radio" name="condition" value="AND" tabindex="0" class="hidden">
-          <label>AND</label>
-        </div>
-      </div>
-    </div>
-    <div class="field">
+    <div class="seven wide field">
       <div id="topicSelectNew" class="ui multiple selection search dropdown">
         <input name="topicListNew" type="hidden">
         <i class="dropdown icon"></i>
@@ -72,31 +58,37 @@ manageTopics: true
         <div id="topic-list-new" class="menu"> </div>
       </div>
     </div>
+    <div class="three wide field">
+      <div id="condition-toggle" class="ui toggle checkbox">
+        <input type="checkbox" name="condition">
+        <label>OR</label>
+      </div> 
+    </div>
   </div>
   <div class="hide annotation-actions">
     <div class="fields">
-      <div class="field">
+      <div class="three wide field">
         <button class="hide-headers ui primary button">Hide Headers</button>
       </div>
-      <div class="field">
+      <div class="three wide field">
         <button class="hide-quotes ui green button">Hide Quotes</button>
       </div>
-      <div class="inline fields">
-        <label>Style Filter:</label>
+      <div id="annotation-filter" class="inline fields">
+        <label for="annotationFilter">Filter Results?</label>
         <div class="field">
-          <div class="style-checkbox default ui radio checkbox">
+          <div class="cmi-filter ui radio checkbox">
             <input type="radio" checked="" value="none" name="annotationFilter" tabindex="0" class="hidden">
             <label>None</label>
           </div>
         </div>
         <div class="field">
-          <div class="ui radio checkbox">
+          <div class="cmi-filter ui radio checkbox">
             <input type="radio" value="note" name="annotationFilter" tabindex="0" class="hidden">
             <label>Note</label>
           </div>
         </div>
         <div class="field">
-          <div class="ui radio checkbox">
+          <div class="cmi-filter ui radio checkbox">
             <input type="radio" value="selected" name="annotationFilter" tabindex="0" class="hidden">
             <label>Selected</label>
           </div>

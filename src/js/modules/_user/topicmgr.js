@@ -82,6 +82,7 @@ function setData(sid) {
 
 function showActions(sid) {
   setData(sid);
+  $(".annotation-actions").addClass("hide");
   $("#action-manager").removeClass("hide");
 }
 
@@ -383,6 +384,11 @@ function initForm() {
   $("#topicSelectNew").dropdown();
   $("#action-manager .ui.radio.checkbox").checkbox();
 
+  $("#condition-toggle").on("change", function(e) {
+    let val = $("#condition-toggle label").text();
+    $("#condition-toggle label").text(val === "AND" ? "OR" : "AND");
+  });
+
   $("#manageTopicsButton").on("click", function(e) {
     let sid = $(this).attr("data-sid");
     if ($("#topicTable").hasClass("hide")) {
@@ -515,7 +521,8 @@ function initForm() {
 
     let bookFilter = $(`#book-list${sid} :selected`).val();
 
-    let matches = findMatchesNew(sid, bookFilter, actionManager.topicListNew, actionManager.condition);
+    let condition = actionManager.condition === "on"? "AND" : "OR";
+    let matches = findMatchesNew(sid, bookFilter, actionManager.topicListNew, condition);
 
     if (matches.length === 0) {
       notify.info("No bookmarks contain selected topics");
@@ -526,7 +533,7 @@ function initForm() {
 
     topicManager.source = sourceInfo.title[sid];
     topicManager.topicArray = actionManager.topicListNew.split(",");
-    topicManager.condition = actionManager.condition;
+    topicManager.condition = condition;
     topicManager.bookFilter = bookFilter;
 
     //generated html

@@ -1,0 +1,44 @@
+I"{<h2 class="disable-paragraph-marker" id="user-accounts">User Accounts</h2>
+
+<p>You can use the CMI Library without creating a user account and have full
+access to all features except <a href="/acq/bookmark">Bookmarks and Annotations</a>.</p>
+
+<p>See the <a href="/acq/bookmark">Bookmarks</a> documentation for details on using bookmarks and annotations.</p>
+
+<h2 id="create-an-account">Create An Account</h2>
+
+<p>You must first create an account before you can sign in. Start by clicking the
+<i class="sign in icon"></i> icon in the menu bar.</p>
+
+<div class="ui container">
+  <p><img src="/public/img/cmi/sign-up.jpg" alt="Sign Up" /></p>
+</div>
+
+<p>Click the Sign up tab, enter your name, email address, and password and the
+press the “Sign up” button at the bottom of the window.</p>
+
+<p>An email will be sent to the email address you entered. Click the link in the
+email to continuing signing up.</p>
+
+<div class="ui container">
+  <p><img src="/public/img/cmi/sign-up-email.jpg" alt="Sign Up Email" /></p>
+</div>
+
+<p>Click the link to confirm your email address. Unless you explicity sign out you
+will be automatically signed in each time you enter the site.</p>
+
+<p>When you hover the cursor over the <i class="sign out icon"></i> icon, which
+shows green when your are signed in, your name and account specific features are shown.</p>
+
+<div class="ui container">
+  <p><img src="/public/img/cmi/signed-in.jpg" alt="Signed In" /></p>
+</div>
+
+<h2 id="signing-in">Signing In</h2>
+
+<p>Signing in is usually done automatically. You will need to sign in only when
+you access the site with a new computer or after you explicitly sign out.</p>
+
+<p>Easy.</p>
+
+:ET

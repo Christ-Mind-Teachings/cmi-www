@@ -2,17 +2,18 @@ const webpack = require("webpack");
 //const etp = require("extract-text-webpack-plugin");
 const path = require("path");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
-module.exports = {
-  devtool: "source-map",
+var config = {
   stats: {
     colors: true
   },
 
+  //"jquery": "jquery/dist/jquery",
+  //"semantic": "../vendor/semantic",
+
   resolve: {
     alias: {
-      "jquery": "jquery/src/jquery",
-      "semantic": "../vendor/semantic",
       "me-plugin": path.resolve(__dirname, "../cmi-audio/dist"),
       "acim": path.resolve(__dirname, "../cmi-acim/src/js"),
       "oe": path.resolve(__dirname, "../cmi-oe/src/js"),
@@ -58,10 +59,25 @@ module.exports = {
     ]
   },
   plugins: [
-    new MiniCssExtractPlugin({filename: 'me-styles.css'}),
-    new webpack.ProvidePlugin({
-      $: "jquery",
-      jQuery: "jquery"
-    })
+    new MiniCssExtractPlugin({filename: 'me-styles.css'})
+    //new webpack.ProvidePlugin({ $: "jquery", jQuery: "jquery" })
   ]
 };
+
+module.exports = (env, argv) => {
+  const jqDev = { $: "jquery", jQuery: "jquery" };
+  const jqProd = { $: "jquery.min", jQuery: "jquery.min" };
+
+  if (argv.mode === "development") {
+    config.devtool = "source-map";
+    //config.plugins.push(new BundleAnalyzerPlugin({analyzerPort: 8899}));
+    //config.plugins.push(new webpack.ProvidePlugin(jqDev));
+  }
+
+  if (argv.mode === "production") {
+    //config.plugins.push(new webpack.ProvidePlugin(jqProd));
+  }
+
+  return config;
+};
+
