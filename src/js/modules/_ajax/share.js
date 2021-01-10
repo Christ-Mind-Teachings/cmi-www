@@ -26,6 +26,7 @@ export function putMailList(userId, list) {
 }
 
 export function sendMail(mailInfo) {
+  console.log('mailInfo: %o', mailInfo);
   return new Promise((resolve, reject) => {
     axios.post(`${globals.user}/share`, mailInfo)
       .then((response) => {
