@@ -232,6 +232,32 @@
         "name": "Preface"
       }
     ]
+  },
+  {
+    "sid": "17",
+    "title": "Choose Only Love",
+    "books": [
+      {
+        "value": "*",
+        "name": "All Books"
+      },
+      {
+        "value": "1701",
+        "name": "Book 1: Echoes of Holiness"
+      },
+      {
+        "value": "1702",
+        "name": "Book 2: Let Yourself Be Loved"
+      },
+      {
+        "value": "1703",
+        "name": "Book 3: Homo-Christus Deo"
+      },
+      {
+        "value": "1704",
+        "name": "Book 4: Wisdom"
+      }
+    ]
   }
 ]
 

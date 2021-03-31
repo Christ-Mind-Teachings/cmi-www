@@ -114,6 +114,16 @@ each page. Video documentation is also available.
       </div>
     </div>
     <div class="card">
+      <a id="col-christmind-info" href="/t/col/" class="image" data-tooltip="Click to visit Choose Only Love." data-position="bottom center">
+        <img src="/public/img/cmi/col-big.jpg">
+      </a>
+      <div class="content">
+        <div class="description">
+          <em>Choose Only Love</em>
+        </div>
+      </div>
+    </div>
+    <div class="card">
       <a id="jsb-christmind-info" href="/t/jsb/" class="image" data-tooltip="Click to view The Impersonal Life." data-position="bottom center">
         <img src="/public/img/cmi/jsb-big.jpg">
       </a>

@@ -8,14 +8,16 @@ const rajKey = require("raj/modules/_config/key");
 const jsbKey = require("jsb/modules/_config/key");
 const womKey = require("wom/modules/_config/key");
 const pwomKey = require("pwom/modules/_config/key");
+const colKey = require("col/modules/_config/key");
 
+const WOMSOURCEID  = "10";
+const JSBSOURCEID  = "11";
 const ACIMSOURCEID = "12";
-const OESOURCEID = "15";
+const RAJSOURCEID  = "13";
 const ACOLSOURCEID = "14";
-const RAJSOURCEID = "13";
-const WOMSOURCEID = "10";
+const OESOURCEID   = "15";
 const PWOMSOURCEID = "16";
-const JSBSOURCEID = "11";
+const COLSOURCEID  = "17";
 
 /**
  * Get the url for the page identified by "key"
@@ -48,6 +50,9 @@ export function getUrlByPageKey(key) {
   }
   if (key.startsWith(PWOMSOURCEID)) {
     return pwomKey.getUrl(key, true);
+  }
+  if (key.startsWith(COLSOURCEID)) {
+    return colKey.getUrl(key, true);
   }
 
   throw new Error(`getUrlByPageKey(${key}): invalid key`);
