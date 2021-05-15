@@ -10,8 +10,8 @@ import net, {netInit}  from "./bmnet";
 import differenceWith from "lodash/differenceWith";
 import cloneDeep from "lodash/cloneDeep";
 import startCase from "lodash/startCase";
-import { showBookmark } from "../_util/url";
-import {initNavigator} from "./navigator";
+import { showTopicBookmark, showBookmark } from "../_util/url";
+import {initTopicNavigator, initNavigator} from "./navigator";
 import list from "./list";
 import {bookmarksLoaded} from "./topics";
 import {
@@ -361,6 +361,21 @@ function createAnnotation(formValues) {
   delete annotation.newTopics;
   delete annotation.hasAnnotation;
 
+  // add summary from any topic into the annotation
+  if (annotation.status === "update") {
+    let bkmrk = localStore.getItem(annotation.rangeStart, annotation.aid);
+    bkmrk.annotation.topicList.forEach(i => {
+      if (i.summary) {
+        let topic = annotation.topicList.find(t => t.value === i.value);
+        if (topic) {
+          topic.summary = i.summary;
+        }
+      }
+    });
+    // console.log("annotation: %o", annotation);
+    // console.log("bookmark: %o", bkmrk);
+  }
+
   //persist the bookmark
   net.postAnnotation(annotation);
 }
@@ -580,8 +595,29 @@ async function getPageBookmarks(sharePid) {
 */
 function initTranscriptPage(sharePid, constants) {
   //bookmarks are supported only for signed in users
+
+  // this should work for users not signed in
+  let topicInfo = showTopicBookmark();
+  if (topicInfo) {
+    initTopicNavigator(topicInfo, constants);
+  }
+
   if (!getUserInfo()) return;
 
+  // disable bookmarks when topic navigator is active
+  // - bookmarks are enabled when the navigator is closed
+  if (!topicInfo) {
+    initBookmarkFeature(sharePid, constants);
+  }
+
+  //setup bookmark navigator if requested
+  let pid = showBookmark();
+  if (pid) {
+    initNavigator(pid, constants);
+  }
+}
+
+export function initBookmarkFeature(sharePid, constants) {
   //get existing bookmarks for page
   getPageBookmarks(sharePid);
 
@@ -598,12 +634,6 @@ function initTranscriptPage(sharePid, constants) {
   //setup bookmark link listener
   createLinkListener(getLink);
   initBmLinkHandler();
-
-  //setup bookmark navigator if requested
-  let pid = showBookmark();
-  if (pid) {
-    initNavigator(pid, teaching);
-  }
 }
 
 export const annotation = {

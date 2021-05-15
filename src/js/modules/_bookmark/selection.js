@@ -226,10 +226,13 @@ export function highlight(annotation, toNode = document.body) {
               annotation.wrap = wrapRange(mark, range);
             }
             catch(err) {
-              //console.log("adjusting selector.end");
+              console.error("highlight catch bloc: err: %o", err);
+              console.log("annotation: %o", annotation);
+              /*
               selector.end--;
               range = textPosition.toRange(toNode, selector);
               annotation.wrap = wrapRange(mark, range);
+              */
             }
           }
           break;

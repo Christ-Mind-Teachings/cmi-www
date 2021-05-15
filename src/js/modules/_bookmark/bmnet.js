@@ -95,7 +95,12 @@ function postAnnotation(annotation, pageKey, addToLocalStorage=true) {
           serverAnnotation.selectedText.wrap = wrapFunction;
         }
       }
-      localStore.addItem(userInfo.userId, pageKey, creationDate, serverAnnotation);
+      try {
+        localStore.addItem(userInfo.userId, pageKey, creationDate, serverAnnotation);
+      }
+      catch(err) {
+        console.error(`Error saving annotation to localStore: ${err}`);
+      }
     }
   }).catch((err) => {
     console.error(`Error saving annotation: ${err}`);

@@ -24,9 +24,15 @@ function formatKey(key) {
   return `${intPart}.${decimalPart}${padding}`;
 }
 
-/*
+/***
  * Get array of annotations from server, add a numeric pid to each item, and
  * parse stringified selectedText.
+ *
+ *
+ * @param {string} userId - md5 has of email address of owner
+ * @param {string} key - teaching id (sourceId) for origin of annotations,
+ *                       at least two digits, more to restrict by book
+ * @param {string} topicValue - optional, return annotations containing topicValue only
  *
  * Return array of annotations.
  * {
@@ -46,7 +52,7 @@ function formatKey(key) {
  *   pid: <number>
  * }
  */
-export function getAnnotations(userId, key) {
+export function getAnnotations(userId, key, topicValue="") {
   return new Promise((resolve, reject) => {
     axios.get(`${globals.user}/queryAnnotation/${userId}/${key}`)
       .then((response) => {
@@ -68,11 +74,54 @@ export function getAnnotations(userId, key) {
           }
         });
 
+        // filter by topicValue
+        if (topicValue.length > 0) {
+          bmList = bmList.filter(b => {
+            if (b.annotation.topicList) {
+              let found = b.annotation.topicList.findIndex(t => t.value === topicValue);
+              return found > -1;
+            }
+            return false;
+          });
+        }
+
         //sort bookmarks by numeric pid
         bmList.sort((a,b) => {
           return a.paraKey - b.paraKey;
         });
         resolve(bmList);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+}
+
+/**
+ * Get topic summaries for bookmarks by key (portion of paraKey) and topic name.
+ *
+ * @param {string} key - sourceId (2 chars) or more of paraKey
+ * @param {string} topicValue - topic name (without spaces)
+ * @param {string} userId - md5 hash of bookmark creators email address
+ * @returns {array} - object of paraKey and summary text
+ */
+export function getTopicSummaries(key, topicValue, userId) {
+  return new Promise((resolve, reject) => {
+    axios.get(`${globals.user}/querySummariesByTopic/${userId}/${key}/${topicValue}`)
+      .then((response) => {
+        let bmList = response.data.response;
+        let summary = [];
+
+        bmList.forEach((b) => {
+          let topic = b.annotation.topicList.find(t => t.value === topicValue);
+          summary.push({paraKey: b.paraKey, pid: b.annotation.rangeStart, summary: topic.summary});
+        });
+
+        //sort bookmarks by numeric pid
+        summary.sort((a,b) => {
+          return a.paraKey - b.paraKey;
+        });
+        resolve({topicTotal: response.data.topicTotal, summary: summary});
       })
       .catch((err) => {
         reject(err);

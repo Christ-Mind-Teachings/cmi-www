@@ -5,6 +5,7 @@ import intersectionWith from "lodash/intersectionWith";
 import range from "lodash/range";
 import scroll from "scroll-into-view";
 import notify from "toastr";
+import {initBookmarkFeature} from "./bookmark";
 
 import {shareByEmail} from "./shareByEmail";
 import clipboard from "./clipboard";
@@ -48,6 +49,8 @@ function generateAnnotation(annotation, topics = []) {
     annotation.topicList = [];
   }
 
+  // console.log("annotation: %o", annotation);
+
   //convert annotation topics list into string array
   let topicList = annotation.topicList.map((topic) => {
     return topic.value;
@@ -66,9 +69,15 @@ function generateAnnotation(annotation, topics = []) {
             ${generateHorizontalList(annotation.topicList)}
           </div>
           <div class="description">
-            <a data-aid="${annotation.aid}" class="annotation-item" data-range="${annotation.rangeStart}/${annotation.rangeEnd}">
+            <button class="annotation-item ui icon basic button" data-range="${annotation.rangeStart}/${annotation.rangeEnd}" data-aid="${annotation.aid}" data-creationDate="${annotation.creationDate}" >
+              <i class="share square icon"></i>
+              ${annotation.Comment?annotation.Comment:getString("annotate:m7")}
+            </button>
+            <!--
+            <a title="Click to share" data-aid="${annotation.aid}" data-creationDate="${annotation.creationDate}" class="annotation-item" data-range="${annotation.rangeStart}/${annotation.rangeEnd}">
               ${annotation.Comment?annotation.Comment:getString("annotate:m7")}
             </a>
+            -->
           </div>
         </div>
       </div> <!-- item: ${annotation.rangeStart}/${annotation.rangeEnd} -->
@@ -103,24 +112,35 @@ function generateBookmark(actualPid, bkmk, topics, label) {
   returns the url for the first annotation of the arg bookmark
   Note: deleted annotations are empty arrays so skip over them.
 */
-function getBookmarkUrl(bookmarks, pageKey, pid) {
+function getBookmarkUrl(bookmarks, pageKey, pid, topic) {
   let url;
   let bookmark = bookmarks[pageKey][pid];
 
   let selectedText = bookmark[0].selectedText;
   if (selectedText) {
-    url = `${bookmark[0].selectedText.url}?bkmk=${bookmark[0].rangeStart}`;
+    // topic navigator
+    if (topic.length > 0) {
+      url = `${bookmark[0].selectedText.url}?tnav=${bookmark[0].rangeStart}&topic=${topic}`;
+    }
+    else {
+      url = `${bookmark[0].selectedText.url}?bkmk=${bookmark[0].rangeStart}`;
+    }
   }
   else {
     //we have a bookmark with no selected text, have to get the url in another way
-    url = `${teaching.env === "integration"?teaching.url_prefix:""}${teaching.keyInfo.getUrl(pageKey)}?bkmk=${bookmark[0].rangeStart}`;
+    if (topic.length > 0) {
+      url = `${teaching.env === "integration"?teaching.url_prefix:""}${teaching.keyInfo.getUrl(pageKey)}?tnav=${bookmark[0].rangeStart}&topic=${topic}`;
+    }
+    else {
+      url = `${teaching.env === "integration"?teaching.url_prefix:""}${teaching.keyInfo.getUrl(pageKey)}?bkmk=${bookmark[0].rangeStart}`;
+    }
   }
 
   //console.log("url: %s", url);
   return url;
 }
 
-function getNextPageUrl(pos, pageList, filterList, bookmarks) {
+function getNextPageUrl(pos, pageList, filterList, bookmarks, topic) {
   if (pos > pageList.length) {
     return Promise.resolve(null);
   }
@@ -158,7 +178,7 @@ function getNextPageUrl(pos, pageList, filterList, bookmarks) {
   return new Promise((resolve) => {
     if (found) {
       let pageKey = pageList[pagePos];
-      let url = getBookmarkUrl(bookmarks, pageKey, pid);
+      let url = getBookmarkUrl(bookmarks, pageKey, pid, topic);
 
       //it's possible the url was not found so check for that
       if (url) {
@@ -178,7 +198,7 @@ function getNextPageUrl(pos, pageList, filterList, bookmarks) {
   });
 }
 
-function getPrevPageUrl(pos, pageList, filterList, bookmarks) {
+function getPrevPageUrl(pos, pageList, filterList, bookmarks, topic) {
   if (pos < 0) {
     return Promise.resolve(null);
   }
@@ -215,7 +235,7 @@ function getPrevPageUrl(pos, pageList, filterList, bookmarks) {
   return new Promise((resolve) => {
     if (found) {
       let pageKey = pageList[pagePos];
-      let url = getBookmarkUrl(bookmarks, pageKey, pid);
+      let url = getBookmarkUrl(bookmarks, pageKey, pid, topic);
       //console.log("prev url is %s", url);
       resolve(url);
     }
@@ -226,7 +246,7 @@ function getPrevPageUrl(pos, pageList, filterList, bookmarks) {
   });
 }
 
-function getNextPrevUrl(pageKey, bookmarks, bmModal) {
+function getNextPrevUrl(pageKey, bookmarks, bmModal, topic) {
   let pages = Object.keys(bookmarks);
   let pos = pages.indexOf("lastFetchDate");
   let urls = {next: null, prev: null};
@@ -241,8 +261,8 @@ function getNextPrevUrl(pageKey, bookmarks, bmModal) {
   }
 
   //console.log("current page: %s", pageKey);
-  let nextPromise = getNextPageUrl(pos + 1, pages, bmModal["modal"].topics, bookmarks);
-  let prevPromise = getPrevPageUrl(pos - 1, pages, bmModal["modal"].topics, bookmarks);
+  let nextPromise = getNextPageUrl(pos + 1, pages, bmModal ? bmModal["modal"].topics: bmModal, bookmarks, topic);
+  let prevPromise = getPrevPageUrl(pos - 1, pages, bmModal ? bmModal["modal"].topics: bmModal, bookmarks, topic);
 
   return Promise.all([prevPromise, nextPromise]);
 }
@@ -364,7 +384,7 @@ function getCurrentBookmark(pageKey, actualPid, allBookmarks, bmModal, whoCalled
   let topics = [];
   let filterTopics;
 
-  if (bmModal["modal"].filter) {
+  if (bmModal && bmModal["modal"].filter) {
     topics = bmModal["modal"].topics;
     filterTopics = generateHorizontalList(bmModal["modal"].fullTopic);
   }
@@ -373,6 +393,7 @@ function getCurrentBookmark(pageKey, actualPid, allBookmarks, bmModal, whoCalled
   pidKey = (parseInt(actualPid.substr(1), 10) + 1).toString(10);
 
   let paragraphBookmarks = allBookmarks[pageKey][pidKey];
+  // console.log("paragraphBookmarks: %o", paragraphBookmarks);
 
   //the current bookmark (actualPid) does not exist
   //this would happen where url includes ?bkmk=p3 and p3 does not have a bookmark
@@ -436,6 +457,14 @@ function getCurrentBookmark(pageKey, actualPid, allBookmarks, bmModal, whoCalled
       $(".bookmark-navigator .next-bookmark").html(`<i class="down arrow icon"></i> ${resp} (${nextActualPid})`);
     }
   });
+  
+  // Highlight paragraph for topic navigator
+  // if there's more than one annotation for the current paragraph we
+  // use the first one to highlight
+  if (whoCalled === "topic") {
+    let {rangeStart, rangeEnd, creationDate} = paragraphBookmarks[0];
+    highlightParagraph(actualPid, rangeStart, rangeEnd, creationDate);
+  }
 
   return true;
 }
@@ -455,7 +484,7 @@ function bookmarkManager(actualPid) {
     gPageKey = pageKey;
 
     //get previous and next url's
-    getNextPrevUrl(pageKey, bmList, bmModal)
+    getNextPrevUrl(pageKey, bmList, bmModal, "")
       .then((responses) => {
         //console.log("next/prev urls: ", responses);
 
@@ -475,7 +504,7 @@ function bookmarkManager(actualPid) {
 
         //identify current bookmark in navigator
         //returns false if actualPid does not contain a bookmark
-        if (!getCurrentBookmark(pageKey, actualPid, bmList, bmModal, "both")) {
+        if (!getCurrentBookmark(pageKey, actualPid, bmList, bmModal, "bookmark")) {
           getString("fragment:f1", true).then(value => {
             notify.info(__lang`${value} ${actualPid} ${"fragment:f2"}`);
           });
@@ -483,7 +512,7 @@ function bookmarkManager(actualPid) {
         }
 
         //init navigator controls
-        initClickListeners();
+        initClickListeners("bookmark");
 
         //indicate bookmark navigator is active by adding class to ./transcript
         $(".transcript").addClass("bookmark-navigator-active");
@@ -508,17 +537,104 @@ function bookmarkManager(actualPid) {
 }
 
 /*
+  Setup the bookmark topic navigator for the page.
+  arg: pid - paragraph id.
+*/
+function bookmarkTopicManager(topicInfo, constants) {
+  let sourceId = teaching.keyInfo.getSourceId();
+  let pageKey = teaching.keyInfo.genPageKey().toString(10);
+  let topicList = storeGet("topicList");
+  let bmModal = null;
+
+  if (topicList) {
+    // get topic name and update navigator
+    let keys = Object.keys(topicList[pageKey]);
+    let first = topicList[pageKey][keys[0]][0].topicList.find(t => t.value === topicInfo.topic);
+    console.log("keys: %o, topiclist: %o", keys, first);
+
+    if (first) {
+      $(".bookmark-navigator").prepend(`<h4 class="ui header"><div class="content">Topic: ${first.topic}</div></h4>`);
+    }
+
+    //store globally
+    gPageKey = pageKey;
+
+    //get previous page and next page url's
+    getNextPrevUrl(pageKey, topicList, bmModal, topicInfo.topic)
+      .then((responses) => {
+        //console.log("next/prev urls: ", responses);
+
+        //set prev and next hrefs
+        if (responses[0] !== null) {
+          $(".bookmark-navigator .previous-page").attr({ "href": responses[0] });
+        }
+        else {
+          $(".bookmark-navigator .previous-page").addClass("inactive").removeAttr("href");
+        }
+        if (responses[1] !== null) {
+          $(".bookmark-navigator .next-page").attr({ "href": responses[1] });
+        }
+        else {
+          $(".bookmark-navigator .next-page").addClass("inactive").removeAttr("href");
+        }
+
+        //identify current bookmark in navigator
+        //returns false if actualPid does not contain a bookmark
+        if (!getCurrentBookmark(pageKey, topicInfo.pid, topicList, bmModal, "topic")) {
+          getString("fragment:f1", true).then(value => {
+            notify.info(__lang`${value} ${actualPid} ${"fragment:f2"}`);
+          });
+          return;
+        }
+
+        //init navigator controls
+        initClickListeners("topic", constants);
+
+        //indicate bookmark navigator is active by adding class to ./transcript
+        $(".transcript").addClass("bookmark-navigator-active");
+
+        //show the navigator and scroll
+        $(".bookmark-navigator-wrapper").removeClass("hide-bookmark-navigator");
+        setTimeout(scrollIntoView, 250, topicInfo.pid, "bookmarkTopicManager");
+      })
+      .catch((err) => {
+        console.error(err);
+
+        if (err === "bookmark not found") {
+          getString("fragment:f1", true).then((v) => {
+            notify.info(`${v} ${actualPid} ${getString("fragment:f2")}`);
+          });
+        }
+      });
+  }
+  else {
+    //console.log(teaching.bm_list_store);
+  }
+}
+
+/*
   Update previous and next bookmark links on navigator.
 
   args:
     pid: the actual pid to display
     update: either "previous", or "next" depending on what click handler called the function
+    type: "bookmark" or "topic"
 */
-function updateNavigator(pid, update) {
+function updateNavigator(pid, update, type) {
   //console.log("updateNavigator, pid: %s, update: %s", pid, update);
-  let bmList = storeGet("bmList");
-  let bmModal = storeGet("bmModal");
-  getCurrentBookmark(gPageKey, pid, bmList, bmModal, update);
+  let bmList;
+  let bmModal;
+
+  if (type === "bookmark") {
+    bmList = storeGet("bmList");
+    bmModal = storeGet("bmModal");
+  }
+  else {
+    bmList = storeGet("topicList");
+    bmModal = null;
+  }
+
+  getCurrentBookmark(gPageKey, pid, bmList, bmModal, type);
 }
 
 /*
@@ -695,7 +811,43 @@ export function initShareDialog(source) {
   shareEventListenerCreated = true;
 }
 
-function initClickListeners() {
+function highlightParagraph(pid, rangeStart, rangeEnd, creationDate) {
+  let rStart = parseInt(rangeStart.substr(1), 10);
+  let rEnd = parseInt(rangeEnd.substr(1), 10);
+
+  // remove highlight from previous paragraph, if any
+  $(".topic-navigator").removeClass("topic-navigator navigator-highlight navigator-highlight-top navigator-highlight-bottom navigator-highlight-middle");
+
+  // annotation has 1 paragraph
+  if (rStart === rEnd) {
+    $(`#${pid}`).addClass("topic-navigator navigator-highlight");
+    return;
+  }
+
+  // annotation has two paragraphs 
+  if (rEnd - rStart === 1) {
+    $(`#${pid}`).addClass("topic-navigator navigator-highlight-top");
+    $(`#p${rEnd}`).addClass("topic-navigator navigator-highlight-bottom");
+    return;
+  }
+
+  // annotation has more than two paragraphs
+  $(`#${pid}`).addClass("topic-navigator navigator-highlight-top");
+  $(`#p${rEnd}`).addClass("topic-navigator navigator-highlight-bottom");
+
+  for (let i = rStart + 1; i < rEnd; i++) {
+    $(`#p${i}`).addClass("topic-navigator navigator-highlight-middle");
+  }
+
+}
+
+
+/**
+ * Get next and prev paragraph bookmarks.
+ *
+ * @param {string} type - either "bookmark" or "topic", specifies navitator type
+ */
+function initClickListeners(type, constants) {
   //previous bookmark
   $(".bookmark-navigator .previous-bookmark").on("click", function(e) {
     e.preventDefault();
@@ -705,7 +857,7 @@ function initClickListeners() {
     scroll(document.getElementById(actualPid), {align: {top: 0.2}}, (type) => {
       scrollComplete(`bookmark navigator previous-bookmark(${actualPid})`, type);
     });
-    updateNavigator(actualPid, "previous");
+    updateNavigator(actualPid, "previous", type);
   });
 
   $(".bookmark-navigator .next-bookmark").on("click", function(e) {
@@ -716,7 +868,7 @@ function initClickListeners() {
     scroll(document.getElementById(actualPid), {align: {top: 0.2}}, (type) => {
       scrollComplete(`bookmark navigator next-bookmark(${actualPid})`, type);
     });
-    updateNavigator(actualPid, "next");
+    updateNavigator(actualPid, "next", type);
   });
 
   $(".bookmark-navigator .current-bookmark").on("click", function(e) {
@@ -734,14 +886,33 @@ function initClickListeners() {
 
     $(".bookmark-navigator-wrapper").addClass("hide-bookmark-navigator");
     $(".transcript").removeClass("bookmark-navigator-active");
+
+    // remove paragraph highlight
+    if (type === "topic") {
+      $(".topic-navigator").removeClass("topic-navigator navigator-highlight navigator-highlight-top navigator-highlight-bottom navigator-highlight-middle");
+    }
+
+    // bookmarks are disabled when the topic navigator is active
+    // - enable bookmarks when the user is signed in and the
+    //   topic navigator is being closed.
+    if (type === "topic" && getUserInfo()) {
+      initBookmarkFeature(false, constants);
+    }
+
   });
 
   //highlights an annotation by wrapping it in a segment
   $(".bookmark-navigator").on("click", ".annotation-item", function(e) {
     e.preventDefault();
+    let userInfo = getUserInfo();
+
+    // allow sharing to signed in users only 
+    if (type === "topic") {
+      if (!userInfo) return;
+    }
+
     clearSelectedAnnotation();
 
-    let userInfo = getUserInfo();
     if (!userInfo) {
       userInfo = {userId: "xxx"};
     }
@@ -765,7 +936,13 @@ function initClickListeners() {
       aid = $(`#${pid} > span.pnum`).attr("data-aid");
     }
 
+    // this can be null when using topic navigator
+    if (!aid) {
+      aid = $(this).attr("data-creationDate");
+    }
+
     let url = `${location.origin}${location.pathname}?as=${pid}:${aid}:${userInfo.userId}`;
+    // console.log("share url: %s", url);
 
     let numericRange = rangeArray.map((r) => parseInt(r.substr(1),10));
     let annotationRange = range(numericRange[0], numericRange[1] + 1);
@@ -820,3 +997,9 @@ export function initNavigator(actualPid, constants) {
   teaching = constants;
   bookmarkManager(actualPid);
 }
+
+export function initTopicNavigator(topicInfo, constants) {
+  teaching = constants;
+  bookmarkTopicManager(topicInfo, constants);
+}
+

@@ -110,7 +110,7 @@ function loadBookmarksRequest(sid, el) {
   });
 }
 
-function generateHorizontalList(listArray, flat = false) {
+function generateHorizontalList(listArray, bm, flat = false) {
   if (!listArray || listArray.length === 0) {
     return `
       <div class="item">
@@ -121,7 +121,7 @@ function generateHorizontalList(listArray, flat = false) {
   return `
     ${listArray.map((item) => `
       <div class="item">
-        <em>${flat?item:item.topic}</em>
+        <em>${flat?item:`<a class="topic-summary ${item.summary?"summarized":""}" data-creationdate="${bm.creationDate}" data-sid="${bm.paraKey.substring(0,2)}" data-value="${item.value}" href="#">${item.topic}</a>`}</em>
       </div>
     `).join("")}
   `;
@@ -144,7 +144,7 @@ function generateSection(bm) {
         <a id="${bm.annotation.creationDate}" target="_blank" href="${bm.mgr.url}?v=${bm.mgr.pid}&key=${bm.paraKey}">${bm.mgr.title?bm.mgr.title:bm.mgr.url}</a>
         <br/>
         <div class="ui horizontal bulleted link list">
-          ${generateHorizontalList(bm.annotation.topicList)}
+          ${generateHorizontalList(bm.annotation.topicList, bm)}
         </div>
         ${bm.mgr.comment?"<br/>":""}
         ${bm.mgr.comment?bm.mgr.comment:""}
@@ -496,7 +496,14 @@ function initForm() {
         //bookmark has topic, replace the old topic and mark the bookmark
         //as being modified
         if (idx > -1) {
-          bm.annotation.topicList[idx] = newTopic;
+          let nt = Object.create({});
+          let summary = bm.annotation.topicList[idx].summary;
+          if (summary) {
+            nt.summary = summary;
+          }
+          nt.value = newTopic.value;
+          nt.topic = newTopic.topic;
+          bm.annotation.topicList[idx] = nt;
           bm.modified = true;
           markSourceModified(form.sid, "bookmark");
         }
@@ -535,6 +542,7 @@ function initForm() {
     topicManager.topicArray = actionManager.topicListNew.split(",");
     topicManager.condition = condition;
     topicManager.bookFilter = bookFilter;
+    topicManager.sid = sid;
 
     //generated html
     generateBookmarkText(matches, topicManager);
@@ -675,6 +683,148 @@ function initForm() {
   });
 }
 
+function findBookmark(info) {
+  let selectedBookmark = bookmarks[info.sid].find(bm => bm.creationDate === info.creationDate);
+  if (!selectedBookmark) {
+    console.error("Couldn't find bookmark to summarize. This shouldn't happen.");
+    notify.error("Couldn't find bookmark to summarize.");
+  }
+  return selectedBookmark;
+}
+
+function findTopic(bookmark, topicValue) {
+  let topic = bookmark.annotation.topicList.find(t => t.value === topicValue);
+  if (!topic) {
+    console.error("Couldn't find topic to summarize. This shouldn't happen.");
+    notify.error("Couldn't find topic to summarize.");
+  }
+  return topic;
+}
+
+function initSummaryForm(info) {
+  let form = $("#topic-summary-editor-form");
+
+  // find bookmark
+  let selectedBookmark = findBookmark(info);
+  if (selectedBookmark) {
+    //get summary
+    let topic = findTopic(selectedBookmark, info.topicValue);
+    if (topic && topic.summary) {
+      info.summary = topic.summary;
+      $("#topic-summary-editor-form .summary-delete").removeClass("disabled");
+    }
+  }
+
+  form.form("set values", info);
+}
+
+function initTopicSummaryEventHandler() {
+
+  $("#activity-report").on("click", ".topic-summary", function(e) {
+    e.stopPropagation();
+    e.preventDefault();
+
+    let userInfo = getUserInfo();
+    if (!userInfo) {
+      return;
+    }
+
+    if (isTopicSummaryEditorOpen()) {
+      return;
+    }
+
+    setTopicSummaryEditorOpen();
+
+    let summaryInfo = {};
+    summaryInfo.sid = $(this).attr("data-sid");
+    summaryInfo.creationDate = $(this).attr("data-creationdate");
+    summaryInfo.topicValue = $(this).attr("data-value");
+
+    // highlight selected topic
+    $(this).addClass("selected");
+    $(this).parents(".bookmark-header").append(getTopicSummaryForm());
+    initSummaryForm(summaryInfo);
+  });
+
+  //cancel button
+  $("#activity-report").on("click", "#topic-summary-editor-form .summary-cancel", function(e) {
+    e.stopPropagation();
+    e.preventDefault();
+
+    $(this).parents(".bookmark-header").find(".topic-summary.selected").removeClass("selected");
+    removeTopicSummaryEditor();
+    clearTopicSummaryEditorOpen();
+  });
+
+  //submit button
+  $("#activity-report").on("click", "#topic-summary-editor-form .summary-submit", function(e) {
+    e.stopPropagation();
+    e.preventDefault();
+
+    let info = $("#topic-summary-editor-form").form("get values");
+    info.summary = info.summary.trim();
+
+    removeTopicSummaryEditor();
+    clearTopicSummaryEditorOpen();
+
+    // console.log("summary: %s, summary length: %s", info.summary, info.summary.length);
+    if (info.summary.length === 0) {
+      $(".bookmark-header .topic-summary.selected").removeClass("selected");
+      return;
+    }
+
+    // guard against nefarious input
+    info.summary = purify(info.summary);
+
+    let bookmark = findBookmark(info);
+    if (bookmark) {
+      let topic = findTopic(bookmark, info.topicValue);
+      if (topic) {
+        // mark bookmark as summarized
+        bookmark.annotation.summarized = true;
+        topic.summary = info.summary;
+      }
+    }
+
+    // mark bookmark as modified
+    bookmark.modified = true;
+    markSourceModified(info.sid, "bookmark");
+
+    // mark topic as summarized
+    $(".bookmark-header .topic-summary.selected").addClass("summarized").removeClass("selected");
+  });
+
+  // delete button
+  $("#activity-report").on("click", ".summary-delete", function(e) {
+    e.stopPropagation();
+    e.preventDefault();
+
+    // console.log("summary delete clicked");
+    let info = $("#topic-summary-editor-form").form("get values");
+
+    removeTopicSummaryEditor();
+    clearTopicSummaryEditorOpen();
+    $(".bookmark-header .topic-summary.selected").removeClass("selected summarized");
+
+    let bookmark = findBookmark(info);
+    if (bookmark) {
+      let topic = findTopic(bookmark, info.topicValue);
+      if (topic) {
+        delete topic.summary;
+      }
+
+      let summaryExists = bookmark.annotation.topicList.find(t => t.summary);
+      if (!summaryExists) {
+        bookmark.annotation.summarized = false;
+      }
+    }
+
+    // mark bookmark as modified
+    bookmark.modified = true;
+    markSourceModified(info.sid, "bookmark");
+  });
+}
+
 function initManageQuoteEventHandler() {
 
   /*
@@ -780,6 +930,23 @@ function initManageQuoteEventHandler() {
     removeQuoteEditor();
     clearQuoteEditorOpen();
   });
+}
+
+function removeTopicSummaryEditor() {
+  $("#topic-summary-editor-form").remove();
+}
+
+function isTopicSummaryEditorOpen() {
+  return $("#activity-report").hasClass("topic-summary-editor-open");
+}
+
+
+function setTopicSummaryEditorOpen() {
+  $("#activity-report").addClass("topic-summary-editor-open");
+}
+
+function clearTopicSummaryEditorOpen() {
+  $("#activity-report").removeClass("topic-summary-editor-open");
 }
 
 function removeQuoteEditor() {
@@ -915,6 +1082,30 @@ function clearModified() {
   $("#applyChangesButtonNew").attr("disabled", "");
 }
 
+//rick
+function getTopicSummaryForm() {
+  let form = `
+    <form name="topic-summary-editor" id="topic-summary-editor-form" class="ui form">
+      <input class="hidden-field" type="text" readonly name="creationDate">
+      <input class="hidden-field" type="text" name="sid" readonly>
+      <input class="hidden-field" type="text" name="topicValue" readonly>
+      <div class="field">
+        <label>Summarized Annotation</label>
+        <textarea name="summary" placeholder="No summary yet." rows="5"></textarea>
+      </div>
+      <div class="fields">
+        <button class="summary-submit ui green button" type="submit">Add or Update</button>
+        <button class="summary-cancel ui red basic button">Cancel</button>
+        <div class="twelve wide field">
+          <button class="summary-delete ui red disabled right floated button">Delete</button>
+        </div>
+      </div>
+    </form>
+  `;
+
+  return form;
+}
+
 function getQuoteForm() {
   let form = `
     <form name="quote-editor" id="quote-editor-form" class="ui form">
@@ -976,6 +1167,7 @@ export function initializeTopicManager() {
 
   initForm();
   initManageQuoteEventHandler();
+  initTopicSummaryEventHandler();
   checkForUnsavedChanges();
 }
 

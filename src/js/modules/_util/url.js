@@ -80,6 +80,17 @@ export function showTOC() {
   }
 }
 
+export function showTopicBookmark() {
+  let pId = getQueryString("tnav");
+  let topic = getQueryString("topic");
+
+  if (pId) {
+    resetUrl();
+    return {pid: pId, topic: topic};
+  }
+  return null;
+}
+
 export function showBookmark() {
   let pId = getQueryString("bkmk");
 

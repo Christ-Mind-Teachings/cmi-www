@@ -1,9 +1,57 @@
 /* cmi styles */
 
 :root {
-  --masthead-color:#871212;
+  --masthead-color: #871212;
   --signed-in-color: green;
   --signed-in-background: #f1f1f7;
+}
+
+.topic .excerpt {
+  padding-left: 30px;
+  border-left: 5px solid deepskyblue;
+  margin-bottom: 20px;
+}
+
+.topic-summary.selected {
+  border: 1px solid var(--masthead-color);
+  border-radius: 8px;
+  padding: 0 5px;
+}
+
+.topic-summary.summarized {
+  text-decoration: underline;
+}
+
+.topic-summary.summarized:before {
+  content: "S) ";
+}
+
+div#activity-report {
+  padding-bottom: 300px;
+}
+
+/* topic summary indent */
+.cmi-tsi {
+  font-style: italic;
+  display: block;
+  margin-block-start: 1em;
+  margin-block-end: 1em;
+  margin-inline-start: 40px;
+  margin-inline-end: 40px;
+}
+
+.cmi-topic-title {
+  font-style: italic;
+  text-align: center;
+  padding-top: 2rem;
+}
+
+.ui.segments.topic-summary-list {
+  padding-bottom: 300px;
+}
+
+.ui.segments.topic-summary-list .segment {
+  font-size: 16px;
 }
 
 body {
@@ -107,7 +155,7 @@ i.toc-share.icon {
 /* add margin so the navigator does not hide a bookmark or search result */
 .transcript.ui.text.container.bookmark-navigator-active,
 .transcript.ui.text.container.search-navigator-active {
-  margin-bottom: 300px;
+  margin-bottom: 350px;
 }
 
 /* footer */
@@ -172,8 +220,10 @@ i.toc-share.icon {
   color: red;
 }
 
+.ui.form textarea,
 #activity-report p {
   font-size: 1.2rem;
+  line-height: 1.428;
 }
 
 #page-contents [data-tooltip] {

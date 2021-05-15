@@ -1,9 +1,13 @@
 /* transcript css */
-.transcript.ui.text.container,
 .transcript.ui.text.container .ui.segment {
   font-size: 20px;
   line-height: 1.5;
-  padding-bottom: 20rem;
+}
+
+.transcript.ui.text.container {
+  font-size: 20px;
+  line-height: 1.5;
+  padding-bottom: 22rem;
 }
 
 .clearBoth {
@@ -42,8 +46,35 @@
   display: none;
 }
 
-/* audio hilite */
+.topic-navigator {
+  background: beige;
+  color: black;
+  border-radius: 8px;
+  padding: 10px;
+}
 
+.topic-navigator.navigator-highlight {
+  border: 1px solid #252525;
+}
+
+.topic-navigator.navigator-highlight-top {
+  border-top: 1px solid #252525;
+  border-left: 1px solid #252525;
+  border-right: 1px solid #252525;
+}
+
+.topic-navigator.navigator-highlight-bottom {
+  border-bottom: 1px solid #252525;
+  border-left: 1px solid #252525;
+  border-right: 1px solid #252525;
+}
+
+.topic-navigator.navigator-highlight-middle {
+  border-left: 1px solid #252525;
+  border-right: 1px solid #252525;
+}
+
+/* audio hilite */
 .hilight {
   border: 1px dashed black;
   border-radius: 10px;

@@ -3,6 +3,10 @@ import {storeGet, storeSet} from "../_util/store";
 
 let storeKey;
 
+export function initTopicPage() {
+  initStickyMenu();
+}
+
 export function initTranscriptPage(key) {
   //local storage key to save paragraph number display state
   storeKey = key;

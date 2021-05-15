@@ -16,6 +16,38 @@ import difference from "lodash/difference";
 import {noMoreBookmarks, bookmarksLoaded} from "./topics";
 import {processBookmark} from "./bookmark";
 
+/**
+ * Convert paragraphKey from number to String and add
+ * zero's if needed so decimal part contains 3 digits.
+ */
+function toString(paraKey) {
+  let pk = `${paraKey}`;
+  let decimalPos = pk.indexOf(".");
+
+  if (decimalPos > -1) {
+    let fpart = pk.substring(decimalPos + 1);
+    //console.log("pk: %s, fpart: %s", pk, fpart);
+    switch (fpart.length) {
+      case 1:
+        pk = `${pk}00`;
+        break;
+      case 2:
+        pk = `${pk}0`;
+        break;
+      case 3:
+        // format is correct
+        break;
+      default:
+        // Houston, we've got a problem
+        // console.err(`paragraph key format error: ${pk}`);
+        break;
+    }
+  }
+  // console.log("pk returned: %s", pk);
+
+  return pk;
+}
+
 export class BookmarkLocalStore {
   /**
    * Add list of bookmarks on page to this.list and add the topics for each
@@ -223,9 +255,14 @@ export class BookmarkLocalStore {
    * @param {string} - creationDate
    * @param {object} - annotation (the bookmark)
    */
+
   addItem(userId, paraKey, creationDate, annotation) {
     let pid = annotation.rangeStart;
     let id = parseInt(pid.substr(1), 10);
+
+    if (typeof paraKey === "number") {
+      paraKey = toString(paraKey);
+    }
 
     if (annotation.status === "new") {
       annotation.creationDate = creationDate;
