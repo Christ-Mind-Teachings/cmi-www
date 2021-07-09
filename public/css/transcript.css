@@ -46,7 +46,14 @@
   display: none;
 }
 
-.topic-navigator {
+.rick.topic-navigator {
+  background: beige;
+  color: black;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.navigator-highlight {
   background: beige;
   color: black;
   border-radius: 8px;

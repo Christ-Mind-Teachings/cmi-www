@@ -1,11 +1,24 @@
 import {getAnnotations} from "../_ajax/annotation";
 import {storeSet} from "../_util/store"
+import {parse} from "../_util/frontMatter";
 
 function generateSegment(summaryElement) {
-  // <a href="${summaryElement.url}" target="_blank"><i class="linkify icon"></i></a>
+  let info = parse(summaryElement.summary);
+  // console.log("info: %o", info);
+  if (info.data.title) {
+    return (`
+      <div class="ui segment">
+        <h3 class="ui header">
+          <a href="${summaryElement.url}" title="${summaryElement.title}" target="_blank"><i class="linkify icon"></i></a> ${info.data.title}
+        </h3>
+        <p>${info.content}</p>
+      </div>
+    `);
+  }
+
   return (`
     <div class="ui segment">
-      <p><a href="${summaryElement.url}" title="${summaryElement.title}" target="_blank"><i class="linkify icon"></i></a> ${summaryElement.summary}</p>
+      <p><a href="${summaryElement.url}" title="${summaryElement.title}" target="_blank"><i class="linkify icon"></i></a> ${info.content}</p>
     </div>
   `);
 }
@@ -52,6 +65,23 @@ export async function getTopicList(ownerId, keyInfo) {
   let key = $("body").attr("data-key");
   let topic = $("body").attr("data-topic");
 
+  // not a topic page
+  if (!topic) {
+    return;
+  }
+
+  if (topic.startsWith("x")) {
+    $(".topic-summary-list").html(`
+      <div class="ui warning message">
+        <div class="header">
+          Under Construction
+        </div>
+        Topic: ${topic.substring(1)} is not ready yet.
+      </div>
+    `);
+    return;
+  }
+
   try {
     // let {topicTotal, summary} = await getTopicSummaries(key, topic, ownerId);
     let topicList = await getAnnotations(ownerId, key, topic);
@@ -82,7 +112,7 @@ export async function getTopicList(ownerId, keyInfo) {
       s.url = `${keyInfo.getUrl(s.paraKey, true)}?tnav=${s.pid}&topic=${topic}`; 
     });
 
-    console.log("summary: %o", summary);
+    // console.log("summary: %o", summary);
 
     let html = generateSummaryList(summary);
     $(".topic-summary-list").html(html);

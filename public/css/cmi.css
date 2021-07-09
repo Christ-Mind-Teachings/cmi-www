@@ -26,7 +26,8 @@
   content: "S) ";
 }
 
-div#activity-report {
+div#activity-report,
+div.topic-welcome {
   padding-bottom: 300px;
 }
 

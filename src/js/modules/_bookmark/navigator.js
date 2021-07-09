@@ -816,29 +816,20 @@ function highlightParagraph(pid, rangeStart, rangeEnd, creationDate) {
   let rEnd = parseInt(rangeEnd.substr(1), 10);
 
   // remove highlight from previous paragraph, if any
-  $(".topic-navigator").removeClass("topic-navigator navigator-highlight navigator-highlight-top navigator-highlight-bottom navigator-highlight-middle");
+  $(".topic-navigator").unwrap();
+  $(".topic-navigator").removeClass("topic-navigator");
 
-  // annotation has 1 paragraph
-  if (rStart === rEnd) {
-    $(`#${pid}`).addClass("topic-navigator navigator-highlight");
-    return;
+  for (let i = rStart; i <= rEnd; i++) {
+    let p = $(`#p${i}`);
+    if (p.parent().is("blockquote")) {
+      p.parent().addClass("topic-navigator");
+    }
+    else {
+      p.addClass("topic-navigator");
+    }
   }
 
-  // annotation has two paragraphs 
-  if (rEnd - rStart === 1) {
-    $(`#${pid}`).addClass("topic-navigator navigator-highlight-top");
-    $(`#p${rEnd}`).addClass("topic-navigator navigator-highlight-bottom");
-    return;
-  }
-
-  // annotation has more than two paragraphs
-  $(`#${pid}`).addClass("topic-navigator navigator-highlight-top");
-  $(`#p${rEnd}`).addClass("topic-navigator navigator-highlight-bottom");
-
-  for (let i = rStart + 1; i < rEnd; i++) {
-    $(`#p${i}`).addClass("topic-navigator navigator-highlight-middle");
-  }
-
+  $(".topic-navigator").wrapAll("<div class='navigator-highlight' />");
 }
 
 
@@ -889,7 +880,9 @@ function initClickListeners(type, constants) {
 
     // remove paragraph highlight
     if (type === "topic") {
-      $(".topic-navigator").removeClass("topic-navigator navigator-highlight navigator-highlight-top navigator-highlight-bottom navigator-highlight-middle");
+      $(".topic-navigator").unwrap();
+      $(".topic-navigator").removeClass("topic-navigator");
+      //$(".topic-navigator").removeClass("topic-navigator navigator-highlight navigator-highlight-top navigator-highlight-bottom navigator-highlight-middle");
     }
 
     // bookmarks are disabled when the topic navigator is active
