@@ -256,6 +256,28 @@
       {
         "value": "1704",
         "name": "Book 4: Wisdom"
+      },
+      {
+        "value": "1705",
+        "name": "Book 5: The Holy Dwelling"
+      }
+    ]
+  },
+  {
+    "sid": "18",
+    "title": "From the Christ Mind",
+    "books": [
+      {
+        "value": "*",
+        "name": "All Books"
+      },
+      {
+        "value": "1801",
+        "name": "From the Christ Mind"
+      },
+      {
+        "value": "1802",
+        "name": "From the Christ Mind: Book II"
       }
     ]
   }

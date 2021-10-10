@@ -10,6 +10,8 @@ fb:
     - "cmi/acim-toc.jpg"
     - "cmi/acimoe-toc.jpg"
     - "cmi/acol-toc.jpg"
+    - "cmi/col-toc.jpg"
+    - "cmi/ftcm-toc.jpg"
     - "cmi/jsb-toc.jpg"
     - "cmi/raj-toc.jpg"
     - "cmi/wom-toc.jpg"
@@ -94,12 +96,12 @@ each page. Video documentation is also available.
       </div>
     </div>
     <div class="card">
-      <a id="raj-christmind-info" href="/t/raj/" class="image" data-tooltip="Click to view the Raj Material." data-position="bottom center">
-        <img src="/public/img/cmi/raj-big.jpg">
+      <a id="ftcm-christmind-info" href="/t/ftcm/" class="image" data-tooltip="Click to view From the Christ Mind" data-position="bottom center">
+        <img src="/public/img/cmi/ftcm-big.jpg">
       </a>
       <div class="content">
         <div class="description">
-          <em>The Raj Material</em>
+          <em>From the Christ Mind</em>
         </div>
       </div>
     </div>
@@ -110,6 +112,16 @@ each page. Video documentation is also available.
       <div class="content">
         <div class="description">
           <em>The Way of Mastery</em> in Polish
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <a id="raj-christmind-info" href="/t/raj/" class="image" data-tooltip="Click to view the Raj Material." data-position="bottom center">
+        <img src="/public/img/cmi/raj-big.jpg">
+      </a>
+      <div class="content">
+        <div class="description">
+          <em>The Raj Material</em>
         </div>
       </div>
     </div>

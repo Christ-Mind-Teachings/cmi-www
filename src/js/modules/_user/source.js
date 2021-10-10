@@ -6,7 +6,9 @@ export default {
     "13": "The Raj Material",
     "14": "A Course Of Love",
     "15": "ACIM Original Edition",
-    "16": "Droga Mistrzostwa"
+    "16": "Droga Mistrzostwa",
+    "17": "Choose Only Love",
+    "18": "From the Christ Mind"
   },
   "12": [
     {
@@ -212,6 +214,18 @@ export default {
     {
       "value": "1605",
       "name": "Droga Poznania"
+    }
+  ],
+  "17": [
+    {
+      "value": "*",
+      "name": "All Books"
+    }
+  ],
+  "18": [
+    {
+      "value": "*",
+      "name": "All Books"
     }
   ]
 };

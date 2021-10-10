@@ -8,14 +8,18 @@ const rajKey = require("raj/modules/_config/key");
 const jsbKey = require("jsb/modules/_config/key");
 const womKey = require("wom/modules/_config/key");
 const pwomKey = require("pwom/modules/_config/key");
+const colKey = require("col/modules/_config/key");
+const ftcmKey = require("ftcm/modules/_config/key");
 
-const ACIMSOURCEID = "12";
-const OESOURCEID = "15";
-const ACOLSOURCEID = "14";
-const RAJSOURCEID = "13";
 const WOMSOURCEID = "10";
-const PWOMSOURCEID = "16";
 const JSBSOURCEID = "11";
+const ACIMSOURCEID = "12";
+const RAJSOURCEID = "13";
+const ACOLSOURCEID = "14";
+const OESOURCEID = "15";
+const PWOMSOURCEID = "16";
+const COLSOURCEID = "17";
+const FTCMSOURCEID = "18";
 
 /*
 export function getConfig(key) {
