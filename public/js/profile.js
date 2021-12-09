@@ -783,13 +783,14 @@ function generateContent(content) {
       </p>
     `).join("")}
   `;
-}
+} //~${bm.paraKey}${bm.mgr.type === "note"?"":`:${bm.annotation.creationDate}:${bm.annotation.rangeStart}`}
+
 
 function generateSection(bm) {
   return `
     <div class="ui vertical segment bookmark-segment ${bm.mgr.type}">
       <div class="ui small header bookmark-header">
-        <a id="${bm.annotation.creationDate}" target="_blank" href="${bm.mgr.url}?v=${bm.mgr.pid}&key=${bm.paraKey}">${bm.mgr.title ? bm.mgr.title : bm.mgr.url}</a>
+        <a id="${bm.annotation.creationDate}" target="_blank" title="Link opens in new tab" href="${bm.mgr.url}?v=${bm.mgr.pid}&key=${bm.paraKey}">${bm.mgr.title ? bm.mgr.title : bm.mgr.url} <i class="external alternate icon"></i></a>
         <br/>
         <div class="ui horizontal bulleted link list">
           ${generateHorizontalList(bm.annotation.topicList, bm)}
@@ -798,8 +799,8 @@ function generateSection(bm) {
         ${bm.mgr.comment ? bm.mgr.comment : ""}
       </div>
       ${generateContent(bm.mgr.content)}
-      <p ${bm.mgr.type !== "note" ? `class='cmi-manage-quote ${bm.annotation.quote ? "in-database" : ""} ${bm.annotation.creationDate}'` : ""}>
-        ~${bm.paraKey}${bm.mgr.type === "note" ? "" : `:${bm.annotation.creationDate}:${bm.annotation.rangeStart}`}
+      <p ${bm.mgr.type !== "note" ? `class='cmi-manage-quote ${bm.annotation.quote ? "in-database" : ""} ${bm.annotation.creationDate}' data-quoteid="${bm.paraKey}:${bm.annotation.creationDate}:${bm.annotation.rangeStart}"` : ""}>
+        ~${bm.mgr.type === "note" ? `${bm.paraKey}` : `${bm.annotation.quote ? " Update Quote" : " Create Quote"}`}
       </p>
     </div>
   `;
@@ -858,6 +859,10 @@ function loadData(sid) {
       bookmarks[sid] = bmList; //initialize to not modified
 
       bookmarks[sid].forEach(i => {
+        if (i.annotation.quote) {
+          i.quote = i.annotation.quote;
+        }
+
         i.modified = false;
       });
       toastr__WEBPACK_IMPORTED_MODULE_0___default.a.success(`${bookmarks[sid].length} bookmarks loaded`);
@@ -1269,6 +1274,11 @@ function initForm() {
     modified.bookmarks.forEach(m => {
       delete m.modified;
       delete m.pid;
+
+      if (m.quote) {
+        m.annotation.quote = m.quote;
+      }
+
       results.push(Object(_ajax_annotation__WEBPACK_IMPORTED_MODULE_4__["updateAnnotation"])(m));
     });
     Promise.all(results).then(responses => {
@@ -1450,9 +1460,11 @@ function initManageQuoteEventHandler() {
     }
 
     setQuoteEditorOpen();
-    let quoteInfo = {};
-    let citation = $(this).text().trim();
-    let [parakey, annotationId, pid] = citation.substr(1).split(":");
+    let quoteInfo = {}; // let citation = $(this).text().trim();
+    //let [parakey, annotationId, pid] = citation.substr(1).split(":");
+
+    let citation = $(this).data("quoteid").trim();
+    let [parakey, annotationId, pid] = citation.split(":");
     let quote = $(this).prev("p").text().trim().replace(/\r?\n|\r/g, " ");
     quoteInfo.parakey = parakey;
     quoteInfo.annotationId = annotationId;
@@ -1562,9 +1574,10 @@ function clearQuoteEditorOpen() {
 function markAsInDB(paraKey, creationDate, modified = true) {
   if (modified) {
     markModified(paraKey, creationDate, true);
+    $(`.${creationDate}`).addClass("in-database").text("~ Update Quote");
+  } else {
+    $(`.${creationDate}`).addClass("in-database");
   }
-
-  $(`.${creationDate}`).addClass("in-database");
 }
 /*
  * Indicate bookmark is not in the quote db and
@@ -1574,7 +1587,7 @@ function markAsInDB(paraKey, creationDate, modified = true) {
 
 function markAsNotInDB(paraKey, creationDate) {
   markModified(paraKey, creationDate, false);
-  $(`.${creationDate}`).removeClass("in-database");
+  $(`.${creationDate}`).removeClass("in-database").text("~ Create Quote");
 }
 
 async function initQuoteForm(info) {
@@ -1587,8 +1600,7 @@ async function initQuoteForm(info) {
     if (response.q) {
       info.database = response.q.quote;
       $("#quote-editor-form .quote-delete").removeClass("disabled");
-      $("#quote-editor-form button.quote-submit").text("Update Quote");
-      markAsInDB(info.parakey, info.annotationId, false);
+      $("#quote-editor-form button.quote-submit").text("Update Quote"); //markAsInDB(info.parakey, info.annotationId, false);
     }
 
     $("#quote-editor-form").removeClass("loading");

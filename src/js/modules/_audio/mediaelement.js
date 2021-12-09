@@ -69,6 +69,7 @@ function setEventListeners(player, userStatus, haveTimingData) {
   */
   player.media.addEventListener("timeupdate", function() {
     var time = player.getCurrentTime();
+    // console.log("duration: %s", player.duration);
 
     if (haveTimingData) {
       focus.setCurrentPlaybackTime(time);

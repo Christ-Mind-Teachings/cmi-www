@@ -228,6 +228,7 @@ export function highlight(annotation, toNode = document.body) {
             catch(err) {
               console.error("highlight catch bloc: err: %o", err);
               console.log("annotation: %o", annotation);
+              return false;
               /*
               selector.end--;
               range = textPosition.toRange(toNode, selector);
@@ -238,6 +239,7 @@ export function highlight(annotation, toNode = document.body) {
           break;
       }
     }
+    return true;
   }
 }
 
@@ -354,7 +356,12 @@ function processSelection(selection) {
       }
     }
 
-    highlight(selectedText, pNode);
+    //if highlight fails notify user and return without 
+    //creating annotation
+    if (!highlight(selectedText, pNode)) {
+      notify.info("Failed to highlight text. Try a shorter selection.");
+      return;
+    }
 
     //persist annotation
     pageAnnotations[selectedText.id] = selectedText;

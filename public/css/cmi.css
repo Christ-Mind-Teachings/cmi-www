@@ -4,6 +4,7 @@
   --masthead-color: #871212;
   --signed-in-color: green;
   --signed-in-background: #f1f1f7;
+  --signed-out-background: #f1f1f7;
 }
 
 .topic .excerpt {
@@ -112,8 +113,19 @@ body {
   box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.2);
 }
 
-.signed-in {
+#page-menu.signed-in,
+#topic-menu.signed-in,
+#transcript-menu.signed-in
+{
   background-color: var(--signed-in-background);
+  border-radius: 5px;
+}
+
+#page-menu:not(.signed-in),
+#topic-menu:not(.signed-in),
+#transcript-menu:not(.signed-in)
+{
+  background-color: var(--signed-out-background);
   border-radius: 5px;
 }
 

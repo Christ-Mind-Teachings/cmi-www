@@ -9,6 +9,7 @@ const jsbKey = require("jsb/modules/_config/key");
 const womKey = require("wom/modules/_config/key");
 const pwomKey = require("pwom/modules/_config/key");
 const colKey = require("col/modules/_config/key");
+const ftcmKey = require("ftcm/modules/_config/key");
 
 const WOMSOURCEID  = "10";
 const JSBSOURCEID  = "11";
@@ -18,6 +19,7 @@ const ACOLSOURCEID = "14";
 const OESOURCEID   = "15";
 const PWOMSOURCEID = "16";
 const COLSOURCEID  = "17";
+const FTCMSOURCEID  = "18";
 
 /**
  * Get the url for the page identified by "key"
@@ -53,6 +55,9 @@ export function getUrlByPageKey(key) {
   }
   if (key.startsWith(COLSOURCEID)) {
     return colKey.getUrl(key, true);
+  }
+  if (key.startsWith(FTCMSOURCEID)) {
+    return ftcmKey.getUrl(key, true);
   }
 
   throw new Error(`getUrlByPageKey(${key}): invalid key`);

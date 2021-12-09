@@ -97,7 +97,7 @@ each page. Video documentation is also available.
     </div>
     <div class="card">
       <a id="ftcm-christmind-info" href="/t/ftcm/" class="image" data-tooltip="Click to view From the Christ Mind" data-position="bottom center">
-        <img src="/public/img/cmi/ftcm-big.jpg">
+        <img src="/public/img/cmi/ftcm2-big.jpg">
       </a>
       <div class="content">
         <div class="description">
