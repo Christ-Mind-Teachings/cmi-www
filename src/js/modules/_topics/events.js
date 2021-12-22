@@ -38,8 +38,14 @@ function showQuote(q) {
   let quote = q.quote;
 
   if (!q.quote) {
+    q.citation = "Make Your Own Quotes";
+    q.url = "/acq/quotes";
+    quote = "No quotes have been defined yet. Did you know you can define your own? See documentation at the link below.";
+
+    /*
     cancelLoading();
     return;
+    */
   }
 
   if (!quote.includes("<p>")) {
@@ -81,7 +87,8 @@ function loadQuotes(qm, constants, userInfo) {
       qm.addQuotes(q0);
 
       if (responses[1].length > 0) {
-        let q1 = new RandomQuotes(userInfo.name, userInfo.userId, constants.sourceId); 
+        //let q1 = new RandomQuotes(userInfo.name, userInfo.userId, constants.sourceId); 
+        let q1 = new RandomQuotes("My Quotes", userInfo.userId, constants.sourceId); 
         q1.qIds = responses[1];
         qm.addQuotes(q1);
 

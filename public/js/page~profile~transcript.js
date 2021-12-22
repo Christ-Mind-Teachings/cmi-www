@@ -9160,7 +9160,7 @@ const keyLength = 7; // books (bid)
 const books = ["acq", "profile"];
 const bookIds = ["xxx", ...books];
 const profile = ["xxx", "email", "topicMgt"];
-const acq = ["xxx", "welcome", "overview", "quick", "bookmark", "search", "audio", "accounts", "profile", "video", "email", "tech", "contact"];
+const acq = ["xxx", "welcome", "overview", "quick", "quotes", "bookmark", "search", "audio", "accounts", "profile", "video", "email", "tech", "contact"];
 const contents = {
   acq: acq,
   profile: profile
@@ -9436,8 +9436,8 @@ module.exports = {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "status", function() { return status; });
 const status = {
-  acq: "Tue Mar 26 00:01:19 HST 2019",
-  profile: "Tue Jan 21 14:24:49 HST 2020"
+  acq: "Mon Dec 13 13:30:29 HST 2021",
+  profile: "Sat Feb 22 16:46:35 HST 2020"
 };
 
 /***/ }),
@@ -10055,6 +10055,18 @@ function scrollIntoView(id, caller) {
     scrollComplete(`scroll from search navigator ${caller}(${id})`, type);
   });
 }
+/**
+ * Remove <mark> highlighting search terms when search navigator closes
+ */
+
+
+function clearMarks() {
+  let marks = document.querySelectorAll("mark.show-mark");
+
+  for (let mark of marks) {
+    mark.outerHTML = mark.innerHTML;
+  }
+}
 
 class PageMatches {
   constructor(query, start, end, hits) {
@@ -10194,6 +10206,7 @@ function initClickListeners(matches) {
     e.preventDefault();
     $(".search-navigator-wrapper").addClass("hide-search-navigator");
     $(".transcript").removeClass("search-navigator-active");
+    clearMarks();
   });
 }
 /*

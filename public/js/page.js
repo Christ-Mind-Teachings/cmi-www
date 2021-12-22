@@ -240,9 +240,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_language_lang__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./modules/_language/lang */ "./src/js/modules/_language/lang.js");
 /* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./constants */ "./src/js/constants.js");
 /* eslint no-console: off */
- //import "../vendor/semantic/semantic.min.js";
-//import "../../public/vendor/semantic/semantic.js";
-//common modules
+ //common modules
 
 
 

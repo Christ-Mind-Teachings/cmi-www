@@ -1,7 +1,5 @@
 /* eslint no-console: off */
 import {storeInit} from "./modules/_util/store";
-//import "../vendor/semantic/semantic.min.js";
-//import "../../public/vendor/semantic/semantic.js";
 
 //common modules
 import auth from "./modules/_user/netlify";

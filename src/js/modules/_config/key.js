@@ -35,7 +35,7 @@ const books = ["acq", "profile" ];
 
 const bookIds = ["xxx", ...books];
 const profile = ["xxx", "email", "topicMgt"];
-const acq = ["xxx", "welcome", "overview", "quick", "bookmark", "search", "audio",
+const acq = ["xxx", "welcome", "overview", "quick", "quotes", "bookmark", "search", "audio",
   "accounts", "profile", "video", "email", "tech", "contact"];
 
 const contents = {

@@ -18,6 +18,16 @@ function scrollIntoView(id, caller) {
   });
 }
 
+/**
+ * Remove <mark> highlighting search terms when search navigator closes
+ */
+function clearMarks() {
+  let marks = document.querySelectorAll("mark.show-mark");
+  for (let mark of marks) {
+    mark.outerHTML = mark.innerHTML;
+  }
+}
+
 class PageMatches {
   constructor(query, start, end, hits) {
     this.query = query;
@@ -154,6 +164,7 @@ function initClickListeners(matches) {
 
     $(".search-navigator-wrapper").addClass("hide-search-navigator");
     $(".transcript").removeClass("search-navigator-active");
+    clearMarks();
   });
 }
 
