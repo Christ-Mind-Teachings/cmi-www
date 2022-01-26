@@ -3,17 +3,22 @@ import scroll from "scroll-into-view";
 //timeout interval before calling scroll
 const INTERVAL = 250;
 
-// get query string from window.location unless the arg 'qString' is not
-// null, in that case it represents the query string
-function getQueryString(key, qString) {
-  let queryString;
+//save auery string for subsequent calls
+let qString = "";
 
-  if (qString) {
-    queryString = qString.substring(1);
+/*
+ * Get query string from url and store it incase url is reset
+ */
+function getQueryString(key) {
+  let queryString = window.location.search.substring(1);
+
+  if (queryString.length === 0) {
+    queryString = qString;
   }
   else {
-    queryString = window.location.search.substring(1);
+    qString = queryString;
   }
+
   let vars = queryString.split("&");
 
   for(let i=0; i<vars.length; i++) {
@@ -66,6 +71,25 @@ export function showParagraph() {
   if (pId) {
     setTimeout(scrollIntoView, INTERVAL, pId, "showParagraph");
     resetUrl();
+  }
+}
+
+/*
+ * When url contains 'ro=<something>' we don't load audio or bookmarks
+ */
+export function isReadOnly() {
+  let value = getQueryString("ro");
+  if (value) {
+    resetUrl();
+    return true;
+  }
+  return false;
+}
+
+export function setBackgroundColor() {
+  let value = getQueryString("bc");
+  if (value) {
+    return value;
   }
 }
 

@@ -11975,7 +11975,7 @@ function storeInit(config) {
 /*!*************************************!*\
   !*** ./src/js/modules/_util/url.js ***!
   \*************************************/
-/*! exports provided: loadComplete, loadStart, showParagraph, showTOC, showTopicBookmark, showBookmark, showSearchMatch, showAnnotation, getUser */
+/*! exports provided: loadComplete, loadStart, showParagraph, isReadOnly, setBackgroundColor, showTOC, showTopicBookmark, showBookmark, showSearchMatch, showAnnotation, getUser */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -11983,6 +11983,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "loadComplete", function() { return loadComplete; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "loadStart", function() { return loadStart; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "showParagraph", function() { return showParagraph; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isReadOnly", function() { return isReadOnly; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setBackgroundColor", function() { return setBackgroundColor; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "showTOC", function() { return showTOC; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "showTopicBookmark", function() { return showTopicBookmark; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "showBookmark", function() { return showBookmark; });
@@ -11993,16 +11995,20 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var scroll_into_view__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(scroll_into_view__WEBPACK_IMPORTED_MODULE_0__);
  //timeout interval before calling scroll
 
-const INTERVAL = 250; // get query string from window.location unless the arg 'qString' is not
-// null, in that case it represents the query string
+const INTERVAL = 250; //save auery string for subsequent calls
 
-function getQueryString(key, qString) {
-  let queryString;
+let qString = "";
+/*
+ * Get query string from url and store it incase url is reset
+ */
 
-  if (qString) {
-    queryString = qString.substring(1);
+function getQueryString(key) {
+  let queryString = window.location.search.substring(1);
+
+  if (queryString.length === 0) {
+    queryString = qString;
   } else {
-    queryString = window.location.search.substring(1);
+    qString = queryString;
   }
 
   let vars = queryString.split("&");
@@ -12062,6 +12068,27 @@ function showParagraph() {
   if (pId) {
     setTimeout(scrollIntoView, INTERVAL, pId, "showParagraph");
     resetUrl();
+  }
+}
+/*
+ * When url contains 'ro=<something>' we don't load audio or bookmarks
+ */
+
+function isReadOnly() {
+  let value = getQueryString("ro");
+
+  if (value) {
+    resetUrl();
+    return true;
+  }
+
+  return false;
+}
+function setBackgroundColor() {
+  let value = getQueryString("bc");
+
+  if (value) {
+    return value;
   }
 }
 /*
