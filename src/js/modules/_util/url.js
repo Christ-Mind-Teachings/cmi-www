@@ -104,6 +104,34 @@ export function showTOC() {
   }
 }
 
+/*
+ * Open search dialog on page load.
+ * - Intended for teaching home page
+ */
+export function showSearch() {
+  let show = getQueryString("search");
+  console.log("showSearch %s", show);
+  if (show) {
+    resetUrl();
+    $("#search-modal-open").trigger("click");
+  }
+}
+
+/*
+ * Open quote dialog on page load
+ * - Must be used on home pages
+ */
+export function showQuotes() {
+  let show = getQueryString("quotes");
+  console.log("showQuotes %s", show);
+  if (show) {
+    resetUrl();
+    setTimeout(() => {
+      $("#show-quote-button").trigger("click");
+    }, 500);
+  }
+}
+
 export function showTopicBookmark() {
   let pId = getQueryString("tnav");
   let topic = getQueryString("topic");

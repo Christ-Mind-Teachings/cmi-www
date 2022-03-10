@@ -8,4 +8,6 @@ project/
 *.map
 *.old
 t/
+ruby-version-old
+runOnInitialInstall.sh
 
