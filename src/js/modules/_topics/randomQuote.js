@@ -15,6 +15,14 @@ export class QuoteManager {
   }
 
   getRandomQuote() {
+    //this can happen when quote dialog is shown on page load
+    if (this.ptr === -1) {
+      return Promise.resolve( {
+        citation: "It should be okay now",
+        quote: "Waiting for Quotes to download. Please click the 'Display Another Quote' button to continue.",
+        url: ""
+      });
+    }
     return this.quotes[this.ptr].getRandomQuote();
   }
 
