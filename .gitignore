@@ -10,4 +10,8 @@ project/
 t/
 ruby-version-old
 runOnInitialInstall.sh
-
+public/js/page.js
+public/js/page~profile~transcript.js
+public/js/profile.js
+public/js/transcript.js
+public/js/vendors~page~profile~transcript.js
