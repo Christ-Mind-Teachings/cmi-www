@@ -11,10 +11,21 @@ export function initTranscriptPage(key) {
   //local storage key to save paragraph number display state
   storeKey = key;
 
+  //test if browser is mobile based on the css media query
+  const isMobile = window.matchMedia("only screen and (max-width: 768px)").matches;
+
+  if (isMobile) {
+    initMobileSpecifics();
+  }
+
   initStickyMenu();
   labelParagraphs();
   setParagraphNumberDisplayState();
   createParagraphNumberToggleListener();
+}
+
+function initMobileSpecifics() {
+  $("#transcript-menu-large").remove();
 }
 
 /*
@@ -139,9 +150,24 @@ export function initStickyMenu() {
     }
   });
 
+  $("#transcript-menu-mobile").visibility({
+    type: "fixed",
+    onFixed: function(el) {
+      //console.log("menu is fixed");
+    },
+    onUnfixed: function(el) {
+      //console.log("menu is un fixed");
+    }
+  });
+
   // show dropdown on hover
   $(".main.menu  .ui.dropdown").dropdown({
     on: "hover"
+  });
+
+  // show dropdown on click on mobile
+  $("#transcript-menu-mobile .ui.buttons  .ui.dropdown").dropdown({
+    on: "click"
   });
 
   // enable tabs on source pages

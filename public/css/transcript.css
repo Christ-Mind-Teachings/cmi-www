@@ -255,3 +255,59 @@
 i.linkify.bm-link-list.icon {
   cursor: pointer;
 }
+
+@media only screen and (max-width: 767.98px) {
+
+  ol {
+    padding-left: 0px;
+    list-style: none;
+  }
+
+  .ui[class*="very padded"].segment {
+    padding: 0.5em;
+    font-size: 1.3rem;
+  }
+
+  .ui.ui.ui.container:not(.fluid) {
+    margin-top:1em;
+  }
+
+  .cmi-header-breadcrumb.ui.big.breadcrumb {
+    margin-bottom: 10px;
+  }
+
+  .ui.breadcrumb .section {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    white-space: nowrap;
+  }
+
+  .ui.breadcrumb #src-title.section {
+    max-width: 70px;
+  }
+
+  .main.container {
+    margin-top: 1em;
+  }
+
+  #transcript-menu-large {
+    display: none;
+  }
+
+  #transcript-top-bar, #transcript-bottom-bar {
+    width:100%;
+    background: #fff;
+  }
+
+  #masthead-title {
+    text-align: left !important;
+    font-size: 1.8rem;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  #transcript-menu-mobile {
+    display: none;
+  }
+}
