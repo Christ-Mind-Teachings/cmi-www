@@ -303,7 +303,7 @@ i.toc-share.icon {
 
 #quote-modal-content.silver-diagonal {
   /* Permalink: https://colorzilla.com/gradient-editor/#f5f6f6+0,dbdce2+21,b8bac6+49,dddfe3+80,f5f6f6+100;Grey+Pipe */
-  background: linear-gradient(135deg,  rgba(245,246,246,1) 0%,rgba(219,220,226,1) 21%,rgba(184,186,198,1) 49%,rgba(221,223,227,1) 80%,rgba(245,246,246,1) 100%); 
+  background: linear-gradient(135deg,  rgba(245,246,246,1) 0%,rgba(219,220,226,1) 21%,rgba(184,186,198,1) 49%,rgba(221,223,227,1) 80%,rgba(245,246,246,1) 100%);
 }
 
 #quote-modal-content.wax-diagonal {
@@ -405,6 +405,13 @@ a.login-menu-option-guest.item.hide.ui.floated,
 a.requires-signin.hide.ui.item {
   display: none;
 }
+
+button.login-menu-option-account.hide.dropdown.ui,
+button.login-menu-option-guest.hide.ui,
+button.requires-signin.hide.ui {
+  display: none;
+}
+
 
 #condition-toggle.ui.checkbox.toggle {
   margin-top: 8px;
