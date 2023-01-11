@@ -17,10 +17,11 @@ export class QuoteManager {
   getRandomQuote() {
     //this can happen when quote dialog is shown on page load
     if (this.ptr === -1) {
+      let icon = "<i class='circular inverted green left quote icon'></i>";
       return Promise.resolve( {
         citation: "It should be okay now",
-        quote: "Waiting for Quotes to download. Please click the 'Display Another Quote' button to continue.",
-        url: ""
+        quote: `Waiting for Quotes to download. Please click the 'Display Another Quote' <span>${icon}</span> button below to continue.`,
+        url: "nolink"
       });
     }
     return this.quotes[this.ptr].getRandomQuote();

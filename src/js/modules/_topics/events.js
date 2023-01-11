@@ -52,16 +52,31 @@ function showQuote(q) {
     quote = `<p>${quote}</p>`;
   }
 
-  let html = `
-    <blockquote>
-      ${quote}
-      <footer>
-        <a href="${q.url}" title="${getString("quote:g2s")}" target="_blank">
+  let html;
+
+  //don't create a link when there's not a real quote
+  if (q.url === "nolink") {
+    html = `
+      <blockquote>
+        ${quote}
+        <footer>
           ~ ${q.citation}
-        </a>
-      </footer>
-    </blockquote>
-    `;
+        </footer>
+      </blockquote>
+      `;
+  }
+  else {
+    html = `
+      <blockquote>
+        ${quote}
+        <footer>
+          <a href="${q.url}" title="${getString("quote:g2s")}" target="_blank">
+            ~ ${q.citation}
+          </a>
+        </footer>
+      </blockquote>
+      `;
+  }
 
   $("#quote-modal-content").html(html).attr("class", `content ${getRandomStyle()}`);
   cancelLoading();
