@@ -110,7 +110,7 @@ export function showTOC() {
  */
 export function showSearch() {
   let show = getQueryString("search");
-  console.log("showSearch %s", show);
+  //console.log("showSearch %s", show);
   if (show) {
     resetUrl();
     $("#search-modal-open").trigger("click");
@@ -123,7 +123,7 @@ export function showSearch() {
  */
 export function showQuotes() {
   let show = getQueryString("quotes");
-  console.log("showQuotes %s", show);
+  //console.log("showQuotes %s", show);
   if (show) {
     resetUrl();
     setTimeout(() => {

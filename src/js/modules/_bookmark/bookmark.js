@@ -186,7 +186,7 @@ function updateNoteHighlight(bm) {
   if (bm.annotation.selectedText) {
     return;
   }
-  
+
   let start = parseInt(bm.annotation.rangeStart.substr(1), 10);
   let end = parseInt(bm.annotation.rangeEnd.substr(1), 10);
   let pid = start;
