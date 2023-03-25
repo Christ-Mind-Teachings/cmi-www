@@ -49,6 +49,7 @@
   {% endif %}
 
   {% include components/toc-modal.html %}
+  {% comment %}
   {% if page.search != false %}
     <!-- include search support -->
     {% include components/search-modal.html %}
@@ -68,6 +69,7 @@
     {% include components/annotation-popup.html %}
     {% include components/email-share-dialog.html %}
   {% endif %}
+  {% endcomment %}
 
   <div class="fixed" id="netlify-modal"></div>
 

@@ -1,21 +1,18 @@
 /*
   search results query navigator
 */
-
 import scroll from "scroll-into-view";
-import {storeGet} from "../_util/store";
 import notify from "toastr";
-const page = require("../_config/key");
+//import {storeGet, storeSet} from "../_util/store";
+//const page = require("../_config/key");
+
 const SCROLL_INTERVAL = 250;
+
+//source specific settings
+let g_sourceInfo;
 
 function scrollComplete(message, type) {
   //console.log(`${message}: ${type}`);
-}
-
-function scrollIntoView(id, caller) {
-  scroll(document.getElementById(id), {align: {top: 0.2}}, (type) => {
-    scrollComplete(`scroll from search navigator ${caller}(${id})`, type);
-  });
 }
 
 /**
@@ -28,17 +25,79 @@ function clearMarks() {
   }
 }
 
+function scrollIntoView(id, caller) {
+  scroll(document.getElementById(id), {align: {top: 0.2}}, (type) => {
+    scrollComplete(`scroll from search navigator ${caller}(${id})`, type);
+  });
+}
+
 class PageMatches {
-  constructor(query, start, end, hits) {
-    this.query = query;
-    this.start = start;
-    this.end = end;
-    this.count = end - start + 1;
-    this.hits = hits;
+  //constructor(query, start, end, hits) {
+  constructor(searchResults, hitPositions, bookId) {
+    this.query = searchResults.query;
+    this.start = hitPositions.start;
+    this.end = hitPositions.end;
+    this.count = this.end - this.start + 1;
+    this.hits = searchResults.flat;
+    this.results = searchResults;
+    this.removeCount = 0;
+    this.bookId = bookId;
+  }
+
+  itemsMarkedForRemoval() {
+    //return this.hits.findIndex(e => e.remove) !== -1;
+    return this.removeCount > 0;
+  }
+
+  setState(location, remove) {
+    if (remove) {
+      $(".search-navigator .remove-match").html(`<i class="trash restore red icon"></i>Restore`);
+      $(`#${location}`).addClass("remove");
+
+      $(".search-navigator .save-changes.button").removeClass("disabled");
+
+      if (this.removeCount > 1) {
+        $(".remove-count").text(` (${this.removeCount} matches marked)`);
+      }
+      else {
+        $(".remove-count").text(` (${this.removeCount} match marked)`);
+      }
+    }
+    else {
+      $(".search-navigator .remove-match").html(`<i class="trash green icon"></i>Remove`);
+      $(`#${location}`).removeClass("remove");
+
+      if (!this.itemsMarkedForRemoval()) {
+        $(".search-navigator .save-changes.button").addClass("disabled");
+        $(".remove-count").text("");
+      }
+      else {
+        if (this.removeCount > 1) {
+          $(".remove-count").text(` (${this.removeCount} match(es) marked)`);
+        }
+        else {
+          $(".remove-count").text(` (${this.removeCount} match marked)`);
+        }
+      }
+    }
+  }
+
+  toggleMatch() {
+    //unremove
+    if (this.hits[this.current].remove) {
+      delete this.hits[this.current].remove;
+      this.removeCount--;
+      this.setState(this.hits[this.current].location, false);
+    }
+    else {
+      //remove hit, trash restore red icon
+      this.hits[this.current].remove = true;
+      this.removeCount++;
+      this.setState(this.hits[this.current].location, true);
+    }
   }
 
   setStart(current, first) {
-    this.current = current;
     let pid = this.hits[current].location;
 
     if (first) {
@@ -46,7 +105,25 @@ class PageMatches {
     }
     else {
       scrollIntoView(pid, "setStart()");
+
+      //remove class current from previous hit
+      $(`#${this.hits[this.current].location}`).removeClass("current");
+
+      //update 'Remove' option on navigator to reflect state of current match
+      if (this.hits[current].remove) {
+        $(".search-navigator .remove-match").html(`<i class="trash restore red icon"></i>Restore`);
+      }
+      else {
+        $(".search-navigator .remove-match").html(`<i class="trash green icon"></i>Remove`);
+      }
     }
+
+    //set this.current to current current
+    this.current = current;
+
+    //add class current to current
+    $(`#${this.hits[this.current].location}`).addClass("current");
+
     this.setTitle();
   }
 
@@ -136,7 +213,6 @@ function markSearchHits(searchHits, start, end, query, state) {
   return markFailure;
 }
 
-
 /*
   Set up listeners for search navigator links
   args: matches - keeps track of page specific search hits
@@ -159,12 +235,148 @@ function initClickListeners(matches) {
     matches.showCurrent();
   });
 
+  $(".search-navigator .remove-match").on("click", function(e) {
+    e.preventDefault();
+    matches.toggleMatch();
+  });
+
   $(".search-navigator .close-window").on("click", function(e) {
     e.preventDefault();
 
+    if (matches.itemsMarkedForRemoval()) {
+      notify.error("Save changes before closing Navigator.");
+      return;
+    }
+
+    //reset Remove/Restore link in case navigator opens again
+    $(".search-navigator .save-changes.button").addClass("disabled");
+    $(".search-navigator .remove-match").html(`<i class="trash green icon"></i>Remove`);
+
     $(".search-navigator-wrapper").addClass("hide-search-navigator");
     $(".transcript").removeClass("search-navigator-active");
+
+    //remove .current from current paragraph
+    $(`#${matches.hits[matches.current].location}`).removeClass("current");
+
     clearMarks();
+  });
+
+  $(".search-navigator a.remove-hit-check").on("click", function(e) {
+
+    if (matches.itemsMarkedForRemoval()) {
+      notify.error("Save changes before leaving page.");
+      return false;
+    }
+
+    return true;
+  });
+
+  /*
+   * Update matches object and save to local store
+   */
+  $(".search-navigator .save-changes.button").on("click", function(e) {
+    //use filter to get removed items
+    let removedArray = matches.results.flat.filter((e,i) => {
+      if (e.remove) {
+        e.bid = matches.bookId;
+        e.idx = i;
+      }
+
+      return e.remove;
+    });
+
+    //reverse array so we delete items from the back to the front
+    removedArray.reverse();
+
+    //all element of removedArray have the same bookId and pageKey
+    let bid = removedArray[0].bid;
+    let key = removedArray[0].key;
+
+    //find the hits to be removed
+    let pageHits = matches.results.data[bid].filter((e,i) => {
+      if ( e.pageKey === key) {
+        e.index = i;
+        return true;
+      }
+      return false;
+    });
+
+    //console.log("removed: %o", removedArray);
+    //console.log("pageHits: %o", pageHits);
+
+    //remove from data and flat arrays in matches
+    removedArray.forEach(e => {
+      let index = pageHits[0].m.findIndex(i => {return e.location === i.location;});
+
+      if (index > -1) {
+        //remove array item from matches data array
+        pageHits[0].m.splice(index,1);
+
+        //remove array item from matches flat aray
+        matches.results.flat.splice(e.idx, 1);
+      }
+    });
+
+    let newPid = "";
+
+    //clean up: remove page from data array if it has no hits
+    if (pageHits[0].m.length === 0) {
+      matches.results.data[bid].splice(pageHits[0].index, 1);
+
+      //clean up: remove book if it has no hits
+      if (matches.results.data[bid].length === 0) {
+        delete matches.results.data[bid];
+      }
+    }
+    else {
+      //get first hit on page to use to reset navigator
+      newPid = pageHits[0].m[0].location;
+    }
+
+    //update hit count
+    matches.results.count = matches.results.flat.length;
+
+    //notify user
+    if (matches.removeCount > 1) {
+      notify.info(`${matches.removeCount} Matches Removed!`);
+    }
+    else {
+      notify.info("1 Match Removed!");
+    }
+
+    //reset removeCount
+    matches.removeCount = 0;
+
+    //mark results as modified
+    // - this will cause the results to be persisted before a new query is run
+    matches.results.modified = true;
+
+    //update modified list in local store
+    //storeSet("srchResults", matches.results);
+    g_sourceInfo.setValue("srchResults", matches.results);
+
+    //display next search hit on page if any or show the search modal
+    if (newPid !== "") {
+      //there are more matches on the page so close and reset navigator
+      $(".search-navigator .close-window").trigger("click");
+
+      initNavigator(newPid);
+    }
+    else if (!$(".search-navigator a.next-page").hasClass("inactive")) {
+      //this does not work - don't know why!!
+      //$(".search-navigator a.next-page").trigger("click");
+
+      let href = $(".search-navigator a.next-page").attr("href");
+      //console.log("href: %s", href);
+
+      //this works, yay!
+      location.href=`${location.origin}${href}`;
+    }
+    else {
+      //open search dialog
+      $(".search-navigator .close-window").trigger("click");
+      $("#search-modal-open").trigger("click");
+    }
   });
 }
 
@@ -216,7 +428,9 @@ function findPositions(pid, pageKey, flat) {
 }
 
 function initControls(pid) {
-  let lastSearch = storeGet("srchResults");
+  //let lastSearch = store.get(queryResultName);
+  //let lastSearch = storeGet("srchResults");
+  let lastSearch = g_sourceInfo.getValue("srchResults");
 
   if (!lastSearch) {
     notify.warning("There are no search results to show.");
@@ -225,9 +439,11 @@ function initControls(pid) {
 
   //console.log("lastSearch: %o", lastSearch);
 
-  let pageKey = page.genPageKey();
+  //let pageKey = page.genPageKey();
+  let pageKey = g_sourceInfo.keyInfo.genPageKey();
   let pageKeyString = pageKey.toString(10);
-  let bid = page.decodeKey(pageKey).bookId;
+  //let bid = page.decodeKey(pageKey).bookId;
+  let bid = g_sourceInfo.keyInfo.decodeKey(pageKey).bookId;
   let title = lastSearch.titleArray[bid];
 
   //when ?srch=p2 and p2 does not contain a search hit
@@ -246,7 +462,7 @@ function initControls(pid) {
   }
 
   if (hitPositions.prev > -1) {
-    url = `${lastSearch.flat[hitPositions.prev].url}?srch=${lastSearch.flat[hitPositions.prev].location}`;
+    url = `${g_sourceInfo.prefix}${lastSearch.flat[hitPositions.prev].url}?srch=${lastSearch.flat[hitPositions.prev].location}`;
     $(".search-navigator .previous-page").attr("href", url);
   }
   else {
@@ -254,7 +470,7 @@ function initControls(pid) {
   }
 
   if (hitPositions.next > -1) {
-    url = `${lastSearch.flat[hitPositions.next].url}?srch=${lastSearch.flat[hitPositions.next].location}`;
+    url = `${g_sourceInfo.prefix}${lastSearch.flat[hitPositions.next].url}?srch=${lastSearch.flat[hitPositions.next].location}`;
     $(".search-navigator .next-page").attr("href", url);
   }
   else {
@@ -267,16 +483,17 @@ function initControls(pid) {
   }
 
   //set search navigator title
-  $(".search-navigator-header-book").text(`${title} - ${lastSearch.pageInfo[pageKey].title}`);
+  $(".search-navigator-header-book").html(`${title} - ${lastSearch.pageInfo[pageKey].title}<span class=remove-count></span>`);
 
-  let matches = new PageMatches(lastSearch.query, hitPositions.start, hitPositions.end, lastSearch.flat);
+  //let matches = new PageMatches(lastSearch.query, hitPositions.start, hitPositions.end, lastSearch.flat);
+  let matches = new PageMatches(lastSearch, hitPositions, bid);
 
   //arg 'true' causes 250ms deplay before calling scroll
   matches.setStart(hitPositions.current, true);
 
   let markFail = markSearchHits(lastSearch.flat, hitPositions.start, hitPositions.end, lastSearch.query, "show");
   if (markFail) {
-    notify.info(`Failed to highlight ${markFail} search results`);
+    notify.info(`Failed to hilight ${markFail} search results`);
   }
   initClickListeners(matches);
 
@@ -285,7 +502,12 @@ function initControls(pid) {
   $(".search-navigator-wrapper").removeClass("hide-search-navigator");
 }
 
-export function initNavigator(requestedPid) {
+export function initNavigator(requestedPid, si) {
   //console.log("init search navigator pid: %s", requestedPid);
+  g_sourceInfo = si;
+
   initControls(requestedPid);
 }
+
+
+

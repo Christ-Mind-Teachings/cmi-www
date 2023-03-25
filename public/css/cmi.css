@@ -7,55 +7,6 @@
   --signed-out-background: #f1f1f7;
 }
 
-.topic .excerpt {
-  padding-left: 30px;
-  border-left: 5px solid deepskyblue;
-  margin-bottom: 20px;
-}
-
-.topic-summary.selected {
-  border: 1px solid var(--masthead-color);
-  border-radius: 8px;
-  padding: 0 5px;
-}
-
-.topic-summary.summarized {
-  text-decoration: underline;
-}
-
-.topic-summary.summarized:before {
-  content: "S) ";
-}
-
-div#activity-report,
-div.topic-welcome {
-  padding-bottom: 300px;
-}
-
-/* topic summary indent */
-.cmi-tsi {
-  font-style: italic;
-  display: block;
-  margin-block-start: 1em;
-  margin-block-end: 1em;
-  margin-inline-start: 40px;
-  margin-inline-end: 40px;
-}
-
-.cmi-topic-title {
-  font-style: italic;
-  text-align: center;
-  padding-top: 2rem;
-}
-
-.ui.segments.topic-summary-list {
-  padding-bottom: 300px;
-}
-
-.ui.segments.topic-summary-list .segment {
-  font-size: 16px;
-}
-
 body {
   color: #454545;
   background-color: #fff;
@@ -425,5 +376,86 @@ button.requires-signin.hide.ui {
   margin-top: 0;
 }
 
+/* topics */
+.topic .excerpt {
+  padding-left: 30px;
+  border-left: 5px solid deepskyblue;
+  margin-bottom: 20px;
+}
+
+.topic-summary.selected {
+  border: 1px solid var(--masthead-color);
+  border-radius: 8px;
+  padding: 0 5px;
+}
+
+.topic-summary.summarized {
+  text-decoration: underline;
+}
+
+.topic-summary.summarized:before {
+  content: "S) ";
+}
+
+div#activity-report,
+div.topic-welcome {
+  padding-bottom: 300px;
+}
+
+/* topic summary indent */
+.cmi-tsi {
+  font-style: italic;
+  display: block;
+  margin-block-start: 1em;
+  margin-block-end: 1em;
+  margin-inline-start: 40px;
+  margin-inline-end: 40px;
+}
+
+.cmi-topic-title {
+  font-style: italic;
+  text-align: center;
+  padding-top: 2rem;
+}
+
+.ui.segments.topic-summary-list {
+  padding-bottom: 300px;
+}
+
+.ui.segments.topic-summary-list .segment {
+  font-size: 16px;
+}
+
+/* edit search list */
+div.cmi-search-list:not(.edit) i.edit-match {
+  display:none;
+}
+
+i.edit-match.trash.icon {
+    cursor: pointer;
+}
+
+i.edit-match.item-removed + a {
+  text-decoration: line-through;
+  color: red;
+}
+
+.search-navigator-active p.current {
+  padding: 5px;
+  border: 1px green dotted;
+}
+
+.search-navigator-active p.current.remove {
+  padding: 5px;
+  border: 3px red dotted;
+}
+
+.search-navigator-header-book .remove-count {
+  color:red;
+}
+
+#search .four.wide.field {
+  align-self: flex-end;
+}
 
 

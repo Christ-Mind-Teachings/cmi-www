@@ -1,6 +1,7 @@
 <!-- _includes/common/transcript-menu.html -->
 <div class="ui borderless main menu">
   <div id="transcript-menu" class="ui text container">
+    {% comment %}
     <a id="bookmark-dropdown-menu" href="#" class="requires-signin hide ui dropdown item">
       <span data-xposition="left center" data-xtooltip="Show/Set Bookmarks">
         <i class="icons">
@@ -19,6 +20,7 @@
         </div>
       </div>
     </a>
+    {% endcomment %}
     {% unless page.search == false %}
     <a id="search-modal-open" href="#" id="search-modal-open" class="item search-modal-open">
       <span data-position="bottom center" data-tooltip="Search {{site.title}}">

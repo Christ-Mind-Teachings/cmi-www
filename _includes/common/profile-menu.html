@@ -1,6 +1,7 @@
 <!-- _includes/common/profile-menu.html -->
 <div class="ui borderless main menu">
   <div id="profile-menu" class="ui text container">
+    {% comment %}
     {% unless page.search == false %}
     <a id="search-modal-open" href="#" id="search-modal-open" class="item search-modal-open">
       <span data-position="bottom center" data-tooltip="Search {{site.title}}">
@@ -8,6 +9,7 @@
       </span>
     </a>
     {% endunless %}
+    {% endcomment %}
     <a id="jump-to-top-menu-option" href="#masthead-title" class="top-of-page item">
       <span data-position="bottom center" data-tooltip="Top of Page">
         <i class="level up icon"></i>

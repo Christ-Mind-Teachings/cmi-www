@@ -35,14 +35,16 @@
     {% include common/footer.html %}
   {% endif %}
 
+  {% comment %}
   {% if page.search != false %}
     {% include components/search-modal.html %}
   {% endif %}
+  {% endcomment %}
 
   {% if page.manageEmail == true %}
     {% include components/addto-maillist-dialog.html %}
   {% endif %}
- 
+
   {% if page.manageTopics == true %}
     {% include components/edit-topic-dialog.html %}
   {% endif %}
@@ -55,6 +57,7 @@
     <script src="/public/vendor/jquery/jquery.min.js"></script>
     <script src="/public/vendor/{{site.semantic}}/semantic.min.js"></script>
     <script src="/public/js/vendors~page~profile~transcript.js"></script>
+    <script src="/public/js/vendors~profile.js"></script>
     <script src="/public/js/page~profile~transcript.js"></script>
     <script src="/public/js/profile.js"></script>
   {% else %}
@@ -62,6 +65,7 @@
     <script src="/public/vendor/jquery/jquery.js"></script>
     <script src="/public/vendor/{{site.semantic}}/semantic.js"></script>
     <script src="/public/js/vendors~page~profile~transcript.js"></script>
+    <script src="/public/js/vendors~profile.js"></script>
     <script src="/public/js/page~profile~transcript.js"></script>
     <script src="/public/js/profile.js"></script>
   {% endif %}

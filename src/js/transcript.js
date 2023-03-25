@@ -11,8 +11,8 @@ import fb from "./modules/_util/facebook";
 import {initTranscriptPage} from "./modules/_page/startup";
 
 import {loadConfig} from "./modules/_config/config";
-import {bookmarkStart} from "./modules/_bookmark/start";
-import search from "./modules/_search/search";
+//import {bookmarkStart} from "./modules/_bookmark/start";
+//import search from "./modules/_search/search";
 import toc, {getBookId} from "./modules/_contents/toc";
 import about from "./modules/_about/about";
 //import audio from "./modules/_audio/audio";
@@ -35,11 +35,11 @@ $(document).ready(() => {
 
   //load config file and do initializations that depend on a loaded config file
   loadConfig(getBookId()).then((result) => {
-    search.initialize();
+    //search.initialize();
     toc.initialize("transcript");
     //audio.initialize();
     showParagraph();
-    bookmarkStart("transcript");
+    //bookmarkStart("transcript");
   }).catch((error) => {
     console.error(error);
   });

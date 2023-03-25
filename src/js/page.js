@@ -5,8 +5,8 @@ import {storeInit} from "./modules/_util/store";
 import auth from "./modules/_user/netlify";
 import {initStickyMenu, initAnimation} from "./modules/_page/startup";
 
-import {bookmarkStart} from "./modules/_bookmark/start";
-import search from "./modules/_search/search";
+//import {bookmarkStart} from "./modules/_bookmark/start";
+//import search from "./modules/_search/search";
 import toc from "./modules/_contents/toc";
 import about from "./modules/_about/about";
 import subscribe from "./modules/_forms/subscribe";
@@ -19,8 +19,8 @@ $(() => {
   initStickyMenu();
   setLanguage(constants);
 
-  bookmarkStart("page");
-  search.initialize();
+  //bookmarkStart("page");
+  //search.initialize();
   auth.initialize();
   toc.initialize("page");
   about.initialize();
