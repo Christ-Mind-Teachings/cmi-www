@@ -27,8 +27,6 @@ const uiSearchMessageHeader = ".search-message.header";
 const uiSearchMessageBody = ".search-message-body";
 
 //search message id's
-const SOURCE_NOT_SELECTED = Symbol("no_source");
-const SOURCE_SELECTED = Symbol("source_selected");
 const SEARCHING = Symbol("searching");
 const SEARCH_RESULT = Symbol("search_result");
 const SEARCH_ERROR = Symbol("search_error");
@@ -44,34 +42,24 @@ let g_savedSearchDescriptions;
 
 function displaySearchMessage(msgId, arg1, arg2, arg3) {
   switch(msgId) {
-    case SOURCE_NOT_SELECTED:
-      $(uiSearchMessage).addClass("negative");
-      $(uiSearchMessageHeader).text("Search Source Not Selected");
-      $(uiSearchMessageBody).html("<p>You forgot to select a search source.</p>");
-      break;
-    case SOURCE_SELECTED:
-      $(uiSearchMessage).removeClass("negative");
-      $(uiSearchMessageHeader).text("Search Source");
-      $(uiSearchMessageBody).html(`<p>Searching from <em>${arg1}</em></p>`);
-      break;
     case SEARCHING:
       $(uiSearchInputIcon).addClass("loading");
       $(uiSearchString).attr("disabled", true);
       $(uiSearchMessage).addClass("purple");
-      $(uiSearchMessageHeader).text("Search Started...");
-      $(uiSearchMessageBody).html(`<p>Searching for <em>${arg2}</em></p>`);
+      $(uiSearchMessageHeader).text(`${g_sourceInfo.gs("search:s11", "Search Started")}...`);
+      $(uiSearchMessageBody).html(`<p>${g_sourceInfo.gs("search:s12", "Searching for")} <em>${arg2}</em></p>`);
       break;
     case GET_SAVED_SEARCH:
       //$(uiSearchInputIcon).addClass("loading");
       $(uiSavedSearchSelect).addClass("disabled loading");
       $(uiSearchMessage).addClass("green");
-      $(uiSearchMessageHeader).text("Please wait...");
-      $(uiSearchMessageBody).html(`<p>Waiting for saved search: <em>${arg2}</em></p>`);
+      $(uiSearchMessageHeader).text(`${g_sourceInfo.gs("search:s13", "Please wait")}...`);
+      $(uiSearchMessageBody).html(`<p>${g_sourceInfo.gs("search:s14", "Waiting for saved search")}: <em>${arg2}</em></p>`);
       break;
     case SAVED_SEARCH:
       //arg1: source, arg2: query string, arg3: count
-      $(uiSearchMessageHeader).text("Last Search Result");
-      $(uiSearchMessageBody).html(`<p>Search for <em>${arg2}</em> from <em>${arg1}</em> found ${arg3} matches</p>`);
+      $(uiSearchMessageHeader).text(g_sourceInfo.gs("search:s10", "Last Search Result"));
+      $(uiSearchMessageBody).html(`<p>${g_sourceInfo.gs("search:s12", "Search for")} <em>${arg2}</em> ${g_sourceInfo.gs("search:s15", "from")} <em>${arg1}</em> ${g_sourceInfo.gs("search:s7", "found")} ${arg3} ${g_sourceInfo.gs("search:s8", "matches")}</p>`);
       break;
     case SEARCH_RESULT:
       $(uiSearchInputIcon).removeClass("loading");
@@ -83,42 +71,48 @@ function displaySearchMessage(msgId, arg1, arg2, arg3) {
         $(uiSearchString).val("");
       }
 
-      $(uiSearchMessageHeader).text("Search Result");
-      $(uiSearchMessageBody).html(`<p>Search for <em>${arg2}</em> found ${arg3} matches</p>`);
+      $(uiSearchMessageHeader).text(g_sourceInfo.gs("search:s16", "Search Result"));
+      $(uiSearchMessageBody).html(`<p>${g_sourceInfo.gs("search:s19", "Search for")} <em>${arg2}</em> ${g_sourceInfo.gs("search:s7", "found")} ${arg3} ${g_sourceInfo.gs("search:s8", "matches")}</p>`);
       break;
     case GET_SAVED_SEARCH_RESULT:
-      //$(uiSearchInputIcon).removeClass("loading");
       $(uiSavedSearchSelect).removeClass("disabled loading");
       $(uiSearchString).attr("disabled", false);
       $(uiSearchMessage).removeClass("green").removeClass("negative");
 
       //clear input only if matches were found
-      //$("#saved-search-select").dropdown("clear", true);
       $(uiSavedSearchSelect).dropdown("clear", true);
-
-      //$(uiSearchMessageHeader).text("Saved Search Result");
-      //$(uiSearchMessageBody).html(`<p>Saved Search <em>${arg2}</em> has ${arg3} matches</p>`);
       break;
     case SEARCH_ERROR:
       $(uiSearchInputIcon).removeClass("loading");
       $(uiSearchString).attr("disabled", false);
       $(uiSearchMessage).removeClass("purple").addClass("negative");
 
-      $(uiSearchMessageHeader).text("Search Error");
+      $(uiSearchMessageHeader).text(g_sourceInfo.gs("search:s17", "Search Error"));
       $(uiSearchMessageBody).html(`<p>${arg1}</p>`);
       break;
     case SAVED_SEARCH_ERROR:
-      //$(uiSearchInputIcon).removeClass("loading");
       $(uiSearchSearchSelect).removeClass("loading");
       $(uiSearchString).attr("disabled", false);
       $(uiSavedSearchSelect).removeClass("disabled");
       $(uiSearchMessage).removeClass("green").addClass("negative");
 
-      $(uiSearchMessageHeader).text("Saved Search Error");
+      $(uiSearchMessageHeader).text(g_sourceInfo.gs("search:s18", "Saved Search Error"));
       $(uiSearchMessageBody).html(`<p>${arg1}</p>`);
       break;
     default:
       break;
+  }
+}
+
+/*
+ * Mark saved search results as not modified.
+ */
+function resetModifiedFlag() {
+  const queryResult = g_sourceInfo.getValue("srchResults");
+
+  if (queryResult && queryResult.modified) {
+    queryResult.modified = false;
+    g_sourceInfo.setValue("srchResults", queryResult);
   }
 }
 
@@ -146,7 +140,7 @@ async function search(query, exact=false) {
       showSearchResults(result, result.queryTransformed);
     }
     else {
-      notify.info(`Search for "${result.queryTransformed}" didn't find any matches`);
+      notify.info(`g_sourceInfo.gs("search:s19", "Search for")} "${result.queryTransformed}" ${g_sourceInfo.gs("search:s20", "didn't find any matches")}`);
     }
     document.getElementById("search-input-field").focus();
   }
@@ -175,7 +169,7 @@ async function getSavedSearch(savedId) {
       showSavedQuery();
     }
     else {
-      notify.info(`Saved Search "${result.name}" doesn't have any matches. This should not happen.`);
+      notify.info(`${g_sourceInfo.gs("search:s5", "Saved Search")} "${result.name}" ${g_sourceInfo.gs("search:s26", "doesn't have any matches. This should not happen.")}`);
     }
     document.getElementById("search-input-field").focus();
   }
@@ -234,7 +228,7 @@ function updateSavedSearchList() {
           let html = makeList(response);
           $("#saved-search-select .menu").html(html);
           $("#saved-search-select").removeClass("disabled");
-          $("#saved-search-select .default.text").text(`You Have ${response.length} Saved Search(es)`);
+          $("#saved-search-select .default.text").text(`${g_sourceInfo.gs("search:s21", "You Have")} ${response.length} ${g_sourceInfo.gs("search:s22", "Saved Search(es)")}`);
 
           //enable saved search dropdown
           $("#saved-search-select").dropdown({
@@ -250,7 +244,7 @@ function updateSavedSearchList() {
           });
         }
         else {
-          $("#saved-search-select .default.text").text("You Have No Saved Searches");
+          $("#saved-search-select .default.text").text(g_sourceInfo.gs("search:s23", "You Have No Saved Searches"));
         }
       })
       .catch((err) => {
@@ -258,7 +252,7 @@ function updateSavedSearchList() {
       });
   }
   else {
-    $("#saved-search-select .default.text").text("Sign In to Save Searches");
+    $("#saved-search-select .default.text").text(g_sourceInfo.gs("search:s24", "Sign In to Save Searches"));
   }
 }
 
@@ -328,7 +322,7 @@ function initSearchModal() {
     let ssd = g_savedSearchDescriptions[id];
     //console.log("Showing desc for id: %s, ssd:%o", id, ssd);
 
-    $(".search-desc.ui.modal .header").text(`Saved Search: ${ssd.name}`);
+    $(".search-desc.ui.modal .header").text(`${g_sourceInfo.gs("search:s5", "Saved Search")}: ${ssd.name}`);
     $(".search-desc.ui.modal .content").html(ssd.desc);
     $(".search-desc.ui.modal").modal("show");
   });
@@ -351,7 +345,7 @@ function initSearchModal() {
     //Prevent new search if there are unsaved changes to the current search results.
     if ($(".save-modified-search-list").length > 0) {
       if (!$(".save-modified-search-list").hasClass("disabled")) {
-        notify.error("You have unsaved changes to the search list. Save the changes starting a new search.");
+        notify.error(g_sourceInfo.gs("search:s25", "You have unsaved changes to the search list. Save the changes starting a new search."));
         return;
       }
     }
@@ -449,7 +443,7 @@ function initSearchModal() {
     //console.log("link clicked");
     if (!$(".save-modified-search-list").hasClass("disabled")) {
       //notify user of unsaved changes
-      notify.error("You have unsaved changes to the search list. Save the changes before leaving the page.");
+      notify.error(g_sourceInfo.gs("search:s27", "You have unsaved changes to the search list. Save the changes before leaving the page."));
       return false;
     }
     return true;
@@ -535,8 +529,6 @@ function removeSearchItem(i, result) {
  * need to save it otherwise because the query can be rerun to recover the results.
  */
 async function saveModifiedSearchResults() {
-  //let userInfo = getUserInfo();
-
   //can't saved modified results for guest users
   if (!g_userInfo) return;
 
@@ -551,7 +543,7 @@ async function saveModifiedSearchResults() {
   try {
     //let result = await putSearchResult(g_userInfo.userId, "wom", queryResult);
     let result = await putSearchResult(g_userInfo.userId, g_sourceInfo.sid, queryResult);
-    queryResult.modified = false;
+    resetModifiedFlag();
     $(".search.message").removeClass("orange");
 
     //update saved search dropdown

@@ -21,7 +21,8 @@ export function setLanguage(constants) {
   let url;
 
   if (status === LOADED) {
-    notify.warning("language already loaded");
+    console.log("language already loaded");
+    //notify.warning("language already loaded");
     return;
   }
 
@@ -42,6 +43,11 @@ export function setLanguage(constants) {
     .then((response) => {
       //console.log("language %o", response.data);
       language = response.data;
+
+      if (typeof language === "string") {
+        notify.error(`Error in language file: ${lang}.json`);
+        console.error("You have a syntax error in your language json file.");
+      }
       status = LOADED;
       //console.log("%s loaded", lang);
     })
@@ -138,6 +144,35 @@ function keyValue(s, k) {
   }
 
   return language[s][k];
+}
+
+/*
+ * If a non English language is loaded return value
+ * of argument 'key' otherwise return default.
+ */
+export function gs(key, def, wait=false, timeoutValue) {
+  if (typeof key !== "string") {
+    return def;
+  }
+
+  if (status === NOTLOADED) {
+    return def;
+  }
+
+  let [s,k] = key.split(":");
+
+  if (wait) {
+    return waitForReady(s, k, timeoutValue);
+  }
+
+  let value = keyValue(s, k);
+
+  //if we didn't find a value return default preceded by '!'
+  if (!value) {
+    return `!${def}`;
+  }
+
+  return value;
 }
 
 /*

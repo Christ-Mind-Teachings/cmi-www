@@ -53,13 +53,11 @@ export class SourceStore {
     this._sid = config.sid;
     this._prefix = config.url_prefix;
 
-    //search data functions
-    this._prepareSearchResults;
+    //source specific functions
     this._generateHTML;
-
-    //wom
     this._keyInfo = config.keyInfo;
     this._getPageInfo = config.getPageInfo;
+    this._gs = function(key, def) {return def;};
 
     for (const key in config.store) {
       this.keys.set(key, `${this._sid}.${config.store[key]}`);
@@ -76,12 +74,12 @@ export class SourceStore {
     return storeKey;
   }
 
-  set prepareSearchResults(func) {
-    this._prepareSearchResults = func;
+  set gs(func) {
+    this._gs = func;
   }
 
-  get prepareSearchResults() {
-    return this._prepareSearchResults;
+  gs(key, def) {
+    return this._gs(key, def);
   }
 
   set generateHTML(func) {

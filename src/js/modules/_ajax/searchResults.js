@@ -38,7 +38,7 @@ export function putSearchResult(userId, sourceId, result) {
   };
 
   return new Promise((resolve, reject) => {
-    console.log("putSearchResult body: %o", body);
+    //console.log("putSearchResult body: %o", body);
     axios.post(`${globals.user}/searchResult`, body)
       .then((response) => { resolve(response.data.response); })
       .catch((err) => { reject(err); });

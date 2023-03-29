@@ -51,20 +51,20 @@ class PageMatches {
 
   setState(location, remove) {
     if (remove) {
-      $(".search-navigator .remove-match").html(`<i class="trash restore red icon"></i>Restore`);
+      $(".search-navigator .remove-match").html(`<i class="trash restore red icon"></i>${g_sourceInfo.gs("search:s39", "Restore")}`);
       $(`#${location}`).addClass("remove");
 
       $(".search-navigator .save-changes.button").removeClass("disabled");
 
       if (this.removeCount > 1) {
-        $(".remove-count").text(` (${this.removeCount} matches marked)`);
+        $(".remove-count").text(` (${this.removeCount} ${g_sourceInfo.gs("search:s29", "matches marked")})`);
       }
       else {
-        $(".remove-count").text(` (${this.removeCount} match marked)`);
+        $(".remove-count").text(` (${this.removeCount} ${g_sourceInfo.gs("search:s28", "match marked")})`);
       }
     }
     else {
-      $(".search-navigator .remove-match").html(`<i class="trash green icon"></i>Remove`);
+      $(".search-navigator .remove-match").html(`<i class="trash green icon"></i>${g_sourceInfo.gs("search:s38", "Remove")}`);
       $(`#${location}`).removeClass("remove");
 
       if (!this.itemsMarkedForRemoval()) {
@@ -73,10 +73,10 @@ class PageMatches {
       }
       else {
         if (this.removeCount > 1) {
-          $(".remove-count").text(` (${this.removeCount} match(es) marked)`);
+          $(".remove-count").text(` (${this.removeCount} ${g_sourceInfo.gs("search:s29", "matches marked")})`);
         }
         else {
-          $(".remove-count").text(` (${this.removeCount} match marked)`);
+          $(".remove-count").text(` (${this.removeCount} ${g_sourceInfo.gs("search:s28", "match marked")})`);
         }
       }
     }
@@ -111,10 +111,10 @@ class PageMatches {
 
       //update 'Remove' option on navigator to reflect state of current match
       if (this.hits[current].remove) {
-        $(".search-navigator .remove-match").html(`<i class="trash restore red icon"></i>Restore`);
+        $(".search-navigator .remove-match").html(`<i class="trash restore red icon"></i>${g_sourceInfo.gs("search:s39", "Restore")}`);
       }
       else {
-        $(".search-navigator .remove-match").html(`<i class="trash green icon"></i>Remove`);
+        $(".search-navigator .remove-match").html(`<i class="trash green icon"></i>${g_sourceInfo.gs("search:s38", "Remove")}`);
       }
     }
 
@@ -127,11 +127,19 @@ class PageMatches {
     this.setTitle();
   }
 
-  setTitle() {
+  async setTitle() {
     let pos = this.current - this.start + 1;
-    let title = `Search for <em>${this.query}</em> (${pos} of ${this.count})`;
+    try {
+      let sf = await g_sourceInfo.gs("search:s9", "Search for", true);
+      let of = await g_sourceInfo.gs("search:s15", "of", true);
+      let title = `${sf} <em>${this.query}</em> (${pos} ${of} ${this.count})`;
+      $(".search-navigator-header-query").html(title);
+    }
+    catch(err) {
+      console.error("Error waiting for translated values");
+      $(".search-navigator-header-query").html(`Translation Error`);
+    }
 
-    $(".search-navigator-header-query").html(title);
   }
 
   /*
@@ -244,13 +252,13 @@ function initClickListeners(matches) {
     e.preventDefault();
 
     if (matches.itemsMarkedForRemoval()) {
-      notify.error("Save changes before closing Navigator.");
+      notify.error(g_sourceInfo.gs("search:s30", "Save changes before closing Navigator."));
       return;
     }
 
     //reset Remove/Restore link in case navigator opens again
     $(".search-navigator .save-changes.button").addClass("disabled");
-    $(".search-navigator .remove-match").html(`<i class="trash green icon"></i>Remove`);
+    $(".search-navigator .remove-match").html(`<i class="trash green icon"></i>${g_sourceInfo.gs("search:s38", "Remove")}`);
 
     $(".search-navigator-wrapper").addClass("hide-search-navigator");
     $(".transcript").removeClass("search-navigator-active");
@@ -264,7 +272,7 @@ function initClickListeners(matches) {
   $(".search-navigator a.remove-hit-check").on("click", function(e) {
 
     if (matches.itemsMarkedForRemoval()) {
-      notify.error("Save changes before leaving page.");
+      notify.error(g_sourceInfo.gs("search:s31", "Save changes before leaving page."));
       return false;
     }
 
@@ -338,10 +346,10 @@ function initClickListeners(matches) {
 
     //notify user
     if (matches.removeCount > 1) {
-      notify.info(`${matches.removeCount} Matches Removed!`);
+      notify.info(`${matches.removeCount} ${g_sourceInfo.gs("search:s32", "Matches Removed")}!`);
     }
     else {
-      notify.info("1 Match Removed!");
+      notify.info(`1 ${g_sourceInfo.gs("search:s33", "Match Removed")}!`);
     }
 
     //reset removeCount
@@ -433,7 +441,7 @@ function initControls(pid) {
   let lastSearch = g_sourceInfo.getValue("srchResults");
 
   if (!lastSearch) {
-    notify.warning("There are no search results to show.");
+    notify.warning(g_sourceInfo.gs("search:s34", "There are no search results to show."));
     return;
   }
 
@@ -448,7 +456,7 @@ function initControls(pid) {
 
   //when ?srch=p2 and p2 does not contain a search hit
   if (!lastSearch.pageInfo[pageKey]) {
-    notify.warning(`There is no search result at ${pid}`);
+    notify.warning(`${g_sourceInfo.gs("search:s35", "There is no search result at")} ${pid}`);
     return;
   }
 
@@ -457,7 +465,7 @@ function initControls(pid) {
 
   //check that requested search hit is valid
   if (hitPositions.current === -1) {
-    notify.warning(`There is no search result at ${pid}`);
+    notify.warning(`${g_sourceInfo.gs("search:s35", "There is no search result at")} ${pid}`);
     return;
   }
 
@@ -493,7 +501,7 @@ function initControls(pid) {
 
   let markFail = markSearchHits(lastSearch.flat, hitPositions.start, hitPositions.end, lastSearch.query, "show");
   if (markFail) {
-    notify.info(`Failed to hilight ${markFail} search results`);
+    notify.info(`${g_sourceInfo.gs("search:s36", "Failed to highlight")} ${markFail} ${g_sourceInfo.gs("search:s37", "search results")}`);
   }
   initClickListeners(matches);
 
