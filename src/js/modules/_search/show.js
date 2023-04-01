@@ -181,7 +181,7 @@ function addEditToggle(html) {
           </button>
           <div class="ui toggle edit checkbox">
             <input type="checkbox" name="public">
-            <label>${g_sourceInfo.gs("search:s2", "Remove Selected Matches")}</label>
+            <label>${g_sourceInfo.gs("search:s2", "Select Items to Remove")}</label>
           </div>
           ${html}`;
 }
@@ -219,6 +219,9 @@ export function showSavedQuery() {
     return;
   }
 
+  //record if toggle is checked
+  let showToggle = $(".ui.toggle.edit.checkbox").hasClass("checked");
+
   //call source specific function to generate search results for saved query
   let html = g_sourceInfo.generateHTML(queryResult);
 
@@ -249,6 +252,11 @@ export function showSavedQuery() {
   }
 
   setUpEditHandler();
+
+  //click toggle to reset to previous state
+  if (showToggle) {
+    $(".ui.toggle.edit.checkbox").checkbox("check");
+  }
 }
 
 export function initShow(si) {

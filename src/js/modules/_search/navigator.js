@@ -228,27 +228,27 @@ function markSearchHits(searchHits, start, end, query, state) {
 function initClickListeners(matches) {
 
   //previous search
-  $(".search-navigator .previous-match").on("click", function(e) {
+  $(".search-navigator .previous-match").on("click.navigator", function(e) {
     e.preventDefault();
     matches.setPrevious();
   });
 
-  $(".search-navigator .next-match").on("click", function(e) {
+  $(".search-navigator .next-match").on("click.navigator", function(e) {
     e.preventDefault();
     matches.setNext();
   });
 
-  $(".search-navigator .current-match").on("click", function(e) {
+  $(".search-navigator .current-match").on("click.navigator", function(e) {
     e.preventDefault();
     matches.showCurrent();
   });
 
-  $(".search-navigator .remove-match").on("click", function(e) {
+  $(".search-navigator .remove-match").on("click.navigator", function(e) {
     e.preventDefault();
     matches.toggleMatch();
   });
 
-  $(".search-navigator .close-window").on("click", function(e) {
+  $(".search-navigator .close-window").on("click.navigator", function(e) {
     e.preventDefault();
 
     if (matches.itemsMarkedForRemoval()) {
@@ -269,7 +269,7 @@ function initClickListeners(matches) {
     clearMarks();
   });
 
-  $(".search-navigator a.remove-hit-check").on("click", function(e) {
+  $(".search-navigator a.remove-hit-check").on("click.navigator", function(e) {
 
     if (matches.itemsMarkedForRemoval()) {
       notify.error(g_sourceInfo.gs("search:s31", "Save changes before leaving page."));
@@ -282,12 +282,15 @@ function initClickListeners(matches) {
   /*
    * Update matches object and save to local store
    */
-  $(".search-navigator .save-changes.button").on("click", function(e) {
+  $(".search-navigator .save-changes.button").on("click.navigator", function(e) {
     //use filter to get removed items
     let removedArray = matches.results.flat.filter((e,i) => {
       if (e.remove) {
         e.bid = matches.bookId;
         e.idx = i;
+
+        //make sure remove and current classes are removed
+        $(`#${e.location}`).removeClass("remove current");
       }
 
       return e.remove;
@@ -368,7 +371,17 @@ function initClickListeners(matches) {
       //there are more matches on the page so close and reset navigator
       $(".search-navigator .close-window").trigger("click");
 
-      initNavigator(newPid);
+      //remove all navigator event handlers
+      $(".search-navigator .previous-match").off("click.navigator");
+      $(".search-navigator .next-match").off("click.navigator");
+      $(".search-navigator .current-match").off("click.navigator");
+      $(".search-navigator .remove-match").off("click.navigator");
+      $(".search-navigator .close-window").off("click.navigator");
+      $(".search-navigator a.remove-hit-check").off("click.navigator");
+      $(".search-navigator .save-changes.button").off("click.navigator");
+
+      //reset search navigator
+      initControls(newPid);
     }
     else if (!$(".search-navigator a.next-page").hasClass("inactive")) {
       //this does not work - don't know why!!
@@ -516,6 +529,4 @@ export function initNavigator(requestedPid, si) {
 
   initControls(requestedPid);
 }
-
-
 

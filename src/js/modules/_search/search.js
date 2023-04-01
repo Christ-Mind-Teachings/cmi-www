@@ -129,8 +129,15 @@ async function search(query, exact=false) {
     source: g_sourceInfo.sid,
     strict: exact,
     query: query,
-    width: 30
+    width: 30,
+    authorization: "guest"
   };
+
+  //check for acol authorization
+  //The search API gives full acol search access only when authorization="acol"
+  if (g_sourceInfo.sid === "acol" && g_userInfo && g_userInfo.roles && g_userInfo.roles.includes("acol")) {
+    searchBody.authorization = "acol";
+  }
 
   //console.log("searchBody: %o", searchBody);
   try {
@@ -140,7 +147,7 @@ async function search(query, exact=false) {
       showSearchResults(result, result.queryTransformed);
     }
     else {
-      notify.info(`g_sourceInfo.gs("search:s19", "Search for")} "${result.queryTransformed}" ${g_sourceInfo.gs("search:s20", "didn't find any matches")}`);
+      notify.info(`${g_sourceInfo.gs("search:s19", "Search for")} "${result.queryTransformed}" ${g_sourceInfo.gs("search:s20", "didn't find any matches")}`);
     }
     document.getElementById("search-input-field").focus();
   }
@@ -443,7 +450,10 @@ function initSearchModal() {
     //console.log("link clicked");
     if (!$(".save-modified-search-list").hasClass("disabled")) {
       //notify user of unsaved changes
-      notify.error(g_sourceInfo.gs("search:s27", "You have unsaved changes to the search list. Save the changes before leaving the page."));
+      //notify.error(g_sourceInfo.gs("search:s27", "You have unsaved changes to the search list. Save the changes before leaving the page."));
+      $.toast({class: "error",
+             message: g_sourceInfo.gs("search:s27", "You have unsaved changes to the search list. Save the changes before leaving the page.")
+      });
       return false;
     }
     return true;
