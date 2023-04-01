@@ -550,6 +550,12 @@ async function saveModifiedSearchResults() {
   //if previous query results have not been modified return
   if (!queryResult.modified) return;
 
+  //don't save if there are no matches - user could have deleted them all
+  if (queryResult.count === 0) {
+    //$(".search.message").removeClass("orange");
+    return;
+  }
+
   try {
     //let result = await putSearchResult(g_userInfo.userId, "wom", queryResult);
     let result = await putSearchResult(g_userInfo.userId, g_sourceInfo.sid, queryResult);

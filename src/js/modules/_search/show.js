@@ -168,12 +168,18 @@ function setUpEditHandler() {
   });
 }
 
-function addEditToggle(html) {
+function addEditToggle(html, count) {
   // delete existing checkbox if present
   $(".ui.toggle.edit.checkbox").checkbox("destroy");
 
   //remove edit class if set
   $("div.cmi-search-list").removeClass("edit");
+
+  //don't add buttons if there are no results
+  if (count === 0) {
+    $(".search.message").removeClass("orange");
+    return html;
+  }
 
   return `<button class="ui disabled primary button save-modified-search-list">
             <i class="save outline icon"></i>
@@ -190,7 +196,6 @@ export async function showSearchResults(data, query) {
   //format data for local storage
   //- this is source specific
   try {
-    //let results = await g_sourceInfo.prepareSearchResults(data);
     let results = await prepareSearchResults(data);
 
     //save search results to local store
@@ -199,7 +204,7 @@ export async function showSearchResults(data, query) {
     //generate html to display in search modal
     let html = g_sourceInfo.generateHTML(results);
 
-    $(".cmi-search-list").html(addEditToggle(html));
+    $(".cmi-search-list").html(addEditToggle(html, results.count));
     $("#search-results-header").html(`: <em>${query}</em>`);
     setUpEditHandler();
   }
@@ -225,7 +230,7 @@ export function showSavedQuery() {
   //call source specific function to generate search results for saved query
   let html = g_sourceInfo.generateHTML(queryResult);
 
-  $(".cmi-search-list").html(addEditToggle(html));
+  $(".cmi-search-list").html(addEditToggle(html, queryResult.count));
 
   //if the result has a uniqueId it's been saved
   if (queryResult.uniqueId) {
@@ -240,7 +245,7 @@ export function showSavedQuery() {
   $("#search-results-header").html(`: <em>${queryResult.query}</em>`);
 
   //indicate result has been modified and will be saved when query next changes
-  if (queryResult.modified) {
+  if (queryResult.modified && queryResult.count > 0) {
     $(".search.message").addClass("orange");
   }
   //console.log("show search results: strict: %s", queryResult.strict);
