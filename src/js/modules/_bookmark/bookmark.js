@@ -24,17 +24,17 @@ import {
   updateSelectionTopicList
 } from "./selection";
 import {getLink} from "./annotate";
-import {getUrlByPageKey} from "../_util/cmi";
+//import {getUrlByPageKey} from "../_util/cmi";
 import {getString} from "../_language/lang";
 
 //teaching specific constants, assigned at initialization
-let teaching = {};
+let g_sourceInfo = {};
 
 //manages bookmark store for bookmarks on page
 export let localStore;
 
 export function getTeachingInfo() {
-  return teaching;
+  return g_sourceInfo;
 }
 
 let counter = new Map();
@@ -465,7 +465,7 @@ function addToTopicList(newTopics, formValues) {
         storeSet("bmTopics", topicList);
 
         let userInfo = getUserInfo();
-        let sourceId = `${teaching.sourceId}`;
+        let sourceId = `${g_sourceInfo.sourceId}`;
 
         //write the new list to the db
         putTopicList(userInfo.userId, sourceId, newTopicList);
@@ -566,7 +566,7 @@ function initializeBookmarkFeatureState() {
  * @params {string} sharePid - is not null when bookmark is shared on page.
  */
 async function getPageBookmarks(sharePid) {
-  let pageKey = teaching.keyInfo.genPageKey();
+  let pageKey = g_sourceInfo.keyInfo.genPageKey();
   let userInfo = getUserInfo();
 
   if (!userInfo) {
@@ -713,7 +713,8 @@ export const annotation = {
 }
 
 function getLinkHref(link) {
-  let url = getUrlByPageKey(link.key);
+  //let url = getUrlByPageKey(link.key);
+  let url = g_sourceInfo.keyInfo.getUrlByPageKey(link.key);
 
   if (location.pathname === url) {
     return `#${link.desc.pid}`;
@@ -739,10 +740,10 @@ function createLinkListener(getLink) {
 
 export default {
   initialize: function(pid, constants) {
-    teaching = constants;
+    g_sourceInfo = constants;
 
     //provide teaching constants to bmnet
-    netInit(teaching);
+    netInit(g_sourceInfo);
 
     if ($(".transcript").length) {
       //this is a transcript page

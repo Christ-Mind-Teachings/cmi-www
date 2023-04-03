@@ -145,7 +145,6 @@ export function getBookmarkText(bookmarks) {
   @params {string} url - The url of the config file
   @params {string} lsKey - local storage key (cfgwoh)
   @returns {Promise} The config file
-*/
 export function fetchConfiguration(url, lsKey, configStatus) {
   return new Promise((resolve, reject) => {
     let cfg = storeGet(lsKey);
@@ -169,6 +168,7 @@ export function fetchConfiguration(url, lsKey, configStatus) {
       });
   });
 }
+*/
 
 /*
   The status constains the save date for each config file. We compare that to the saveDate
@@ -177,7 +177,6 @@ export function fetchConfiguration(url, lsKey, configStatus) {
 
   return: true - get a new version
           false - use the one we've got
-*/
 function refreshNeeded(cfg, configStatus) {
   let lastSaveDate = configStatus[cfg.bid];
   if (!cfg.saveDate) {
@@ -194,4 +193,6 @@ function refreshNeeded(cfg, configStatus) {
     return true;
   }
 }
+
+*/
 

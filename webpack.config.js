@@ -14,7 +14,9 @@ var config = {
 
   resolve: {
     alias: {
+      /*
       "me-plugin": path.resolve(__dirname, "../cmi-audio/dist"),
+     */
       "acim": path.resolve(__dirname, "../cmi-acim/src/js"),
       "oe": path.resolve(__dirname, "../cmi-oe/src/js"),
       "acol": path.resolve(__dirname, "../cmi-acol/src/js"),
