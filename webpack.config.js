@@ -9,9 +9,6 @@ var config = {
     colors: true
   },
 
-  //"jquery": "jquery/dist/jquery",
-  //"semantic": "../vendor/semantic",
-
   resolve: {
     alias: {
       /*

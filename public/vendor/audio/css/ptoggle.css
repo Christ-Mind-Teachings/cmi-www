@@ -1,0 +1,4 @@
+.mejs__ptoggle > button,
+.mejs-ptoggle > button {
+    background: url('ptoggle.svg') 0 2px no-repeat;
+}

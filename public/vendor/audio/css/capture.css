@@ -1,0 +1,4 @@
+.mejs__capture > button,
+.mejs-capture > button {
+    background: url('capture.svg') 0 2px no-repeat;
+}

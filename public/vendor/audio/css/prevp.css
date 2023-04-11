@@ -1,0 +1,4 @@
+.mejs__prevp > button,
+.mejs-prevp > button {
+    background: url('prevp.svg') 0 2px no-repeat;
+}

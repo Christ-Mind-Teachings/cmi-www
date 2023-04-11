@@ -52,11 +52,25 @@ export class SourceStore {
     this.keys = new Map();
     this._sid = config.sid;
     this._prefix = config.url_prefix;
+    this._lang = config.lang;
 
     //source specific functions
     this._generateHTML;
     this._keyInfo = config.keyInfo;
     this._getPageInfo = config.getPageInfo;
+
+    //audio support
+    this._getReservation = function(url) {return "";};
+    this._getAudioInfo = function(url) {return {};};
+    this._timingBase;
+
+    if (config.audio) {
+      this._timingBase = config.audio.timingBase;
+      this._getReservation = config.audio.getReservation;
+      this._getAudioInfo = config.audio.getAudioInfo;
+    }
+
+    //for language translation
     this._gs = function(key, def) {return def;};
 
     for (const key in config.store) {
@@ -82,8 +96,27 @@ export class SourceStore {
     return this._gs(key, def);
   }
 
+  //check for timer reservation for url
+  getReservation(url) {
+    return this._getReservation(url);
+  }
+
+  //get audio info for url
+  getAudioInfo(url) {
+    return this._getAudioInfo(url);
+  }
+
+  //base uri for timing data
+  get timingBase() {
+    return this._timingBase;
+  }
+
   set generateHTML(func) {
     this._generateHTML = func;
+  }
+
+  get lang() {
+    return this._lang;
   }
 
   get generateHTML() {

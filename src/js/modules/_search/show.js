@@ -215,6 +215,20 @@ export async function showSearchResults(data, query) {
   }
 }
 
+/*
+ * This function accomodates Polish which uses a different word for counts of 1, 2, 3 and 4, and 
+ * 5 or more.
+ */
+function plural(count) {
+  if (count > 4) return `${g_sourceInfo.gs("search:s8", "matches")}`;
+
+  if (count > 2) return `${g_sourceInfo.gs("search:s40", "matches")}`;
+
+  if (count > 1) return `${g_sourceInfo.gs("search:s29", "matches")}`;
+
+  return `${g_sourceInfo.gs("search:s28", "match")}`;
+}
+
 //show saved query result in modal
 export function showSavedQuery() {
   //const queryResult = storeGet("srchResults");
@@ -235,11 +249,11 @@ export function showSavedQuery() {
   //if the result has a uniqueId it's been saved
   if (queryResult.uniqueId) {
     $(".search-message.header").text(g_sourceInfo.gs("search:s4","Saved Search Result"));
-    $(".search-message-body").html(`<p>${g_sourceInfo.gs("search:s5","Saved Search")} <em>${queryResult.query}</em> ${g_sourceInfo.gs("search:s6", "has")} ${queryResult.count} ${g_sourceInfo.gs("search:s8", "matches")}</p>`);
+    $(".search-message-body").html(`<p>${g_sourceInfo.gs("search:s5","Saved Search")} <em>${queryResult.query}</em> ${g_sourceInfo.gs("search:s6", "has")} ${queryResult.count} ${plural(queryResult.count)}</p>`);
   }
   else {
     $(".search-message.header").text(g_sourceInfo.gs("search:s10", "Last Search Result"));
-    $(".search-message-body").html(`<p>${g_sourceInfo.gs("search:s9", "Search for")} <em>${queryResult.query}</em> ${g_sourceInfo.gs("search:s7", "found")} ${queryResult.count} ${g_sourceInfo.gs("search:s8", "matches")}</p>`);
+    $(".search-message-body").html(`<p>${g_sourceInfo.gs("search:s9", "Search for")} <em>${queryResult.query}</em> ${g_sourceInfo.gs("search:s7", "found")} ${queryResult.count} ${plural(queryResult.count)}</p>`);
   }
 
   $("#search-results-header").html(`: <em>${queryResult.query}</em>`);

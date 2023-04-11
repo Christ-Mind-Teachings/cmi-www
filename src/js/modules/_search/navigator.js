@@ -56,12 +56,8 @@ class PageMatches {
 
       $(".search-navigator .save-changes.button").removeClass("disabled");
 
-      if (this.removeCount > 1) {
-        $(".remove-count").text(` (${this.removeCount} ${g_sourceInfo.gs("search:s29", "matches marked")})`);
-      }
-      else {
-        $(".remove-count").text(` (${this.removeCount} ${g_sourceInfo.gs("search:s28", "match marked")})`);
-      }
+      //$(".remove-count").text(` (${this.removeCount} ${g_sourceInfo.gs("search:s29", "matches marked")})`);
+      $(".remove-count").text(` (${this.removeCount})`);
     }
     else {
       $(".search-navigator .remove-match").html(`<i class="trash green icon"></i>${g_sourceInfo.gs("search:s38", "Remove")}`);
@@ -72,12 +68,7 @@ class PageMatches {
         $(".remove-count").text("");
       }
       else {
-        if (this.removeCount > 1) {
-          $(".remove-count").text(` (${this.removeCount} ${g_sourceInfo.gs("search:s29", "matches marked")})`);
-        }
-        else {
-          $(".remove-count").text(` (${this.removeCount} ${g_sourceInfo.gs("search:s28", "match marked")})`);
-        }
+        $(".remove-count").text(` (${this.removeCount})`);
       }
     }
   }

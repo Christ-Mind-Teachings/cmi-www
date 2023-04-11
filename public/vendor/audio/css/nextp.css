@@ -1,0 +1,4 @@
+.mejs__nextp > button,
+.mejs-nextp > button {
+    background: url('nextp.svg') 0 2px no-repeat;
+}
