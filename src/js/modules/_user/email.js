@@ -2,9 +2,10 @@
   Email list management - for sharing bookmarks via email
 */
 import notify from "toastr";
-import {getUserInfo} from "../_user/netlify";
-import {getMailList, putMailList} from "../_ajax/share";
-import {purify} from "../_util/sanitize";
+
+import {getUserInfo} from "common/modules/_user/netlify";
+import {getMailList, putMailList} from "common/modules/_ajax/share";
+import {purify} from "common/modules/_util/sanitize";
 
 //module global list of email addresses
 let maillist = [];

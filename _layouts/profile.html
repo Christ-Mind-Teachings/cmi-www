@@ -35,12 +35,6 @@
     {% include common/footer.html %}
   {% endif %}
 
-  {% comment %}
-  {% if page.search != false %}
-    {% include components/search-modal.html %}
-  {% endif %}
-  {% endcomment %}
-
   {% if page.manageEmail == true %}
     {% include components/addto-maillist-dialog.html %}
   {% endif %}

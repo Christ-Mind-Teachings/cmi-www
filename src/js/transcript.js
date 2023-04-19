@@ -1,28 +1,24 @@
 /* eslint no-console: off */
-import {storeInit} from "./modules/_util/store";
 
 //common modules
-import {showParagraph} from "./modules/_util/url";
-import auth from "./modules/_user/netlify";
-import fb from "./modules/_util/facebook";
-import {initTranscriptPage} from "./modules/_page/startup";
+import {storeInit} from "common/modules/_util/store";
+import {showParagraph} from "common/modules/_util/url";
+import auth from "common/modules/_user/netlify";
+import {initTranscriptPage} from "common/modules/_page/startup";
+import {initialize as acqVideoInit} from "common/modules/_video/acq";
 
 import {loadConfig} from "./modules/_config/config";
 import toc, {getBookId} from "./modules/_contents/toc";
 import about from "./modules/_about/about";
-
 import contact from "./modules/_forms/contact";
-import {initialize as acqVideoInit} from "./modules/_video/acq";
 
-import {setLanguage} from "./modules/_language/lang";
 import constants from "./constants";
 
 $(document).ready(() => {
   storeInit(constants);
-  setLanguage(constants);
   initTranscriptPage("pnDisplay");
   auth.initialize();
-  fb.initialize();
+
   about.initialize();
   contact.initialize("acq-contact-form");
   acqVideoInit();

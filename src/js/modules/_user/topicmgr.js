@@ -1,13 +1,13 @@
 import notify from "toastr";
-import {getBookmarkText, getUrlByPageKey} from "../_util/cmi";
-import {getUserInfo} from "./netlify";
-import {getTopicList, putTopicList} from "../_ajax/topics";
-import {getAnnotations, updateAnnotation} from "../_ajax/annotation";
-import {deleteQuote, putQuote, getQuoteData} from "../_ajax/quotes";
 import startCase from "lodash/startCase";
-import {purify} from "../_util/sanitize";
 
-//Data for each source, sourceId, books, etc
+import {getUserInfo} from "common/modules/_user/netlify";
+import {getTopicList, putTopicList} from "common/modules/_ajax/topics";
+import {getAnnotations, updateAnnotation} from "common/modules/_ajax/annotation";
+import {deleteQuote, putQuote, getQuoteData} from "common/modules/_ajax/quotes";
+import {purify} from "common/modules/_util/sanitize";
+
+import {getBookmarkText, getUrlByPageKey} from "./cmi";
 import sourceInfo from "./source";
 
 let bookmarks = {};

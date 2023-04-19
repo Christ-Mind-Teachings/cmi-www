@@ -1,32 +1,28 @@
 /* eslint no-console: off */
-import {storeInit} from "./modules/_util/store";
+import {storeInit} from "common/modules/_util/store";
+import auth from "common/modules/_user/netlify";
+import {initStickyMenu, initAnimation} from "common/modules/_page/startup";
 
-//common modules
-import auth from "./modules/_user/netlify";
-import {initStickyMenu, initAnimation} from "./modules/_page/startup";
+//used only for non-english languages
+//import {setLanguage} from "common/modules/_language/lang";
+//import lang from "./lang";
 
-//import {bookmarkStart} from "./modules/_bookmark/start";
-//import search from "./modules/_search/search";
 import toc from "./modules/_contents/toc";
 import about from "./modules/_about/about";
 import subscribe from "./modules/_forms/subscribe";
 
-import {setLanguage} from "./modules/_language/lang";
 import constants from "./constants";
 
 $(() => {
   storeInit(constants);
   initStickyMenu();
-  setLanguage(constants);
 
-  //bookmarkStart("page");
-  //search.initialize();
+  //setLanguage(lang);
+
   auth.initialize();
   toc.initialize("page");
   about.initialize();
 
-  //init subscribe form in footer
   subscribe.initialize();
-
   initAnimation(".card > a");
 });

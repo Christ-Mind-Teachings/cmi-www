@@ -3,7 +3,7 @@
 */
 
 import notify from "toastr";
-import {getUserInfo} from "../_user/netlify";
+import {getUserInfo} from "common/modules/_user/netlify";
 
 function createSubmitHandler($form) {
   let userInfo = getUserInfo();

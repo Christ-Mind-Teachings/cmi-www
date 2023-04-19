@@ -1,8 +1,6 @@
 const webpack = require("webpack");
-//const etp = require("extract-text-webpack-plugin");
 const path = require("path");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+//const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 var config = {
   stats: {
@@ -11,9 +9,7 @@ var config = {
 
   resolve: {
     alias: {
-      /*
-      "me-plugin": path.resolve(__dirname, "../cmi-audio/dist"),
-     */
+      "common": path.resolve(__dirname, "../cmi-common/src/js"),
       "acim": path.resolve(__dirname, "../cmi-acim/src/js"),
       "oe": path.resolve(__dirname, "../cmi-oe/src/js"),
       "acol": path.resolve(__dirname, "../cmi-acol/src/js"),
@@ -52,31 +48,19 @@ var config = {
         loader: "babel-loader",
         exclude: /node_modules/,
         query: {cacheDirectory: true}
-      },
-      {
-        test: /\.css$/,
-        use: [ "style-loader", MiniCssExtractPlugin.loader, "css-loader"]
       }
     ]
   },
-  plugins: [
-    new MiniCssExtractPlugin({filename: 'me-styles.css'})
-    //new webpack.ProvidePlugin({ $: "jquery", jQuery: "jquery" })
-  ]
+  plugins: [ ]
 };
 
 module.exports = (env, argv) => {
-  const jqDev = { $: "jquery", jQuery: "jquery" };
-  const jqProd = { $: "jquery.min", jQuery: "jquery.min" };
-
   if (argv.mode === "development") {
-    config.devtool = "source-map";
+    //config.devtool = "source-map";
     //config.plugins.push(new BundleAnalyzerPlugin({analyzerPort: 8899}));
-    //config.plugins.push(new webpack.ProvidePlugin(jqDev));
   }
 
   if (argv.mode === "production") {
-    //config.plugins.push(new webpack.ProvidePlugin(jqProd));
   }
 
   return config;

@@ -13,7 +13,6 @@
   {% include common/load-open-graph.html %}
 
   <link rel="stylesheet" href="/public/css/{{site.semantic}}/semantic.css">
-  <link rel="stylesheet" href="/public/js/me-styles.css">
   <link rel="stylesheet" href="/public/css/toastr.css">
   <link rel="stylesheet" href="/public/css/cmi.css">
   <link rel="stylesheet" href="/public/css/transcript.css">
@@ -26,14 +25,6 @@
 <body sourceId="{{site.sourceId}}">
   {% include common/masthead.html %}
   {% include common/transcript-menu.html %}
-
-  <div id="transcript-page-loading" class="ui dimmer">
-    <div class="ui text loader">
-      Library of Christ Mind Teachings<br/>
-      The Library<br/><br/>
-      Hang on a sec&hellip;
-    </div>
-  </div>
 
   {% if page.bid %}
   <div class="{{page.bid | downcase }} transcript ui text container">
@@ -49,27 +40,6 @@
   {% endif %}
 
   {% include components/toc-modal.html %}
-  {% comment %}
-  {% if page.search != false %}
-    <!-- include search support -->
-    {% include components/search-modal.html %}
-    {% include components/search-navigator.html %}
-  {% endif %}
-  {% if page.audio != false %}
-    <!-- include audio support -->
-    {% include components/audio-player.html %}
-    {% include components/timecapture-modal.html %}
-    {% include components/time-edit-modal.html %}
-  {% endif %}
-  {% if page.bookmark != false %}
-    <!-- include bookmark support -->
-    {% include components/bookmark-modal.html %}
-    {% include components/page-topics-modal.html %}
-    {% include components/bookmark-navigator.html %}
-    {% include components/annotation-popup.html %}
-    {% include components/email-share-dialog.html %}
-  {% endif %}
-  {% endcomment %}
 
   <div class="fixed" id="netlify-modal"></div>
 

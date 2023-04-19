@@ -1,7 +1,7 @@
 //import store from "store";
 //import {fetchConfiguration} from "../_util/cmi";
-import {fetchConfiguration} from "../_ajax/config";
-import {storeGet, storeSet} from "../_util/store";
+import {fetchConfiguration} from "common/modules/_ajax/config";
+import {storeGet, storeSet} from "common/modules/_util/store";
 import {status} from "./status";
 
 const transcript = require("./key");

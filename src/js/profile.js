@@ -1,28 +1,20 @@
 /* eslint no-console: off */
 
-import {storeInit} from "./modules/_util/store";
-//import "../vendor/semantic/semantic.min.js";
-//import "../../public/vendor/semantic/semantic.js";
+import {storeInit} from "common/modules/_util/store";
+import {initStickyMenu} from "common/modules/_page/startup";
+import auth from "common/modules/_user/netlify";
+import {setLanguage} from "common/modules/_language/lang";
 
-import {initStickyMenu} from "./modules/_page/startup";
-//import {bookmarkStart} from "./modules/_bookmark/start";
-//import search from "./modules/_search/search";
 import toc from "./modules/_contents/toc";
-import auth from "./modules/_user/netlify";
 import about from "./modules/_about/about";
-
 import {loadEmailListTable} from "./modules/_user/email";
 import {initializeTopicManager} from "./modules/_user/topicmgr";
-
-import {setLanguage} from "./modules/_language/lang";
 import constants from "./constants";
 
 $(document).ready(() => {
   storeInit(constants);
   initStickyMenu();
   setLanguage(constants);
-  //bookmarkStart("page");
-  //search.initialize();
   auth.initialize();
   toc.initialize("transcript");
   about.initialize();

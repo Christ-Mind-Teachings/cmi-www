@@ -9,16 +9,12 @@
   "main": "index.js",
   "scripts": {
     "base:dev:webpack": "webpack --mode development",
-    "base:dev:jekyll": "JEKYLL_ENV=development bundle exec jekyll build --config ./_config.prod.yml",
+    "base:dev:jekyll": "JEKYLL_ENV=development bundle exec jekyll build",
     "base:prod:webpack": "webpack --mode production",
     "base:prod:jekyll": "JEKYLL_ENV=production bundle exec jekyll build --config ./_config.prod.yml",
-    "test": "jest",
-    "check:dev": "JEKYLL_ENV=development bundle exec jekyll serve --config ./_config.prod.yml",
-    "check:prod": "JEKYLL_ENV=production bundle exec jekyll serve --config ./_config.prod.yml",
     "watch": "webpack --mode development --watch",
     "jekyll": "JEKYLL_ENV=development bundle exec jekyll s",
     "start": "npm run jekyll & npm run watch",
-    "setConfigDate": "./deploy",
     "d:jekyll": "JEKYLL_ENV=development bundle exec jekyll build",
     "deploy:dev": "npm run d:webpack && npm run d:jekyll",
     "p:webpack": "webpack --mode production",
@@ -48,15 +44,5 @@
     "webpack": "^4.42.1",
     "webpack-bundle-analyzer": "^3.8.0",
     "webpack-cli": "^3.3.11"
-  },
-  "dependencies": {
-    "clipboard": "^2.0.6",
-    "dom-anchor-text-quote": "^4.0.2",
-    "dompurify": "^2.0.12",
-    "gsap": "^2.1.3",
-    "md5": "^2.2.1",
-    "netlify-identity-widget": "^1.5.6",
-    "uuid": "^7.0.3",
-    "wrap-range-text": "^1.0.1"
   }
 }

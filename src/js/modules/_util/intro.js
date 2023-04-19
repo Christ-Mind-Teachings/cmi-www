@@ -1,4 +1,4 @@
-import {runFeatureIntro} from "./driver";
+import {runFeatureIntro} from "common/modules/_util/driver";
 
 const cmiPageBanner = {
   element: "#masthead-title",
