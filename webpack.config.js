@@ -1,68 +1,33 @@
+/**
+ * CMI sources use the same webpack config file with few exceptions. The shared
+ * config file is found in the cmi-common project. Any changes affecting all
+ * sources should be made there.
+ *
+ * Source specific changes should be made here and added to the config file.
+ */
+const cfg = require("../cmi-common/webpack/config.js");
+
 const webpack = require("webpack");
 const path = require("path");
-//const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-
-var config = {
-  stats: {
-    colors: true
-  },
-
-  resolve: {
-    alias: {
-      "common": path.resolve(__dirname, "../cmi-common/src/js"),
-      "acim": path.resolve(__dirname, "../cmi-acim/src/js"),
-      "oe": path.resolve(__dirname, "../cmi-oe/src/js"),
-      "acol": path.resolve(__dirname, "../cmi-acol/src/js"),
-      "col": path.resolve(__dirname, "../cmi-col/src/js"),
-      "ftcm": path.resolve(__dirname, "../cmi-ftcm/src/js"),
-      "jsb": path.resolve(__dirname, "../cmi-jsb/src/js"),
-      "raj": path.resolve(__dirname, "../cmi-raj/src/js"),
-      "pwom": path.resolve(__dirname, "../cmi-pwom/src/js"),
-      "wom": path.resolve(__dirname, "../cmi-wom/src/js")
-    }
-  },
-
-  entry: {
-    transcript: ["./src/js/transcript.js"],
-    profile: ["./src/js/profile.js"],
-    page: ["./src/js/page.js"]
-  },
-  output: {
-    path: path.join(__dirname, "public/js"),
-    publicPath: "/public/js",
-    filename: "[name].js"
-  },
-  optimization: {
-    splitChunks: {
-      chunks: "all",
-    }
-  },
-  module: {
-    rules: [
-      {
-        test: /\.((png)|(eot)|(woff)|(woff2)|(ttf)|(svg)|(gif))(\?v=\d+\.\d+\.\d+)?$/,
-        loader: "file-loader?name=/[hash].[ext]"
-      },
-      {
-        test: /\.js?$/,
-        loader: "babel-loader",
-        exclude: /node_modules/,
-        query: {cacheDirectory: true}
-      }
-    ]
-  },
-  plugins: [ ]
-};
 
 module.exports = (env, argv) => {
+
+  //write output to public/js
+  cfg.output.path = path.join(__dirname, "public/js");
+
+  //create package for profile.js, not included in the common cfg
+  cfg.entry.profile = ["./src/js/profile.js"];
+
+  //dev specific directives
   if (argv.mode === "development") {
-    //config.devtool = "source-map";
-    //config.plugins.push(new BundleAnalyzerPlugin({analyzerPort: 8899}));
+    cfg.devtool = "source-map";
   }
 
   if (argv.mode === "production") {
   }
 
-  return config;
+  //console.log("cfg %o", cfg);
+
+  return cfg;
 };
 

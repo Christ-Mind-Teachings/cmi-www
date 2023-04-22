@@ -6,8 +6,8 @@ import {getTopicList, putTopicList} from "common/modules/_ajax/topics";
 import {getAnnotations, updateAnnotation} from "common/modules/_ajax/annotation";
 import {deleteQuote, putQuote, getQuoteData} from "common/modules/_ajax/quotes";
 import {purify} from "common/modules/_util/sanitize";
+import {getBookmarkText, getUrlByPageKey} from "common/modules/_user/cmi";
 
-import {getBookmarkText, getUrlByPageKey} from "./cmi";
 import sourceInfo from "./source";
 
 let bookmarks = {};
