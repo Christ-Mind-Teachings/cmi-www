@@ -45,17 +45,15 @@
 
   {% include common/javascript.html %}
 
+  <script src="/public/vendor/jquery/jquery.min.js"></script>
+  <script src="/public/vendor/{{site.semantic}}/semantic.min.js"></script>
   {% if jekyll.environment == "production" %}
     <!-- WWW transcript Webpack production ({{site.semantic}}) -->
-    <script src="/public/vendor/jquery/jquery.min.js"></script>
-    <script src="/public/vendor/{{site.semantic}}/semantic.min.js"></script>
     <script src="/public/js/vendors~page~profile~transcript.js"></script>
-    <script src="/public/js/page~transcript.js"></script>
+    <script src="/public/js/page~profile~transcript.js"></script>
     <script src="/public/js/transcript.js"></script>
   {% else %}
     <!-- WWW transcript Webpack development ({{site.semantic}}) -->
-    <script src="/public/vendor/jquery/jquery.js"></script>
-    <script src="/public/vendor/{{site.semantic}}/semantic.js"></script>
     <script src="/public/js/vendors~page~profile~transcript.js"></script>
     <script src="/public/js/page~profile~transcript.js"></script>
     <script src="/public/js/transcript.js"></script>

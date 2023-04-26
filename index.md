@@ -54,7 +54,7 @@ each page. Video documentation is also available.
 <div id="page-contents">
   <div class="ui three cards">
     <div class="card">
-      <a id="book-acq" href="#" data-book="acq" class="toc-modal-open image" data-tooltip="Click to view the Getting Acquainted table of contents." data-position="bottom center">
+      <a id="book-acq" href="#" data-book="acq" animate class="toc-modal-open image" data-tooltip="Click to view the Getting Acquainted table of contents." data-position="bottom center">
         <img src="/public/img/cmi/acq-big.jpg">
       </a>
       <div class="content">
@@ -66,7 +66,7 @@ each page. Video documentation is also available.
   </div>
   <div class="ui three cards">
     <div class="card">
-      <a id="acimoe-christmind-info" href="/t/acimoe/" class="image" data-tooltip="Click to view the ACIM Original Edition." data-position="bottom center">
+      <a id="acimoe-christmind-info" href="/t/acimoe/" animate class="image" data-tooltip="Click to view the ACIM Original Edition." data-position="bottom center">
         <img src="/public/img/cmi/acimoe-big.jpg">
       </a>
       <div class="content">
@@ -76,7 +76,7 @@ each page. Video documentation is also available.
       </div>
     </div>
     <div class="card">
-      <a id="wom-christmind-info" href="/t/wom/" class="image" data-tooltip="Click to view the Way of Mastery." data-position="bottom center">
+      <a id="wom-christmind-info" href="/t/wom/" animate class="image" data-tooltip="Click to view the Way of Mastery." data-position="bottom center">
         <img src="/public/img/cmi/wom-big.jpg">
       </a>
       <div class="content">
@@ -86,7 +86,7 @@ each page. Video documentation is also available.
       </div>
     </div>
     <div class="card">
-      <a id="acol-christmind-info" href="/t/acol/" class="image" data-tooltip="Click to view A Course Of Love" data-position="bottom center">
+      <a id="acol-christmind-info" href="/t/acol/" animate class="image" data-tooltip="Click to view A Course Of Love" data-position="bottom center">
         <img src="/public/img/cmi/acol2-big.jpg">
       </a>
       <div class="content">
@@ -96,7 +96,7 @@ each page. Video documentation is also available.
       </div>
     </div>
     <div class="card">
-      <a id="ftcm-christmind-info" href="/t/ftcm/" class="image" data-tooltip="Click to view From the Christ Mind" data-position="bottom center">
+      <a id="ftcm-christmind-info" href="/t/ftcm/" animate class="image" data-tooltip="Click to view From the Christ Mind" data-position="bottom center">
         <img src="/public/img/cmi/ftcm2-big.jpg">
       </a>
       <div class="content">
@@ -106,7 +106,7 @@ each page. Video documentation is also available.
       </div>
     </div>
     <div class="card">
-      <a id="pwom-christmind-info" href="/t/pwom/" class="image" data-tooltip="Click to visit the Polish translation of the Way of Mastery." data-position="bottom center">
+      <a id="pwom-christmind-info" href="/t/pwom/" animate class="image" data-tooltip="Click to visit the Polish translation of the Way of Mastery." data-position="bottom center">
         <img src="/public/img/cover/pwom2-big.jpg">
       </a>
       <div class="content">
@@ -116,7 +116,7 @@ each page. Video documentation is also available.
       </div>
     </div>
     <div class="card">
-      <a id="raj-christmind-info" href="/t/raj/" class="image" data-tooltip="Click to view the Raj Material." data-position="bottom center">
+      <a id="raj-christmind-info" href="/t/raj/" animate class="image" data-tooltip="Click to view the Raj Material." data-position="bottom center">
         <img src="/public/img/cmi/raj-big.jpg">
       </a>
       <div class="content">
@@ -126,7 +126,7 @@ each page. Video documentation is also available.
       </div>
     </div>
     <div class="card">
-      <a id="col-christmind-info" href="/t/col/" class="image" data-tooltip="Click to visit Choose Only Love." data-position="bottom center">
+      <a id="col-christmind-info" href="/t/col/" animate class="image" data-tooltip="Click to visit Choose Only Love." data-position="bottom center">
         <img src="/public/img/cmi/col-big.jpg">
       </a>
       <div class="content">
@@ -136,7 +136,7 @@ each page. Video documentation is also available.
       </div>
     </div>
     <div class="card">
-      <a id="jsb-christmind-info" href="/t/jsb/" class="image" data-tooltip="Click to view The Impersonal Life." data-position="bottom center">
+      <a id="jsb-christmind-info" href="/t/jsb/" animate class="image" data-tooltip="Click to view The Impersonal Life." data-position="bottom center">
         <img src="/public/img/cmi/jsb-big.jpg">
       </a>
       <div class="content">
@@ -146,7 +146,7 @@ each page. Video documentation is also available.
       </div>
     </div>
     <div class="card">
-      <a id="acim-christmind-info" href="/t/acim/" class="image" data-tooltip="Click to view the ACIM Sparkly Edition." data-position="bottom center">
+      <a id="acim-christmind-info" href="/t/acim/" animate class="image" data-tooltip="Click to view the ACIM Sparkly Edition." data-position="bottom center">
         <img src="/public/img/cover/acim-big.jpg">
       </a>
       <div class="content">

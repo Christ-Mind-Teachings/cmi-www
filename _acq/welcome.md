@@ -10,7 +10,7 @@ tour: enable
 <div markdown="1" class="ui basic segment">
 <h2 class="ui header">Introduction</h2>
 
-<img class="ui small left floated image" src="/public/img/cmi/cmi-logo-200.png">
+<img class="ui small left floated image" src="/public/img/site/cmi-logo-200.png">
 
 The library is a collection of authoritative channeled insight and inspiration
 that offers a perspective on the individual and collective challenges of our

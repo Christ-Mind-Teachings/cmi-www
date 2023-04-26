@@ -1,6 +1,6 @@
 {
  "icons": [
-    { "src": "/icon-192.png", "type": "image/png", "sizes": "192x192" },
-    { "src": "/icon-512.png", "type": "image/png", "sizes": "512x512" }
+    { "src": "/public/img/favicon/cmi/icon-192.png", "type": "image/png", "sizes": "192x192" },
+    { "src": "/public/img/favicon/cmi/icon-310.png", "type": "image/png", "sizes": "310x310" }
  ]
 }

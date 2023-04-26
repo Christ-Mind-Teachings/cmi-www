@@ -1,4 +1,4 @@
-import {pageDriver, pageNavigationDriver, transcriptDriver} from "../_util/intro";
+import {pageDriver, pageNavigationDriver, transcriptDriver} from "../_util/driver";
 
 function createClickHandlers() {
   //help menu
