@@ -44,8 +44,12 @@ body {
 }
 
 /* cmi menu */
-.main.menu {
+
+#transcript-menu-large {
   margin-top: 4em;
+}
+
+.main.menu {
   border-radius: 0;
   border: none;
   box-shadow: none;
