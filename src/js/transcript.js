@@ -14,13 +14,12 @@ import constants from "./constants";
 $(document).ready(() => {
   const store = new SourceStore(constants);
   storeInit(constants);
-
-  contact.initialize("acq-contact-form");
   acqVideoInit();
 
   //load config file and do initializations that depend on a loaded config file
   loadConfig(getBookId()).then((result) => {
     initBareBonesTranscriptPage(store);
+    contact.initialize("acq-contact-form");
     about.initialize();
     toc.initialize("transcript");
   }).catch((error) => {
