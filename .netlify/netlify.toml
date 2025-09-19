@@ -1,0 +1,72 @@
+plugins = []
+headers = []
+
+[Settings]
+
+[functions]
+
+[functions."*"]
+
+[build]
+publish = "/Users/rmercer/Projects/cmi/site/cmi-sources/cmi-www/_site"
+publishOrigin = "ui"
+commandOrigin = "ui"
+command = "bundle exec jekyll build"
+
+[build.environment]
+
+[build.processing]
+
+[build.processing.css]
+
+[build.processing.html]
+
+[build.processing.images]
+
+[build.processing.js]
+
+[build.services]
+
+[[redirects]]
+from = "/library"
+to = "/"
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/acim/*"
+to = "/t/acim/"
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/nwffacim/*"
+to = "/t/raj/"
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/wom/*"
+to = "/t/wom/"
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]

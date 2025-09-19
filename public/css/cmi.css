@@ -104,6 +104,13 @@ body {
   border-radius: 5px;
 }
 
+/*
+.toc-list .ui.relaxed.ordered.list > .item::before {
+  counter-increment: ordered 1;
+  content: counters(ordered, "&nbsp;&nbsp;&nbsp;") "+++";
+}
+*/
+
 i.toc-share.icon {
   display: inline-block!important;
   font-size: 1em!important;
