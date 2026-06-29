@@ -13,3 +13,6 @@ public/js/page~profile~transcript.js
 public/js/profile.js
 public/js/transcript.js
 public/js/vendors~page~profile~transcript.js
+
+# Local Netlify folder
+.netlify

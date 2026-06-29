@@ -1,0 +1,140 @@
+❯ netlify status
+──────────────────────┐
+ Current Netlify User │
+──────────────────────┘
+Name:  Rick Mercer
+Email: rmercer33@gmail.com
+Teams:
+  - Library of Christ Mind Teachings
+  - Rick Mercer's team
+────────────────────┐
+ Netlify Project Info  │
+────────────────────┘
+Current project: cmi-www
+Netlify TOML:    /Users/rmercer/Projects/cmi/site/cmi-sources/cmi-www/netlify.toml
+Admin URL:       https://app.netlify.com/projects/cmi-www
+Project URL:     https://www.christmind.info
+Project Id:      ae12b0c5-b306-4113-ab74-eea7334a62eb
+
+❯ netlify functions:list
+Based on local functions folder /Users/rmercer/Projects/cmi/site/cmi-sources/cmi-www, these are the functions detected
+.----------------------------------------------------------------.
+|         Netlify Functions (in local functions folder)          |
+|----------------------------------------------------------------|
+|      Name      |                URL                 | deployed |
+|----------------|------------------------------------|----------|
+| webpack.config | /.netlify/functions/webpack.config | no       |
+'----------------------------------------------------------------'
+❯ netlify deploy
+
+Netlify Build
+────────────────────────────────────────────────────────────────
+
+❯ Version
+  @netlify/build 35.13.4
+
+❯ Flags
+  accountId: 5e4f85de092dfb4bf367f3c1
+  deployId: 6a220ba3d181295886185add
+
+❯ Current directory
+  /Users/rmercer/Projects/cmi/site/cmi-sources/cmi-www
+
+❯ Config file
+  /Users/rmercer/Projects/cmi/site/cmi-sources/cmi-www/netlify.toml
+
+❯ Context
+  production
+
+Build command from Netlify app
+────────────────────────────────────────────────────────────────
+
+$ bundle exec jekyll build
+Configuration file: /Users/rmercer/Projects/cmi/site/cmi-sources/cmi-www/_config.yml
+            Source: /Users/rmercer/Projects/cmi/site/cmi-sources/cmi-www
+       Destination: /Users/rmercer/Projects/cmi/site/cmi-sources/cmi-www/_site
+ Incremental build: disabled. Enable with --incremental
+      Generating...
+                    done in 0.25 seconds.
+ Auto-regeneration: disabled. Use --watch to enable.
+
+(build.command completed in 588ms)
+
+Functions bundling
+────────────────────────────────────────────────────────────────
+
+Packaging Functions from . directory:
+ - webpack.config.js
+
+
+(Functions bundling completed in 1.4s)
+
+Deploying to Netlify
+────────────────────────────────────────────────────────────────
+
+Deploy path:        /Users/rmercer/Projects/cmi/site/cmi-sources/cmi-www/_site
+Functions path:     /Users/rmercer/Projects/cmi/site/cmi-sources/cmi-www
+Configuration path: /Users/rmercer/Projects/cmi/site/cmi-sources/cmi-www/netlify.toml
+
+✔ Finished uploading blobs to deploy store
+✔ Deploying functions from cache (use --skip-functions-cache to override)
+✔ Finished hashing 5443 files and 1 functions
+⠼ CDN diffing files... ›   Warning: JSONHTTPError: Incorrect function names. Name should consist of only alphanumeric characters, hyphen & underscores 422
+ ›   Warning:
+{
+  "name": "JSONHTTPError",
+  "status": 422,
+  "json": {
+    "code": 422,
+    "message": "Incorrect function names. Name should consist of only alphanumeric characters, hyphen & underscores"
+  }
+}
+
+
+Internal error during "options.onPostBuild"
+────────────────────────────────────────────────────────────────
+
+  Error message
+  JSONHTTPError: Unprocessable Entity
+
+  Error location
+  During options.onPostBuild
+      at parseResponse (file:///Users/rmercer/.nvm/versions/node/v24.14.1/lib/node_modules/netlify-cli/node_modules/@netlify/api/lib/methods/response.js:34:39)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async callMethod (file:///Users/rmercer/.nvm/versions/node/v24.14.1/lib/node_modules/netlify-cli/node_modules/@netlify/api/lib/methods/index.js:26:28)
+      at async deploySite (file:///Users/rmercer/.nvm/versions/node/v24.14.1/lib/node_modules/netlify-cli/dist/utils/deploy/deploy-site.js:132:18)
+      at async runDeploy (file:///Users/rmercer/.nvm/versions/node/v24.14.1/lib/node_modules/netlify-cli/dist/commands/deploy/deploy.js:471:19)
+      at async prepAndRunDeploy (file:///Users/rmercer/.nvm/versions/node/v24.14.1/lib/node_modules/netlify-cli/dist/commands/deploy/deploy.js:712:21)
+      at async deployHandler (file:///Users/rmercer/.nvm/versions/node/v24.14.1/lib/node_modules/netlify-cli/dist/commands/deploy/deploy.js:1045:31)
+      at async fireCoreStep (file:///Users/rmercer/.nvm/versions/node/v24.14.1/lib/node_modules/netlify-cli/node_modules/@netlify/build/lib/steps/core_step.js:11:98)
+      at async tFireStep (file:///Users/rmercer/.nvm/versions/node/v24.14.1/lib/node_modules/netlify-cli/node_modules/@netlify/build/lib/time/main.js:19:63)
+      at async file:///Users/rmercer/.nvm/versions/node/v24.14.1/lib/node_modules/netlify-cli/node_modules/@netlify/build/lib/steps/run_step.js:65:329
+
+  Error properties
+  {
+    name: 'JSONHTTPError',
+    status: 422,
+    json: {
+      code: 422,
+      message: 'Incorrect function names. Name should consist of only alphanumeric characters, hyphen & underscores'
+    }
+  }
+
+  Resolved config
+  build:
+    command: bundle exec jekyll build
+    commandOrigin: ui
+    publish: /Users/rmercer/Projects/cmi/site/cmi-sources/cmi-www/_site
+    publishOrigin: ui
+  functionsDirectory: /Users/rmercer/Projects/cmi/site/cmi-sources/cmi-www
+  redirects:
+    - from: /library
+      to: /
+    - from: /acim/*
+      to: /t/acim/
+    - from: /nwffacim/*
+      to: /t/raj/
+    - from: /wom/*
+      to: /t/wom/
+⠧ CDN diffing files... ›   Error: Error while running build
+~/Pr/c/s/cmi-sources/cmi-www master !3 ?1 ❯                                  9s   ruby-3.0.0

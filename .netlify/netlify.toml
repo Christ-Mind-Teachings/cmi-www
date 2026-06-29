@@ -1,3 +1,5 @@
+functionsDirectory = "/Users/rmercer/Projects/cmi/site/cmi-sources/cmi-www/src/js/netlify"
+functionsDirectoryOrigin = "ui"
 plugins = []
 headers = []
 
@@ -12,6 +14,7 @@ publish = "/Users/rmercer/Projects/cmi/site/cmi-sources/cmi-www/_site"
 publishOrigin = "ui"
 commandOrigin = "ui"
 command = "bundle exec jekyll build"
+functions = "/Users/rmercer/Projects/cmi/site/cmi-sources/cmi-www/src/js/netlify"
 
 [build.environment]
 
